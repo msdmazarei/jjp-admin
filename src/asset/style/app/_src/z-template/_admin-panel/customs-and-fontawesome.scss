@@ -1,0 +1,37 @@
+// core
+@import "./custom/functions";
+@import "./custom/variables";
+@import "./custom/mixins";
+ // Custom components
+@import "./custom/alerts";
+@import "./custom/badges";
+@import "./custom/buttons";
+@import "./custom/dropdown";
+@import "./custom/footer";
+@import "./custom/forms";
+@import "./custom/images";
+@import "./custom/modal";
+@import "./custom/navbar";
+@import "./custom/type";
+@import "./custom/tables";
+@import "./custom/checkboxes-radio";
+@import "./custom/fixed-plugin";
+@import "./custom/sidebar-and-main-panel";
+@import "./custom/misc";
+@import "./custom/rtl";
+@import "./custom/input-group";
+ // Vendor / Plugins
+@import "./custom/vendor/plugin-perfect-scrollbar";
+@import "./custom/vendor/plugin-react-notification-alert";
+// light mode
+@import "./custom/white-content";
+
+// Cards
+
+@import './custom/card';
+@import "./custom/cards/card-chart";
+@import "./custom/cards/card-map";
+@import "./custom/cards/card-user";
+@import "./custom/cards/card-task";
+@import "./custom/cards/card-plain";
+

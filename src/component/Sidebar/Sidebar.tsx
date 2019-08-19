@@ -29,7 +29,8 @@ class Sidebar extends React.Component<any,any> {
   }
   componentDidMount() {
     if (navigator.platform.indexOf("Win") > -1) {
-      ps = new PerfectScrollbar(this.refs.sidebar, {
+      let sidebar:any=this.refs.sidebar;
+      ps = new PerfectScrollbar(sidebar, {
         suppressScrollX: true,
         suppressScrollY: false
       });

@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
 
 // core components
-import AdminNavbar from "../../component/Navbars/AdminNavbar";
+import { AdminNavbar } from "../../component/Navbars/AdminNavbar";
 import Sidebar from "../../component/Sidebar/Sidebar";
 import routes from "../.././routes";
 // import { Localization } from "../../config/localization/localization";
@@ -11,10 +11,22 @@ import { connect, MapDispatchToProps } from "react-redux";
 import { redux_state } from "../../redux/app_state.js";
 import { Dispatch } from "redux";
 // import logo from "../../asset/style/img/react-logo.png";
+import { History, Location } from 'history';
+// import * as HSTR from 'history';
+import { IUser } from "../../model/model.user";
+import { TInternationalization } from "../../config/setup";
+
+
+interface IProps {
+  logged_in_user?: IUser | null;
+  internationalization: TInternationalization;
+  history: History;
+  location: Location; // HSTR.Location;
+}
 
 let ps: any;
 
-class AdminComponent extends React.Component<any, any> {
+class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IProps, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -22,14 +34,6 @@ class AdminComponent extends React.Component<any, any> {
       sidebarOpened:
         document.documentElement.className.indexOf("nav-open") !== -1
     };
-
-
-    // Localization.setLanguage(props.internationalization.flag);
-    // document.title = Localization.app_title;
-
-    // if (props.internationalization.rtl) {
-    //   document.body.classList.add('rtl');
-    // }
   }
 
   componentWillMount() {

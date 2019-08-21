@@ -8,7 +8,7 @@ export class BookService extends BaseService {
     //     headers: { 'authorization': 'Bearer 0be2e4cb-88b3-44a6-aeff-4eeb96e411c6' }
     // });
 
-    addBook(book: any) {
+    create(book: any) {
         return this.axiosTokenInstance.post('/books', book);
     }
 
@@ -17,15 +17,15 @@ export class BookService extends BaseService {
     }
 
 
-    bookById(bookId: string) {
-        return this.axiosTokenInstance.post(`/books/_search`, { filter: { id: { bookId } } });
-    }
+    // bookById(bookId: string) {
+    //     return this.axiosTokenInstance.post(`/books/_search`, { filter: { id: { bookId } } });
+    // }
 
     // bookEditById(editedbook: {}) {
     //     return this.instance.put("url", editedbook)
     // }
 
-    removeBook(bookId: string) {
+    remove(bookId: string) {
         return this.axiosTokenInstance.delete(`/books/${bookId}`);
     }
 

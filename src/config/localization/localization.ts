@@ -4,7 +4,7 @@ import { Setup } from '../setup';
 import { fa } from './fa';
 import { en } from './en';
 import { ar } from './ar';
-import { BOOK_TYPES } from '../../enum/Book';
+import { BOOK_TYPES, BOOK_GENRE, BOOK_ROLES } from '../../enum/Book';
 
 interface ILocalization extends LocalizedStringsMethods {
     [key: string]: any; // todo
@@ -230,6 +230,7 @@ interface ILocalization extends LocalizedStringsMethods {
     duration: string;
     genre: string;
     type: string;
+    tags:string;
     roles: string;
     role: string;
     images: string;
@@ -240,18 +241,17 @@ interface ILocalization extends LocalizedStringsMethods {
     edit_book: string;
     book_manage: string;
     dashboard: string;
-    genre_option_comedy: string;
-    genre_option_drama: string;
-    genre_option_romance: string;
-    genre_option_social: string;
-    genre_option_religious: string;
-    genre_option_historical: string;
-    genre_option_classic: string;
-    genre_option_science: string;
-
+    price:string;
+    // money_unit:string;
+    genre_type_list:{
+        [key in BOOK_GENRE]: string;
+    };
     book_type_list: {
         [key in BOOK_TYPES]: string;
-    }
+    };
+    role_type_list: {
+        [key in BOOK_ROLES]: string;
+    };
 }
 
 export let Localization: ILocalization = new LocalizedStrings({

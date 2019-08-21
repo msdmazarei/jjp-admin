@@ -24,4 +24,5 @@ export interface IBook extends BaseModel {
     pages: string;    ///
     duration: string;   ///
     from_editor: string;   ///
+    price?: number;
 }  

@@ -1,0 +1,19 @@
+//npm installed
+@import "~react-toastify/scss/main";
+
+body.rtl {
+  .Toastify__toast {
+    font-family: $global-font-farsi;
+  }
+}
+/* @import "~ng-snotify/styles/material";
+
+.snotifyToast {
+  &__progressBar {
+    height: 2px;
+    &__percentage {
+      height: 2px;
+    }
+  }
+}
+ */

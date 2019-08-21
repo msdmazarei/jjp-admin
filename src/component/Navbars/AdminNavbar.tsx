@@ -1,6 +1,7 @@
 import React from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
+import { History } from 'history';
 
 // reactstrap components
 import {
@@ -19,16 +20,51 @@ import {
   Container,
   Modal
 } from "reactstrap";
+import { IUser } from "../../model/model.user";
+import { TInternationalization } from "../../config/setup";
+import { redux_state } from "../../redux/app_state";
+import { MapDispatchToProps, connect } from "react-redux";
+import { Dispatch } from "redux";
+import { action_user_logged_out } from "../../redux/action/user";
+// import { action_change_app_flag } from "../../redux/action/internationalization";
+import { action_remove_token } from "../../redux/action/token";
+import { action_remove_authentication } from "../../redux/action/authentication";
 // import { any } from "prop-types";
 
-class AdminNavbar extends React.Component<any,any> {
-  constructor(props:any) {
+
+
+interface IProps {
+  logged_in_user?: IUser | null;
+  internationalization: TInternationalization;
+  history: History;
+  do_logout?: () => void;
+  // change_app_flag: (internationalization: TInternationalization) => void;
+  remove_token?: () => void;
+  remove_authentication?: () => void;
+  sidebarOpened: any;
+  brandText: any;
+  toggleSidebar: any;
+}
+
+
+
+
+
+
+class AdminNavbarComponent extends React.Component<IProps, any> {
+  constructor(props: any) {
     super(props);
     this.state = {
       collapseOpen: false,
       modalSearch: false,
       color: "navbar-transparent"
     };
+  }
+  log_out() {
+    this.props.do_logout && this.props.do_logout();
+    this.props.remove_token && this.props.remove_token();
+    this.props.remove_authentication && this.props.remove_authentication();
+    this.props.history.push('/login');
   }
   componentDidMount() {
     window.addEventListener("resize", this.updateColor);
@@ -149,7 +185,12 @@ class AdminNavbar extends React.Component<any,any> {
                     </NavLink> */}
                     {/* <DropdownItem divider tag="li" /> */}
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Log out</DropdownItem>
+                      <DropdownItem
+                        className="nav-item"
+                        onClick={() => this.log_out()}
+                      >
+                        Log out
+                      </DropdownItem>
                     </NavLink>
                   </DropdownMenu>
                 </UncontrolledDropdown>
@@ -181,4 +222,28 @@ class AdminNavbar extends React.Component<any,any> {
   }
 }
 
-export default AdminNavbar;
+
+
+
+
+// export default AdminNavbar;
+
+
+const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
+  return {
+    do_logout: () => dispatch(action_user_logged_out()),
+    // change_app_flag: (internationalization: TInternationalization) => dispatch(action_change_app_flag(internationalization)),
+    remove_token: () => dispatch(action_remove_token()),
+    remove_authentication: () => dispatch(action_remove_authentication()),
+  }
+}
+
+const state2props = (state: redux_state) => {
+  return {
+    logged_in_user: state.logged_in_user,
+    internationalization: state.internationalization,
+    // cart: state.cart
+  }
+}
+
+export const AdminNavbar = connect(state2props, dispatch2props)(AdminNavbarComponent);

@@ -1,14 +1,14 @@
-import Dashboard from "../src/views/Dashboard";
-import {BookManage} from "./views/BookManage";
-import User from "./views/User";
-import { BookSave } from "../src/views/BookSave";
+import Dashboard from "./component/dashboard/Dashboard";
+import {BookManage} from "./component/book/BookManage/BookManage";
+import User from "./component/user/User";
+import { BookSave } from "./component/book/BookSave/BookSave";
 // import { Login } from "./component/login/Login";
 import {Localization} from "./config/localization/localization";
 // import { any } from "prop-types";
 // import { TInternationalization } from "./config/setup";
 // import { Redirect } from "@reach/router";
 // import TableList from "../src/views/TableList.tsx";
-// import UserProfile from "../src/views/UserProfile.tsx";
+// import UserProfile from "../src/views/UserProfile";
 
 var routes = [
   {
@@ -53,6 +53,14 @@ var routes = [
     isitem: false
   },
   // {
+  //   path: "/book/manage",
+  //   name:"user",
+  //   icon: "fa fa-user",
+  //   component: BookManage,
+  //   layout: "/admin",
+  //   isitem: true
+  // },
+  // {
   //   path: "/login",
   //   component: Login,
   //   layout: "/admin",
@@ -70,7 +78,7 @@ var routes = [
   //   path: "/user-profile",
   //   name: "User Profile",
   //   rtlName: "ملف تعريفي للمستخدم",
-  //   icon: "tim-icons icon-single-02",
+  //   icon: "fa fa-user",
   //   component: UserProfile,
   //   layout: "/admin"
   // },

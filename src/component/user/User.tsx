@@ -1,7 +1,7 @@
 import React from 'react';
-import { IPerson } from "../model/model.person";
-import { Table, IProps_table} from "../component/table/table";
-import { UserService } from "../service/user.service";
+import { IPerson } from "../../model/model.person";
+import { Table, IProps_table} from "../../component/table/table";
+import { UserService } from "../../service/user.service";
 
 //  define props & state and type 
 

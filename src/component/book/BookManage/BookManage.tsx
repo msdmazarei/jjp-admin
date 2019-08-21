@@ -1,19 +1,20 @@
 import React from "react";
 // import { IPerson } from "../model/model.person";
-import { Table, IProps_table } from "../component/table/table"
-import { BookService } from "../service/service.book";
+import { Table, IProps_table } from "../../table/table"
+import { BookService } from "../../../service/service.book";
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
-import { IBook } from "../model/model.book";
+import { IBook } from "../../../model/model.book";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
-import { redux_state } from "../redux/app_state";
-import { BaseComponent } from "../component/_base/BaseComponent";
-import { TInternationalization } from "../config/setup";
-import { IToken } from "../model/model.token";
-import { Localization } from "../config/localization/localization";
-import { BtnLoader } from "../component/form/btn-loader/BtnLoader";
+import { redux_state } from "../../../redux/app_state";
+import { BaseComponent } from "../../_base/BaseComponent";
+import { TInternationalization } from "../../../config/setup";
+import { IToken } from "../../../model/model.token";
+import { Localization } from "../../../config/localization/localization";
+import { BtnLoader } from "../../form/btn-loader/BtnLoader";
+import { BOOK_TYPES } from "../../../enum/Book";
 
 
 
@@ -57,11 +58,10 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     book_table: {
       list: [],
       colHeaders: [
-        { 
-          field: "title", title: Localization.title,cellTemplateFunc: (row: IBook) => {
+        {field: "title", title: Localization.title, cellTemplateFunc: (row: IBook) => {
             if (row.title) {
-              return <div title={row.title} className="text-right d-inline-block" style={{
-                maxWidth: '100px',
+              return <div title={row.title} className=" d-inline-block" style={{
+                maxWidth: '200px',
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis"
@@ -72,42 +72,52 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             return '';
           }
         },
-        { field: "edition", title: Localization.edition},
-        {
-          field: "images", title:Localization.images , templateFunc: () => {
+        {field: "images", title: Localization.images, templateFunc: () => {
             return <b>{Localization.images}</b>
           },
           cellTemplateFunc: (row: IBook) => {
             if (row.images && row.images.length) {
-              return <div className="text-center">
-                <img src={"/api/serve-files/" + row.images[0]} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+              return <div className="text-center" >
+                <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
+                  <img src={"/api/serve-files/" + row.images[0]} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                </div>
               </div>
             }
             else {
               return <div className="text-center">
-                <img src="/static/media/img/icon/no-image.png" alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
+                  <img src="/static/media/img/icon/no-image.png" alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                </div>
               </div>
             }
           }
         },
-        { field: "language", title: Localization.language},
-        { field: "pub_year", title:Localization.publication_date},
-        { field: "rate", title: "Rate" },
-        { 
-          field: "rate_no", title: "Rate Number",cellTemplateFunc: (row: IBook) => {
-            if (row.rate && row.rate_no) {
-              return <span>
-                {row.rate_no} {Localization.from} 5
-              </span> 
-            }
-            return '';
-          }
+        {field: "type", title: Localization.type,
+            cellTemplateFunc: (row: IBook) => {
+              if (row.type) {
+                const b_type: any = row.type;
+                const b_t: BOOK_TYPES = b_type;
+                return Localization.book_type_list[b_t];
+              }
+              return '';
+              }
         },
-        { field: "type", title:Localization.type},
-        {
-          field: "description", title:Localization.description, cellTemplateFunc: (row: IBook) => {
+        { field: "price", title: Localization.price,
+        cellTemplateFunc: (row: IBook) => {
+          // row.price = 3436465;
+          if (row.price) {
+            return <span className="text-info">
+            {row.price.toLocaleString()}
+            </span>
+          }
+          else {
+            return <div className="text-muted text-center">-</div>;
+          }
+        } },
+        {field: "description", title: Localization.description, 
+        cellTemplateFunc: (row: IBook) => {
             if (row.description) {
-              return <div className="text-right d-inline-block" style={{
+              return <div title={row.description} className="text-right d-inline-block" style={{
                 maxWidth: '100px',
                 whiteSpace: "nowrap",
                 overflow: "hidden",
@@ -119,8 +129,20 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             return '';
           }
         },
-        { field: "pages", title:Localization.pages},
-        { field: "duration", title:Localization.duration}
+        {field: "rate",
+          title: Localization.vote_s,
+          cellTemplateFunc: (row: IBook) => {
+            if (row.rate) {
+              return <span>
+                {row.rate} {Localization.from} 5 <small>({row.rate_no})</small>
+              </span>
+            }
+            return '';
+          }
+        },
+        { field: "pages", title: Localization.pages },
+        { field: "duration", title: Localization.duration },
+        { field: "pub_year", title: Localization.publication_date },
       ],
       actions: [
         { text: <div className="text-center p-0 m-0"><i className="fa fa-trash text-danger fa-2x"></i></div>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
@@ -160,7 +182,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveBook(book_id: string) {
-    let res = await this._bookService.removeBook(book_id).catch(error => {
+    let res = await this._bookService.remove(book_id).catch(error => {
       // debugger;
       //notify
       this.handleError({ error: error });
@@ -215,7 +237,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
 
   async fetchBooks() {
-    debugger;
+    // debugger;
 
     let res = await this._bookService.search(this.state.pager_limit, this.state.pager_offset).catch(error => {
       // debugger;
@@ -262,7 +284,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             this.state.pager_offset > 0 &&
             <BtnLoader
               loading={this.state.prevBtnLoader}
-              btnClassName="btn btn-info pull-left shadow8"
+              btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
               onClick={() => this.onPreviousClick()}
             >
               {Localization.previous}
@@ -277,7 +299,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             this.state.pager_offset > 0 &&
             <BtnLoader
               loading={this.state.prevBtnLoader}
-              btnClassName="btn btn-info pull-left shadow8"
+              btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
               onClick={() => this.onPreviousClick()}
             >
               {Localization.previous}
@@ -305,7 +327,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             !(this.state.pager_limit > (this.state.book_table.list! || []).length) &&
             <BtnLoader
               loading={this.state.nextBtnLoader}
-              btnClassName="btn btn-info pull-right"
+              btnClassName="btn btn-outline-info pull-right shadow-default shadow-hover"
               onClick={() => this.onNextClick()}
             >
               {Localization.next}
@@ -386,7 +408,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               <BtnLoader
                 loading={false}
                 disabled={false}
-                btnClassName="btn btn-success mb-4"
+                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
                 onClick={() => this.gotoBookCreate()}
               >
                 {Localization.new}
@@ -396,7 +418,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           <div className="row">
             <div className="col-12">
               <Table list={this.state.book_table.list} colHeaders={this.state.book_table.colHeaders} actions={this.state.book_table.actions}></Table>
-              <div className="px-5">
+              <div>
                 {this.pager_previous_btn_render()}
                 {this.pager_next_btn_render()}
               </div>

@@ -1,18 +1,18 @@
 import React, { Fragment } from 'react';
 // import { Input } from '../component/form/input/Input';
 import Select from 'react-select'
-import { IPerson } from '../model/model.person';
-import { BOOK_ROLES } from '../enum/Book';
+import { IPerson } from '../../../model/model.person';
+import { BOOK_ROLES } from '../../../enum/Book';
 import AsyncSelect from 'react-select/async';
-import { PersonService } from "../service/service.person";
-import { IToken } from '../model/model.token';
+import { PersonService } from "../../../service/service.person";
+import { IToken } from '../../../model/model.token';
 import { connect, MapDispatchToProps } from 'react-redux';
-import { redux_state } from '../redux/app_state';
+import { redux_state } from '../../../redux/app_state';
 import { Dispatch } from 'redux';
-import { Localization } from '../config/localization/localization';
-import { BaseComponent } from '../component/_base/BaseComponent';
-import { TInternationalization } from '../config/setup';
-import { BtnLoader } from '../component/form/btn-loader/BtnLoader';
+import { Localization } from '../../../config/localization/localization';
+import { BaseComponent } from '../../_base/BaseComponent';
+import { TInternationalization } from '../../../config/setup';
+import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 
 interface IRoleRow {
     id: string;
@@ -42,12 +42,12 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     }
 
     roleOptions = [
-        { value: 'Author', label: 'Author' },
-        { value: 'Writer', label: 'Writer' },
-        { value: 'Translator', label: 'Translator' },
-        { value: 'Press', label: 'Press' },
-        { value: 'Contributer', label: 'Contributer' },
-        { value: 'Designer', label: 'Designer' }
+        { value: 'Author', label: Localization.role_type_list.Author },
+        { value: 'Writer', label: Localization.role_type_list.Writer },
+        { value: 'Translator', label: Localization.role_type_list.Translator },
+        { value: 'Press', label: Localization.role_type_list.Press },
+        { value: 'Contributer', label: Localization.role_type_list.Contributer },
+        { value: 'Designer', label: Localization.role_type_list.Designer }
     ];
     _personService = new PersonService();
     componentDidMount() {

@@ -1,4 +1,5 @@
 import React from "react";
+import { Localization } from "../../config/localization/localization";
 
 
 class Dashboard extends React.Component {
@@ -12,7 +13,11 @@ class Dashboard extends React.Component {
     // ))
     return (
       <div className="content">
-        casc
+        <div className="row">
+          <div className="col-12">
+            <h2>{Localization.dashboard}</h2>
+          </div>
+        </div>
       </div>
     );
   }

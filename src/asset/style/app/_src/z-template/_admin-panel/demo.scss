@@ -172,7 +172,7 @@
   body:not(.rtl) & {
     .nav-link {
       &:hover {
-        padding-right: 0 !important;
+        padding-right: 1rem !important;
         padding-left: 1rem !important;
       }
     }
@@ -181,7 +181,7 @@
     .nav-link {
       &:hover {
         padding-right: 1rem !important;
-        padding-left: 0 !important;
+        padding-left: 1rem !important;
       }
     }
   }
@@ -375,6 +375,9 @@
 body{
   .fa-trash,.fa-pencil-square-o{
     cursor: pointer!important;
+  }
+  .table-manage-del-edit{
+    text-align: center!important;
   }
 }
 

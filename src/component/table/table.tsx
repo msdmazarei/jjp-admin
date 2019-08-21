@@ -21,7 +21,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
     render() {
         return (
             <>
-                <div className="table-responsive table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl ps p-3 shadow4 rounded mb-3">
+                <div className="table-responsive table-responsive-sm table-responsive-md table-responsive-lg table-responsive-xl template-box ps mb-3">
                     <table className="table table-striped table-bordered table-hover table-sm table-bordered bg-white mb-0">
                         <thead className="thead-light">
                             <tr className="table-light">
@@ -36,7 +36,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                     </Fragment>
                                 ))}
                                 {
-                                    this.props.actions ? <th>#</th> : ''
+                                    this.props.actions ? <th className="text-center">#</th> : ''
                                 }
 
                             </tr>

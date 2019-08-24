@@ -105,14 +105,14 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
             }
         });
 
-        let f_l = list.filter(item => item.role && item.person);
-        return f_l.map(item => {
-            return {
-                id: item.id,
-                role: item.role!.value,
-                person: item.person!.value
-            }
-        });
+        // let f_l = list.filter(item => item.role && item.person);
+        // return f_l.map(item => {
+        //     return {
+        //         id: item.id,
+        //         role: item.role!.value,
+        //         person: item.person!.value
+        //     }
+        // });
     }
 
     convertOuterToInner(list: TOuterListItem[]): IRoleRow[] {

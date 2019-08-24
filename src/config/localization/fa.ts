@@ -240,6 +240,10 @@ export const fa = {
     Pricing:"قیمت گذاری",
     Add_price:"افزودن قیمت",
     Justـenterـtheـnumericـvalue:"فقط مقدار عددی وارد نمایید",
+    email:"ایمیل",
+    cell_no:"تلفن همراه",
+    person_manage:"مدیریت اشخاص",
+    image:"تصویر",
     // money_unit:'ریال',
     genre_type_list:{
         Comedy:"کمدی",

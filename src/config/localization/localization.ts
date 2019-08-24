@@ -245,6 +245,10 @@ interface ILocalization extends LocalizedStringsMethods {
     Pricing:string;
     Add_price:string;
     Justـenterـtheـnumericـvalue:string;
+    email:string;
+    cell_no:string;
+    person_manage:string;
+    image:string;
     // money_unit:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;

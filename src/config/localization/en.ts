@@ -238,6 +238,10 @@ export const en = {
     Pricing:"Pricing",
     Add_price:"Add price",
     Justـenterـtheـnumericـvalue:"Just enter the numeric value",
+    email:"email",
+    cell_no:"cell_no",
+    person_manage:"Person management",
+    image:"image",
     // money_unit:'$',
     genre_type_list:{
         Comedy: "comedy",

@@ -239,27 +239,18 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          {/* <Modal.Header closeButton>
-            <Modal.Title>Do you want delete {this.selectedBook.title} ?</Modal.Title>
-          </Modal.Header> */}
           <Modal.Body>
             <p style={{ maxWidth: '200px', whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} >
               <span className="text-muted">
-                {Localization.title}:
+                {Localization.title}:&nbsp;
             </span>
               {this.selectedBook.title}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-            {/* <h3 className="text-dark">Book details :</h3> */}
-            {/* <h6 className="text-dark">Edition : {this.selectedBook.edition}</h6>
-            <h6 className="text-dark">Language : {this.selectedBook.language}</h6>
-            <h6 className="text-dark">Pages : {this.selectedBook.pages}</h6>
-            <h6 className="text-dark">Publish's year :{this.selectedBook.pub_year}</h6>
-            <h6 className="text-dark">Description :{this.selectedBook.description}</h6> */}
+            
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            {/* <button className="btn btn-danger" onClick={() => this.onRemoveBook(selectedBook.id)}>{Localization.remove}</button> */}
             <BtnLoader
               btnClassName="btn btn-danger shadow-default shadow-hover"
               onClick={() => this.onRemoveBook(selectedBook.id)}
@@ -272,15 +263,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       </>
     );
   }
-
-
-
-
-
-
-
-
-  //price func  //////////////////////////////
 
   onShowPriceModal(book: IBook) {
     this.selectedBook = book;

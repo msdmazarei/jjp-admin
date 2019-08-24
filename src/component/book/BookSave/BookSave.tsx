@@ -656,63 +656,71 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={'number only'}
                                         />
                                     </div>
+
                                     <div className="col-md-3 col-sm-6">
+                                        <div className="form-group">
+                                            <label htmlFor="">{Localization.type} <span className="text-danger">*</span></label>
+                                            <Select
+                                                isMulti
+                                                onChange={(value: any) => this.handleSelectInputChange(value, "type")}
+                                                options={this.typeOptions}
+                                                // defaultValue={this.state.book.type.value}
+                                                // label='type'
+                                                value={this.state.book.type.value}
+                                                placeholder={Localization.type}
+                                                isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
+                                        <div className="form-group">
+                                            <label htmlFor="">{Localization.genre}</label>
+                                            <Select
+                                                isMulti
+                                                onChange={(value: any) => this.handleSelectInputChange(value, "genre")}
+                                                options={this.genreOptions}
+                                                // defaultValue={this.state.book.genre.value}
+                                                // label='genre'
+                                                value={this.state.book.genre.value}
+                                                placeholder={Localization.genre}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
+                                        <div className="form-group">
+                                            <label htmlFor="">{Localization.tags}</label>
+                                            <Select
+                                                isMulti
+                                                onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
+                                                value={this.state.book.tags.value}
+                                                placeholder={Localization.tags}
+                                                onKeyDown={(e) => this.handle_tagsKeyDown(e)}
+                                                inputValue={this.state.tags_inputValue}
+                                                menuIsOpen={false}
+                                                components={{
+                                                    DropdownIndicator: null,
+                                                }}
+                                                isClearable
+                                                onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "from_editor")}
                                             label={Localization.from_the_editor}
                                             placeholder={Localization.from_the_editor}
                                             defaultValue={this.state.book.from_editor.value}
+                                            is_textarea
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-6 col-sm-12">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "description")}
                                             label={Localization.description}
                                             placeholder={Localization.description}
                                             is_textarea
                                             defaultValue={this.state.book.description.value}
-                                        />
-                                    </div>
-                                    <div className="col-md-3 col-sm-6">
-                                        <label htmlFor="">{Localization.genre}</label>
-                                        <Select
-                                            isMulti
-                                            onChange={(value: any) => this.handleSelectInputChange(value, "genre")}
-                                            options={this.genreOptions}
-                                            // defaultValue={this.state.book.genre.value}
-                                            // label='genre'
-                                            value={this.state.book.genre.value}
-                                            placeholder={Localization.genre}
-                                        />
-                                    </div>
-                                    <div className="col-md-3 col-sm-6">
-                                        <label htmlFor="">{Localization.type} <span className="text-danger">*</span></label>
-                                        <Select
-                                            isMulti
-                                            onChange={(value: any) => this.handleSelectInputChange(value, "type")}
-                                            options={this.typeOptions}
-                                            // defaultValue={this.state.book.type.value}
-                                            // label='type'
-                                            value={this.state.book.type.value}
-                                            placeholder={Localization.type}
-                                            isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
-                                        />
-                                    </div>
-                                    <div className="col-md-3 col-sm-6">
-                                        <label htmlFor="">{Localization.tags}</label>
-                                        <Select
-                                            isMulti
-                                            onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
-                                            value={this.state.book.tags.value}
-                                            placeholder={Localization.tags}
-                                            onKeyDown={(e) => this.handle_tagsKeyDown(e)}
-                                            inputValue={this.state.tags_inputValue}
-                                            menuIsOpen={false}
-                                            components={{
-                                                DropdownIndicator: null,
-                                            }}
-                                            isClearable
-                                            onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
                                         />
                                     </div>
                                     <div className="col-md-6 col-sm-12">
@@ -763,7 +771,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                                     height: '50px'
                                                                                 }} />
                                                                                 <span className="mx-2 text-dark">{fileName} {fileSize}</span>
-                                                                                <button className="img-remover btn btn-danger btn-role-remover btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
+                                                                                <button className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
                                                                             </li>
                                                                         </Fragment>
                                                                     })

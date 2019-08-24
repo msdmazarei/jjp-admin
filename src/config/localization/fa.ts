@@ -130,7 +130,7 @@ export const fa = {
     Length: 'اندازه',
     pages: 'صفحه',
 
-    from_the_editor: 'از ویرایشگر',
+    from_the_editor: 'از ویراستار',
     about_this_item: 'درباره این محصول',
 
     description: 'توضیحات',
@@ -237,6 +237,9 @@ export const fa = {
     book_manage:"مدیریت کتاب",
     dashboard:"پیشخوان",
     price:"قیمت",
+    Pricing:"قیمت گذاری",
+    Add_price:"افزودن قیمت",
+    Justـenterـtheـnumericـvalue:"فقط مقدار عددی وارد نمایید",
     // money_unit:'ریال',
     genre_type_list:{
         Comedy:"کمدی",

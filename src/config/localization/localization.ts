@@ -242,6 +242,9 @@ interface ILocalization extends LocalizedStringsMethods {
     book_manage: string;
     dashboard: string;
     price:string;
+    Pricing:string;
+    Add_price:string;
+    Justـenterـtheـnumericـvalue:string;
     // money_unit:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;

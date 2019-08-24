@@ -235,6 +235,9 @@ export const en = {
     book_manage: "Book Management",
     dashboard: "dashboard",
     price:"price",
+    Pricing:"Pricing",
+    Add_price:"Add price",
+    Justـenterـtheـnumericـvalue:"Just enter the numeric value",
     // money_unit:'$',
     genre_type_list:{
         Comedy: "comedy",

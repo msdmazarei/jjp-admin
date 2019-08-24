@@ -59,11 +59,11 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                                 </td>
                                             ))}
                                             {this.props.actions ?
-                                                <td className="">
+                                                <td className="py-0 px-1 text-center">
                                                     {
                                                         this.props.actions ?
                                                             this.props.actions.map((ac, index) => (
-                                                                <div key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
+                                                                <div className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
                                                             ))
                                                             : ''
                                                     }

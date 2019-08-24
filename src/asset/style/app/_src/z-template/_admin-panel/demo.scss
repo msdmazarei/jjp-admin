@@ -373,7 +373,7 @@
   }
 }
 body{
-  .fa-trash,.fa-pencil-square-o{
+  .fa-trash,.fa-pencil-square-o,.fa-money{
     cursor: pointer!important;
   }
   .table-manage-del-edit{
@@ -385,4 +385,19 @@ body{
 
 .search-bar {
   display: none !important;
+}
+
+.table-action-shadow-hover{
+  width: 2.1rem;
+  height: 2.1rem;
+  cursor: pointer;
+  margin-bottom: .25rem !important;
+  &:hover{
+    @extend .shadow-default;
+  }
+  i{
+    width: 1.125rem;
+    height: 1.125rem;
+    padding-top: .15rem!important;
+  }
 }

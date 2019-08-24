@@ -72,21 +72,25 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             return '';
           }
         },
-        {field: "images", title: Localization.images, templateFunc: () => {
+        {
+          field: "images", title: Localization.images, templateFunc: () => {
             return <b>{Localization.images}</b>
           },
           cellTemplateFunc: (row: IBook) => {
             if (row.images && row.images.length) {
               return <div className="text-center" >
                 <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  <img src={"/api/serve-files/" + row.images[0]} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                  <img src={"/api/serve-files/" + row.images[0]} alt=""
+                    style={{ maxWidth: '100px', maxHeight: '100px' }}
+                    onError={e => this.bookImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
                 <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  <img src="/static/media/img/icon/no-image.png" alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                  {/* <img src="/static/media/img/icon/no-image.png" alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} /> */}
+                  <img src={this.defaultBookImagePath} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
                 </div>
               </div>
             }

@@ -394,6 +394,7 @@ body{
   margin-bottom: .25rem !important;
   &:hover{
     @extend .shadow-default;
+    @extend .rounded;
   }
   i{
     width: 1.125rem;

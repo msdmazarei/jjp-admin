@@ -24,7 +24,7 @@ interface IState {
     list: IRoleRow[];
 }
 
-type TOuterListItem = { role: BOOK_ROLES, person: IPerson, id?: string };
+type TOuterListItem = { role: BOOK_ROLES | undefined, person: IPerson | undefined, id?: string };
 
 interface IProps {
     onChange: (list: TOuterListItem[], isValid: boolean) => void;
@@ -96,6 +96,15 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     // }
 
     convertInnerToOuter(list: IRoleRow[]): TOuterListItem[] {
+        let new_list = [...list];
+        return new_list.map(item => {
+            return {
+                id: item.id,
+                role: (item.role || { value: undefined }).value,
+                person: (item.person || { value: undefined }).value
+            }
+        });
+
         let f_l = list.filter(item => item.role && item.person);
         return f_l.map(item => {
             return {
@@ -110,8 +119,8 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         return list.map(item => {
             return {
                 id: item.id || (Math.random() + ''),
-                role: { label: item.role, value: item.role },
-                person: { label: this.getPersonFullName(item.person), value: item.person }
+                role: item.role ? { label: item.role, value: item.role } : undefined,
+                person: item.person ? { label: this.getPersonFullName(item.person), value: item.person } : undefined
             }
         });
     }

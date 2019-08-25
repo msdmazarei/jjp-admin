@@ -105,7 +105,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         updateLoader: false,
         saveBtnVisibility: false,
     }
-    
+
     private _personService = new PersonService();
     private _uploadService = new UploadService();
     private person_id: string | undefined;
@@ -274,7 +274,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     gotoPersonManage() {
-        this.props.history.push('/person/manage'); 
+        this.props.history.push('/person/manage');
     }
 
     // image add /////
@@ -411,7 +411,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input 
+                                        <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
                                             label={Localization.cell_no}
                                             placeholder={Localization.cell_no}
@@ -420,64 +420,65 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={'mobile only'}
                                         />
                                     </div>
-                                    <div className="col-md-6 col-sm-12">
-                                        <Input  
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "address")}
-                                            label={Localization.address}
-                                            placeholder={Localization.address}
-                                            is_textarea
-                                            defaultValue={this.state.person.address.value}
-                                        />
-                                    </div>
-                                    <div className="col-md-6 col-sm-12">
-                                        <label htmlFor="">{Localization.images}</label>
-                                        <div className="role-img-container">
-                                            <Dropzone
-                                                multiple={false}
-                                                onDrop={(files) => this.onDrop(files)}
-                                                maxSize={5000000}
-                                                accept="image/*"
-                                                onDropRejected={(files, event) => this.onDropRejected(files, event)}
-                                            >
-                                                {
-                                                    (({ getRootProps, getInputProps }) => (
-                                                        <section className="container">
-                                                            <div {...getRootProps({ className: 'dropzone' })}>
-                                                                <input {...getInputProps()} />
-                                                                <p className="img-container text-center text-muted p-3">{Localization.DRAG_AND_DROP}</p>
-                                                            </div>
-                                                            <aside>
-                                                                <h4 className="m-2 font-weight-bold">{Localization.images_list}:</h4>
-                                                                <ul className="image-wrapper">{
-                                                                    (this.state.person.image.value || []).map((file: any, index) => {
-                                                                        let tmUrl = '';
-                                                                        let fileName = '';
-                                                                        let fileSize = '';
-                                                                        if (typeof file === "string") {
-                                                                            fileName = file;
-                                                                            tmUrl = '/api/serve-files/' + file;
-                                                                        } else {
-                                                                            fileName = file.name;
-                                                                            fileSize = '- ' + file.size + ' bytes';
-                                                                            tmUrl = this.getTmpUrl(file);
-                                                                        }
-                                                                        return <Fragment key={index}>
-                                                                            <li className="img-item m-2">
-                                                                                <img src={tmUrl} alt="" style={{
-                                                                                    width: '50px',
-                                                                                    height: '50px'
-                                                                                }} />
-                                                                                <span className="mx-2 text-dark">{fileName} {fileSize}</span>
-                                                                                <button className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
-                                                                            </li>
-                                                                        </Fragment>
-                                                                    })
-                                                                }</ul>
-                                                            </aside>
-                                                        </section>
-                                                    ))
-                                                }
-                                            </Dropzone>
+                                    <div className="col-12">
+                                        <div className="row">
+                                            <div className="col-md-6 col-sm-12">
+                                                <Input
+                                                    onChange={(value, isValid) => this.handleInputChange(value, isValid, "address")}
+                                                    label={Localization.address}
+                                                    placeholder={Localization.address}
+                                                    is_textarea
+                                                    defaultValue={this.state.person.address.value}
+                                                />
+                                            </div>
+                                            <div className="col-md-6 col-sm-12">
+                                                <label htmlFor="">{Localization.profile_image}</label>
+                                                <div className="role-img-container">
+                                                    <Dropzone
+                                                        multiple={false}
+                                                        onDrop={(files) => this.onDrop(files)}
+                                                        maxSize={5000000}
+                                                        accept="image/*"
+                                                        onDropRejected={(files, event) => this.onDropRejected(files, event)}
+                                                    >
+                                                        {
+                                                            (({ getRootProps, getInputProps }) => (
+                                                                <section className="container">
+                                                                    <div {...getRootProps({ className: 'dropzone' })}>
+                                                                        <input {...getInputProps()} />
+                                                                        <p className="img-container text-center text-muted p-3">{Localization.DRAG_AND_DROP}</p>
+                                                                    </div>
+                                                                    <aside>
+                                                                        <h5 className="m-2">{Localization.preview}:</h5>
+                                                                        <div className="image-wrapper mb-2">{
+                                                                            (this.state.person.image.value || []).map((file: any, index) => {
+                                                                                let tmUrl = '';
+                                                                                let fileName = '';
+                                                                                let fileSize = '';
+                                                                                if (typeof file === "string") {
+                                                                                    fileName = file;
+                                                                                    tmUrl = '/api/serve-files/' + file;
+                                                                                } else {
+                                                                                    fileName = file.name;
+                                                                                    fileSize = '- ' + file.size + ' bytes';
+                                                                                    tmUrl = this.getTmpUrl(file);
+                                                                                }
+                                                                                return <Fragment key={index}>
+                                                                                <div className="img-item m-2">
+                                                                                    <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/>
+                                                                                    <span className="mx-2 text-dark">{fileName} {fileSize}</span>
+                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
+                                                                                </div>
+                                                                                </Fragment>
+                                                                            })
+                                                                        }</div>
+                                                                    </aside>
+                                                                </section>
+                                                            ))
+                                                        }
+                                                    </Dropzone>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -242,6 +242,11 @@ export const en = {
     cell_no:"cell_no",
     person_manage:"Person management",
     image:"image",
+    create_person:"Create a person",
+    person_update: "Person update",
+    edit_person:"Edit the person",
+    profile:"profile",
+    profile_image:"profile image",
     // money_unit:'$',
     genre_type_list:{
         Comedy: "comedy",

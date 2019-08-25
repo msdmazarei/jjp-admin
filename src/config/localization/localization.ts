@@ -249,6 +249,11 @@ interface ILocalization extends LocalizedStringsMethods {
     cell_no:string;
     person_manage:string;
     image:string;
+    create_person: string;
+    person_update: string;
+    edit_person: string;
+    profile:string;
+    profile_image:string;
     // money_unit:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;

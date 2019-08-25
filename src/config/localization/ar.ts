@@ -239,6 +239,11 @@ export const ar = {
     cell_no:"تلفن همراه",
     person_manage:"مدیریت اشخاص",
     image:"تصویر",
+    create_person:"ایجاد شخص",
+    person_update: "بروزرسانی شخص",
+    edit_person:"ویرایش شخص",
+    profile:"پروفایل",
+    profile_image:"تصویر پروفایل",
     // :'ریال',
     genre_type_list:{
         Comedy:"کمدی",

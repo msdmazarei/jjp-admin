@@ -719,7 +719,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                                     height: '50px'
                                                                                 }} />
                                                                                 <span className="mx-2 text-dark">{fileName} {fileSize}</span>
-                                                                                <button className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
+                                                                                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
                                                                             </li>
                                                                         </Fragment>
                                                                     })

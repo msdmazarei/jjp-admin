@@ -3,9 +3,6 @@ import { Input } from '../../form/input/Input';
 import { PersonService } from "../../../service/service.person";
 import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
-import { BOOK_GENRE, BOOK_TYPES } from '../../../enum/Book';
-// import { IPerson } from '../../../model/model.person';
-// import Select from 'react-select'
 import Dropzone from "react-dropzone";
 import { AppRegex } from '../../../config/regex';
 import { BaseComponent } from '../../_base/BaseComponent';
@@ -15,7 +12,7 @@ import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 
 enum SAVE_MODE {
@@ -25,7 +22,7 @@ enum SAVE_MODE {
 }
 
 interface IState {
-    // book: any;//IBook | undefined;
+    // person: any;//IPerson | undefined;
     person: {
         name: {
             value: string | undefined;
@@ -52,7 +49,7 @@ interface IState {
             isValid: boolean
         };
         image: {
-            value: string | undefined,
+            value: string[],
             isValid: boolean
         };
     };
@@ -60,7 +57,7 @@ interface IState {
     saveMode: SAVE_MODE;
     createLoader: boolean;
     updateLoader: boolean;
-    tags_inputValue: string;
+    saveBtnVisibility: boolean;
 }
 interface IProps {
     match: any;
@@ -83,34 +80,32 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
             },
             address: {
                 value: undefined,
-                isValid: false,
+                isValid: true,
             },
             phone: {
                 value: undefined,
-                isValid: false,
+                isValid: true,
             },
             email: {
                 value: undefined,
-                isValid: false,
+                isValid: true,
             },
             cell_no: {
                 value: undefined,
-                isValid: false,
+                isValid: true,
             },
             image: {
-                value: undefined,
-                isValid: false,
+                value: [],
+                isValid: true,
             },
         },
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
         updateLoader: false,
-        tags_inputValue: ''
+        saveBtnVisibility: false,
     }
-    // saveMode: 'edit' | 'create' = 'create';
-
-
+    
     private _personService = new PersonService();
     private _uploadService = new UploadService();
     private person_id: string | undefined;
@@ -120,25 +115,16 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         this._uploadService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/person/:person_id/edit')) {
-            // this.saveMode = "edit";
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.person_id = this.props.match.params.book_id;
-            this.fetchBookById(this.props.match.params.book_id);
+            this.person_id = this.props.match.params.person_id;
+            this.fetchPersonById(this.props.match.params.person_id);
         }
     }
 
-    async fetchBookById(book_id: string) {
-
-        // let res = await this._bookService.bookById(book_id).catch(error => {
-        //     debugger;
-        //     //notify
-        //   });
-
-        let res = await this._personService.byId(book_id).catch(error => {
-            debugger;
-            //notify
+    async fetchPersonById(person_id: string) {
+        let res = await this._personService.byId(person_id).catch(error => {
+            this.handleError({ error: error.response });
         });
-
         // await this.__waitOnMe();
         if (res) {
             this.setState({
@@ -149,15 +135,18 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                     last_name: { ...this.state.person.last_name, value: res.data.last_name, isValid: true },
                     address: { ...this.state.person.address, value: res.data.address, isValid: true },
                     phone: { ...this.state.person.phone, value: res.data.phone, isValid: true },
-                    image: { ...this.state.person.image, value: res.data.image, isValid: true },
+                    image: {
+                        ...this.state.person.image,
+                        value: res.data.image ? [res.data.image] : [], isValid: true
+                    },
                     email: { ...this.state.person.email, value: res.data.email, isValid: true },
                     cell_no: { ...this.state.person.cell_no, value: res.data.cell_no, isValid: true },
-                }
+                },
+                saveBtnVisibility: true
             })
         }
 
     }
-
     __waitOnMe() {
         return new Promise((res, rej) => {
             setTimeout(() => {
@@ -169,8 +158,6 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     // on change functions 
 
     handleInputChange(value: any, isValid: boolean, inputType: any) {
-        // debugger;
-
         this.setState({
             ...this.state,
             person: {
@@ -180,21 +167,17 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    
-
-    
-
     //  check form validation for avtive button
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
         let valid = true;
-        let bookObj: any = { ...this.state.person };
+        let personObj: any = { ...this.state.person };
 
         for (let i = 0; i < Object.keys(this.state.person).length; i++) {
             let IT = Object.keys(this.state.person)[i];
             if (IT !== inputType) {
-                valid = valid && bookObj[IT].isValid;
-                if (!bookObj[IT].isValid) {
+                valid = valid && personObj[IT].isValid;
+                if (!personObj[IT].isValid) {
                     break;
                 }
             }
@@ -202,15 +185,13 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         valid = valid && isValid;
         return valid;
     }
+
     async uploadFileReq(): Promise<string[]> {
         debugger;
         let fileImg = (this.state.person.image.value || []).filter(img => typeof img !== "string");
         let strImg = (this.state.person.image.value || []).filter(img => typeof img === "string");
-
-        // if (this.state.book.images.value && (this.state.book.images.value || []).length) {
         if (fileImg && (fileImg || []).length) {
             return new Promise(async (res, rej) => {
-                // let urls = await this._uploadService.upload(this.state.book.images.value || []).catch(e => {
                 let urls = await this._uploadService.upload(fileImg).catch(e => {
                     rej(e);
                 });
@@ -221,38 +202,34 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         } else {
             return new Promise((res, rej) => {
                 res(strImg || []);
-                // res(this.state.book.images.value || []);
-                // res([])
             });
         }
     }
-    // add book function 
+
+    // add person function 
 
     async create() {
 
         debugger;
         if (!this.state.isFormValid) return;
-        // let imgFile = (this.state.book.images.value || []);
-        // let res = this._imgService.imgUpload([imgFile]).then(res => this.state.book.images.value=res.data)
         this.setState({ ...this.state, createLoader: true });
-
-        let img = await this.uploadFileReq().catch(error => {
+        let imgUrls = await this.uploadFileReq().catch(error => {
             this.handleError({ error: error });
         });
-        if (!img/*  || !imgUrls.length */) {
+        if (!imgUrls/*  || !imgUrls.length */) {
             this.setState({ ...this.state, createLoader: false });
             return
         }
-        const newBook = {
+        const newPerson = {
             name: this.state.person.name.value,
             last_name: this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
-            image: img,
+            image: imgUrls[0],
             email: this.state.person.email.value,
             cell_no: this.state.person.cell_no.value,
         }
-        let res = await this._personService.create(newBook).catch(error => {
+        let res = await this._personService.create(newPerson).catch(error => {
             this.handleError({ error: error });
         });
         this.setState({ ...this.state, createLoader: false });
@@ -269,69 +246,70 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, updateLoader: true });
 
         let imgUrls = await this.uploadFileReq().catch(error => {
-            debugger;
+            this.handleError({ error: error.response });
         });
-        if (!imgUrls/*  || !imgUrls.length */) {
+        if (!imgUrls) {
             return
         }
-        const newBook = {
+        const newPerson = {
             name: this.state.person.name.value,
             last_name: this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
-            image: imgUrls,
+            image: imgUrls[0],
             email: this.state.person.email.value,
             cell_no: this.state.person.cell_no.value,
         }
-        let res = await this._personService.update(newBook, this.person_id!).catch(e => {
+        let res = await this._personService.update(newPerson, this.person_id!).catch(e => {
             this.handleError({ error: e });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {
-            // this.apiSuccessNotify();
-            this.props.history.push('/book/manage');
+            this.props.history.push('/person/manage');
             this.apiSuccessNotify();
         }
 
     }
 
-    ///////////////////////////////////////////
+    ////////// navigation function //////////////////
 
     backTO() {
-        this.gotoBookManage();
+        this.gotoPersonManage();
     }
 
-    /* refreshBookCreate() {
-        this.props.history.push('/book/create'); // /admin
-    } */
-
-    gotoBookManage() {
-        this.props.history.push('/book/manage'); // /admin
+    gotoPersonManage() {
+        this.props.history.push('/person/manage'); 
     }
 
     // image add /////
 
-
-    onDropRejected(file: any[], event: any) {
-        debugger;
-        console.log(file, event);
+    onDropRejected(files: any[], event: any) {
+        this.onDropRejectedNotify(files);
     }
 
-    onDrop(file: any[]) {
-        if(this.state.person.image.value===undefined){
-            this.setState({
-                ...this.state, person: {
-                    ...this.state.person,
-                    image: {
-                        isValid: true,
-                        value: [...(this.state.person.image.value || []), ...file]
-                    }
-                }
-            })
-        }else{
+    onDropRejectedNotify(files: any[]) {
+        toast.warn(`file can not be added.`, this.getNotifyConfig());
+    }
 
+    removePreviousImgNotify() {
+        toast.warn('only 1 avatar, please remove exisiting one', this.getNotifyConfig());
+    }
+
+    onDrop(files: any[]) {
+        if (!files || !files.length) return;
+        if (this.state.person.image.value && this.state.person.image.value!.length) {
+            this.removePreviousImgNotify();
+            return;
         }
-        
+        this.setState({
+            ...this.state, person: {
+                ...this.state.person,
+                image: {
+                    isValid: true,
+                    value: files
+                }
+            }
+        })
     }
 
     tmpUrl_list: string[] = [];
@@ -343,9 +321,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     removeItemFromDZ(index: number/* , url: string */) {
-        let newFiles = (this.state.person.image.value || "");
-        // URL.revokeObjectURL(URL.createObjectURL(this.state.files[index]));
-        // URL.revokeObjectURL(url);
+        let newFiles = (this.state.person.image.value || []);
         if (newFiles) {
             newFiles.splice(index, 1);
         }
@@ -354,7 +330,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                 ...this.state.person,
                 image: {
                     isValid: true,
-                    value: ""
+                    value: [...newFiles]
                 }
             }
         })
@@ -375,13 +351,13 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                 phone: { value: undefined, isValid: false },
                 email: { value: undefined, isValid: true },
                 cell_no: { value: undefined, isValid: true },
-                image: { value: undefined, isValid: true },
+                image: { value: [], isValid: true },
             },
             isFormValid: false,
         })
     }
 
-
+    ////// render ////////
     render() {
         return (
             <>
@@ -393,67 +369,66 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                     {
                                         this.state.saveMode === SAVE_MODE.CREATE
                                             ?
-                                            <h2 className="text-bold text-dark">{Localization.create_book}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.create_person}</h2>
                                             :
-                                            <h2 className="text-bold text-dark">{Localization.edit_book}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.edit_person}</h2>
                                     }
                                 </div>
-                                {/* <div className="row">
-                                    <h3 className="text-bold text-dark">Book details :</h3>
-                                </div> */}
                                 {/* start give data by inputs */}
                                 <div className="row">
                                     <div className="col-md-3 col-sm-6">
-                                        <Input   //name
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "title")}
-                                            label={Localization.title}
-                                            placeholder={Localization.title}
-                                            required
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "name")}
+                                            label={Localization.name}
+                                            placeholder={Localization.name}
                                             defaultValue={this.state.person.name.value}
-                                            readOnly={this.state.saveMode === SAVE_MODE.EDIT}
+                                            required
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input   //last-name
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'edition')}
-                                            label={Localization.edition}
-                                            placeholder={Localization.edition}
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
+                                            label={Localization.lastname}
+                                            placeholder={Localization.lastname}
                                             defaultValue={this.state.person.last_name.value}
+                                            required
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input    //email
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'language')}
-                                            label={Localization.language}
-                                            placeholder={Localization.language}
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'email')}
+                                            label={Localization.email}
+                                            placeholder={Localization.email}
                                             defaultValue={this.state.person.email.value}
+                                            pattern={AppRegex.email}
+                                            patternError={'email only'}
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input   //phone
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "pages")}
-                                            label={Localization.pages}
-                                            placeholder={Localization.pages}
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "phone")}
+                                            label={Localization.phone}
+                                            placeholder={Localization.phone}
                                             defaultValue={this.state.person.phone.value}
-                                            pattern={AppRegex.integer}
-                                            patternError={'int number only'}
+                                            pattern={AppRegex.phone}
+                                            patternError={'phone only'}
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input   //cell num
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "duration")}
-                                            label={Localization.duration}
-                                            placeholder={Localization.duration}
+                                        <Input 
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
+                                            label={Localization.cell_no}
+                                            placeholder={Localization.cell_no}
                                             defaultValue={this.state.person.cell_no.value}
-                                            pattern={AppRegex.number}
-                                            patternError={'number only'}
+                                            pattern={AppRegex.mobile}
+                                            patternError={'mobile only'}
                                         />
                                     </div>
                                     <div className="col-md-6 col-sm-12">
-                                        <Input  //address
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "description")}
-                                            label={Localization.description}
-                                            placeholder={Localization.description}
+                                        <Input  
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "address")}
+                                            label={Localization.address}
+                                            placeholder={Localization.address}
                                             is_textarea
                                             defaultValue={this.state.person.address.value}
                                         />
@@ -461,11 +436,12 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-6 col-sm-12">
                                         <label htmlFor="">{Localization.images}</label>
                                         <div className="role-img-container">
-                                            <Dropzone   //image
+                                            <Dropzone
+                                                multiple={false}
                                                 onDrop={(files) => this.onDrop(files)}
                                                 maxSize={5000000}
                                                 accept="image/*"
-                                                onDropRejected={(file, event) => this.onDropRejected(file, event)}
+                                                onDropRejected={(files, event) => this.onDropRejected(files, event)}
                                             >
                                                 {
                                                     (({ getRootProps, getInputProps }) => (
@@ -478,9 +454,9 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                                 <h4 className="m-2 font-weight-bold">{Localization.images_list}:</h4>
                                                                 <ul className="image-wrapper">{
                                                                     (this.state.person.image.value || []).map((file: any, index) => {
+                                                                        let tmUrl = '';
                                                                         let fileName = '';
                                                                         let fileSize = '';
-                                                                        let tmUrl = '';
                                                                         if (typeof file === "string") {
                                                                             fileName = file;
                                                                             tmUrl = '/api/serve-files/' + file;
@@ -489,8 +465,6 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                                             fileSize = '- ' + file.size + ' bytes';
                                                                             tmUrl = this.getTmpUrl(file);
                                                                         }
-                                                                        // const tmUrl = this.getTmpUrl(file); // URL.createObjectURL(file);
-
                                                                         return <Fragment key={index}>
                                                                             <li className="img-item m-2">
                                                                                 <img src={tmUrl} alt="" style={{
@@ -536,14 +510,21 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                     </BtnLoader>
                                                 </>
                                                 :
-                                                <BtnLoader
-                                                    btnClassName="btn btn-info shadow-default shadow-hover ml-4"
-                                                    loading={this.state.updateLoader}
-                                                    onClick={() => this.update()}
-                                                    disabled={!this.state.isFormValid}
-                                                >
-                                                    {Localization.update}
-                                                </BtnLoader>
+                                                <>
+                                                    {
+                                                        this.state.saveBtnVisibility ?
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-info shadow-default shadow-hover ml-4"
+                                                                loading={this.state.updateLoader}
+                                                                onClick={() => this.update()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.update}
+                                                            </BtnLoader>
+                                                            : ''
+                                                    }
+                                                </>
+
                                         }
                                     </div>
                                     <BtnLoader
@@ -555,13 +536,6 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         {Localization.back}
                                     </BtnLoader>
                                 </div>
-                                {/* start show data */}
-                                {/* <div className="row">
-                                    <div className="col-12">
-                                        <pre>{JSON.stringify(this.state.book, null, 2)}</pre>
-                                    </div>
-                                </div> */}
-                                {/* end of show data */}
                             </div>
                         </div>
                     </div>
@@ -585,7 +559,7 @@ const state2props = (state: redux_state) => {
     };
 };
 
-export const BookSave = connect(
+export const PersonSave = connect(
     state2props,
     dispatch2props
 )(PersonSaveComponent);

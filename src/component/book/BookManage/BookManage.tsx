@@ -51,12 +51,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "title", title: Localization.title, cellTemplateFunc: (row: IBook) => {
             if (row.title) {
-              return <div title={row.title} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
+              return <div title={row.title} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.title}
               </div>
             }
@@ -70,17 +65,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           cellTemplateFunc: (row: IBook) => {
             if (row.images && row.images.length) {
               return <div className="text-center" >
-                <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  <img src={"/api/serve-files/" + row.images[0]} alt=""
-                    style={{ maxWidth: '100px', maxHeight: '100px' }}
-                    onError={e => this.bookImageOnError(e)} />
+                <div className="d-inline-block w-100px h-100px">
+                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt=""onError={e => this.bookImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
-                <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  <img src={this.defaultBookImagePath} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                <div className="d-inline-block w-100px h-100px">
+                  <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt=""/>
                 </div>
               </div>
             }
@@ -115,12 +108,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           field: "description", title: Localization.description,
           cellTemplateFunc: (row: IBook) => {
             if (row.description) {
-              return <div title={row.description} className="text-right d-inline-block" style={{
-                maxWidth: '100px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
+              return <div title={row.description} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px">
                 {row.description}
               </div>
             }

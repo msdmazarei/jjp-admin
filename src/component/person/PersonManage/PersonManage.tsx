@@ -46,90 +46,10 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "name", title: Localization.name, cellTemplateFunc: (row: IPerson) => {
+          field: "name", title: Localization.full_name , cellTemplateFunc: (row: IPerson) => {
             if (row.name) {
-              return <div title={row.name} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
-                {row.name}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "last_name", title: Localization.lastname,cellTemplateFunc: (row: IPerson) => {
-            if (row.last_name) {
-              return <div title={row.last_name} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
-                {row.last_name}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "address", title: Localization.address,cellTemplateFunc: (row: IPerson) => {
-            if (row.address) {
-              return <div title={row.last_name} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
-                {row.address}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "phone", title: Localization.phone,cellTemplateFunc: (row: IPerson) => {
-            if (row.phone) {
-              return <div title={row.last_name} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
-                {row.phone}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "email",title: Localization.email,cellTemplateFunc: (row: IPerson) => {
-            if (row.email) {
-              return <div title={row.last_name} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
-                {row.email}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "cell_no",title: Localization.cell_no,cellTemplateFunc: (row: IPerson) => {
-            if (row.cell_no) {
-              return <div title={row.last_name} className=" d-inline-block" style={{
-                maxWidth: '200px',
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis"
-              }} >
-                {row.cell_no}
+              return <div title={this.getPersonFullName(row)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {this.getPersonFullName(row)}
               </div>
             }
             return '';
@@ -138,21 +58,59 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "image", title: Localization.image, templateFunc: () => {return <b>{Localization.image}</b> },cellTemplateFunc: (row: IPerson) => {
             if (row.image) {
-              return <div className="text-center" >
-                <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  <img src={"/api/serve-files/" + row.image} alt=""
-                    style={{ maxWidth: '100px', maxHeight: '100px' }}
-                    onError={e => this.personImageOnError(e)} />
+              return <div title={Localization.image} className="text-center" >
+                <div className="d-inline-block w-100px h-100px">
+                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
-                <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  <img src={this.defaultPersonImagePath} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                <div className="d-inline-block w-100px h-100px">
+                  <img className="max-w-100px max-h-100px" src={this.defaultPersonImagePath} alt=""/>
                 </div>
               </div>
             }
+          }
+        },
+        {
+          field: "cell_no",title: Localization.cell_no,cellTemplateFunc: (row: IPerson) => {
+            if (row.cell_no) {
+              return <div title={row.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.cell_no}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "email",title: Localization.email,cellTemplateFunc: (row: IPerson) => {
+            if (row.email) {
+              return <div title={row.email} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.email}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "phone", title: Localization.phone,cellTemplateFunc: (row: IPerson) => {
+            if (row.phone) {
+              return <div title={row.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.phone}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "address", title: Localization.address,cellTemplateFunc: (row: IPerson) => {
+            if (row.address) {
+              return <div title={row.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.address}
+              </div>
+            }
+            return '';
           }
         },
       ],

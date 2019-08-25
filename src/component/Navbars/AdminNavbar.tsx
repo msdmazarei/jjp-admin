@@ -29,6 +29,8 @@ import { action_user_logged_out } from "../../redux/action/user";
 // import { action_change_app_flag } from "../../redux/action/internationalization";
 import { action_remove_token } from "../../redux/action/token";
 import { action_remove_authentication } from "../../redux/action/authentication";
+import { Localization } from '../../config/localization/localization';
+import { BaseComponent } from "../_base/BaseComponent";
 // import { any } from "prop-types";
 
 
@@ -46,12 +48,8 @@ interface IProps {
   toggleSidebar: any;
 }
 
-
-
-
-
-
-class AdminNavbarComponent extends React.Component<IProps, any> {
+// class AdminNavbarComponent extends React.Component<IProps, any> {
+class AdminNavbarComponent extends BaseComponent<IProps, any> {
   constructor(props: any) {
     super(props);
     this.state = {
@@ -105,6 +103,19 @@ class AdminNavbarComponent extends React.Component<IProps, any> {
       modalSearch: !this.state.modalSearch
     });
   };
+
+  getUserAvatar(): string {
+    let avatar = this.props.logged_in_user
+      // && this.props.logged_in_user.person
+      && this.props.logged_in_user.person.image;
+
+    let imgUrl = '/static/media/img/icon/avatar.png';
+    if (avatar) {
+      imgUrl = this.getImageUrl(avatar)
+    }
+    return imgUrl;
+  }
+
   render() {
     return (
       <>
@@ -170,14 +181,15 @@ class AdminNavbarComponent extends React.Component<IProps, any> {
                     onClick={e => e.preventDefault()}
                   >
                     <div className="photo">
-                      <img alt="..." src={require("../../asset/style/app/_src/z-template/_admin-panel/custom/img/anime3.png")} />
+                      {/* <img alt="..." src={require("../../asset/style/app/_src/z-template/_admin-panel/custom/img/anime3.png")} /> */}
+                      <img alt="..." src={this.getUserAvatar()} />
                     </div>
                     <b className="caret d-none d-lg-block d-xl-block" />
-                    <p className="d-lg-none">Log out</p>
+                    <p className="d-lg-none">{Localization.log_out}</p>
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item">Profile</DropdownItem>
+                      <DropdownItem className="nav-item d-none">{Localization.profile}</DropdownItem>
                     </NavLink>
                     {/* setting item commented in jame-jam project */}
                     {/* <NavLink tag="li">
@@ -189,7 +201,7 @@ class AdminNavbarComponent extends React.Component<IProps, any> {
                         className="nav-item"
                         onClick={() => this.log_out()}
                       >
-                        Log out
+                        {Localization.log_out}
                       </DropdownItem>
                     </NavLink>
                   </DropdownMenu>

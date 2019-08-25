@@ -244,6 +244,7 @@ export const ar = {
     edit_person:"ویرایش شخص",
     profile:"پروفایل",
     profile_image:"تصویر پروفایل",
+    full_name:"نام و نام خانوادگی",
     // :'ریال',
     genre_type_list:{
         Comedy:"کمدی",

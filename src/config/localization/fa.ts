@@ -249,6 +249,7 @@ export const fa = {
     edit_person:"ویرایش شخص",
     profile:"پروفایل",
     profile_image:"تصویر پروفایل",
+    full_name:"نام و نام خانوادگی",
     // money_unit:'ریال',
     genre_type_list:{
         Comedy:"کمدی",

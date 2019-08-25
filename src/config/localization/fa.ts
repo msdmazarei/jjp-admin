@@ -250,6 +250,7 @@ export const fa = {
     profile:"پروفایل",
     profile_image:"تصویر پروفایل",
     full_name:"نام و نام خانوادگی",
+    preview:"پیش نمایش",
     // money_unit:'ریال',
     genre_type_list:{
         Comedy:"کمدی",

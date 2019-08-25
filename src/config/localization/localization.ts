@@ -255,6 +255,7 @@ interface ILocalization extends LocalizedStringsMethods {
     profile:string;
     profile_image:string;
     full_name:string;
+    preview:string;
     // money_unit:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;

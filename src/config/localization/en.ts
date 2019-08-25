@@ -248,6 +248,7 @@ export const en = {
     profile:"profile",
     profile_image:"profile image",
     full_name:"full name",
+    preview:"preview",
     // money_unit:'$',
     genre_type_list:{
         Comedy: "comedy",

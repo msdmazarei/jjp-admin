@@ -211,7 +211,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
         let imgUrls = await this.uploadFileReq().catch(error => {
-            this.handleError({ error: error });
+            this.handleError({ error: error.response });
         });
         if (!imgUrls/*  || !imgUrls.length */) {
             this.setState({ ...this.state, createLoader: false });
@@ -227,7 +227,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
             cell_no: this.state.person.cell_no.value,
         }
         let res = await this._personService.create(newPerson).catch(error => {
-            this.handleError({ error: error });
+            this.handleError({ error: error.response });
         });
         this.setState({ ...this.state, createLoader: false });
 
@@ -257,7 +257,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
             cell_no: this.state.person.cell_no.value,
         }
         let res = await this._personService.update(newPerson, this.person_id!).catch(e => {
-            this.handleError({ error: e });
+            this.handleError({ error: e.response });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {

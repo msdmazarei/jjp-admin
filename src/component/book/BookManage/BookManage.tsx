@@ -178,7 +178,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
   onShowRemoveModal(book: IBook) {
     this.selectedBook = book;
-    // debugger;
     this.setState({ ...this.state, removeModalShow: true });
   }
 

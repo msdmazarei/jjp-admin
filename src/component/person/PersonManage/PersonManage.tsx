@@ -188,7 +188,6 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
   onShowRemoveModal(person: IPerson) {
     this.selectedPerson = person;
-    // debugger;
     this.setState({ ...this.state, removeModalShow: true });
   }
 

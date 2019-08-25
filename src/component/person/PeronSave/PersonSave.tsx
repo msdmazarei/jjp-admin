@@ -187,7 +187,6 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async uploadFileReq(): Promise<string[]> {
-        debugger;
         let fileImg = (this.state.person.image.value || []).filter(img => typeof img !== "string");
         let strImg = (this.state.person.image.value || []).filter(img => typeof img === "string");
         if (fileImg && (fileImg || []).length) {
@@ -209,8 +208,6 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     // add person function 
 
     async create() {
-
-        debugger;
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
         let imgUrls = await this.uploadFileReq().catch(error => {
@@ -241,7 +238,6 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        debugger;
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 

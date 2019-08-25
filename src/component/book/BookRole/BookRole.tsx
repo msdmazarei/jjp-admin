@@ -53,7 +53,6 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
             JSON.stringify(this.convertInnerToOuter(this.convertOuterToInner(nextProps.defaultValue || [])))
             !== JSON.stringify(this.convertInnerToOuter(this.state.list))
         ) {
-            // debugger;
             let newList = [...nextProps.defaultValue || []];
             this.setState({ ...this.state, list: this.convertOuterToInner(newList) }, () => {
                 this.props.onChange(newList, this.handleValidate(this.state.list));

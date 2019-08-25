@@ -34,13 +34,15 @@ const appRoutes = (
             <Route exact path="/" render={props => <AdminLayout {...props} />} />
             <Route exact path="/dashboard" render={props => <AdminLayout {...props} />} />
             <Route exact path="/book/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/book/create" render={props => <AdminLayout {...props} />} />
             <Route exact path="/book/:book_id/edit" render={props => <AdminLayout {...props} />} />
-
-            <RouteLayoutAccount path="/login" component={Login} />
+            <Route exact path="/person/manage" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/person/create" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/person/:person_id/edit" render={props => <AdminLayout {...props} />} />
+            {/* <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} /> */}
             {/* <Route exact path="/" component={() => <Redirect to="/dashboard" />} /> */}
             {/* <RouteLayoutMain exact path="/dashboard" component={Dashboard} /> */}
+            <RouteLayoutAccount path="/login" component={Login} />
             <RouteLayoutAccount path="/register" component={Register} />
             <RouteLayoutAccount path="/forgot-password" component={ForgotPassword} />
             {/* <RouteLayoutMain component={NotFound} /> */}

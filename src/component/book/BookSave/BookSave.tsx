@@ -16,7 +16,7 @@ import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 
 enum SAVE_MODE {
@@ -165,7 +165,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         updateLoader: false,
         tags_inputValue: ''
     }
-    // saveMode: 'edit' | 'create' = 'create';
 
     /////////// start Select's options define
 
@@ -188,6 +187,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     ];
 
     /////////// end of Select's options define
+
+
     private _bookService = new BookService();
     private _uploadService = new UploadService();
     private book_id: string | undefined;
@@ -205,17 +206,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async fetchBookById(book_id: string) {
-
-        // let res = await this._bookService.bookById(book_id).catch(error => {
-        //     debugger;
-        //     //notify
-        //   });
-
         let res = await this._bookService.byId(book_id).catch(error => {
-            debugger;
-            //notify
+            this.handleError({ error: error.response });
         });
-
         // await this.__waitOnMe();
         if (res) {
             let genreList: any[] = [];
@@ -247,7 +240,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     roles: { ...this.state.book.roles, value: res.data.roles, isValid: true },
                     type: { ...this.state.book.type, value: typeList, isValid: true },
                     images: { ...this.state.book.images, value: res.data.images, isValid: true },
-                    // id: { ...this.state.book.id, value: res.data.id, isValid: true },
                     tags: { ...this.state.book.tags, value: tagList, isValid: true },
                 }
             })
@@ -266,8 +258,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     // on change functions 
 
     handleInputChange(value: any, isValid: boolean, inputType: any) {
-        // debugger;
-
         this.setState({
             ...this.state,
             book: {
@@ -278,8 +268,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     handleSelectInputChange(value: any[], inputType: any) {
-        // debugger;
-        // let List = (value || []).map(selestinput => selestinput.value);
         let isValid;
         if (!value || !value.length) {
             isValid = false;
@@ -297,16 +285,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookRollChange(list: any[], isValid: boolean) {
-        // debugger;
-        // let List = (list || []).map(rolesinput => rolesinput.value);
-        // let isValid;
-        // for (let i = 0; i < list.length; i++) {
-        //     if (!list[i].role || !list[i].person || !list.length) {
-        //         isValid = false;
-        //     } else {
-        //         isValid = true;
-        //     }
-        // }
         this.setState({
             ...this.state,
             book: {
@@ -335,14 +313,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         return valid;
     }
     async uploadFileReq(): Promise<string[]> {
-        debugger;
         let fileImg = (this.state.book.images.value || []).filter(img => typeof img !== "string");
         let strImg = (this.state.book.images.value || []).filter(img => typeof img === "string");
-
-        // if (this.state.book.images.value && (this.state.book.images.value || []).length) {
         if (fileImg && (fileImg || []).length) {
             return new Promise(async (res, rej) => {
-                // let urls = await this._uploadService.upload(this.state.book.images.value || []).catch(e => {
                 let urls = await this._uploadService.upload(fileImg).catch(e => {
                     rej(e);
                 });
@@ -353,25 +327,19 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         } else {
             return new Promise((res, rej) => {
                 res(strImg || []);
-                // res(this.state.book.images.value || []);
-                // res([])
             });
         }
     }
+
     // add book function 
 
     async create() {
-
-        debugger;
         if (!this.state.isFormValid) return;
-        // let imgFile = (this.state.book.images.value || []);
-        // let res = this._imgService.imgUpload([imgFile]).then(res => this.state.book.images.value=res.data)
         this.setState({ ...this.state, createLoader: true });
-
         let imgUrls = await this.uploadFileReq().catch(error => {
-            this.handleError({ error: error });
+            this.handleError({ error: error.response });
         });
-        if (!imgUrls/*  || !imgUrls.length */) {
+        if (!imgUrls) {
             this.setState({ ...this.state, createLoader: false });
             return
         }
@@ -391,14 +359,14 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            genre: genreList, // this.state.book.genre.value,
-            types: typeList, // note: in book create use types,
-            roles: roleList, // this.state.book.roles.value,
+            genre: genreList,
+            types: typeList, 
+            roles: roleList,
             images: imgUrls,
             tags: tagList
         }
         let res = await this._bookService.create(newBook).catch(error => {
-            this.handleError({ error: error });
+            this.handleError({ error: error.response });
         });
         this.setState({ ...this.state, createLoader: false });
 
@@ -409,71 +377,65 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        debugger;
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 
         let imgUrls = await this.uploadFileReq().catch(error => {
-            debugger;
+            this.handleError({ error: error.response });
         });
-        if (!imgUrls/*  || !imgUrls.length */) {
+        if (!imgUrls) {
             return
         }
         let genreList = (this.state.book.genre.value || []).map((list: { label: string; value: string }) => list.value);
-        // let typeList = (this.state.book.type.value || []).map((list: { label: string; value: string }) => list.value);
         let roleList = (this.state.book.roles.value || []).map((item: any) => { return { role: item.role, person: { id: item.person.id } } });
-        // let imagesList = (this.state.book.images.value || []).map((list: { label: string; value: string }) => list.value);
-        // let id = this.state.book.id.value;
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
+        // let imagesList = (this.state.book.images.value || []).map((list: { label: string; value: string }) => list.value);
 
         const newBook = {
             edition: this.state.book.edition.value,
             language: this.state.book.language.value,
             pub_year: this.state.book.pub_year.value,
-            // title: this.state.book.title.value,
             isben: this.state.book.isben.value,
             pages: this.state.book.pages.value,
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            genre: genreList, // this.state.book.genre.value,
-            // type: typeList[0], // this.state.book.type.value,
-            roles: roleList,//this.state.book.roles.value,
+            genre: genreList,
+            roles: roleList,
             images: imgUrls,
             tags: tagList
+            // title: this.state.book.title.value,
+            // type: typeList[0], // this.state.book.type.value,
         }
         let res = await this._bookService.update(newBook, this.book_id!).catch(e => {
-            this.handleError({ error: e });
+            this.handleError({ error: e.response });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {
-            // this.apiSuccessNotify();
             this.props.history.push('/book/manage');
             this.apiSuccessNotify();
         }
-
     }
 
-    ///////////////////////////////////////////
+    ////////////////// navigatin func ///////////////////////
 
     backTO() {
         this.gotoBookManage();
     }
 
-    /* refreshBookCreate() {
-        this.props.history.push('/book/create'); // /admin
-    } */
-
     gotoBookManage() {
         this.props.history.push('/book/manage'); // /admin
     }
 
-    // image add /////
 
+    // image add functions /////
 
     onDropRejected(files: any[], event: any) {
-        debugger;
-        console.log(files, event);
+        this.onDropRejectedNotify(files);
+    }
+
+    onDropRejectedNotify(files: any[]) {
+        toast.warn(`${files.length} files can not be added.`, this.getNotifyConfig());
     }
 
     onDrop(files: any[]) {
@@ -498,8 +460,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
     removeItemFromDZ(index: number/* , url: string */) {
         let newFiles = (this.state.book.images.value || []);
-        // URL.revokeObjectURL(URL.createObjectURL(this.state.files[index]));
-        // URL.revokeObjectURL(url);
         if (newFiles) {
             newFiles.splice(index, 1);
         }
@@ -514,10 +474,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-
     /////////////////
 
-    // reset form /////////////
+    /////////// reset form /////////////
 
     resetForm() {
         this.setState({
@@ -542,15 +501,14 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    // private tags_inputValue: any;
+    //////// tag input keydown handle ////////////////////////////
+
     handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
-        // const { inputValue, value } = this.state;
         if (!this.state.tags_inputValue) return;
         switch (event.key) {
             case 'Enter':
             case 'Tab':
                 const newVal = this.state.tags_inputValue;
-                // this.tags_inputValue = '';
                 this.setState({
                     ...this.state,
                     book: {
@@ -564,12 +522,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     },
                     tags_inputValue: ''
                 });
-                // this.tags_inputValue = '';
                 event.preventDefault();
         }
     };
 
-    ///////////////////////////////////////////
+    /////////////////// render ////////////////////////
 
     render() {
         return (
@@ -587,9 +544,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             <h2 className="text-bold text-dark">{Localization.edit_book}</h2>
                                     }
                                 </div>
-                                {/* <div className="row">
-                                    <h3 className="text-bold text-dark">Book details :</h3>
-                                </div> */}
                                 {/* start give data by inputs */}
                                 <div className="row">
                                     <div className="col-md-3 col-sm-6">
@@ -664,8 +618,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 isMulti
                                                 onChange={(value: any) => this.handleSelectInputChange(value, "type")}
                                                 options={this.typeOptions}
-                                                // defaultValue={this.state.book.type.value}
-                                                // label='type'
                                                 value={this.state.book.type.value}
                                                 placeholder={Localization.type}
                                                 isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
@@ -679,8 +631,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 isMulti
                                                 onChange={(value: any) => this.handleSelectInputChange(value, "genre")}
                                                 options={this.genreOptions}
-                                                // defaultValue={this.state.book.genre.value}
-                                                // label='genre'
                                                 value={this.state.book.genre.value}
                                                 placeholder={Localization.genre}
                                             />
@@ -698,7 +648,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 inputValue={this.state.tags_inputValue}
                                                 menuIsOpen={false}
                                                 components={{
-                                                    DropdownIndicator: null,
+                                                DropdownIndicator: null,
                                                 }}
                                                 isClearable
                                                 onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
@@ -762,8 +712,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                             fileSize = '- ' + file.size + ' bytes';
                                                                             tmUrl = this.getTmpUrl(file);
                                                                         }
-                                                                        // const tmUrl = this.getTmpUrl(file); // URL.createObjectURL(file);
-
                                                                         return <Fragment key={index}>
                                                                             <li className="img-item m-2">
                                                                                 <img src={tmUrl} alt="" style={{
@@ -828,13 +776,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         {Localization.back}
                                     </BtnLoader>
                                 </div>
-                                {/* start show data */}
-                                {/* <div className="row">
-                                    <div className="col-12">
-                                        <pre>{JSON.stringify(this.state.book, null, 2)}</pre>
-                                    </div>
-                                </div> */}
-                                {/* end of show data */}
                             </div>
                         </div>
                     </div>

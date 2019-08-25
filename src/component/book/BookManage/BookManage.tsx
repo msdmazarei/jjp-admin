@@ -1,5 +1,4 @@
 import React from "react";
-// import { IPerson } from "../model/model.person";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { BookService } from "../../../service/service.book";
@@ -19,29 +18,13 @@ import { BOOK_TYPES } from "../../../enum/Book";
 import { AppRegex } from "../../../config/regex";
 import { PriceService } from "../../../service/service.price";
 
-
-
-
-
-//  define props & state and type 
-
-// export interface IBook {
-//   last_name: number;
-//   username: string;
-//   id: string;
-//   person?: IPerson;
-// }
-
+/// define props & state ///////
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
   token: IToken;
 }
-
-
 interface IState {
-  // userlist: any[];//IBook
-  // colHeaders: any[]//Table header
   book_table: IProps_table;
   BookError: string | undefined;
   pager_offset: number;
@@ -56,16 +39,11 @@ interface IState {
   },
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
-
 }
-
-
-
 
 // define class of Book 
 
 class BookManageComponent extends BaseComponent<IProps, IState>{
-
   state = {
     book_table: {
       list: [],
@@ -102,7 +80,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             else {
               return <div className="text-center">
                 <div className="d-inline-block" style={{ width: '100px', height: '100px' }}>
-                  {/* <img src="/static/media/img/icon/no-image.png" alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} /> */}
                   <img src={this.defaultBookImagePath} alt="" style={{ maxWidth: '100px', maxHeight: '100px' }} />
                 </div>
               </div>
@@ -167,9 +144,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         { field: "pub_year", title: Localization.publication_date },
       ],
       actions: [
-        // { text: <div title={Localization.remove} className="table-action-shadow-hover text-center p-0 mb-0 ml-0 mr-0 mt-1"><i className="fa fa-trash text-danger pt-1"></i></div>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
-        // { text: <div title={Localization.update} className="table-action-shadow-hover text-center p-0 m-0"><i className="fa fa-pencil-square-o text-info"></i></div>, ac_func: (row: any) => { this.updateRow(row) } },
-        // { text: <div title={Localization.Pricing} className="table-action-shadow-hover text-center p-0 m-0"><i className="fa fa-money text-success"></i></div>, ac_func: (row: any) => { this.onShowPriceModal(row) } },
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
         { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
         { text: <i title={Localization.Pricing} className="table-action-shadow-hover fa fa-money text-success pt-2"></i>, ac_func: (row: any) => { this.onShowPriceModal(row) } },
@@ -188,7 +162,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     },
     setRemoveLoader: false,
     setPriceLoader: false
-
   }
 
   selectedBook: IBook | undefined;
@@ -198,10 +171,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
 
   updateRow(book_id: any) {
-    // this.props.history.push(`/admin/book/${book_id.id}/edit`);
     this.props.history.push(`/book/${book_id.id}/edit`);
   }
-
 
   // delete modal function define
 
@@ -214,18 +185,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   onHideRemoveModal() {
     this.selectedBook = undefined;
     this.setState({ ...this.state, removeModalShow: false });
-
   }
 
   async onRemoveBook(book_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._bookService.remove(book_id).catch(error => {
-      // debugger;
-      //notify
-      this.handleError({ error: error });
+      this.handleError({ error: error.response });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
-
     if (res) {
       this.setState({ ...this.state, setRemoveLoader: false });
       this.apiSuccessNotify();
@@ -247,7 +214,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               {this.selectedBook.title}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-            
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
@@ -266,7 +232,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
   onShowPriceModal(book: IBook) {
     this.selectedBook = book;
-    // debugger;
     this.setState({
       ...this.state, priceModalShow: true, price: {
         isValid: (book.price || book.price === 0) ? true : false,
@@ -274,21 +239,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       }
     });
   }
-
   onHidePriceModal() {
     this.selectedBook = undefined;
     this.setState({ ...this.state, priceModalShow: false });
   }
-
   async onPriceBook(book_id: string) {
     if (!this.state.price.isValid) return;
-    // const priceBook = {
-    //   book_id:book_id,
-    //   price:this.state.price.value
-    // }
     this.setState({ ...this.state, setPriceLoader: true });
     let res = await this._priceService.price(book_id, this.state.price.value!).catch(error => {
-      this.handleError({ error: error });
+      this.handleError({ error: error.response });
       this.setState({ ...this.state, setPriceLoader: false });
     });
     if (res) {
@@ -301,7 +260,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
 
   handlePriceInputChange(value: number, isValid: boolean) {
-    // debugger;
     this.setState({
       ...this.state,
       price: {
@@ -313,13 +271,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
   render_price_modal(selectedBook: any) {
     if (!this.selectedBook || !this.selectedBook.id) return;
-    // this.setState({ ...this.state, price: { isValid: false, value: selectedBook.price } })
     return (
       <>
         <Modal show={this.state.priceModalShow} onHide={() => this.onHidePriceModal()}>
-          {/* <Modal.Header closeButton>
-            <Modal.Title>Do you want delete {this.selectedBook.title} ?</Modal.Title>
-          </Modal.Header> */}
           <Modal.Body>
             <p style={{ maxWidth: '200px', whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} >
               <span className="text-muted">
@@ -327,7 +281,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               </span>
               {this.selectedBook.title}
             </p>
-            {/* <p className="text-system">price</p> */}
             <Input
               onChange={(value, isValid) => this.handlePriceInputChange(value, isValid)}
               label={Localization.Pricing}
@@ -340,7 +293,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHidePriceModal()}>{Localization.close}</button>
-            {/* <button className="btn btn-system" onClick={() => this.onPriceBook(selectedBook.id)}>افزودن قیمت</button> */}
             <BtnLoader
               loading={this.state.setPriceLoader}
               btnClassName="btn btn-system shadow-default shadow-hover"
@@ -356,43 +308,23 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
   // define axios for give data
 
 
   componentDidMount() {
     this.fetchBooks();
-    // this.fetchOneBook('4c64a437-0740-4be9-b836-5453ac93f05d');
   }
 
-
   async fetchBooks() {
-    // debugger;
-
     let res = await this._bookService.search(this.state.pager_limit, this.state.pager_offset).catch(error => {
-      // debugger;
-      //notify
-      this.handleError({ error: error });
+      this.handleError({ error: error.response });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
         nextBtnLoader: false,
       });
     });
-
     if (res) {
-      // debugger;
-      // const booklist = res.data;
       this.setState({
         ...this.state, book_table: {
           ...this.state.book_table,
@@ -403,16 +335,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       });
     }
   }
-
-
-
-  /* async fetchOneBook(bookId: string) {
-    // let oneBook = await this._bookService.bookById(bookId).catch(oneBook => { debugger })  
-    await this._bookService.bookById(bookId).catch(() => { debugger })
-  } */
-
-
-
 
   // previous button create
 
@@ -455,8 +377,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-
-
   // next button create
 
   pager_next_btn_render() {
@@ -485,7 +405,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
 
-
   // on previous click
 
   onPreviousClick() {
@@ -494,12 +413,10 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       pager_offset: this.state.pager_offset - this.state.pager_limit,
       prevBtnLoader: true
     }, () => {
-      // this.gotoTop();
+      this.gotoTop();
       this.fetchBooks()
     });
   }
-
-
 
   // on next click
 
@@ -509,34 +426,19 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       pager_offset: this.state.pager_offset + this.state.pager_limit,
       nextBtnLoader: true
     }, () => {
-      // this.gotoTop();
+      this.gotoTop();
       this.fetchBooks()
     });
   }
 
 
-
-  // async fetchtableBooks() {
-  //   this.setState({ ...this.state, BookError: undefined });
-  //   let searchRequest;
-  //   searchRequest = this._bookService.search(this.state.pager_limit,this.state.pager_offset).catch(error => {
-  //     debugger;
-  //     //notify
-  //   })
-  // }
-
-
-
-
-
-  // link on button  for create book
+  ///// navigation function //////
 
   gotoBookCreate() {
     this.props.history.push('/book/create'); // /admin
   }
 
-
-  //   call Table component 
+  //////render call Table component //////
 
   render() {
     return (
@@ -572,8 +474,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 }
-// export default Book
-
 
 const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
   return {

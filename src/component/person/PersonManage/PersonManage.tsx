@@ -60,14 +60,14 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             if (row.image) {
               return <div title={Localization.image} className="text-center" >
                 <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
+                  <img className="max-w-100px max-h-100px profile-img-rounded" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
                 <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={this.defaultPersonImagePath} alt=""/>
+                  <img className="max-w-100px max-h-100px  profile-img-rounded" src={this.defaultPersonImagePath} alt=""/>
                 </div>
               </div>
             }
@@ -106,7 +106,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "address", title: Localization.address,cellTemplateFunc: (row: IPerson) => {
             if (row.address) {
-              return <div title={row.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+              return <div title={row.address} className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.address}
               </div>
             }

@@ -38,6 +38,10 @@
   width: 50px;
 }
 
+.h-50px {
+  height: 50px;
+} 
+
 .w-100px {
   width: 100px;
 }
@@ -112,6 +116,9 @@ hr {
   white-space: nowrap!important;
   overflow: hidden!important;
   text-overflow: ellipsis!important;
+}
+.profile-img-rounded{
+  border-radius: 50%!important;
 }
 /*
 select, textarea.form-control {

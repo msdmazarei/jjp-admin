@@ -1,9 +1,9 @@
 import Dashboard from "./component/dashboard/Dashboard";
-import {BookManage} from "./component/book/BookManage/BookManage";
+import { BookManage } from "./component/book/BookManage/BookManage";
 import { BookSave } from "./component/book/BookSave/BookSave";
-import {PersonManage} from "./component/person/PersonManage/PersonManage";
+import { PersonManage } from "./component/person/PersonManage/PersonManage";
 import { PersonSave } from "./component/person/PeronSave/PersonSave";
-import {Localization} from "./config/localization/localization";
+import { Localization } from "./config/localization/localization";
 // import User from "./component/user/User";
 // import { Login } from "./component/login/Login";
 // import { any } from "prop-types";
@@ -19,12 +19,13 @@ var routes = [
     icon: "fa fa-dashboard",
     component: Dashboard,
     layout: "/admin",
-    isitem: true
+    isitem: true,
+    brandName: ['dashboard']
   },
   // book
   {
     path: "/book/manage",
-    name:Localization.book,
+    name: Localization.book,
     icon: "fa fa-book",
     component: BookManage,
     layout: "/admin",
@@ -42,12 +43,13 @@ var routes = [
     name: Localization.book_update,
     component: BookSave,
     layout: "/admin",
-    isitem: false
+    isitem: false,
+    brandName: ['book', 'edit']
   },
   // person
   {
     path: "/person/manage",
-    name:Localization.person,
+    name: Localization.person,
     icon: "fa fa-id-card",
     component: PersonManage,
     layout: "/admin",
@@ -65,7 +67,8 @@ var routes = [
     name: Localization.person_update,
     component: PersonSave,
     layout: "/admin",
-    isitem: false
+    isitem: false,
+    brandName: ['person', 'edit']
   },
 ];
 export default routes;

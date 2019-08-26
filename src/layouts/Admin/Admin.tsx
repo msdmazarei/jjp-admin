@@ -15,6 +15,7 @@ import { History, Location } from 'history';
 // import * as HSTR from 'history';
 import { IUser } from "../../model/model.user";
 import { TInternationalization } from "../../config/setup";
+import { Localization } from "../../config/localization/localization";
 
 
 interface IProps {
@@ -111,15 +112,30 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
   getBrandText = (path: any) => {
     for (let i = 0; i < routes.length; i++) {
       if (
-        this.props.location.pathname.indexOf(
+        // this.props.location.pathname.indexOf(
+        path.indexOf(
           // routes[i].layout + routes[i].path
           routes[i].path
         ) !== -1
       ) {
         return routes[i].name;
+
+      } else if (routes[i].brandName) {
+        let txt = '';
+        if (Array.isArray(routes[i].brandName)) {
+          let arr: string[] = routes[i].brandName || [];
+          let match = true;
+          arr.forEach(n => {
+            if (!path.includes(n)) { match = false; }
+          });
+
+          if (match) txt = routes[i].name;
+        }
+
+        if (txt) return txt;
       }
     }
-    return "Brand";
+    return Localization.app_title; // "Brand";
   };
   render() {
     if (!this.props.logged_in_user) {

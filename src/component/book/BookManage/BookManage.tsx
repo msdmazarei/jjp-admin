@@ -156,7 +156,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   private _bookService = new BookService();
   private _priceService = new PriceService();
 
-
+  constructor(props:IProps){
+    super(props);
+    this._bookService.setToken(this.props.token)
+    this._priceService.setToken(this.props.token)
+  }
 
   updateRow(book_id: any) {
     this.props.history.push(`/book/${book_id.id}/edit`);

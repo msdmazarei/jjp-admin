@@ -143,8 +143,12 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
   selectedPerson: IPerson | undefined;
   private _personService = new PersonService();
-  private _priceService = new PriceService();
+  // private _priceService = new PriceService();
 
+  constructor(props:IProps){
+    super(props);
+    this._personService.setToken(this.props.token)
+  }
   updateRow(person_id: any) {
     this.props.history.push(`/person/${person_id.id}/edit`);
   }

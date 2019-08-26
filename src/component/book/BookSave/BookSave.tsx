@@ -541,7 +541,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             ?
                                             <h2 className="text-bold text-dark">{Localization.create_book}</h2>
                                             :
-                                            <h2 className="text-bold text-dark">{Localization.edit_book}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.book_update}</h2>
                                     }
                                 </div>
                                 {/* start give data by inputs */}
@@ -579,7 +579,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.publication_date}
                                             defaultValue={this.state.book.pub_year.value}
                                             pattern={AppRegex.integer}
-                                            patternError={'int number only'}
+                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
@@ -597,7 +597,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.pages}
                                             defaultValue={this.state.book.pages.value}
                                             pattern={AppRegex.integer}
-                                            patternError={'int number only'}
+                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
@@ -607,7 +607,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.duration}
                                             defaultValue={this.state.book.duration.value}
                                             pattern={AppRegex.number}
-                                            patternError={'number only'}
+                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
 
@@ -714,10 +714,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                         }
                                                                         return <Fragment key={index}>
                                                                             <li className="img-item m-2">
-                                                                                <img src={tmUrl} alt="" style={{
-                                                                                    width: '50px',
-                                                                                    height: '50px'
-                                                                                }} />
+                                                                                {
+                                                                                    (this.state.book.images.value) ? <img className="w-50px max-h-75px" src={tmUrl} alt="" onError={e => this.bookImageOnError(e)}/> : <img className="w-50px max-h-75px" src={this.defaultBookImagePath} alt="" />
+                                                                                }
+                                                                                
                                                                                 <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                 <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
                                                                             </li>

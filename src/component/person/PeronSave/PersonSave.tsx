@@ -284,11 +284,11 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     onDropRejectedNotify(files: any[]) {
-        toast.warn(`file can not be added.`, this.getNotifyConfig());
+        toast.warn(Localization.validation_msg.file_can_not_added, this.getNotifyConfig());
     }
 
     removePreviousImgNotify() {
-        toast.warn('only 1 avatar, please remove exisiting one', this.getNotifyConfig());
+        toast.warn(Localization.validation_msg.just_one_image_person_can_have, this.getNotifyConfig());
     }
 
     onDrop(files: any[]) {
@@ -367,7 +367,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                             ?
                                             <h2 className="text-bold text-dark">{Localization.create_person}</h2>
                                             :
-                                            <h2 className="text-bold text-dark">{Localization.edit_person}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.person_update}</h2>
                                     }
                                 </div>
                                 {/* start give data by inputs */}
@@ -397,7 +397,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.email}
                                             defaultValue={this.state.person.email.value}
                                             pattern={AppRegex.email}
-                                            patternError={'email only'}
+                                            patternError={Localization.validation_msg.Just_enter_the_email}
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
@@ -407,7 +407,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.phone}
                                             defaultValue={this.state.person.phone.value}
                                             pattern={AppRegex.phone}
-                                            patternError={'phone only'}
+                                            patternError={Localization.validation_msg.Just_enter_the_phone_number}
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
@@ -417,7 +417,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.cell_no}
                                             defaultValue={this.state.person.cell_no.value}
                                             pattern={AppRegex.mobile}
-                                            patternError={'mobile only'}
+                                            patternError={Localization.validation_msg.Just_enter_the_cell_number}
                                         />
                                     </div>
                                     <div className="col-12">
@@ -465,7 +465,10 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                                                 }
                                                                                 return <Fragment key={index}>
                                                                                 <div className="img-item m-2">
-                                                                                    <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/>
+                                                                                    {
+                                                                                        (this.state.person.image.value) ? <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt="" onError={e => this.personImageOnError(e)}/> : <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt=""/>
+                                                                                    }
+                                                                                    {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
                                                                                     <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                     <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
                                                                                 </div>

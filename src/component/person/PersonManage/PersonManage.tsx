@@ -14,6 +14,9 @@ import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { PriceService } from "../../../service/service.price";
+// import { Input } from '../../form/input/Input';
+// import { async } from "q";
+// import { string } from "prop-types";
 
 //// props & state define ////////
 export interface IProps {
@@ -37,6 +40,8 @@ interface IState {
   },
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
+  isSearch:boolean;
+  searchVal:string | undefined;
 }
 ///// define class of Person //////
 class PersonManageComponent extends BaseComponent<IProps, IState>{
@@ -46,7 +51,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "name", title: Localization.full_name , cellTemplateFunc: (row: IPerson) => {
+          field: "name", title: Localization.full_name, cellTemplateFunc: (row: IPerson) => {
             if (row.name) {
               return <div title={this.getPersonFullName(row)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {this.getPersonFullName(row)}
@@ -56,7 +61,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "image", title: Localization.image, templateFunc: () => {return <b>{Localization.image}</b> },cellTemplateFunc: (row: IPerson) => {
+          field: "image", title: Localization.image, templateFunc: () => { return <b>{Localization.image}</b> }, cellTemplateFunc: (row: IPerson) => {
             if (row.image) {
               return <div title={Localization.image} className="text-center" >
                 <div className="d-inline-block w-100px h-100px">
@@ -67,14 +72,14 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             else {
               return <div className="text-center">
                 <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px  profile-img-rounded" src={this.defaultPersonImagePath} alt=""/>
+                  <img className="max-w-100px max-h-100px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                 </div>
               </div>
             }
           }
         },
         {
-          field: "cell_no",title: Localization.cell_no,cellTemplateFunc: (row: IPerson) => {
+          field: "cell_no", title: Localization.cell_no, cellTemplateFunc: (row: IPerson) => {
             if (row.cell_no) {
               return <div title={row.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.cell_no}
@@ -84,7 +89,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "email",title: Localization.email,cellTemplateFunc: (row: IPerson) => {
+          field: "email", title: Localization.email, cellTemplateFunc: (row: IPerson) => {
             if (row.email) {
               return <div title={row.email} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.email}
@@ -94,7 +99,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "phone", title: Localization.phone,cellTemplateFunc: (row: IPerson) => {
+          field: "phone", title: Localization.phone, cellTemplateFunc: (row: IPerson) => {
             if (row.phone) {
               return <div title={row.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.phone}
@@ -104,7 +109,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "address", title: Localization.address,cellTemplateFunc: (row: IPerson) => {
+          field: "address", title: Localization.address, cellTemplateFunc: (row: IPerson) => {
             if (row.address) {
               return <div title={row.address} className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.address}
@@ -131,7 +136,9 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       isValid: false,
     },
     setRemoveLoader: false,
-    setPriceLoader: false
+    setPriceLoader: false,
+    isSearch:false,
+    searchVal:undefined,
   }
 
   selectedPerson: IPerson | undefined;
@@ -182,7 +189,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
               {this.selectedPerson.name} {this.selectedPerson.last_name}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-            
+
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
@@ -199,7 +206,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  
+
   // define axios for give data
 
   componentDidMount() {
@@ -208,7 +215,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
   async fetchPersons() {
     let res = await this._personService.search(this.state.pager_limit, this.state.pager_offset).catch(error => {
-      this.handleError({ error: error });
+      this.handleError({ error: error.response });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
@@ -227,6 +234,29 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       });
     }
   }
+
+  // async fetchFilterPersons(search:any) {
+  //   let res = await this._personService.search(this.state.pager_limit, this.state.pager_offset,{search}).catch(error => {
+  //     this.handleError({ error: error.response });
+  //     this.setState({
+  //       ...this.state,
+  //       prevBtnLoader: false,
+  //       nextBtnLoader: false,
+  //     });
+  //   });
+
+  //   if (res) {
+  //     this.setState({
+  //       ...this.state, person_table: {
+  //         ...this.state.person_table,
+  //         list: res.data.result
+  //       },
+  //       prevBtnLoader: false,
+  //       nextBtnLoader: false,
+  //       isSearch:false,
+  //     });
+  //   }
+  // }
 
   // previous button create
 
@@ -306,6 +336,9 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       this.gotoTop();
       this.fetchPersons()
+      // {
+      //   this.state.isSearch ? this.fetchFilterPersons(this.state.searchVal) : this.fetchPersons()
+      // }
     });
   }
 
@@ -319,6 +352,9 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       this.gotoTop();
       this.fetchPersons()
+      // {
+      //   this.state.isSearch ? this.fetchFilterPersons(this.state.searchVal) : this.fetchPersons()
+      // }
     });
   }
 
@@ -328,6 +364,28 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/person/create');
   }
 
+  //// search function //////
+
+  // search(search :any){
+  //   if(search === ""){
+  //     this.setState({
+  //       ...this.state,
+  //       isSearch:false,
+  //       searchVal:undefined,
+  //     }, () => {
+  //       this.fetchPersons();
+  //     });
+  //   }else{
+  //     this.setState({
+  //       ...this.state,
+  //       isSearch:true,
+  //       searchVal:search,
+  //     }, () => {
+  //       this.fetchFilterPersons(search);
+  //     });
+  //   }
+  // }
+
   //// render call Table component ///////
 
   render() {
@@ -335,16 +393,32 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       <>
         <div className="content">
           <div className="row">
-            <h2 className="text-bold text-dark pl-3">{Localization.person_manage}</h2>
-            <div className="col-12">
-              <BtnLoader
-                loading={false}
-                disabled={false}
-                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoPersonCreate()}
-              >
-                {Localization.new}
-              </BtnLoader>
+            <div className="col-3">
+              <h2 className="text-bold text-dark pl-3">{Localization.person_manage}</h2>
+              <div className="col-12">
+                <BtnLoader
+                  loading={false}
+                  disabled={false}
+                  btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                  onClick={() => this.gotoPersonCreate()}
+                >
+                  {Localization.new}
+                </BtnLoader>
+              </div>
+            </div>
+            <div className="col-9">
+              <div className="mt-5 pt-4 mx-4">
+                {/* <Input
+                  onChange={()=>this.search()}
+                  placeholder={Localization.search}
+                /> */}
+                {/* <input
+                 onKeyUp={(value)=>this.search(value)}
+                 className="form-control" 
+                 type="text" name="" 
+                 id=""
+                 /> */}
+              </div>
             </div>
           </div>
           <div className="row">

@@ -13,7 +13,7 @@ import { TInternationalization } from "../../../config/setup";
 import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { PriceService } from "../../../service/service.price";
+// import { PriceService } from "../../../service/service.price";
 // import { Input } from '../../form/input/Input';
 // import { async } from "q";
 // import { string } from "prop-types";
@@ -111,7 +111,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "address", title: Localization.address, cellTemplateFunc: (row: IPerson) => {
             if (row.address) {
-              return <div title={row.address} className="text-nowrap-ellipsis max-w-100px d-inline-block">
+              return <div title={row.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.address}
               </div>
             }
@@ -398,7 +398,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         <div className="content">
           <div className="row">
             <div className="col-3">
-              <h2 className="text-bold text-dark pl-3">{Localization.person_manage}</h2>
+              <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
               <div className="col-12">
                 <BtnLoader
                   loading={false}

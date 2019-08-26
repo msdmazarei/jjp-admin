@@ -436,7 +436,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       <>
         <div className="content">
           <div className="row">
-            <h2 className="text-bold text-dark pl-3">{Localization.book_manage}</h2>
+            <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
             <div className="col-12">
               <BtnLoader
                 loading={false}

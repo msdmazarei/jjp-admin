@@ -266,6 +266,14 @@ interface ILocalization extends LocalizedStringsMethods {
     role_type_list: {
         [key in BOOK_ROLES]: string;
     };
+    validation_msg: {
+        Just_enter_the_phone_number : string;
+        Just_enter_the_cell_number : string;
+        Just_enter_the_email : string;
+        Just_enter_the_numeric_value : string;
+        just_one_image_person_can_have:string;
+        file_can_not_added:string;
+    };
 }
 
 export let Localization: ILocalization = new LocalizedStrings({

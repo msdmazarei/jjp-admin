@@ -237,7 +237,7 @@ export const ar = {
     Justـenterـtheـnumericـvalue:"فقط مقدار عددی وارد نمایید",
     email:"ایمیل",
     cell_no:"تلفن همراه",
-    person_manage:"مدیریت اشخاص",
+    person_manage:"مدیریت شخص",
     image:"تصویر",
     create_person:"ایجاد شخص",
     person_update: "بروزرسانی شخص",
@@ -271,5 +271,13 @@ export const ar = {
         Press : 'مطبوعات',
         Contributer : 'مشارکت کننده',
         Designer : 'طراح',
+    },
+    validation_msg: {
+        Just_enter_the_phone_number : "فقط شماره تلفن وارد کنید",
+        Just_enter_the_cell_number :"فقط شماره موبایل وارد کنید",
+        Just_enter_the_email :"فقط ایمیل وارد کنید",
+        Just_enter_the_numeric_value :"فقط مقدار عددی وارد کنید",
+        just_one_image_person_can_have:"تنها می توانید یک تصویر بارگذاری کنید لطفا عکس قبلی را حذف کنید",
+        file_can_not_added:"فایل اضافه نشد",
     },
 }

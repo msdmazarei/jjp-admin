@@ -2,7 +2,7 @@ export const en = {
     login: "login",
     register: "register",
     sign_in: 'sign in',
-    app_title: 'book store',
+    app_title: 'book store managment',
     app_title_: 'app title',
     app_logo: 'bookstore',
     brand_name: 'bookstore',
@@ -274,5 +274,13 @@ export const en = {
         Press : 'Press',
         Contributer : 'Contributer',
         Designer : 'Designer',
+    },
+    validation_msg: {
+        Just_enter_the_phone_number : "Just enter the phone number",
+        Just_enter_the_cell_number :"Just enter the mobile number",
+        Just_enter_the_email :"Just enter the email",
+        Just_enter_the_numeric_value :"Just enter the numeric value",
+        just_one_image_person_can_have:"You can only upload an image Please delete the previous image",
+        file_can_not_added:"file can not be added.",
     },
 }

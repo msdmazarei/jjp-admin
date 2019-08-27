@@ -17,12 +17,24 @@ import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
 import { AppRegex } from "../../../config/regex";
 import { PriceService } from "../../../service/service.price";
+import Select from 'react-select';
 
 /// define props & state ///////
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
   token: IToken;
+}
+
+interface IFilterBook {
+  title: {
+    value: string | undefined;
+    isValid: boolean;
+  };
+  tags: {
+    value: { label: string, value: string }[];
+    isValid: boolean;
+  };
 }
 interface IState {
   book_table: IProps_table;
@@ -32,13 +44,17 @@ interface IState {
   removeModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
+  filterSearchBtnLoader: boolean;
+  tableProcessLoader: boolean;
   priceModalShow: boolean;
   price: {
     value: number | undefined;
     isValid: boolean;
   },
+  filter: IFilterBook,
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
+  tags_inputValue: string;
 }
 
 // define class of Book 
@@ -66,14 +82,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             if (row.images && row.images.length) {
               return <div className="text-center" >
                 <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt=""onError={e => this.bookImageOnError(e)} />
+                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
                 <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt=""/>
+                  <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt="" />
                 </div>
               </div>
             }
@@ -142,21 +158,34 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     pager_limit: 5,
     prevBtnLoader: false,
     nextBtnLoader: false,
+    filterSearchBtnLoader: false,
+    tableProcessLoader: false,
     removeModalShow: false,
     priceModalShow: false,
     price: {
       value: undefined,
       isValid: false,
     },
+    filter: {
+      title: {
+        value: undefined,
+        isValid: true,
+      },
+      tags: {
+        value: [],
+        isValid: true
+      }
+    },
     setRemoveLoader: false,
-    setPriceLoader: false
+    setPriceLoader: false,
+    tags_inputValue: '',
   }
 
   selectedBook: IBook | undefined;
   private _bookService = new BookService();
   private _priceService = new PriceService();
 
-  constructor(props:IProps){
+  constructor(props: IProps) {
     super(props);
     this._bookService.setToken(this.props.token)
     this._priceService.setToken(this.props.token)
@@ -307,12 +336,18 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchBooks() {
-    let res = await this._bookService.search(this.state.pager_limit, this.state.pager_offset).catch(error => {
+    let res = await this._bookService.search(
+      this.state.pager_limit,
+      this.state.pager_offset,
+      this.getFilter()
+    ).catch(error => {
       this.handleError({ error: error.response });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
         nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
       });
     });
     if (res) {
@@ -323,6 +358,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         prevBtnLoader: false,
         nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
       });
     }
   }
@@ -336,6 +373,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           {
             this.state.pager_offset > 0 &&
             <BtnLoader
+              disabled={this.state.tableProcessLoader}
               loading={this.state.prevBtnLoader}
               btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
               onClick={() => this.onPreviousClick()}
@@ -351,6 +389,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           {
             this.state.pager_offset > 0 &&
             <BtnLoader
+              disabled={this.state.tableProcessLoader}
               loading={this.state.prevBtnLoader}
               btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
               onClick={() => this.onPreviousClick()}
@@ -377,6 +416,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           {
             !(this.state.pager_limit > (this.state.book_table.list! || []).length) &&
             <BtnLoader
+              disabled={this.state.tableProcessLoader}
               loading={this.state.nextBtnLoader}
               btnClassName="btn btn-outline-info pull-right shadow-default shadow-hover"
               onClick={() => this.onNextClick()}
@@ -402,7 +442,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state,
       pager_offset: this.state.pager_offset - this.state.pager_limit,
-      prevBtnLoader: true
+      prevBtnLoader: true,
+      tableProcessLoader: true,
+
     }, () => {
       this.gotoTop();
       this.fetchBooks()
@@ -415,7 +457,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state,
       pager_offset: this.state.pager_offset + this.state.pager_limit,
-      nextBtnLoader: true
+      nextBtnLoader: true,
+      tableProcessLoader: true,
     }, () => {
       this.gotoTop();
       this.fetchBooks()
@@ -429,6 +472,130 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/book/create'); // /admin
   }
 
+
+
+  //////   tag filter //////////////
+
+  handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
+    if (!this.state.tags_inputValue) return;
+    switch (event.key) {
+      case 'Enter':
+      case 'Tab':
+        const newVal = this.state.tags_inputValue;
+        this.setState({
+          ...this.state,
+          filter: {
+            ...this.state.filter,
+            tags: {
+              ...this.state.filter.tags,
+              value: [
+                ...this.state.filter.tags.value,
+                { label: newVal, value: newVal }
+              ]
+            }
+          },
+          tags_inputValue: ''
+        });
+        event.preventDefault();
+    }
+  };
+
+
+  handleSelectInputChange(value: any[], inputType: any) {
+    // let isValid;
+    // if (!value || !value.length) {
+    //   isValid = false;
+    // } else {
+    //   isValid = true;
+    // }
+    this.setState({
+      ...this.state,
+      filter: {
+        ...this.state.filter,
+        [inputType]: { value: value || [], isValid: true }
+      }
+    })
+
+  }
+
+
+
+
+
+  /////  onChange & search & reset function for search box ///////////
+
+  handleFilterInputChange(value: string, isValid: boolean) {
+    this.setState({
+      ...this.state,
+      filter: {
+        ...this.state.filter,
+        title: {
+          value, isValid
+        }
+      },
+    });
+  }
+
+  filterReset() {
+    this.setState({
+      ...this.state, filter: {
+        ...this.state.filter,
+        title: {
+          value: undefined,
+          isValid: true
+        },
+      },
+      prevBtnLoader: false,
+      nextBtnLoader: false,
+    });
+  }
+
+  filterSearch() {
+    this.setState({
+      ...this.state,
+      filterSearchBtnLoader: true,
+      tableProcessLoader: true,
+      pager_offset: 0
+    }, () => {
+      // this.gotoTop();
+      this.setFilter();
+      this.fetchBooks()
+    });
+  }
+
+  private _filter: IFilterBook = {
+    title: { value: undefined, isValid: true },
+    tags: { value: [], isValid: true },
+  };
+  isFilterEmpty(): boolean {
+    if (this._filter.title.value) {
+      return false;
+    }
+    if (this._filter.tags.value.length) {
+      return false;
+    }
+    return true;
+  }
+  setFilter() {
+    this._filter = { ...this.state.filter };
+  }
+  getFilter() {
+    if (!this.isFilterEmpty()) {
+      let obj: any = {};
+      if (this._filter.title.isValid) {
+        obj['title'] = this._filter.title.value;
+      }
+      if (this._filter.tags.isValid) {
+        if (this._filter.tags.value.length) {
+          obj['tags'] = this._filter.tags.value.map(t => t.value);
+        }
+        // obj['tags'] = this._filter.tags.value.length?;
+      }
+      return obj;
+    }
+    return;
+  }
+
   //////render call Table component //////
 
   render() {
@@ -436,8 +603,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       <>
         <div className="content">
           <div className="row">
-            <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
             <div className="col-12">
+              <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
               <BtnLoader
                 loading={false}
                 disabled={false}
@@ -446,6 +613,66 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               >
                 {Localization.new}
               </BtnLoader>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12">
+              <div className="template-box mb-4">
+                <div className="row">
+                  <div className="col-4">
+                    <Input
+                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                      label={Localization.title}
+                      placeholder={Localization.title}
+                      defaultValue={this.state.filter.title.value}
+                    />
+                  </div>
+                  <div className="col-8 d-none">
+                    <div className="form-group">
+                      <label htmlFor="">{Localization.tags}</label>
+                      <Select
+                        isMulti
+                        onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
+                        value={this.state.filter.tags.value}
+                        placeholder={Localization.tags}
+                        onKeyDown={(e) => this.handle_tagsKeyDown(e)}
+                        inputValue={this.state.tags_inputValue}
+                        menuIsOpen={false}
+                        components={{
+                          DropdownIndicator: null,
+                        }}
+                        isClearable
+                        onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-12">
+                    <BtnLoader
+                      disabled={this.state.tableProcessLoader}
+                      loading={this.state.filterSearchBtnLoader}
+                      btnClassName="btn btn-info shadow-default shadow-hover pull-right mt-5--"
+                      onClick={() => this.filterSearch()}
+                    >
+                      {Localization.search}
+                    </BtnLoader>
+                    <BtnLoader
+                      // disabled={this.state.tableProcessLoader}
+                      loading={false}
+                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right mt-5--"
+                      onClick={() => this.filterReset()}
+                    >
+                      {Localization.reset}
+                    </BtnLoader>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-12">
+
             </div>
           </div>
           <div className="row">

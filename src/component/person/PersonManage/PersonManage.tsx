@@ -13,6 +13,7 @@ import { TInternationalization } from "../../../config/setup";
 import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
+import { Input } from "../../form/input/Input";
 // import { PriceService } from "../../../service/service.price";
 // import { Input } from '../../form/input/Input';
 // import { async } from "q";
@@ -24,6 +25,13 @@ export interface IProps {
   internationalization: TInternationalization;
   token: IToken;
 }
+
+interface IFilterPerson {
+  person: {
+    value: string | undefined;
+    isValid: boolean;
+  };
+} 
 
 interface IState {
   person_table: IProps_table;
@@ -40,8 +48,11 @@ interface IState {
   },
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
-  isSearch:boolean;
-  searchVal:string | undefined;
+  isSearch: boolean;
+  searchVal: string | undefined;
+  filter: IFilterPerson,
+  filterSearchBtnLoader: boolean;
+  tableProcessLoader: boolean;
 }
 ///// define class of Person //////
 class PersonManageComponent extends BaseComponent<IProps, IState>{
@@ -124,6 +135,16 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
       ]
     },
+    filter: {
+      person: {
+        value: undefined,
+        isValid: true,
+      }
+    },
+    price: {
+      value: undefined,
+      isValid: false,
+    },
     PersonError: undefined,
     pager_offset: 0,
     pager_limit: 5,
@@ -131,21 +152,19 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     nextBtnLoader: false,
     removeModalShow: false,
     priceModalShow: false,
-    price: {
-      value: undefined,
-      isValid: false,
-    },
     setRemoveLoader: false,
     setPriceLoader: false,
-    isSearch:false,
-    searchVal:undefined,
+    isSearch: false,
+    searchVal: undefined,
+    filterSearchBtnLoader: false,
+    tableProcessLoader: false,
   }
 
   selectedPerson: IPerson | undefined;
   private _personService = new PersonService();
   // private _priceService = new PriceService();
 
-  constructor(props:IProps){
+  constructor(props: IProps) {
     super(props);
     this._personService.setToken(this.props.token)
   }
@@ -218,12 +237,18 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchPersons() {
-    let res = await this._personService.search(this.state.pager_limit, this.state.pager_offset).catch(error => {
+    let res = await this._personService.search(
+      this.state.pager_limit, 
+      this.state.pager_offset,
+      this.getFilter()
+      ).catch(error => {
       this.handleError({ error: error.response });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
         nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
       });
     });
 
@@ -235,32 +260,11 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         },
         prevBtnLoader: false,
         nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
       });
     }
   }
-
-  // async fetchFilterPersons(search:any) {
-  //   let res = await this._personService.search(this.state.pager_limit, this.state.pager_offset,{search}).catch(error => {
-  //     this.handleError({ error: error.response });
-  //     this.setState({
-  //       ...this.state,
-  //       prevBtnLoader: false,
-  //       nextBtnLoader: false,
-  //     });
-  //   });
-
-  //   if (res) {
-  //     this.setState({
-  //       ...this.state, person_table: {
-  //         ...this.state.person_table,
-  //         list: res.data.result
-  //       },
-  //       prevBtnLoader: false,
-  //       nextBtnLoader: false,
-  //       isSearch:false,
-  //     });
-  //   }
-  // }
 
   // previous button create
 
@@ -271,6 +275,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           {
             this.state.pager_offset > 0 &&
             <BtnLoader
+              disabled={this.state.tableProcessLoader}
               loading={this.state.prevBtnLoader}
               btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
               onClick={() => this.onPreviousClick()}
@@ -286,6 +291,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           {
             this.state.pager_offset > 0 &&
             <BtnLoader
+              disabled={this.state.tableProcessLoader}
               loading={this.state.prevBtnLoader}
               btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
               onClick={() => this.onPreviousClick()}
@@ -312,6 +318,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           {
             !(this.state.pager_limit > (this.state.person_table.list! || []).length) &&
             <BtnLoader
+              disabled={this.state.tableProcessLoader}
               loading={this.state.nextBtnLoader}
               btnClassName="btn btn-outline-info pull-right shadow-default shadow-hover"
               onClick={() => this.onNextClick()}
@@ -336,7 +343,8 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state,
       pager_offset: this.state.pager_offset - this.state.pager_limit,
-      prevBtnLoader: true
+      prevBtnLoader: true,
+      tableProcessLoader: true,
     }, () => {
       this.gotoTop();
       this.fetchPersons()
@@ -352,7 +360,8 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state,
       pager_offset: this.state.pager_offset + this.state.pager_limit,
-      nextBtnLoader: true
+      nextBtnLoader: true,
+      tableProcessLoader: true,
     }, () => {
       this.gotoTop();
       this.fetchPersons()
@@ -368,27 +377,72 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/person/create');
   }
 
-  //// search function //////
+  /////  onChange & search & reset function for search box ///////////
 
-  // search(search :any){
-  //   if(search === ""){
-  //     this.setState({
-  //       ...this.state,
-  //       isSearch:false,
-  //       searchVal:undefined,
-  //     }, () => {
-  //       this.fetchPersons();
-  //     });
-  //   }else{
-  //     this.setState({
-  //       ...this.state,
-  //       isSearch:true,
-  //       searchVal:search,
-  //     }, () => {
-  //       this.fetchFilterPersons(search);
-  //     });
-  //   }
-  // }
+  handleFilterInputChange(value: string, isValid: boolean) {
+    this.setState({
+      ...this.state,
+      filter: {
+        ...this.state.filter,
+        person: {
+          value, isValid
+        }
+      },
+    });
+  }
+
+  filterReset() {
+    this.setState({
+      ...this.state, filter: {
+        ...this.state.filter,
+        person: {
+          value: undefined,
+          isValid: true
+        },
+      },
+      prevBtnLoader: false,
+      nextBtnLoader: false,
+    });
+  }
+
+  filterSearch() {
+    this.setState({
+      ...this.state,
+      filterSearchBtnLoader: true,
+      tableProcessLoader: true,
+      pager_offset: 0
+    }, () => {
+      // this.gotoTop();
+      this.setFilter();
+      this.fetchPersons()
+    });
+  }
+
+  private _filter: IFilterPerson = {
+    person: { value: undefined, isValid: true },
+  };
+  isFilterEmpty(): boolean {
+    if (this._filter.person.value) {
+      return false;
+    }
+    // if ....
+    return true;
+  }
+  setFilter() {
+    this._filter = { ...this.state.filter };
+  }
+  getFilter() {
+    if (!this.isFilterEmpty()) {
+      let obj: any = {};
+      if (this._filter.person.isValid) {
+        obj['person'] = this._filter.person.value;
+      }
+      // if  ....
+      return obj;
+    }
+    return;
+  }
+
 
   //// render call Table component ///////
 
@@ -397,31 +451,51 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       <>
         <div className="content">
           <div className="row">
-            <div className="col-3">
+            <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
-              <div className="col-12">
-                <BtnLoader
-                  loading={false}
-                  disabled={false}
-                  btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                  onClick={() => this.gotoPersonCreate()}
-                >
-                  {Localization.new}
-                </BtnLoader>
-              </div>
+              <BtnLoader
+                loading={false}
+                disabled={false}
+                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                onClick={() => this.gotoPersonCreate()}
+              >
+                {Localization.new}
+              </BtnLoader>
             </div>
-            <div className="col-9">
-              <div className="mt-5 pt-4 mx-4">
-                {/* <Input
-                  onChange={()=>this.search()}
-                  placeholder={Localization.search}
-                /> */}
-                {/* <input
-                 onKeyUp={(value)=>this.search(value)}
-                 className="form-control" 
-                 type="text" name="" 
-                 id=""
-                 /> */}
+          </div>
+          <div className="row">
+            <div className="col-12">
+              <div className="template-box mb-4">
+                <div className="row">
+                  <div className="col-4">
+                    <Input
+                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                      label={Localization.name_or_lastname}
+                      placeholder={Localization.name_or_lastname}
+                      defaultValue={this.state.filter.person.value}
+                    />
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-12">
+                    <BtnLoader
+                      disabled={this.state.tableProcessLoader}
+                      loading={this.state.filterSearchBtnLoader}
+                      btnClassName="btn btn-info shadow-default shadow-hover pull-right mt-5--"
+                      onClick={() => this.filterSearch()}
+                    >
+                      {Localization.search}
+                    </BtnLoader>
+                    <BtnLoader
+                      // disabled={this.state.tableProcessLoader}
+                      loading={false}
+                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right mt-5--"
+                      onClick={() => this.filterReset()}
+                    >
+                      {Localization.reset}
+                    </BtnLoader>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { History } from 'history';
 import { BOOK_GENRE, BOOK_TYPES } from '../../../enum/Book';
 import { IPerson } from '../../../model/model.person';
 import { BookRole } from "../BookRole/BookRole";
-import Select from 'react-select'
+import Select from 'react-select';
 import Dropzone from "react-dropzone";
 import { AppRegex } from '../../../config/regex';
 import { BaseComponent } from '../../_base/BaseComponent';
@@ -269,9 +269,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    handleSelectInputChange(value: any[], inputType: any) {
+    handleSelectInputChange(value: any[], inputType: any, required: boolean = true) {
         let isValid;
-        if (!value || !value.length) {
+        if ((!value || !value.length) && required) {
             isValid = false;
         } else {
             isValid = true;
@@ -279,7 +279,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             book: {
-                ...this.state.book, [inputType]: { value: value, isValid: isValid }
+                ...this.state.book, [inputType]: { value: value || [], isValid: isValid }
             }
             , isFormValid: this.checkFormValidate(isValid, inputType)
         })
@@ -643,7 +643,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             <label htmlFor="">{Localization.tags}</label>
                                             <Select
                                                 isMulti
-                                                onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
+                                                onChange={(value: any) => this.handleSelectInputChange(value, "tags", false)}
                                                 value={this.state.book.tags.value}
                                                 placeholder={Localization.tags}
                                                 onKeyDown={(e) => this.handle_tagsKeyDown(e)}

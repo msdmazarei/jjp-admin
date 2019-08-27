@@ -12,8 +12,8 @@ export class BookService extends BaseService {
         return this.axiosTokenInstance.post('/books', book);
     }
 
-    search(limit: number, offset: number): Promise<IAPI_ResponseList<IBook>> {
-        return this.axiosTokenInstance.post(`/books/_search`, { limit, offset });
+    search(limit: number, offset: number, filter?: Object): Promise<IAPI_ResponseList<IBook>> {
+        return this.axiosTokenInstance.post(`/books/_search`, { limit, offset, filter });
     }
 
 

@@ -91,7 +91,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         return list.map(item => {
             return {
                 id: item.id || (Math.random() + ''),
-                role: item.role ? { label: item.role, value: item.role } : undefined,
+                role: item.role ? { label: Localization.role_type_list[item.role], value: item.role } : undefined,
                 person: item.person ? { label: this.getPersonFullName(item.person), value: item.person } : undefined
             }
         });

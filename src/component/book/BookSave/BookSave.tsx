@@ -215,10 +215,12 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             let typeList: any[] = [];
             let tagList: any[] = [];
             if (res.data.genre && res.data.genre.length) {
-                genreList = res.data.genre.map(g => { return { label: g, value: g } });
+                genreList = res.data.genre.map(g => { return { label: Localization.genre_type_list[g], value: g } });
             }
             if (res.data.type) {
-                typeList = [{ label: res.data.type, value: res.data.type }];
+                let edit_book_type: any = res.data.type;
+                let edit_book_type_str_: BOOK_TYPES = edit_book_type;
+                typeList = [{ label: Localization.book_type_list[edit_book_type_str_], value: res.data.type }];
             }
             if (res.data.tags) {
                 tagList = res.data.tags.map(t => { return { label: t, value: t } });
@@ -360,7 +362,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
             genre: genreList,
-            types: typeList, 
+            types: typeList,
             roles: roleList,
             images: imgUrls,
             tags: tagList
@@ -648,7 +650,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 inputValue={this.state.tags_inputValue}
                                                 menuIsOpen={false}
                                                 components={{
-                                                DropdownIndicator: null,
+                                                    DropdownIndicator: null,
                                                 }}
                                                 isClearable
                                                 onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
@@ -705,7 +707,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                         let fileSize = '';
                                                                         let tmUrl = '';
                                                                         if (typeof file === "string") {
-                                                                            fileName = file;
+                                                                            // fileName = file;
                                                                             tmUrl = '/api/serve-files/' + file;
                                                                         } else {
                                                                             fileName = file.name;
@@ -715,9 +717,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                         return <Fragment key={index}>
                                                                             <li className="img-item m-2">
                                                                                 {
-                                                                                    (this.state.book.images.value) ? <img className="w-50px max-h-75px" src={tmUrl} alt="" onError={e => this.bookImageOnError(e)}/> : <img className="w-50px max-h-75px" src={this.defaultBookImagePath} alt="" />
+                                                                                    (this.state.book.images.value) ? <img className="w-50px max-h-75px" src={tmUrl} alt="" onError={e => this.bookImageOnError(e)} /> : <img className="w-50px max-h-75px" src={this.defaultBookImagePath} alt="" />
                                                                                 }
-                                                                                
+
                                                                                 <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                 <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
                                                                             </li>

@@ -456,7 +456,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                                                 let fileName = '';
                                                                                 let fileSize = '';
                                                                                 if (typeof file === "string") {
-                                                                                    fileName = file;
+                                                                                    // fileName = file;
                                                                                     tmUrl = '/api/serve-files/' + file;
                                                                                 } else {
                                                                                     fileName = file.name;

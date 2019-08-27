@@ -271,6 +271,7 @@ export const fa = {
     profile_image:"تصویر پروفایل",
     full_name:"نام و نام خانوادگی",
     preview:"پیش نمایش",
+    name_or_lastname:"نام یا نام خانوادگی",
     // money_unit:'ریال',
     genre_type_list:{
         Comedy:"کمدی",

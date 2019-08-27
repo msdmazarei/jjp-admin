@@ -268,6 +268,7 @@ export const ar = {
     profile_image:"تصویر پروفایل",
     full_name:"نام و نام خانوادگی",
     preview:"پیش نمایش",
+    name_or_lastname:"نام یا نام خانوادگی",
     // :'ریال',
     genre_type_list:{
         Comedy:"کمدی",

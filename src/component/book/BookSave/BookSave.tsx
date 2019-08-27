@@ -709,7 +709,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                                             tmUrl = '/api/serve-files/' + file;
                                                                         } else {
                                                                             fileName = file.name;
-                                                                            fileSize = '- ' + file.size + ' bytes';
+                                                                            fileSize = '- ' + parseFloat((file.size / 1024).toFixed(2)) + ' KB';
                                                                             tmUrl = this.getTmpUrl(file);
                                                                         }
                                                                         return <Fragment key={index}>

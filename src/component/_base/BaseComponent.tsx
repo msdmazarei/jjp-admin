@@ -170,18 +170,30 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         }
     }
 
-    bookImageOnError(e: any) {
-        return this.imageOnError(e, "/static/media/img/icon/broken-book.png");
-    }
-
+    
     getPersonFullName(person: IPerson): string {
         let name = person.name || '';
         let last_name = person.last_name || '';
         name = name ? name + ' ' : '';
         return (name + last_name).trim();
     }
+
+    getUserFullName(person: IPerson): string {
+        let name = person.name || '';
+        let last_name = person.last_name || '';
+        name = name ? name + ' ' : '';
+        return (name + last_name).trim();
+    }
+    
+    bookImageOnError(e: any) {
+        return this.imageOnError(e, "/static/media/img/icon/broken-book.png");
+    }
     
     personImageOnError(e: any) {
+        return this.imageOnError(e, "/static/media/img/icon/broken-avatar.png");
+    }
+
+    userImageOnError(e: any) {
         return this.imageOnError(e, "/static/media/img/icon/broken-avatar.png");
     }
 

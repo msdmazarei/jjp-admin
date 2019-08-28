@@ -1,9 +1,7 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
-import { PersonService } from "../../../service/service.person";
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
-import { IPerson } from "../../../model/model.person";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -14,6 +12,10 @@ import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
+import { IUser } from "../../../model/model.user";
+import { IPerson } from "../../../model/model.person";
+import { UserService } from "../../../service/service.user";
+import { string } from "prop-types";
 // import { PriceService } from "../../../service/service.price";
 // import { Input } from '../../form/input/Input';
 // import { async } from "q";
@@ -26,16 +28,16 @@ export interface IProps {
   token: IToken;
 }
 
-interface IFilterPerson {
-  person: {
+interface IFilterUser {
+  user: {
     value: string | undefined;
     isValid: boolean;
   };
 } 
 
 interface IState {
-  person_table: IProps_table;
-  PersonError: string | undefined;
+  user_table: IProps_table;
+  UserError: string | undefined;
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
@@ -50,33 +52,43 @@ interface IState {
   setPriceLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
-  filter: IFilterPerson,
+  filter: IFilterUser,
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
 }
-///// define class of Person //////
+///// define class of User //////
 class UserManageComponent extends BaseComponent<IProps, IState>{
 
   state = {
-    person_table: {
+    user_table: {
       list: [],
       colHeaders: [
         {
-          field: "name", title: Localization.full_name, cellTemplateFunc: (row: IPerson) => {
-            if (row.name) {
-              return <div title={this.getPersonFullName(row)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
-                {this.getPersonFullName(row)}
+          field: "email", title: Localization.username, cellTemplateFunc: (row: IUser) => {
+            if (row.username) {
+              return <div title={row.username} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.username}
               </div>
             }
             return '';
           }
         },
         {
-          field: "image", title: Localization.image, templateFunc: () => { return <b>{Localization.image}</b> }, cellTemplateFunc: (row: IPerson) => {
-            if (row.image) {
+          field: "name", title: Localization.full_name, cellTemplateFunc: (row: IUser) => {
+            if (row.person.name) {
+              return <div title={this.getUserFullName(row.person)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {this.getUserFullName(row.person)}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "image", title: Localization.image, templateFunc: () => { return <b>{Localization.image}</b> }, cellTemplateFunc: (row: IUser) => {
+            if (row.person.image) {
               return <div title={Localization.image} className="text-center" >
                 <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px profile-img-rounded" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
+                  <img className="max-w-100px max-h-100px profile-img-rounded" src={"/api/serve-files/" + row.person.image} alt="" onError={e => this.userImageOnError(e)} />
                 </div>
               </div>
             }
@@ -90,40 +102,40 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "cell_no", title: Localization.cell_no, cellTemplateFunc: (row: IPerson) => {
-            if (row.cell_no) {
-              return <div title={row.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.cell_no}
+          field: "cell_no", title: Localization.cell_no, cellTemplateFunc: (row: IUser) => {
+            if (row.person.cell_no) {
+              return <div title={row.person.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.person.cell_no}
               </div>
             }
             return '';
           }
         },
         {
-          field: "email", title: Localization.email, cellTemplateFunc: (row: IPerson) => {
-            if (row.email) {
-              return <div title={row.email} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.email}
+          field: "email", title: Localization.email, cellTemplateFunc: (row: IUser) => {
+            if (row.person.email) {
+              return <div title={row.person.email} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.person.email}
               </div>
             }
             return '';
           }
         },
         {
-          field: "phone", title: Localization.phone, cellTemplateFunc: (row: IPerson) => {
-            if (row.phone) {
-              return <div title={row.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.phone}
+          field: "phone", title: Localization.phone, cellTemplateFunc: (row: IUser) => {
+            if (row.person.phone) {
+              return <div title={row.person.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.person.phone}
               </div>
             }
             return '';
           }
         },
         {
-          field: "address", title: Localization.address, cellTemplateFunc: (row: IPerson) => {
-            if (row.address) {
-              return <div title={row.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.address}
+          field: "address", title: Localization.address, cellTemplateFunc: (row: IUser) => {
+            if (row.person.address) {
+              return <div title={row.person.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.person.address}
               </div>
             }
             return '';
@@ -136,7 +148,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       ]
     },
     filter: {
-      person: {
+      user: {
         value: undefined,
         isValid: true,
       }
@@ -145,7 +157,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       value: undefined,
       isValid: false,
     },
-    PersonError: undefined,
+    UserError: undefined,
     pager_offset: 0,
     pager_limit: 5,
     prevBtnLoader: false,
@@ -160,47 +172,47 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
   }
 
-  selectedPerson: IPerson | undefined;
-  private _personService = new PersonService();
+  selectedUser: IUser | undefined;
+  private _userService = new UserService();
   // private _priceService = new PriceService();
 
   constructor(props: IProps) {
     super(props);
-    this._personService.setToken(this.props.token)
+    this._userService.setToken(this.props.token)
   }
-  updateRow(person_id: any) {
-    this.props.history.push(`/person/${person_id.id}/edit`);
+  updateRow(user_id: any) {
+    this.props.history.push(`/user/${user_id.id}/edit`);
   }
 
   /////// delete modal function define ////////
 
-  onShowRemoveModal(person: IPerson) {
-    this.selectedPerson = person;
+  onShowRemoveModal(user: IUser) {
+    this.selectedUser = user;
     this.setState({ ...this.state, removeModalShow: true });
   }
 
   onHideRemoveModal() {
-    this.selectedPerson = undefined;
+    this.selectedUser = undefined;
     this.setState({ ...this.state, removeModalShow: false });
 
   }
 
-  async onRemovePerson(person_id: string) {
+  async onRemoveUser(user_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
-    let res = await this._personService.remove(person_id).catch(error => {
+    let res = await this._userService.remove(user_id).catch(error => {
       this.handleError({ error: error.response });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
       this.setState({ ...this.state, setRemoveLoader: false });
       this.apiSuccessNotify();
-      this.fetchPersons();
+      this.fetchUsers();
       this.onHideRemoveModal();
     }
   }
 
-  render_delete_modal(selectedPerson: any) {
-    if (!this.selectedPerson || !this.selectedPerson.id) return;
+  render_delete_modal(selectedUser: any) {
+    if (!this.selectedUser || !this.selectedUser.id) return;
     return (
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
@@ -209,7 +221,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               <span className="text-muted">
                 {Localization.title}:&nbsp;
             </span>
-              {this.selectedPerson.name} {this.selectedPerson.last_name}
+              {this.selectedUser.name} {this.selectedUser.username}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
 
@@ -218,7 +230,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
             <BtnLoader
               btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemovePerson(selectedPerson.id)}
+              onClick={() => this.onRemoveUser(selectedUser.id)}
               loading={this.state.setRemoveLoader}
             >
               {Localization.remove}
@@ -233,11 +245,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   componentDidMount() {
-    this.fetchPersons();
+    this.fetchUsers();
   }
 
-  async fetchPersons() {
-    let res = await this._personService.search(
+  async fetchUsers() {
+    let res = await this._userService.search(
       this.state.pager_limit, 
       this.state.pager_offset,
       this.getFilter()
@@ -254,8 +266,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
     if (res) {
       this.setState({
-        ...this.state, person_table: {
-          ...this.state.person_table,
+        ...this.state, user_table: {
+          ...this.state.user_table,
           list: res.data.result
         },
         prevBtnLoader: false,
@@ -269,7 +281,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // previous button create
 
   pager_previous_btn_render() {
-    if (this.state.person_table.list && (this.state.person_table.list! || []).length) {
+    if (this.state.user_table.list && (this.state.user_table.list! || []).length) {
       return (
         <>
           {
@@ -285,7 +297,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-    } else if (this.state.person_table.list && !(this.state.person_table.list! || []).length) {
+    } else if (this.state.user_table.list && !(this.state.user_table.list! || []).length) {
       return (
         <>
           {
@@ -302,21 +314,21 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         </>
       );
 
-    } else if (this.state.PersonError) {
+    } else if (this.state.UserError) {
       return;
     } else {
       return;
     }
   }
 
-  // next button create
+  // // next button create
 
   pager_next_btn_render() {
-    if (this.state.person_table.list && (this.state.person_table.list! || []).length) {
+    if (this.state.user_table.list && (this.state.user_table.list! || []).length) {
       return (
         <>
           {
-            !(this.state.pager_limit > (this.state.person_table.list! || []).length) &&
+            !(this.state.pager_limit > (this.state.user_table.list! || []).length) &&
             <BtnLoader
               disabled={this.state.tableProcessLoader}
               loading={this.state.nextBtnLoader}
@@ -328,9 +340,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-    } else if (this.state.person_table.list && !(this.state.person_table.list! || []).length) {
+    } else if (this.state.user_table.list && !(this.state.user_table.list! || []).length) {
       return;
-    } else if (this.state.person_table.list) {
+    } else if (this.state.user_table.list) {
       return;
     } else {
       return;
@@ -347,9 +359,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader: true,
     }, () => {
       this.gotoTop();
-      this.fetchPersons()
+      this.fetchUsers()
       // {
-      //   this.state.isSearch ? this.fetchFilterPersons(this.state.searchVal) : this.fetchPersons()
+      //   this.state.isSearch ? this.fetchFilterUsers(this.state.searchVal) : this.fetchUsers()
       // }
     });
   }
@@ -364,17 +376,17 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader: true,
     }, () => {
       this.gotoTop();
-      this.fetchPersons()
+      this.fetchUsers()
       // {
-      //   this.state.isSearch ? this.fetchFilterPersons(this.state.searchVal) : this.fetchPersons()
+      //   this.state.isSearch ? this.fetchFilterUsers(this.state.searchVal) : this.fetchUsers()
       // }
     });
   }
 
   //// navigation function //////
 
-  gotoPersonCreate() {
-    this.props.history.push('/person/create');
+  gotoUserCreate() {
+    this.props.history.push('/user/create');
   }
 
   /////  onChange & search & reset function for search box ///////////
@@ -384,7 +396,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       ...this.state,
       filter: {
         ...this.state.filter,
-        person: {
+        user: {
           value, isValid
         }
       },
@@ -395,7 +407,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state, filter: {
         ...this.state.filter,
-        person: {
+        user: {
           value: undefined,
           isValid: true
         },
@@ -414,15 +426,15 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       // this.gotoTop();
       this.setFilter();
-      this.fetchPersons()
+      this.fetchUsers()
     });
   }
 
-  private _filter: IFilterPerson = {
-    person: { value: undefined, isValid: true },
+  private _filter: IFilterUser = {
+    user: { value: undefined, isValid: true },
   };
   isFilterEmpty(): boolean {
-    if (this._filter.person.value) {
+    if (this._filter.user.value) {
       return false;
     }
     // if ....
@@ -434,8 +446,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   getFilter() {
     if (!this.isFilterEmpty()) {
       let obj: any = {};
-      if (this._filter.person.isValid) {
-        obj['person'] = this._filter.person.value;
+      if (this._filter.user.isValid) {
+        obj['username'] = this._filter.user.value;
       }
       // if  ....
       return obj;
@@ -452,12 +464,12 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         <div className="content">
           <div className="row">
             <div className="col-12">
-              <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
+              <h2 className="text-bold text-dark pl-3">{Localization.user}</h2>
               <BtnLoader
                 loading={false}
                 disabled={false}
                 btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoPersonCreate()}
+                onClick={() => this.gotoUserCreate()}
               >
                 {Localization.new}
               </BtnLoader>
@@ -472,7 +484,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
                       onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
                       label={Localization.name_or_lastname}
                       placeholder={Localization.name_or_lastname}
-                      defaultValue={this.state.filter.person.value}
+                      defaultValue={this.state.filter.user.value}
                     />
                   </div>
                 </div>
@@ -501,7 +513,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           </div>
           <div className="row">
             <div className="col-12">
-              <Table list={this.state.person_table.list} colHeaders={this.state.person_table.colHeaders} actions={this.state.person_table.actions}></Table>
+              <Table list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
               <div>
                 {this.pager_previous_btn_render()}
                 {this.pager_next_btn_render()}
@@ -509,7 +521,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
         </div>
-        {this.render_delete_modal(this.selectedPerson)}
+        {this.render_delete_modal(this.selectedUser)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

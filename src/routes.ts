@@ -3,14 +3,10 @@ import { BookManage } from "./component/book/BookManage/BookManage";
 import { BookSave } from "./component/book/BookSave/BookSave";
 import { PersonManage } from "./component/person/PersonManage/PersonManage";
 import { PersonSave } from "./component/person/PeronSave/PersonSave";
+import { UserManage } from "./component/user/UserManage/UserManage";
+import { UserSave } from "./component/user/UserSave/UserSave";
 import { Localization } from "./config/localization/localization";
-// import User from "./component/user/User";
-// import { Login } from "./component/login/Login";
-// import { any } from "prop-types";
-// import { TInternationalization } from "./config/setup";
-// import { Redirect } from "@reach/router";
-// import TableList from "../src/views/TableList.tsx";
-// import UserProfile from "../src/views/UserProfile";
+
 
 var routes = [
   {
@@ -22,7 +18,7 @@ var routes = [
     isitem: true,
     brandName: ['dashboard']
   },
-  // book
+  // book start
   {
     path: "/book/manage",
     name: Localization.book,
@@ -46,7 +42,8 @@ var routes = [
     isitem: false,
     brandName: ['book', 'edit']
   },
-  // person
+  // book end
+  // person start
   {
     path: "/person/manage",
     name: Localization.person,
@@ -70,5 +67,31 @@ var routes = [
     isitem: false,
     brandName: ['person', 'edit']
   },
+  // person end
+  // user start
+  {
+    path: "/user/manage",
+    name: Localization.user,
+    icon: "fa fa-user",
+    component: UserManage,
+    layout: "/admin",
+    isitem: true
+  },
+  {
+    path: "/user/create",
+    name: Localization.create_person,
+    component: UserSave,
+    layout: "/admin",
+    isitem: false
+  },
+  {
+    path: "/user/:user_id/edit",
+    name: Localization.person_update,
+    component: UserSave,
+    layout: "/admin",
+    isitem: false,
+    brandName: ['user', 'edit']
+  },
+  // user end
 ];
 export default routes;

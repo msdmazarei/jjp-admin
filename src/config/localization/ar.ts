@@ -269,6 +269,9 @@ export const ar = {
     full_name:"نام و نام خانوادگی",
     preview:"پیش نمایش",
     name_or_lastname:"نام یا نام خانوادگی",
+    user:"کاربر",
+    create_user:"ایجاد کاربر",
+    user_update:"بروزرسانی کاربر",
     // :'ریال',
     genre_type_list:{
         Comedy:"کمدی",

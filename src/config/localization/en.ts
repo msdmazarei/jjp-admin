@@ -269,6 +269,9 @@ export const en = {
     full_name:"full name",
     preview:"preview",
     name_or_lastname:"name or lastname",
+    user:"user",
+    create_user:"Create a user",
+    user_update:"user update",
     // money_unit:'$',
     genre_type_list:{
         Comedy: "comedy",

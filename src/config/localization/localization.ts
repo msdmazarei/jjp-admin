@@ -281,6 +281,9 @@ interface ILocalization extends LocalizedStringsMethods {
     full_name:string;
     preview:string;
     name_or_lastname:string;
+    user:string;
+    create_user:string;
+    user_update:string;
     // money_unit:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;

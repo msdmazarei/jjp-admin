@@ -1,7 +1,7 @@
 import { IAPI_Response,IAPI_ResponseList, BaseService } from "./service.base";
 import { IPerson } from "../model/model.person";
 
-export class PersonService extends BaseService {
+export class UserService extends BaseService {
 
     
     create(user: any) {

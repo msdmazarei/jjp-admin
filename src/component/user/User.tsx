@@ -1,7 +1,7 @@
 import React from 'react';
 import { IPerson } from "../../model/model.person";
 import { Table, IProps_table} from "../../component/table/table";
-import { UserService } from "../../service/user.service";
+import { UserService } from "../../service/service.user";
 
 //  define props & state and type 
 
@@ -17,8 +17,8 @@ interface IProps {
 }
 export interface IUserState {
 
-//   userlist: any[];//IUser
-//   colHeaders: any[]//Table header
+  // userlist: any[];//IUser
+  // colHeaders: any[]//Table header
 user_table: IProps_table;
 }
 
@@ -77,12 +77,12 @@ class User extends React.Component<IProps, IUserState>{
     if (res) {
       debugger;
       // const userlist = res.data;
-      this.setState({
-        ...this.state, user_table: {
-          ...this.state.user_table,
-          list: res.data
-        }
-      });
+      // this.setState({
+      //   ...this.state, user_table: {
+      //     ...this.state.user_table,
+      //     list: res.data
+      //   }
+      // });
     }
   }
   async fetchOneUser(userId:string){

@@ -481,8 +481,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
                   <div className="col-4">
                     <Input
                       onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.name_or_lastname}
-                      placeholder={Localization.name_or_lastname}
+                      label={Localization.username}
+                      placeholder={Localization.username}
                       defaultValue={this.state.filter.user.value}
                     />
                   </div>

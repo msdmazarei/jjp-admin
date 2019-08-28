@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Input } from '../../form/input/Input';
-import { PersonService } from "../../../service/service.person";
+import { UserService } from "../../../service/service.user";
 import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
 import Dropzone from "react-dropzone";
@@ -22,35 +22,41 @@ enum SAVE_MODE {
 }
 
 interface IState {
-    // person: any;//IPerson | undefined;
-    person: {
-        name: {
+    // user: any;//IUser | undefined;
+    user: {
+        person:{
+            name: {
+                value: string | undefined;
+                isValid: boolean;
+            };
+            last_name: {
+                value: string | undefined;
+                isValid: boolean;
+            };
+            address: {
+                value: string | undefined,
+                isValid: boolean
+            };
+            phone: {
+                value: string | undefined,
+                isValid: boolean
+            };
+            email: {
+                value: string | undefined,
+                isValid: boolean
+            };
+            cell_no: {
+                value: string | undefined,
+                isValid: boolean
+            };
+            image: {
+                value: string[],
+                isValid: boolean
+            };
+        };
+        username: {
             value: string | undefined;
             isValid: boolean;
-        };
-        last_name: {
-            value: string | undefined;
-            isValid: boolean;
-        };
-        address: {
-            value: string | undefined,
-            isValid: boolean
-        };
-        phone: {
-            value: string | undefined,
-            isValid: boolean
-        };
-        email: {
-            value: string | undefined,
-            isValid: boolean
-        };
-        cell_no: {
-            value: string | undefined,
-            isValid: boolean
-        };
-        image: {
-            value: string[],
-            isValid: boolean
         };
     };
     isFormValid: boolean;
@@ -69,34 +75,40 @@ interface IProps {
 class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     state = {
-        person: {
-            name: {
+        user: {
+            person:{
+                name: {
+                    value: undefined,
+                    isValid: false,
+                },
+                last_name: {
+                    value: undefined,
+                    isValid: false,
+                },
+                address: {
+                    value: undefined,
+                    isValid: true,
+                },
+                phone: {
+                    value: undefined,
+                    isValid: true,
+                },
+                email: {
+                    value: undefined,
+                    isValid: true,
+                },
+                cell_no: {
+                    value: undefined,
+                    isValid: true,
+                },
+                image: {
+                    value: [],
+                    isValid: true,
+                },
+            },
+            username: {
                 value: undefined,
                 isValid: false,
-            },
-            last_name: {
-                value: undefined,
-                isValid: false,
-            },
-            address: {
-                value: undefined,
-                isValid: true,
-            },
-            phone: {
-                value: undefined,
-                isValid: true,
-            },
-            email: {
-                value: undefined,
-                isValid: true,
-            },
-            cell_no: {
-                value: undefined,
-                isValid: true,
-            },
-            image: {
-                value: [],
-                isValid: true,
             },
         },
         isFormValid: false,
@@ -106,41 +118,44 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         saveBtnVisibility: false,
     }
 
-    private _personService = new PersonService();
+    private _userService = new UserService();
     private _uploadService = new UploadService();
-    private person_id: string | undefined;
+    private user_id: string | undefined;
 
     componentDidMount() {
-        this._personService.setToken(this.props.token);
+        this._userService.setToken(this.props.token);
         this._uploadService.setToken(this.props.token);
 
-        if (this.props.match.path.includes('/person/:person_id/edit')) {
+        if (this.props.match.path.includes('/user/:_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.person_id = this.props.match.params.person_id;
-            this.fetchPersonById(this.props.match.params.person_id);
+            this.user_id = this.props.match.params.user_id;
+            this.fetchUserById(this.props.match.params.user_id);
         }
     }
 
-    async fetchPersonById(person_id: string) {
-        let res = await this._personService.byId(person_id).catch(error => {
+    async fetchUserById(user_id: string) {
+        let res = await this._userService.byId(user_id).catch(error => {
             this.handleError({ error: error.response });
         });
         // await this.__waitOnMe();
         if (res) {
             this.setState({
                 ...this.state,
-                person: {
-                    ...this.state.person,
-                    name: { ...this.state.person.name, value: res.data.name, isValid: true },
-                    last_name: { ...this.state.person.last_name, value: res.data.last_name, isValid: true },
-                    address: { ...this.state.person.address, value: res.data.address, isValid: true },
-                    phone: { ...this.state.person.phone, value: res.data.phone, isValid: true },
-                    image: {
-                        ...this.state.person.image,
-                        value: res.data.image ? [res.data.image] : [], isValid: true
-                    },
-                    email: { ...this.state.person.email, value: res.data.email, isValid: true },
-                    cell_no: { ...this.state.person.cell_no, value: res.data.cell_no, isValid: true },
+                user: {
+                    ...this.state.user,person:{
+                        ...this.state.user.person,
+                        name: { ...this.state.user.person.name, value: res.data.person.name, isValid: true },
+                        last_name: { ...this.state.user.person.last_name, value: res.data.person.last_name, isValid: true },
+                        address: { ...this.state.user.person.address, value: res.data.person.address, isValid: true },
+                        phone: { ...this.state.user.person.phone, value: res.data.person.phone, isValid: true },
+                        image: {
+                            ...this.state.user.person.image,
+                            value: res.data.person.image ? [res.data.person.image] : [], isValid: true
+                        },
+                        email: { ...this.state.user.person.email, value: res.data.person.email, isValid: true },
+                        cell_no: { ...this.state.user.person.cell_no, value: res.data.person.cell_no, isValid: true },
+                    }
+                    
                 },
                 saveBtnVisibility: true
             })
@@ -160,8 +175,8 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     handleInputChange(value: any, isValid: boolean, inputType: any) {
         this.setState({
             ...this.state,
-            person: {
-                ...this.state.person, [inputType]: { value, isValid }
+            user: {
+                ...this.state.user, [inputType]: { value, isValid }
             }
             , isFormValid: this.checkFormValidate(isValid, inputType)
         })
@@ -171,13 +186,13 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
         let valid = true;
-        let personObj: any = { ...this.state.person };
+        let userObj: any = { ...this.state.user };
 
-        for (let i = 0; i < Object.keys(this.state.person).length; i++) {
-            let IT = Object.keys(this.state.person)[i];
+        for (let i = 0; i < Object.keys(this.state.user).length; i++) {
+            let IT = Object.keys(this.state.user)[i];
             if (IT !== inputType) {
-                valid = valid && personObj[IT].isValid;
-                if (!personObj[IT].isValid) {
+                valid = valid && userObj[IT].isValid;
+                if (!userObj[IT].isValid) {
                     break;
                 }
             }
@@ -187,8 +202,8 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async uploadFileReq(): Promise<string[]> {
-        let fileImg = (this.state.person.image.value || []).filter(img => typeof img !== "string");
-        let strImg = (this.state.person.image.value || []).filter(img => typeof img === "string");
+        let fileImg = (this.state.user.person.image.value || []).filter(img => typeof img !== "string");
+        let strImg = (this.state.user.person.image.value || []).filter(img => typeof img === "string");
         if (fileImg && (fileImg || []).length) {
             return new Promise(async (res, rej) => {
                 let urls = await this._uploadService.upload(fileImg).catch(e => {
@@ -205,7 +220,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    // add person function 
+    // add user function 
 
     async create() {
         if (!this.state.isFormValid) return;
@@ -217,16 +232,16 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             this.setState({ ...this.state, createLoader: false });
             return
         }
-        const newPerson = {
-            name: this.state.person.name.value,
-            last_name: this.state.person.last_name.value,
-            address: this.state.person.address.value,
-            phone: this.state.person.phone.value,
+        const newUser = {
+            name: this.state.user.person.name.value,
+            last_name: this.state.user.person.last_name.value,
+            address: this.state.user.person.address.value,
+            phone: this.state.user.person.phone.value,
             image: imgUrls[0],
-            email: this.state.person.email.value,
-            cell_no: this.state.person.cell_no.value,
+            email: this.state.user.person.email.value,
+            cell_no: this.state.user.person.cell_no.value,
         }
-        let res = await this._personService.create(newPerson).catch(error => {
+        let res = await this._userService.create(newUser).catch(error => {
             this.handleError({ error: error.response });
         });
         this.setState({ ...this.state, createLoader: false });
@@ -247,21 +262,21 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         if (!imgUrls) {
             return
         }
-        const newPerson = {
-            name: this.state.person.name.value,
-            last_name: this.state.person.last_name.value,
-            address: this.state.person.address.value,
-            phone: this.state.person.phone.value,
+        const newUser = {
+            name: this.state.user.person.name.value,
+            last_name: this.state.user.person.last_name.value,
+            address: this.state.user.person.address.value,
+            phone: this.state.user.person.phone.value,
             image: imgUrls[0],
-            email: this.state.person.email.value,
-            cell_no: this.state.person.cell_no.value,
+            email: this.state.user.person.email.value,
+            cell_no: this.state.user.person.cell_no.value,
         }
-        let res = await this._personService.update(newPerson, this.person_id!).catch(e => {
+        let res = await this._userService.update(newUser, this.user_id!).catch(e => {
             this.handleError({ error: e.response });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {
-            this.props.history.push('/person/manage');
+            this.props.history.push('/user/manage');
             this.apiSuccessNotify();
         }
 
@@ -270,11 +285,11 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        this.gotoPersonManage();
+        this.gotoUserManage();
     }
 
-    gotoPersonManage() {
-        this.props.history.push('/person/manage');
+    gotoUserManage() {
+        this.props.history.push('/user/manage');
     }
 
     // image add /////
@@ -293,17 +308,20 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     onDrop(files: any[]) {
         if (!files || !files.length) return;
-        if (this.state.person.image.value && this.state.person.image.value!.length) {
+        if (this.state.user.person.image.value && this.state.user.person.image.value!.length) {
             this.removePreviousImgNotify();
             return;
         }
         this.setState({
-            ...this.state, person: {
-                ...this.state.person,
-                image: {
-                    isValid: true,
-                    value: files
+            ...this.state, user: {
+                ...this.state.user, person:{
+                    ...this.state.user.person,
+                    image: {
+                        isValid: true,
+                        value: files
+                    }
                 }
+                
             }
         })
     }
@@ -317,21 +335,24 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     removeItemFromDZ(index: number/* , url: string */) {
-        let newFiles = (this.state.person.image.value || []);
+        let newFiles = (this.state.user.person.image.value || []);
         if (newFiles) {
             newFiles.splice(index, 1);
         }
         this.setState({
-            ...this.state, person: {
-                ...this.state.person,
-                image: {
-                    isValid: true,
-                    value: [...newFiles]
+            ...this.state, user: {
+                ...this.state.user, person:{
+                    ...this.state.user.person,
+                    image: {
+                        isValid: true,
+                        value: [...newFiles]
+                    }
                 }
+                
             }
         })
     }
-
+    
 
     /////////////////
 
@@ -340,14 +361,18 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     resetForm() {
         this.setState({
             ...this.state,
-            person: {
-                name: { value: undefined, isValid: true },
-                last_name: { value: undefined, isValid: true },
-                address: { value: undefined, isValid: true },
-                phone: { value: undefined, isValid: false },
-                email: { value: undefined, isValid: true },
-                cell_no: { value: undefined, isValid: true },
-                image: { value: [], isValid: true },
+            user: {
+                ...this.state.user,
+                person:{
+                    name: { value: undefined, isValid: true },
+                    last_name: { value: undefined, isValid: true },
+                    address: { value: undefined, isValid: true },
+                    phone: { value: undefined, isValid: false },
+                    email: { value: undefined, isValid: true },
+                    cell_no: { value: undefined, isValid: true },
+                    image: { value: [], isValid: true },
+                }
+
             },
             isFormValid: false,
         })
@@ -365,9 +390,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                     {
                                         this.state.saveMode === SAVE_MODE.CREATE
                                             ?
-                                            <h2 className="text-bold text-dark">{Localization.create_person}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.create_user}</h2>
                                             :
-                                            <h2 className="text-bold text-dark">{Localization.person_update}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.user_update}</h2>
                                     }
                                 </div>
                                 {/* start give data by inputs */}
@@ -377,7 +402,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "name")}
                                             label={Localization.name}
                                             placeholder={Localization.name}
-                                            defaultValue={this.state.person.name.value}
+                                            defaultValue={this.state.user.person.name.value}
                                             required
                                         />
                                     </div>
@@ -386,7 +411,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
                                             label={Localization.lastname}
                                             placeholder={Localization.lastname}
-                                            defaultValue={this.state.person.last_name.value}
+                                            defaultValue={this.state.user.person.last_name.value}
                                             required
                                         />
                                     </div>
@@ -395,7 +420,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, 'email')}
                                             label={Localization.email}
                                             placeholder={Localization.email}
-                                            defaultValue={this.state.person.email.value}
+                                            defaultValue={this.state.user.person.email.value}
                                             pattern={AppRegex.email}
                                             patternError={Localization.validation_msg.Just_enter_the_email}
                                         />
@@ -405,7 +430,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "phone")}
                                             label={Localization.phone}
                                             placeholder={Localization.phone}
-                                            defaultValue={this.state.person.phone.value}
+                                            defaultValue={this.state.user.person.phone.value}
                                             pattern={AppRegex.phone}
                                             patternError={Localization.validation_msg.Just_enter_the_phone_number}
                                         />
@@ -415,7 +440,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
                                             label={Localization.cell_no}
                                             placeholder={Localization.cell_no}
-                                            defaultValue={this.state.person.cell_no.value}
+                                            defaultValue={this.state.user.person.cell_no.value}
                                             pattern={AppRegex.mobile}
                                             patternError={Localization.validation_msg.Just_enter_the_cell_number}
                                         />
@@ -428,7 +453,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                     label={Localization.address}
                                                     placeholder={Localization.address}
                                                     is_textarea
-                                                    defaultValue={this.state.person.address.value}
+                                                    defaultValue={this.state.user.person.address.value}
                                                 />
                                             </div>
                                             <div className="col-md-6 col-sm-12">
@@ -451,7 +476,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                                     <aside>
                                                                         <h5 className="m-2">{Localization.preview}:</h5>
                                                                         <div className="image-wrapper mb-2">{
-                                                                            (this.state.person.image.value || []).map((file: any, index) => {
+                                                                            (this.state.user.person.image.value || []).map((file: any, index) => {
                                                                                 let tmUrl = '';
                                                                                 let fileName = '';
                                                                                 let fileSize = '';
@@ -466,7 +491,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                                                 return <Fragment key={index}>
                                                                                 <div className="img-item m-2">
                                                                                     {
-                                                                                        (this.state.person.image.value) ? <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt="" onError={e => this.personImageOnError(e)}/> : <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt=""/>
+                                                                                        (this.state.user.person.image.value) ? <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt="" onError={e => this.userImageOnError(e)}/> : <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt=""/>
                                                                                     }
                                                                                     {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
                                                                                     <span className="mx-2 text-dark">{fileName} {fileSize}</span>

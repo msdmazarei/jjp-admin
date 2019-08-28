@@ -15,7 +15,6 @@ import { Input } from "../../form/input/Input";
 import { IUser } from "../../../model/model.user";
 import { IPerson } from "../../../model/model.person";
 import { UserService } from "../../../service/service.user";
-import { string } from "prop-types";
 // import { PriceService } from "../../../service/service.price";
 // import { Input } from '../../form/input/Input';
 // import { async } from "q";

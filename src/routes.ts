@@ -79,14 +79,14 @@ var routes = [
   },
   {
     path: "/user/create",
-    name: Localization.create_person,
+    name: Localization.create_user,
     component: UserSave,
     layout: "/admin",
     isitem: false
   },
   {
     path: "/user/:user_id/edit",
-    name: Localization.person_update,
+    name: Localization.user_update,
     component: UserSave,
     layout: "/admin",
     isitem: false,

@@ -1,10 +1,8 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Input } from '../../form/input/Input';
 import { PersonService } from "../../../service/service.person";
 import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
-import Dropzone from "react-dropzone";
-import { AppRegex } from '../../../config/regex';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { MapDispatchToProps, connect } from 'react-redux';
@@ -12,17 +10,17 @@ import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer} from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { UserService } from '../../../service/service.user';
-import AsyncSelect from 'react-select/async';
-import { IPerson } from '../../../model/model.person';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
     EDIT = 'EDIT',
     DELETE = "DELETE"
 }
+
+
 
 interface IState {
     // user: any;//IUser | undefined;
@@ -31,14 +29,10 @@ interface IState {
             value: string | undefined;
             isValid: boolean;
         };
-        cell_no: {
+        password: {
             value: string | undefined;
             isValid: boolean;
-        };
-        person_id: {
-            value: IPerson | undefined;
-            isValid: boolean;
-        };
+        };  
     };
     isFormValid: boolean;
     saveMode: SAVE_MODE;
@@ -61,11 +55,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 value: undefined,
                 isValid: false,
             },
-            cell_no: {
-                value: undefined,
-                isValid: true,
-            },
-            person_id: {
+            password: {
                 value: undefined,
                 isValid: false,
             },
@@ -103,8 +93,6 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 user: {
                     ...this.state.user,
                     username: { ...this.state.user.username, value: res.data.username, isValid: true },
-                    cell_no: { ...this.state.user.cell_no, value: res.data.person.cell_no, isValid: true },
-                    person_id: { ...this.state.user.person_id, value: res.data.person, isValid: true },
                    
                 },
                 saveBtnVisibility: true
@@ -159,8 +147,6 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, createLoader: true });
         const newUser = {
             username: this.state.user.username.value,
-            person_id: this.state.user.person_id.value,
-            cell_no: this.state.user.cell_no.value,
         }
         let res = await this._userService.create(newUser).catch(error => {
             this.handleError({ error: error.response });
@@ -179,8 +165,6 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         
         const newUser = {
             username: this.state.user.username.value,
-            cell_no: this.state.user.cell_no.value,
-            person_id: this.state.user.person_id.value,
         }
         let res = await this._userService.update(newUser, this.user_id!).catch(e => {
             this.handleError({ error: e.response });
@@ -251,8 +235,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             user: {
                 username: { value: undefined, isValid: true },
-                cell_no: { value: undefined, isValid: true },
-                person_id: { value: undefined, isValid: true },
+                password: { value: undefined, isValid: true },
             },
             isFormValid: false,
         })
@@ -288,16 +271,14 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                     </div>
                                     <div className="col-md-3 col-sm-6">
                                         <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
-                                            label={Localization.cell_no}
-                                            placeholder={Localization.cell_no}
-                                            defaultValue={this.state.user.cell_no.value}
-                                            pattern={AppRegex.mobile}
-                                            patternError={Localization.validation_msg.Just_enter_the_cell_number}
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "password")}
+                                            label={Localization.password}
+                                            placeholder={Localization.password}
+                                            defaultValue={this.state.user.password.value}
                                             required
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    {/* <div className="col-md-3 col-sm-6">
                                         <label htmlFor="">{Localization.person}</label>
                                         <AsyncSelect
                                             placeholder={Localization.person}
@@ -306,9 +287,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             value={this.state.user.person_id.value}
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                            // onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
+                                            onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
                                         />
-                                    </div>
+                                    </div> */}
                                 </div>
                                 {/* end of give data by inputs */}
                                 <div className="d-flex justify-content-between mt-4">

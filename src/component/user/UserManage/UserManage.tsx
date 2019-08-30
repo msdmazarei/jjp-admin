@@ -13,7 +13,6 @@ import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
 import { IUser } from "../../../model/model.user";
-import { IPerson } from "../../../model/model.person";
 import { UserService } from "../../../service/service.user";
 // import { PriceService } from "../../../service/service.price";
 // import { Input } from '../../form/input/Input';

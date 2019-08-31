@@ -10,17 +10,17 @@ import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
-import { ToastContainer} from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { UserService } from '../../../service/service.user';
+import { IPerson } from '../../../model/model.person';
+import AsyncSelect from 'react-select/async';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
     EDIT = 'EDIT',
     DELETE = "DELETE"
 }
-
-
 
 interface IState {
     // user: any;//IUser | undefined;
@@ -32,8 +32,21 @@ interface IState {
         password: {
             value: string | undefined;
             isValid: boolean;
-        };  
+        };
+        confirm_pass: {
+            value: string | undefined;
+            isValid: boolean;
+        };
+        person_id: {
+            value: string | undefined;
+            isValid: boolean;
+        };
+        person: {
+            value: { label: string, value: IPerson } | undefined; // IPerson | any,
+            isValid: boolean
+        };
     };
+    
     isFormValid: boolean;
     saveMode: SAVE_MODE;
     createLoader: boolean;
@@ -59,6 +72,18 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 value: undefined,
                 isValid: false,
             },
+            confirm_pass: {
+                value: undefined,
+                isValid: false,
+            },
+            person_id: {
+                value: undefined,
+                isValid: true,
+            },
+            person: {
+                value: undefined,
+                isValid: false,
+            },
         },
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
@@ -70,10 +95,12 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     private _userService = new UserService();
     private _uploadService = new UploadService();
     private user_id: string | undefined;
+    private _personService = new PersonService();
 
     componentDidMount() {
         this._userService.setToken(this.props.token);
         this._uploadService.setToken(this.props.token);
+        this._personService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/user/:user_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
@@ -93,7 +120,17 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 user: {
                     ...this.state.user,
                     username: { ...this.state.user.username, value: res.data.username, isValid: true },
-                   
+                    person: {
+                        ...this.state.user.person, value: {
+                            label: this.getPersonFullName(res.data.person),
+                            value: res.data.person
+                        }, 
+                        isValid: true
+                    },
+                    person_id: { ...this.state.user.person_id, value: res.data.person.id, isValid: true },
+                    password: { ...this.state.user.password,  isValid: true },
+                    confirm_pass: { ...this.state.user.confirm_pass,  isValid: true },
+
                 },
                 saveBtnVisibility: true
             })
@@ -120,6 +157,26 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
+    handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
+        let newperson = { ...selectedPerson };
+        let isValid=true      // newperson = selectedPerson;
+        this.setState({
+            ...this.state, user: {
+                ...this.state.user, person: {
+                    ...this.state.user.person,
+                    value: newperson,
+                    isValid:true
+                },
+                person_id:{
+                    value : newperson.value.id,
+                    isValid:true,
+                }
+            },
+             isFormValid: this.checkFormValidate(isValid, 'person')
+        })
+    }
+
+
     //  check form validation for avtive button
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
@@ -140,14 +197,30 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
 
+    //////  password confirm ////////////
+
+    confirmPassword_validation(val: any): boolean {
+        if (val === this.state.user.password.value) {
+            return true
+        }
+        return false;
+    }
+    
+    /////////////////////////////////////
+
+
     // add user function 
 
     async create() {
-        if (!this.state.isFormValid) return;
+        if (!this.state.isFormValid || this.state.user.password.value !== this.state.user.confirm_pass.value) return;
         this.setState({ ...this.state, createLoader: true });
+
         const newUser = {
-            username: this.state.user.username.value,
+            username:this.state.user.username.value,
+            password:this.state.user.password.value,
+            person_id:this.state.user.person_id.value,
         }
+
         let res = await this._userService.create(newUser).catch(error => {
             this.handleError({ error: error.response });
         });
@@ -164,8 +237,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, updateLoader: true });
         
         const newUser = {
-            username: this.state.user.username.value,
+            person_id:this.state.user.person_id.value,
         }
+
         let res = await this._userService.update(newUser, this.user_id!).catch(e => {
             this.handleError({ error: e.response });
         });
@@ -189,8 +263,8 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     ////// request for person ////////
 
-    personRequstError_txt: string = Localization.no_item_found;
-    _personService = new PersonService();
+    private personRequstError_txt: string = Localization.no_item_found;
+
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
@@ -212,12 +286,12 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    private setTimeout_val: any;
+    private setTimeout_person_val: any;
     debounce_300(inputValue: any, callBack: any) {
-        if (this.setTimeout_val) {
-            clearTimeout(this.setTimeout_val);
+        if (this.setTimeout_person_val) {
+            clearTimeout(this.setTimeout_person_val);
         }
-        this.setTimeout_val = setTimeout(() => {
+        this.setTimeout_person_val = setTimeout(() => {
             this.promiseOptions2(inputValue, callBack);
         }, 1000);
     }
@@ -225,6 +299,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     select_noOptionsMessage(obj: { inputValue: string }) {
         return this.personRequstError_txt;
     }
+
 
     /////////////////////////////////////
 
@@ -234,8 +309,11 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             user: {
-                username: { value: undefined, isValid: true },
-                password: { value: undefined, isValid: true },
+                username: { value: undefined, isValid: false },
+                password: { value: undefined, isValid: false },
+                confirm_pass: { value: undefined, isValid: false },
+                person_id: { value: undefined, isValid: false },
+                person: { value: undefined, isValid: false },
             },
             isFormValid: false,
         })
@@ -260,36 +338,67 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                 </div>
                                 {/* start give data by inputs */}
                                 <div className="row">
+                                    {
+                                        this.state.saveMode === SAVE_MODE.EDIT
+                                            ?
+                                            <>
+                                                <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "username")}
+                                                        label={Localization.username}
+                                                        placeholder={Localization.username}
+                                                        defaultValue={this.state.user.username.value}
+                                                        disabled={true}
+                                                    />
+                                                </div>
+                                            </>
+                                            :
+                                            <>
+                                                <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "username")}
+                                                        label={Localization.username}
+                                                        placeholder={Localization.username}
+                                                        defaultValue={this.state.user.username.value}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "password")}
+                                                        label={Localization.password}
+                                                        placeholder={Localization.password}
+                                                        defaultValue={this.state.user.password.value}
+                                                        required
+                                                        type="password"
+                                                    />
+                                                </div>
+                                                <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "confirm_pass")}
+                                                        label={Localization.confirm_password}
+                                                        placeholder={Localization.confirm_password}
+                                                        defaultValue={this.state.user.confirm_pass.value}
+                                                        required
+                                                        type="password"
+                                                        patternError={Localization.validation.confirmPassword}
+                                                        validationFunc={(val) => this.confirmPassword_validation(val)}
+                                                    />
+                                                </div>
+                                            </>
+                                    }
                                     <div className="col-md-3 col-sm-6">
-                                        <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "username")}
-                                            label={Localization.username}
-                                            placeholder={Localization.username}
-                                            defaultValue={this.state.user.username.value}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="col-md-3 col-sm-6">
-                                        <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "password")}
-                                            label={Localization.password}
-                                            placeholder={Localization.password}
-                                            defaultValue={this.state.user.password.value}
-                                            required
-                                        />
-                                    </div>
-                                    {/* <div className="col-md-3 col-sm-6">
-                                        <label htmlFor="">{Localization.person}</label>
+                                        <label >{Localization.person}</label>
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
                                             defaultOptions
-                                            value={this.state.user.person_id.value}
+                                            value={this.state.user.person.value}
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                            onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
+                                            onChange={(selectedPerson : any ) => this.handlePersonChange(selectedPerson)}
                                         />
-                                    </div> */}
+                                    </div>
                                 </div>
                                 {/* end of give data by inputs */}
                                 <div className="d-flex justify-content-between mt-4">

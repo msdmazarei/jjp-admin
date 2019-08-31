@@ -38,7 +38,7 @@ interface IState {
             isValid: boolean;
         };
         person_id: {
-            value: string | undefined;
+            value: string | undefined | undefined;
             isValid: boolean;
         };
         person: {
@@ -78,11 +78,11 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             },
             person_id: {
                 value: undefined,
-                isValid: true,
+                isValid: false,
             },
             person: {
                 value: undefined,
-                isValid: false,
+                isValid: true,
             },
         },
         isFormValid: false,
@@ -159,22 +159,24 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
         let newperson = { ...selectedPerson };
-        let isValid=true      // newperson = selectedPerson;
+        let isValid=true;      // newperson = selectedPerson;
         this.setState({
             ...this.state, user: {
                 ...this.state.user, person: {
                     ...this.state.user.person,
                     value: newperson,
-                    isValid:true
+                    isValid:true,
                 },
                 person_id:{
                     value : newperson.value.id,
-                    isValid:true,
+                    isValid:isValid,
                 }
             },
-             isFormValid: this.checkFormValidate(isValid, 'person')
+            isFormValid: this.checkFormValidate(isValid, 'person_id')
         })
     }
+
+    
 
 
     //  check form validation for avtive button

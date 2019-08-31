@@ -652,7 +652,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                     <BtnLoader
                       disabled={this.state.tableProcessLoader}
                       loading={this.state.filterSearchBtnLoader}
-                      btnClassName="btn btn-info shadow-default shadow-hover pull-right mt-5--"
+                      btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
                       onClick={() => this.filterSearch()}
                     >
                       {Localization.search}
@@ -660,7 +660,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                     <BtnLoader
                       // disabled={this.state.tableProcessLoader}
                       loading={false}
-                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right mt-5--"
+                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
                       onClick={() => this.filterReset()}
                     >
                       {Localization.reset}

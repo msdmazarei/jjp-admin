@@ -408,7 +408,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     <BtnLoader
-                                                        btnClassName="btn btn-success shadow-default shadow-hover mx-4"
+                                                        btnClassName="btn btn-success shadow-default shadow-hover"
                                                         loading={this.state.createLoader}
                                                         onClick={() => this.create()}
                                                         disabled={!this.state.isFormValid}
@@ -416,7 +416,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                         {Localization.create}
                                                     </BtnLoader>
                                                     <BtnLoader
-                                                        btnClassName="btn btn-warning shadow-default shadow-hover  ml-2"
+                                                        btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
                                                         onClick={() => this.resetForm()}
                                                         disabled={false}
@@ -429,7 +429,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                     {
                                                         this.state.saveBtnVisibility ?
                                                             <BtnLoader
-                                                                btnClassName="btn btn-info shadow-default shadow-hover ml-4"
+                                                                btnClassName="btn btn-info shadow-default shadow-hover"
                                                                 loading={this.state.updateLoader}
                                                                 onClick={() => this.update()}
                                                                 disabled={!this.state.isFormValid}
@@ -443,7 +443,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     <BtnLoader
-                                        btnClassName="btn btn-primary shadow-default shadow-hover mr-4"
+                                        btnClassName="btn btn-primary shadow-default shadow-hover"
                                         loading={false}
                                         onClick={() => this.backTO()}
                                         disabled={false}

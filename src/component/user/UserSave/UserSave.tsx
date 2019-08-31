@@ -388,7 +388,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             </>
                                     }
                                     <div className="col-md-3 col-sm-6">
-                                        <label >{Localization.person}</label>
+                                        <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions

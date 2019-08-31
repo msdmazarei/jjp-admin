@@ -41,12 +41,11 @@ interface IState {
             value: string | undefined | undefined;
             isValid: boolean;
         };
-        person: {
-            value: { label: string, value: IPerson } | undefined; // IPerson | any,
-            isValid: boolean
-        };
     };
-    
+    person: {
+        value: { label: string, value: IPerson } | undefined |null; // IPerson | any,
+        // isValid: boolean
+    };
     isFormValid: boolean;
     saveMode: SAVE_MODE;
     createLoader: boolean;
@@ -80,11 +79,11 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 value: undefined,
                 isValid: false,
             },
-            person: {
-                value: undefined,
-                isValid: true,
-            },
         },
+        person: {
+                value: undefined,
+                // isValid: false,
+            },
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
@@ -120,17 +119,17 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 user: {
                     ...this.state.user,
                     username: { ...this.state.user.username, value: res.data.username, isValid: true },
-                    person: {
-                        ...this.state.user.person, value: {
-                            label: this.getPersonFullName(res.data.person),
-                            value: res.data.person
-                        }, 
-                        isValid: true
-                    },
                     person_id: { ...this.state.user.person_id, value: res.data.person.id, isValid: true },
                     password: { ...this.state.user.password,  isValid: true },
                     confirm_pass: { ...this.state.user.confirm_pass,  isValid: true },
 
+                },
+                person: {
+                    ...this.state.person, value: {
+                        label: this.getPersonFullName(res.data.person),
+                        value: res.data.person
+                    }, 
+                    // isValid: true
                 },
                 saveBtnVisibility: true
             })
@@ -162,15 +161,15 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         let isValid=true;      // newperson = selectedPerson;
         this.setState({
             ...this.state, user: {
-                ...this.state.user, person: {
-                    ...this.state.user.person,
-                    value: newperson,
-                    isValid:true,
-                },
-                person_id:{
+                ...this.state.user, person_id:{
                     value : newperson.value.id,
                     isValid:isValid,
                 }
+            },
+            person: {
+                ...this.state.person,
+                value: newperson,
+                // isValid:true,
             },
             isFormValid: this.checkFormValidate(isValid, 'person_id')
         })
@@ -315,8 +314,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 password: { value: undefined, isValid: false },
                 confirm_pass: { value: undefined, isValid: false },
                 person_id: { value: undefined, isValid: false },
-                person: { value: undefined, isValid: false },
             },
+            // person: { value: undefined, isValid: false },
+            person: { value: null},
             isFormValid: false,
         })
     }
@@ -395,7 +395,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.person}
                                             cacheOptions
                                             defaultOptions
-                                            value={this.state.user.person.value}
+                                            value={this.state.person.value}
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
                                             onChange={(selectedPerson : any ) => this.handlePersonChange(selectedPerson)}

@@ -290,6 +290,8 @@ interface ILocalization extends LocalizedStringsMethods {
     number_of_reports:string;
     book_image:string;
     book_type:string;
+    liked_by_user:string;
+    reported_by_user:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

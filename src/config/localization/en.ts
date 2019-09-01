@@ -278,6 +278,8 @@ export const en = {
     number_of_reports:"number of reports",
     book_image:"book's image",
     book_type:"book's type",
+    liked_by_user:"liked by user",
+    reported_by_user:"reported by user",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

@@ -281,6 +281,8 @@ export const fa = {
     number_of_reports:"تعداد گزارشات",
     book_image:"تصویر کتاب",
     book_type:"نوع کتاب",
+    liked_by_user:"پسندشده توسط کاربر",
+    reported_by_user:"گزارش شده توسط کاربر",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

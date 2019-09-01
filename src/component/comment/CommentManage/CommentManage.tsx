@@ -62,7 +62,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "creator", title: Localization.user, cellTemplateFunc: (row: IComment) => {
+          field: "creator", title: Localization.user , cellTemplateFunc: (row: IComment) => {
             if (row.creator) {
               return <div title={row.creator} className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.creator}
@@ -72,7 +72,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "name last_name", title: Localization.full_name, cellTemplateFunc: (row: IComment) => {
+          field: "name last_name", title: Localization.full_name , cellTemplateFunc: (row: IComment) => {
             if (row.person) {
               return <div title={this.getPersonFullName(row.person)} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {this.getPersonFullName(row.person)}
@@ -82,7 +82,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "body", title: Localization.comment, cellTemplateFunc: (row: IComment) => {
+          field: "body", title: Localization.comment , cellTemplateFunc: (row: IComment) => {
             if (row.person) {
               return <div title={row.body} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.body}
@@ -92,7 +92,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "book title", title: Localization.title, cellTemplateFunc: (row: IComment) => {
+          field: "book title", title: Localization.book_title , cellTemplateFunc: (row: IComment) => {
             if (row.book && row.book.title) {
               return <div title={row.book.title} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.book.title}
@@ -102,7 +102,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "likes", title: Localization.like,cellTemplateFunc: (row: IComment) => {
+          field: "likes", title: Localization.number_of_likes , cellTemplateFunc: (row: IComment) => {
             if (row.likes) {
               return <div title={row.likes.toLocaleString()} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.likes}
@@ -114,7 +114,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "reports", title: Localization.reports,cellTemplateFunc: (row: IComment) => {
+          field: "reports", title: Localization.number_of_reports , cellTemplateFunc: (row: IComment) => {
             if (row.reports) {
               return <div title={row.reports.toLocaleString()} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.reports}
@@ -126,7 +126,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "book images", title: Localization.images, templateFunc: () => {
+          field: "book images", title: Localization.book_image , templateFunc: () => {
             return <b>{Localization.images}</b>
           },
           cellTemplateFunc: (row: IComment) => {
@@ -147,7 +147,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "book type", title: Localization.type,cellTemplateFunc: (row: IComment) => {
+          field: "book type", title: Localization.book_type , cellTemplateFunc: (row: IComment) => {
             if (row.book && row.book.type) {
               const b_type: any = row.book.type;
               const b_t: BOOK_TYPES = b_type;

@@ -104,8 +104,14 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "likes", title: Localization.number_of_likes , cellTemplateFunc: (row: IComment) => {
             if (row.likes) {
-              return <div title={row.likes.toLocaleString()} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.likes}
+              return <div title={row.likes.toLocaleString()} className="text-center text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.likes}{
+                  row.liked_by_user
+                  ?   
+                  <span> - <i title={Localization.liked_by_user} className="fa fa-check text-success"></i></span>
+                  : 
+                  ""
+                }
               </div>
             }
             else {
@@ -116,8 +122,14 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "reports", title: Localization.number_of_reports , cellTemplateFunc: (row: IComment) => {
             if (row.reports) {
-              return <div title={row.reports.toLocaleString()} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.reports}
+              return <div title={row.reports.toLocaleString()} className="text-center text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.reports} - {
+                  row.reported_by_user 
+                  ? 
+                  <span> - <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i></span> 
+                  : 
+                  ""
+                }
               </div>
             }
             else {

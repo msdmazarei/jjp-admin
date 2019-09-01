@@ -3,7 +3,6 @@ import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
-import { IBook } from "../../../model/model.book";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -14,7 +13,6 @@ import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
-import Select from 'react-select';
 import { CommentService } from "../../../service/service.comment";
 import { IComment } from "../../../model/model.comment";
 
@@ -30,12 +28,8 @@ interface IFilterComment {
     value: string;
     isValid: boolean;
   };
-  title: {
+  body: {
     value: string | undefined;
-    isValid: boolean;
-  };
-  tags: {
-    value: { label: string, value: string }[];
     isValid: boolean;
   };
 }
@@ -104,7 +98,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "likes", title: Localization.number_of_likes , cellTemplateFunc: (row: IComment) => {
             if (row.likes) {
-              return <div title={row.likes.toLocaleString()} className="text-center text-nowrap-ellipsis max-w-150px d-inline-block">
+              return <div title={row.likes.toLocaleString()} className="text-center">
                 {row.likes}{
                   row.liked_by_user
                   ?   
@@ -122,8 +116,8 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "reports", title: Localization.number_of_reports , cellTemplateFunc: (row: IComment) => {
             if (row.reports) {
-              return <div title={row.reports.toLocaleString()} className="text-center text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.reports} - {
+              return <div title={row.reports.toLocaleString()} className="text-center">
+                {row.reports}{
                   row.reported_by_user 
                   ? 
                   <span> - <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i></span> 
@@ -188,14 +182,10 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         value: "true",
         isValid: true,
       },
-      title: {
+      body: {
         value: undefined,
         isValid: true,
       },
-      tags: {
-        value: [],
-        isValid: true
-      }
     },
     setRemoveLoader: false,
     tags_inputValue: '',
@@ -400,31 +390,6 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
-  //////   tag filter //////////////
-
-  handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
-    if (!this.state.tags_inputValue) return;
-    switch (event.key) {
-      case 'Enter':
-      case 'Tab':
-        const newVal = this.state.tags_inputValue;
-        this.setState({
-          ...this.state,
-          filter: {
-            ...this.state.filter,
-            tags: {
-              ...this.state.filter.tags,
-              value: [
-                ...this.state.filter.tags.value,
-                { label: newVal, value: newVal }
-              ]
-            }
-          },
-          tags_inputValue: ''
-        });
-        event.preventDefault();
-    }
-  };
 
 
   handleSelectInputChange(value: any[], inputType: any) {
@@ -455,7 +420,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       ...this.state,
       filter: {
         ...this.state.filter,
-        title: {
+        body: {
           value, isValid
         }
       },
@@ -466,7 +431,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state, filter: {
         ...this.state.filter,
-        title: {
+        body: {
           value: undefined,
           isValid: true
         },
@@ -491,17 +456,13 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   private _filter: IFilterComment = {
     book: { value: "true", isValid: true },
-    title: { value: undefined, isValid: true },
-    tags: { value: [], isValid: true },
+    body: { value: undefined, isValid: true },
   };
   isFilterEmpty(): boolean {
     if (this._filter.book.value) {
       return false;
     }
-    if (this._filter.title.value) {
-      return false;
-    }
-    if (this._filter.tags.value.length) {
+    if (this._filter.body.value) {
       return false;
     }
     return true;
@@ -512,17 +473,11 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   getFilter() {
     if (!this.isFilterEmpty()) {
       let obj: any = {};
-      if (this._filter.title.isValid) {
-        obj['title'] = this._filter.title.value;
+      if (this._filter.body.isValid) {
+        obj['body'] = this._filter.body.value;
       }
-      if (this._filter.title.isValid) {
-        obj['book'] = "true";
-      }
-      if (this._filter.tags.isValid) {
-        if (this._filter.tags.value.length) {
-          obj['tags'] = this._filter.tags.value.map(t => t.value);
-        }
-        // obj['tags'] = this._filter.tags.value.length?;
+      if (this._filter.book.isValid) {
+        obj['book'] = true;
       }
       return obj;
     }
@@ -549,27 +504,8 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                       onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
                       label={Localization.comment}
                       placeholder={Localization.comment}
-                      defaultValue={this.state.filter.title.value}
+                      defaultValue={this.state.filter.body.value}
                     />
-                  </div>
-                  <div className="col-8 d-none">
-                    <div className="form-group">
-                      <label htmlFor="">{Localization.tags}</label>
-                      <Select
-                        isMulti
-                        onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
-                        value={this.state.filter.tags.value}
-                        placeholder={Localization.tags}
-                        onKeyDown={(e) => this.handle_tagsKeyDown(e)}
-                        inputValue={this.state.tags_inputValue}
-                        menuIsOpen={false}
-                        components={{
-                          DropdownIndicator: null,
-                        }}
-                        isClearable
-                        onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
-                      />
-                    </div>
                   </div>
                 </div>
                 <div className="row">

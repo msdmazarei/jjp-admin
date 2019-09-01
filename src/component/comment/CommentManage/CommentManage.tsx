@@ -39,6 +39,7 @@ interface IState {
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
+  commentModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
@@ -167,6 +168,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       ],
       actions: [
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
+        { text: <i title={Localization.show_comment} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => { this.onShowCommentModal(row) } },
       ]
     },
     CommentError: undefined,
@@ -177,6 +179,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
     removeModalShow: false,
+    commentModalShow: false,
     filter: {
       book:{
         value: "true",
@@ -199,6 +202,91 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     this._commentService.setToken(this.props.token)
   }
 
+  // comment show modal function define
+
+  onShowCommentModal(comment: IComment) {
+    this.selectedComment = comment;
+    this.setState({ ...this.state, commentModalShow: true});
+  }
+
+  onHideCommentModal() {
+    this.selectedComment = undefined;
+    this.setState({ ...this.state, commentModalShow: false });
+  }
+
+  render_comment_show_modal(selectedComment: any) {
+    if (!this.selectedComment || !this.selectedComment.id) return;
+    return (
+      <>
+        <Modal show={this.state.commentModalShow} onHide={() => this.onHideCommentModal()}>
+          <Modal.Body>
+            <p className="show-modal-content-wrapper" >
+              <div>
+                <span>
+                  {Localization.user}:&nbsp;{this.selectedComment.creator}
+                </span>
+              </div>
+              <div>
+                <span>
+                  {Localization.full_name}:&nbsp;{this.getUserFullName(this.selectedComment.person)}
+                </span>
+              </div>
+              <span className="text-muted">
+                  {Localization.comment}:&nbsp;
+              </span>
+              <p className="border border-dark rounded show-modal-content p-2">
+                  {this.selectedComment.body}
+              </p>
+              <div>
+                <span>
+                  {Localization.number_of_likes}:&nbsp;<span className="text-success">{this.selectedComment.likes}</span>
+                </span>
+              </div>
+              <div>
+                <span>
+                  {Localization.number_of_reports}:&nbsp;<span className="text-danger">{this.selectedComment.reports}</span>
+                </span>
+              </div>
+              <div>
+                <span>
+                  {Localization.liked_by_user}:&nbsp;
+                  {
+                    this.selectedComment.liked_by_user
+                    ?
+                    <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
+                    :
+                    <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i>
+                  }
+                </span>
+              </div>
+              <div>
+                <span>
+                  {Localization.reported_by_user}:&nbsp;
+                  {
+                    this.selectedComment.reported_by_user
+                    ?
+                    <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
+                    :
+                    <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i>
+                  }
+                </span>
+              </div>
+              <div>
+                <span>
+                  {Localization.book_title}:&nbsp;<span>{(this.selectedComment.book!||{}).title}</span>
+                </span>
+              </div>
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideCommentModal()}>{Localization.close}</button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+  
   // delete modal function define
 
   onShowRemoveModal(comment: IComment) {
@@ -231,7 +319,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
           <Modal.Body>
-            <p style={{ maxWidth: '200px', whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} >
+            <p className="delete-modal-content" >
               <span className="text-muted">
                 {Localization.comment}:&nbsp;
             </span>
@@ -547,6 +635,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedComment)}
+        {this.render_comment_show_modal(this.selectedComment)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

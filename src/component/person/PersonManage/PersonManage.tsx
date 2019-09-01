@@ -205,9 +205,9 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
           <Modal.Body>
-            <p style={{ maxWidth: '200px', whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} >
+            <p className="delete-modal-content" >
               <span className="text-muted">
-                {Localization.title}:&nbsp;
+                {Localization.full_name}:&nbsp;
             </span>
               {this.selectedPerson.name} {this.selectedPerson.last_name}
             </p>

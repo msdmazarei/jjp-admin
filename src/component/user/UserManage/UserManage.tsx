@@ -215,9 +215,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
           <Modal.Body>
-            <p style={{ maxWidth: '200px', whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} >
+            <p className="delete-modal-content">
               <span className="text-muted">
-                {Localization.title}:&nbsp;
+                {Localization.username}:&nbsp;
             </span>
               {this.selectedUser.name} {this.selectedUser.username}
             </p>

@@ -201,3 +201,28 @@ $grid-breakpoints: (
 //.test {
 //    @include calc( width, '100% - 300px');
 //}
+.delete-modal-content{
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.show-modal-content-wrapper{
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.show-modal-content{
+  max-height: 200px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: scroll;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}

@@ -283,6 +283,7 @@ export const fa = {
     book_type:"نوع کتاب",
     liked_by_user:"پسندشده توسط کاربر",
     reported_by_user:"گزارش شده توسط کاربر",
+    show_comment:"نمایش نظر",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

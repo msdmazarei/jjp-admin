@@ -37,7 +37,7 @@ export const ar = {
             delete_failed: 'deleting failed',
             get_failed: 'getting failed',
             auth_decoding_failed: 'Authentication decoding failed',
-            commit_failed: 'commiting to database failed',
+            commit_failed: 'سرویس دهنده با خطا مواجه شد.',
             no_auth: 'no auth found',
             invalid_username: 'نام کاربری یا رمز عبور اشتباه است.',
             invalid_enum: 'enum is not correct  type',

@@ -273,6 +273,11 @@ export const en = {
     create_user:"Create a user",
     user_update:"user update",
     comment:"comment",
+    book_title:"book's title",
+    number_of_likes:"number of likes",
+    number_of_reports:"number of reports",
+    book_image:"book's image",
+    book_type:"book's type",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

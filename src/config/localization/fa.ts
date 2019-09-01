@@ -276,6 +276,11 @@ export const fa = {
     create_user:"ایجاد کاربر",
     user_update:"بروزرسانی کاربر",
     comment:"نظر",
+    book_title:"عنوان کتاب",
+    number_of_likes:"تعداد پسندها",
+    number_of_reports:"تعداد گزارشات",
+    book_image:"تصویر کتاب",
+    book_type:"نوع کتاب",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

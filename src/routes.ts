@@ -5,6 +5,7 @@ import { PersonManage } from "./component/person/PersonManage/PersonManage";
 import { PersonSave } from "./component/person/PeronSave/PersonSave";
 import { UserManage } from "./component/user/UserManage/UserManage";
 import { UserSave } from "./component/user/UserSave/UserSave";
+import { CommentManage } from "./component/comment/CommentManage/CommentManage";
 import { Localization } from "./config/localization/localization";
 
 

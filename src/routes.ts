@@ -93,5 +93,15 @@ var routes = [
     brandName: ['user', 'edit']
   },
   // user end
+  // comment start
+  {
+    path: "/comment/manage",
+    name: Localization.comment,
+    icon: "fa fa-comment",
+    component: CommentManage,
+    layout: "/admin",
+    isitem: true
+  },
+  // comment end
 ];
 export default routes;

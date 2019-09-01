@@ -42,6 +42,7 @@ const appRoutes = (
             <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/user/create" render={props => <AdminLayout {...props} />} />
             <Route exact path="/user/:user_id/edit" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/comment/manage" render={props => <AdminLayout {...props} />} />
             {/* <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} /> */}
             {/* <Route exact path="/" component={() => <Redirect to="/dashboard" />} /> */}
             {/* <RouteLayoutMain exact path="/dashboard" component={Dashboard} /> */}

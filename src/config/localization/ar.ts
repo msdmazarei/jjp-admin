@@ -272,7 +272,7 @@ export const ar = {
     user:"کاربر",
     create_user:"ایجاد کاربر",
     user_update:"بروزرسانی کاربر",
-    // :'ریال',
+    comment:"نظر",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

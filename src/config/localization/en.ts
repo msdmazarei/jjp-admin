@@ -272,7 +272,7 @@ export const en = {
     user:"user",
     create_user:"Create a user",
     user_update:"user update",
-    // money_unit:'$',
+    comment:"comment",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

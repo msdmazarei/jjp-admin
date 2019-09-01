@@ -284,7 +284,7 @@ interface ILocalization extends LocalizedStringsMethods {
     user:string;
     create_user:string;
     user_update:string;
-    // money_unit:string;
+    comment:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

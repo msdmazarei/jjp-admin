@@ -275,7 +275,7 @@ export const fa = {
     user:"کاربر",
     create_user:"ایجاد کاربر",
     user_update:"بروزرسانی کاربر",
-    // money_unit:'ریال',
+    comment:"نظر",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

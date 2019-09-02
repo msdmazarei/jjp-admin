@@ -6,6 +6,8 @@ import { PersonSave } from "./component/person/PeronSave/PersonSave";
 import { UserManage } from "./component/user/UserManage/UserManage";
 import { UserSave } from "./component/user/UserSave/UserSave";
 import { CommentManage } from "./component/comment/CommentManage/CommentManage";
+import { OrderManage } from "./component/order/OrderManage/OrderManage";
+// import { OrderSave } from "./component/order/OrderSave/OrderSave";
 import { Localization } from "./config/localization/localization";
 
 
@@ -104,5 +106,30 @@ var routes = [
     isitem: true
   },
   // comment end
+    // order start
+    {
+      path: "/order/manage",
+      name: Localization.order,
+      icon: "fa fa-shopping-cart",
+      component: OrderManage,
+      layout: "/admin",
+      isitem: true
+    },
+    {
+      path: "/order/create",
+      name: Localization.create_order,
+      // component: OrderSave,       // not added
+      layout: "/admin",
+      isitem: false
+    },
+    {
+      path: "/prder/:order_id/edit",
+      name: Localization.order_update,
+      // component: OrderSave,       // not added        
+      layout: "/admin",
+      isitem: false,
+      brandName: ['user', 'edit']
+    },
+    // order end
 ];
 export default routes;

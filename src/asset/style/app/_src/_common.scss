@@ -221,7 +221,7 @@ $grid-breakpoints: (
   max-height: 200px;
   max-width: 100%;
   white-space: nowrap;
-  overflow: scroll;
+  overflow-y: scroll;
   text-overflow: ellipsis;
   overflow-wrap: break-word;
   white-space: pre-wrap;

@@ -121,7 +121,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                 {row.reports}{
                   row.reported_by_user 
                   ? 
-                  <span> - <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i></span> 
+                  <span> - <i title={Localization.reported_by_user} className="fa fa-check text-danger"></i></span> 
                   : 
                   ""
                 }
@@ -223,12 +223,17 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             <p className="show-modal-content-wrapper" >
               <div>
                 <span>
-                  {Localization.user}:&nbsp;{this.selectedComment.creator}
+                  <span className="text-muted">{Localization.user}:&nbsp;</span>{this.selectedComment.creator}
                 </span>
               </div>
               <div>
                 <span>
-                  {Localization.full_name}:&nbsp;{this.getUserFullName(this.selectedComment.person)}
+                  <span className="text-muted">{Localization.full_name}:&nbsp;</span>{this.getUserFullName(this.selectedComment.person)}
+                </span>
+              </div>
+              <div>
+                <span>
+                  <span className="text-muted">{Localization.book_title}:&nbsp;</span><span>{(this.selectedComment.book!||{}).title}</span>
                 </span>
               </div>
               <span className="text-muted">
@@ -239,41 +244,36 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
               </p>
               <div>
                 <span>
-                  {Localization.number_of_likes}:&nbsp;<span className="text-success">{this.selectedComment.likes}</span>
+                <span className="text-muted">{Localization.number_of_likes}:&nbsp;</span><span className="text-success">{this.selectedComment.likes}</span>
                 </span>
               </div>
               <div>
                 <span>
-                  {Localization.number_of_reports}:&nbsp;<span className="text-danger">{this.selectedComment.reports}</span>
+                <span className="text-muted">{Localization.number_of_reports}:&nbsp;</span><span className="text-danger">{this.selectedComment.reports}</span>
                 </span>
               </div>
               <div>
                 <span>
-                  {Localization.liked_by_user}:&nbsp;
+                <span className="text-muted">{Localization.liked_by_user}:&nbsp;</span>
                   {
                     this.selectedComment.liked_by_user
                     ?
                     <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
                     :
-                    <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i>
+                    ""
                   }
                 </span>
               </div>
               <div>
                 <span>
-                  {Localization.reported_by_user}:&nbsp;
+                <span className="text-muted">{Localization.reported_by_user}:&nbsp;</span>
                   {
                     this.selectedComment.reported_by_user
                     ?
-                    <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
+                    <i title={Localization.liked_by_user} className="fa fa-check text-danger"></i>
                     :
-                    <i title={Localization.reported_by_user} className="fa fa-times text-danger"></i>
+                    ""
                   }
-                </span>
-              </div>
-              <div>
-                <span>
-                  {Localization.book_title}:&nbsp;<span>{(this.selectedComment.book!||{}).title}</span>
                 </span>
               </div>
             </p>

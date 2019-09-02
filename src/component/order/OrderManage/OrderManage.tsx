@@ -1,7 +1,6 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
-import { BookService } from "../../../service/service.book";
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
 import { IBook } from "../../../model/model.book";

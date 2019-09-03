@@ -19,8 +19,8 @@ export class OrderService extends BaseService {
 
 
     // for test ///
-    byId(book_id: string): Promise<IAPI_Response<any>> {
-        return this.axiosTokenInstance.get(`/books/${book_id}`);
+    byId(order_id: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.get(`/order-items/order/${order_id}`);
     }
 
     update(book: any, id: string) {

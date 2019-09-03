@@ -3,7 +3,6 @@ import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
-import { IBook } from "../../../model/model.book";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -13,7 +12,6 @@ import { TInternationalization } from "../../../config/setup";
 import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { BOOK_TYPES } from "../../../enum/Book";
 import Select from 'react-select';
 import { OrderService } from "../../../service/service.order";
 
@@ -24,7 +22,7 @@ export interface IProps {
   token: IToken;
 }
 
-interface IFilterBook {
+interface IFilterOrder {
   title: {
     value: string | undefined;
     isValid: boolean;
@@ -35,8 +33,8 @@ interface IFilterBook {
   };
 }
 interface IState {
-  book_table: IProps_table;
-  BookError: string | undefined;
+  order_table: IProps_table;
+  OrderError: string | undefined;
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
@@ -44,108 +42,67 @@ interface IState {
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  filter: IFilterBook,
+  filter: any,
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
   tags_inputValue: string;
 }
 
-// define class of Book 
+// define class of Order 
 
 class OrderManageComponent extends BaseComponent<IProps, IState>{
   state = {
-    book_table: {
+    order_table: {
       list: [],
       colHeaders: [
         {
-          field: "title", title: Localization.title, cellTemplateFunc: (row: IBook) => {
-            if (row.title) {
-              return <div title={row.title} className="text-nowrap-ellipsis max-w-200px d-inline-block">
-                {row.title}
+          field: "creator", title: Localization.user, cellTemplateFunc: (row: any) => {
+            if (row.creator) {
+              return <div title={row.creator} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {row.creator}
               </div>
             }
             return '';
           }
         },
         {
-          field: "images", title: Localization.images, templateFunc: () => {
-            return <b>{Localization.images}</b>
-          },
-          cellTemplateFunc: (row: IBook) => {
-            if (row.images && row.images.length) {
-              return <div className="text-center" >
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
-                </div>
-              </div>
-            }
-            else {
-              return <div className="text-center">
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt="" />
-                </div>
-              </div>
-            }
-          }
-        },
-        {
-          field: "type", title: Localization.type,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.type) {
-              const b_type: any = row.type;
-              const b_t: BOOK_TYPES = b_type;
-              return Localization.book_type_list[b_t];
-            }
-            return '';
-          }
-        },
-        {
-          field: "price", title: Localization.price,
-          cellTemplateFunc: (row: IBook) => {
-            // row.price = 3436465;
-            if (row.price) {
-              return <span className="text-info">
-                {row.price.toLocaleString()}
-              </span>
-            }
-            else {
-              return <div className="text-muted text-center">-</div>;
-            }
-          }
-        },
-        {
-          field: "description", title: Localization.description,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.description) {
-              return <div title={row.description} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px">
-                {row.description}
+          field: "name", title: Localization.full_name, cellTemplateFunc: (row:any) => {
+            if (row.person) {
+              return <div title={this.getPersonFullName(row.person)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {this.getPersonFullName(row.person)}
               </div>
             }
             return '';
           }
         },
         {
-          field: "rate",
-          title: Localization.vote_s,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.rate) {
-              return <span>
-                {row.rate} {Localization.from} 5 <small>({row.rate_no})</small>
-              </span>
+          field: "status", title: Localization.status, cellTemplateFunc: (row: any) => {
+            if (row.status) {
+              return <div title={row.status} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {row.status}
+              </div>
             }
             return '';
           }
         },
-        { field: "pages", title: Localization.pages },
-        { field: "duration", title: Localization.duration },
-        { field: "pub_year", title: Localization.publication_date },
+        {
+          field: "total_price", title: Localization.total_price, cellTemplateFunc: (row: any) => {
+            if (row.total_price) {
+              return <div title={row.total_price} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {row.total_price}
+              </div>
+            }
+            return '';
+          }
+        },
       ],
       actions: [
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
         { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
+        { text: <i title={Localization.order} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => {this.fetchByOrderId(row.id) } },
       ]
     },
-    BookError: undefined,
+    OrderError: undefined,
     pager_offset: 0,
     pager_limit: 5,
     prevBtnLoader: false,
@@ -168,55 +125,55 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     tags_inputValue: '',
   }
 
-  selectedBook: IBook | undefined;
-  private _bookService = new OrderService();
+  selectedOrder: any;
+  private _orderService = new OrderService();
 
   constructor(props: IProps) {
     super(props);
-    this._bookService.setToken(this.props.token)
+    this._orderService.setToken(this.props.token)
   }
 
-  updateRow(book_id: any) {
-    this.props.history.push(`/book/${book_id.id}/edit`);
+  updateRow(order_id: any) {
+    this.props.history.push(`/order/${order_id.id}/edit`);
   }
 
   // delete modal function define
 
-  onShowRemoveModal(book: IBook) {
-    this.selectedBook = book;
+  onShowRemoveModal(order:any) {
+    this.selectedOrder = order;
     this.setState({ ...this.state, removeModalShow: true });
   }
 
   onHideRemoveModal() {
-    this.selectedBook = undefined;
+    this.selectedOrder = undefined;
     this.setState({ ...this.state, removeModalShow: false });
   }
 
-  async onRemoveBook(book_id: string) {
+  async onRemoveOrder(order_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
-    let res = await this._bookService.remove(book_id).catch(error => {
+    let res = await this._orderService.remove(order_id).catch(error => {
       this.handleError({ error: error.response });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
       this.setState({ ...this.state, setRemoveLoader: false });
       this.apiSuccessNotify();
-      this.fetchBooks();
+      this.fetchOrders();
       this.onHideRemoveModal();
     }
   }
 
-  render_delete_modal(selectedBook: any) {
-    if (!this.selectedBook || !this.selectedBook.id) return;
+  render_delete_modal(selectedOrder: any) {
+    if (!this.selectedOrder || !this.selectedOrder.id) return;
     return (
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
           <Modal.Body>
             <p className="delete-modal-content">
               <span className="text-muted">
-                {Localization.title}:&nbsp;
+                {Localization.order}:&nbsp;
             </span>
-              {this.selectedBook.title}
+              {this.selectedOrder.creator}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
           </Modal.Body>
@@ -224,7 +181,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
             <BtnLoader
               btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveBook(selectedBook.id)}
+              onClick={() => this.onRemoveOrder(selectedOrder.id)}
               loading={this.state.setRemoveLoader}
             >
               {Localization.remove}
@@ -239,11 +196,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
 
   componentDidMount() {
-    this.fetchBooks();
+    this.fetchOrders();
   }
 
-  async fetchBooks() {
-    let res = await this._bookService.search(
+
+  /////  start request for table data  /////////
+  async fetchOrders() {
+    let res = await this._orderService.search(
       this.state.pager_limit,
       this.state.pager_offset,
       this.getFilter()
@@ -259,8 +218,8 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     });
     if (res) {
       this.setState({
-        ...this.state, book_table: {
-          ...this.state.book_table,
+        ...this.state, order_table: {
+          ...this.state.order_table,
           list: res.data.result
         },
         prevBtnLoader: false,
@@ -270,11 +229,21 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       });
     }
   }
+  /////  end request for table data  ///////// 
+
+/////  start request for order by id  /////////
+  async fetchByOrderId(order_id :any) {
+    let res = await this._orderService.byId(order_id).catch(error => {
+      this.handleError({ error: error.response });
+    });
+  }
+  /////  end request for order by id  ///////// 
+
 
   // previous button create
 
   pager_previous_btn_render() {
-    if (this.state.book_table.list && (this.state.book_table.list! || []).length) {
+    if (this.state.order_table.list && (this.state.order_table.list! || []).length) {
       return (
         <>
           {
@@ -290,7 +259,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-    } else if (this.state.book_table.list && !(this.state.book_table.list! || []).length) {
+    } else if (this.state.order_table.list && !(this.state.order_table.list! || []).length) {
       return (
         <>
           {
@@ -307,7 +276,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         </>
       );
 
-    } else if (this.state.BookError) {
+    } else if (this.state.OrderError) {
       return;
     } else {
       return;
@@ -317,11 +286,11 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   // next button create
 
   pager_next_btn_render() {
-    if (this.state.book_table.list && (this.state.book_table.list! || []).length) {
+    if (this.state.order_table.list && (this.state.order_table.list! || []).length) {
       return (
         <>
           {
-            !(this.state.pager_limit > (this.state.book_table.list! || []).length) &&
+            !(this.state.pager_limit > (this.state.order_table.list! || []).length) &&
             <BtnLoader
               disabled={this.state.tableProcessLoader}
               loading={this.state.nextBtnLoader}
@@ -333,9 +302,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-    } else if (this.state.book_table.list && !(this.state.book_table.list! || []).length) {
+    } else if (this.state.order_table.list && !(this.state.order_table.list! || []).length) {
       return;
-    } else if (this.state.book_table.list) {
+    } else if (this.state.order_table.list) {
       return;
     } else {
       return;
@@ -354,7 +323,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
     }, () => {
       this.gotoTop();
-      this.fetchBooks()
+      this.fetchOrders()
     });
   }
 
@@ -368,14 +337,14 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader: true,
     }, () => {
       this.gotoTop();
-      this.fetchBooks()
+      this.fetchOrders()
     });
   }
 
 
   ///// navigation function //////
 
-  gotoBookCreate() {
+  gotoOrderCreate() {
     this.props.history.push('/order/create'); // /admin
   }
 
@@ -466,11 +435,11 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       // this.gotoTop();
       this.setFilter();
-      this.fetchBooks()
+      this.fetchOrders()
     });
   }
 
-  private _filter: IFilterBook = {
+  private _filter: any = {
     title: { value: undefined, isValid: true },
     tags: { value: [], isValid: true },
   };
@@ -492,12 +461,12 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       if (this._filter.title.isValid) {
         obj['title'] = this._filter.title.value;
       }
-      if (this._filter.tags.isValid) {
-        if (this._filter.tags.value.length) {
-          obj['tags'] = this._filter.tags.value.map(t => t.value);
-        }
-        // obj['tags'] = this._filter.tags.value.length?;
-      }
+      // if (this._filter.tags.isValid) {
+      //   if (this._filter.tags.value.length) {
+      //     obj['tags'] = this._filter.tags.value.map(t => t.value);
+      //   }
+      //   // obj['tags'] = this._filter.tags.value.length?;
+      // }
       return obj;
     }
     return;
@@ -511,12 +480,12 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         <div className="content">
           <div className="row">
             <div className="col-12">
-              <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
+              <h2 className="text-bold text-dark pl-3">{Localization.order}</h2>
               <BtnLoader
                 loading={false}
                 disabled={false}
                 btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoBookCreate()}
+                onClick={() => this.gotoOrderCreate()}
               >
                 {Localization.new}
               </BtnLoader>
@@ -584,7 +553,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           </div>
           <div className="row">
             <div className="col-12">
-              <Table list={this.state.book_table.list} colHeaders={this.state.book_table.colHeaders} actions={this.state.book_table.actions}></Table>
+              <Table list={this.state.order_table.list} colHeaders={this.state.order_table.colHeaders} actions={this.state.order_table.actions}></Table>
               <div>
                 {this.pager_previous_btn_render()}
                 {this.pager_next_btn_render()}
@@ -592,7 +561,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
         </div>
-        {this.render_delete_modal(this.selectedBook)}
+        {this.render_delete_modal(this.selectedOrder)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

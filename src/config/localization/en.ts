@@ -284,6 +284,8 @@ export const en = {
     order:"order",
     create_order:"Create a order",
     order_update:"order update",
+    status:"status",
+    total_price:"total price",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

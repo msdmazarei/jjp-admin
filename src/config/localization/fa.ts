@@ -287,6 +287,8 @@ export const fa = {
     order:"سفارش",
     create_order:"ایجاد سفارش",
     order_update:"بروزرسانی سفارش",
+    status:"وضعیت",
+    total_price:"مبلغ کل",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

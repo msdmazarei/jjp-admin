@@ -293,6 +293,9 @@ interface ILocalization extends LocalizedStringsMethods {
     liked_by_user:string;
     reported_by_user:string;
     show_comment:string;
+    order:string;
+    create_order:string;
+    order_update:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

@@ -281,6 +281,9 @@ export const en = {
     liked_by_user:"liked by user",
     reported_by_user:"reported by user",
     show_comment:"show comment",
+    order:"order",
+    create_order:"Create a order",
+    order_update:"order update",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

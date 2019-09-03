@@ -281,6 +281,9 @@ export const ar = {
     liked_by_user:"پسندشده توسط کاربر",
     reported_by_user:"گزارش شده توسط کاربر",
     show_comment:"نمایش نظر",
+    order:"سفارش",
+    create_order:"ایجاد سفارش",
+    order_update:"بروزرسانی سفارش",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

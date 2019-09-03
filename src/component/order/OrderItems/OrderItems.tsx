@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
-import { IPerson } from '../../../model/model.person';
-import { BOOK_ROLES, BOOK_TYPES } from '../../../enum/Book';
+import { BOOK_TYPES } from '../../../enum/Book';
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { IToken } from '../../../model/model.token';
@@ -12,17 +11,19 @@ import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { BookService } from '../../../service/service.book';
+import { IBook } from '../../../model/model.book';
+import { Input } from '../../form/input/Input';
 
-interface IRoleRow {
+interface IBookRow {
     id: string;
-    role: { label: string, value: BOOK_ROLES } | undefined;
-    person: { label: string, value: IPerson } | undefined;
+    count: number | 1;
+    book: { label: string, value: IBook } | undefined;
 }
 interface IState {
-    list: IRoleRow[];
+    list: IBookRow[];
 }
 
-type TOuterListItem = { role: BOOK_ROLES | undefined, person: IPerson | undefined, id?: string };
+type TOuterListItem = { id?: string, count: number | 0, book: IBook | undefined };
 interface IProps {
     onChange: (list: TOuterListItem[], isValid: boolean) => void;
     defaultValue?: TOuterListItem[] | null;
@@ -36,7 +37,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
     state = {
         list: this.convertOuterToInner(this.props.defaultValue || []) // todo
     }
-    
+
     _personService = new PersonService();
     _bookService = new BookService();
 
@@ -59,7 +60,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
 
     addRow() {
         let newList = [...this.state.list]
-        newList.push({ id: Math.random() + '', role: undefined, person: undefined });
+        newList.push({ id: Math.random() + '', count: 1, book: undefined });
         this.setState({ ...this.state, list: newList }, () => {
             this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newList));
         });
@@ -73,30 +74,33 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                 this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
             });
     }
-    convertInnerToOuter(list: IRoleRow[]): TOuterListItem[] {
+    convertInnerToOuter(list: IBookRow[]): TOuterListItem[] {
         let new_list = [...list];
         return new_list.map(item => {
             return {
                 id: item.id,
-                role: (item.role || { value: undefined }).value,
-                person: (item.person || { value: undefined }).value
+                count: item.count,
+                book: (item.book || { value: undefined }).value
             }
         });
     }
 
-    convertOuterToInner(list: TOuterListItem[]): IRoleRow[] {
+    convertOuterToInner(list: TOuterListItem[]): IBookRow[] {
         return list.map(item => {
+            const b_type: any = (item.book! || {}).type;
+            const b_t: BOOK_TYPES = b_type;
+            let type = Localization.book_type_list[b_t];
             return {
                 id: item.id || (Math.random() + ''),
-                role: item.role ? { label: Localization.role_type_list[item.role], value: item.role } : undefined,
-                person: item.person ? { label: this.getPersonFullName(item.person), value: item.person } : undefined
+                count: item.count,
+                book: item.book ? { label: item.book.title + " - " + type, value: item.book } : undefined
             }
         });
     }
 
-    handleRoleChange(val: { label: string, value: BOOK_ROLES }, index: number) {
+    handleCountChange(val: number, index: number) {
         let newlist = [...this.state.list];
-        newlist[index].role = val;
+        newlist[index].count = val;
         this.setState({ ...this.state, list: newlist },
             () => {
                 this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
@@ -108,11 +112,11 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
         return this.personRequstError_txt;
     }
 
-    handleValidate(list: IRoleRow[]): boolean {
+    handleValidate(list: IBookRow[]): boolean {
         let valid = true;
         for (let i = 0; i < list.length; i++) {
             let obj = list[i];
-            if (!obj.role || !obj.person) {
+            if (!obj.count || !obj.book) {
                 valid = false;
                 break;
             }
@@ -126,9 +130,9 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
 
     ////////////   start person selection func ////////////////////
 
-    handlePersonChange = (selectedPerson: any, index: number) => {
+    handleBookChange = (selectedBook: any, index: number) => {
         let newlist = [...this.state.list];
-        newlist[index].person = selectedPerson;
+        newlist[index].book = selectedBook;
         this.setState({ ...this.state, list: newlist },
             () => {
                 this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
@@ -142,7 +146,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
         if (inputValue) {
             filter = { title: inputValue };
         }
-        let res: any = await this._bookService.search(10, 0,filter).catch(err => {
+        let res: any = await this._bookService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false });
             this.personRequstError_txt = err_msg.body;
         });
@@ -152,13 +156,13 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                 const b_type: any = ps.type;
                 const b_t: BOOK_TYPES = b_type;
                 let type = Localization.book_type_list[b_t];
-                return { label: ps.title + " - " + type , value: ps }
+                return { label: ps.title + " - " + type, value: ps }
             });
             this.personRequstError_txt = Localization.no_item_found;
             callBack(books);
         } else {
             callBack();
-        } 
+        }
     }
 
     private setTimeout_val: any;
@@ -174,7 +178,36 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
 
     ////////////   end person selection func ////////////////////
 
-   
+
+    ///////////////////   book counter func ////////////////////////
+
+    private updateCartItem_up(item : any,index : number) {
+        if (!this.is_countable_book(item.book)) {
+          return;
+        }
+        let newlist = [...this.state.list]
+        newlist[index].count=newlist[index].count!+1;
+      }
+    
+      private updateCartItem_down(item : any,index : number) {
+        if (!this.is_countable_book(item.book)) {
+          return;
+        }
+        let newlist = [...this.state.list]
+        newlist[index].count=newlist[index].count!-1;
+      }
+    
+      private is_countable_book(book:any): boolean {
+        if (book.type === BOOK_TYPES.Hard_Copy || book.type === BOOK_TYPES.DVD) {
+          return true;
+        }
+        return false;
+      }
+
+
+    ////////////////////////////////////////////////////////////////
+
+
 
     render() {
         return (
@@ -202,14 +235,48 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.book}
                                             cacheOptions
                                             defaultOptions
-                                            value={item.person}
+                                            value={item.book}
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                            onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
+                                            onChange={(selectedBook) => this.handleBookChange(selectedBook, index)}
                                         />
                                     </div>
-                                    
-                                    <div className="col-2 mt-2">
+                                    {
+                                        item.book
+                                            ?
+                                            <div className="item-count-wrapper text-center mr-3">
+                                                {
+                                                    this.is_countable_book(item.book) ?
+                                                        <div className="btn btn-light btn-sm cursor-pointer"
+                                                            onClick={() => this.updateCartItem_up(item,index)}>
+                                                            <i className="fa fa-angle-up"></i>
+                                                        </div>
+                                                        : ''
+                                                }
+
+                                                {
+                                                    this.is_countable_book(item.book) ?
+                                                        <div className="item-count rounded">{item.count}</div>
+                                                        :
+                                                        <div className="item-count rounded disable">{item.count}</div>
+                                                }
+                                                {
+                                                    this.is_countable_book(item.book) ?
+                                                        <div className={
+                                                            "btn btn-light btn-sm cursor-pointer " +
+                                                            (item.count! < 2 ? 'disabled' : '')
+                                                        }
+                                                            onClick={() => this.updateCartItem_down(item,index)}>
+                                                            <i className="fa fa-angle-down"></i>
+                                                        </div>
+                                                        : ''
+                                                }
+                                            </div>
+                                            :
+                                            <div className="item-count rounded">1</div>
+
+                                    }
+                                    <div className="col-1 mt-2">
                                         <BtnLoader
                                             btnClassName="btn btn-danger btn-sm mt-4"
                                             onClick={() => this.removeRow(index)}

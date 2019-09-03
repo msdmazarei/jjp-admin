@@ -14,8 +14,23 @@ export class OrderService extends BaseService {
     }
 
     remove(bookId: string) {
-        return this.axiosTokenInstance.delete(`/books/${bookId}`);
+        return this.axiosTokenInstance.delete(`/orders/${bookId}`);
     }
+
+
+    // for test ///
+    byId(book_id: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.get(`/books/${book_id}`);
+    }
+
+    update(book: any, id: string) {
+        return this.axiosTokenInstance.put(`/books/${id}`, book);
+    }
+
+    create(book: any) {
+        return this.axiosTokenInstance.post('/books', book);
+    }
+    ///////////////
 
     order(items: IOrderItems, person_id: string): Promise<IAPI_Response<any>> {
         return this.axiosTokenInstance.post('/orders', { items, person_id });

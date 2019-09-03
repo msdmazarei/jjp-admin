@@ -14,8 +14,6 @@ import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
-import { AppRegex } from "../../../config/regex";
-import { PriceService } from "../../../service/service.price";
 import Select from 'react-select';
 import { OrderService } from "../../../service/service.order";
 
@@ -46,11 +44,6 @@ interface IState {
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  priceModalShow: boolean;
-  price: {
-    value: number | undefined;
-    isValid: boolean;
-  },
   filter: IFilterBook,
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
@@ -150,7 +143,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       actions: [
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
         { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
-        { text: <i title={Localization.Pricing} className="table-action-shadow-hover fa fa-money text-success pt-2"></i>, ac_func: (row: any) => { this.onShowPriceModal(row) } },
       ]
     },
     BookError: undefined,
@@ -161,11 +153,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
     removeModalShow: false,
-    priceModalShow: false,
-    price: {
-      value: undefined,
-      isValid: false,
-    },
     filter: {
       title: {
         value: undefined,
@@ -183,12 +170,10 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   selectedBook: IBook | undefined;
   private _bookService = new OrderService();
-  private _priceService = new PriceService();
 
   constructor(props: IProps) {
     super(props);
     this._bookService.setToken(this.props.token)
-    this._priceService.setToken(this.props.token)
   }
 
   updateRow(book_id: any) {
@@ -249,84 +234,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       </>
     );
   }
-
-  onShowPriceModal(book: IBook) {
-    this.selectedBook = book;
-    this.setState({
-      ...this.state, priceModalShow: true, price: {
-        isValid: (book.price || book.price === 0) ? true : false,
-        value: book.price
-      }
-    });
-  }
-  onHidePriceModal() {
-    this.selectedBook = undefined;
-    this.setState({ ...this.state, priceModalShow: false });
-  }
-  async onPriceBook(book_id: string) {
-    if (!this.state.price.isValid) return;
-    this.setState({ ...this.state, setPriceLoader: true });
-    let res = await this._priceService.price(book_id, this.state.price.value!).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({ ...this.state, setPriceLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setPriceLoader: false });
-      this.apiSuccessNotify();
-      this.fetchBooks(); // todo update selected book & do not request
-      this.onHidePriceModal();
-    }
-  }
-
-
-  handlePriceInputChange(value: number, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      price: {
-        value,
-        isValid,
-      }
-    })
-  }
-
-  render_price_modal(selectedBook: any) {
-    if (!this.selectedBook || !this.selectedBook.id) return;
-    return (
-      <>
-        <Modal show={this.state.priceModalShow} onHide={() => this.onHidePriceModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.title}:
-              </span>
-              {this.selectedBook.title}
-            </p>
-            <Input
-              onChange={(value, isValid) => this.handlePriceInputChange(value, isValid)}
-              label={Localization.Pricing}
-              placeholder={Localization.price}
-              defaultValue={this.state.price.value}
-              pattern={AppRegex.number}
-              patternError={Localization.Justـenterـtheـnumericـvalue}
-              required
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHidePriceModal()}>{Localization.close}</button>
-            <BtnLoader
-              loading={this.state.setPriceLoader}
-              btnClassName="btn btn-system shadow-default shadow-hover"
-              onClick={() => this.onPriceBook(selectedBook.id)}
-              disabled={!this.state.price.isValid}
-            >
-              {Localization.Add_price}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
 
   // define axios for give data
 
@@ -469,7 +376,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookCreate() {
-    this.props.history.push('/book/create'); // /admin
+    this.props.history.push('/order/create'); // /admin
   }
 
 
@@ -686,7 +593,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedBook)}
-        {this.render_price_modal(this.selectedBook)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

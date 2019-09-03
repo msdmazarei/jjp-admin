@@ -7,7 +7,7 @@ import { UserManage } from "./component/user/UserManage/UserManage";
 import { UserSave } from "./component/user/UserSave/UserSave";
 import { CommentManage } from "./component/comment/CommentManage/CommentManage";
 import { OrderManage } from "./component/order/OrderManage/OrderManage";
-// import { OrderSave } from "./component/order/OrderSave/OrderSave";
+import { OrderSave } from "./component/order/OrderSave/OrderSave";
 import { Localization } from "./config/localization/localization";
 
 
@@ -118,14 +118,14 @@ var routes = [
     {
       path: "/order/create",
       name: Localization.create_order,
-      // component: OrderSave,       // not added
+      component: OrderSave,       
       layout: "/admin",
       isitem: false
     },
     {
       path: "/prder/:order_id/edit",
       name: Localization.order_update,
-      // component: OrderSave,       // not added        
+      component: OrderSave,               
       layout: "/admin",
       isitem: false,
       brandName: ['user', 'edit']

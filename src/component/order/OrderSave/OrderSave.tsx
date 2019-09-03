@@ -1,7 +1,6 @@
-import React, { Fragment } from 'react';
+import React from 'react';
+import { PersonService } from "../../../service/service.person";
 import { History } from 'history';
-import { IPerson } from '../../../model/model.person';
-import { OrderItems } from "../OrderItems/OrderItems";
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { MapDispatchToProps, connect } from 'react-redux';
@@ -9,34 +8,36 @@ import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
-import { IBook } from '../../../model/model.book';
+import { IPerson } from '../../../model/model.person';
+import AsyncSelect from 'react-select/async';
+import { OrderItems } from '../OrderItems/OrderItems';
 import { OrderService } from '../../../service/service.order';
-import { PersonService } from '../../../service/service.person';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
     EDIT = 'EDIT',
     DELETE = "DELETE"
 }
-  
-interface IState { 
-    // book: any;//IBook | undefined;
-    order: {
-        person_id: {
-            value: string | undefined;
-            isValid: boolean;
-        };
-        order_items: {
-            value: { count: number, book: IBook }[] | any,
+
+interface IState {
+    // user: any;//IUser | undefined;
+    order :{
+        person: {
+            value: { label: string, value: IPerson } | undefined | null; // IPerson | any,
             isValid: boolean
         };
-    };
+        order_items: {
+            value: { role: string, person: IPerson }[] | any,
+            isValid: boolean
+        };
+    }
     isFormValid: boolean;
     saveMode: SAVE_MODE;
     createLoader: boolean;
     updateLoader: boolean;
+    saveBtnVisibility: boolean;
 }
 interface IProps {
     match: any;
@@ -48,10 +49,10 @@ interface IProps {
 class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
     state = {
-        order: {
-            person_id: {
+        order :{
+            person: {
                 value: undefined,
-                isValid: true
+                isValid: false,
             },
             order_items: {
                 value: undefined,
@@ -62,8 +63,8 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
         updateLoader: false,
+        saveBtnVisibility: false,
     }
-
 
     private _orderService = new OrderService();
     private _personService = new PersonService();
@@ -74,15 +75,14 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         this._personService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/order/:order_id/edit')) {
-            // this.saveMode = "edit";
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.order_id = this.props.match.params.order_id;
-            this.fetchOrderById(this.props.match.params.order_id);
+            this.order_id = this.props.match.params.user_id;
+            this.fetchOrderById(this.props.match.params.user_id);
         }
     }
 
-    async fetchOrderById(order_id: string) {
-        let res = await this._orderService.byId(order_id).catch(error => {
+    async fetchOrderById(user_id: string) {
+        let res = await this._orderService.byId(user_id).catch(error => {
             this.handleError({ error: error.response });
         });
         // await this.__waitOnMe();
@@ -91,14 +91,15 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                 ...this.state,
                 order: {
                     ...this.state.order,
-                    person_id: { ...this.state.order.person_id, value: res.data.person_id, isValid: true },
-                    order_items: { ...this.state.order.order_items, value: res.data.order_items, isValid: true },
-                }
+                    person: { ...this.state.order.person, value: res.data.person, isValid: true },
+                    order_items: { ...this.state.order.order_items, value: res.data.oredr_items, isValid: true },
+
+                },
+                saveBtnVisibility: true
             })
         }
 
     }
-
     __waitOnMe() {
         return new Promise((res, rej) => {
             setTimeout(() => {
@@ -119,44 +120,35 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    handleSelectInputChange(value: any[], inputType: any, required: boolean = true) {
-        let isValid;
-        if ((!value || !value.length) && required) {
-            isValid = false;
-        } else {
-            isValid = true;
-        }
+    handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
+        let newperson = { ...selectedPerson };
+        let isValid = true;      // newperson = selectedPerson;
         this.setState({
-            ...this.state,
-            order: {
-                ...this.state.order, [inputType]: { value: value || [], isValid: isValid }
-            }
-            , isFormValid: this.checkFormValidate(isValid, inputType)
-        })
-
-    }
-
-    bookRollChange(list: any[], isValid: boolean) {
-        this.setState({
-            ...this.state,
-            order: {
-                ...this.state.order, order_items: { value: list, isValid: isValid }
-            }
-            , isFormValid: this.checkFormValidate(isValid, 'order_items')
+            ...this.state, order: {
+                ...this.state.order, person: {
+                    ...this.state.order.person,
+                    value: newperson,
+                    isValid:true,
+                },
+            },
+            isFormValid: this.checkFormValidate(isValid, 'person')
         })
     }
+
+
+
 
     //  check form validation for avtive button
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
         let valid = true;
-        let bookObj: any = { ...this.state.order };
+        let userObj: any = { ...this.state.order };
 
         for (let i = 0; i < Object.keys(this.state.order).length; i++) {
             let IT = Object.keys(this.state.order)[i];
             if (IT !== inputType) {
-                valid = valid && bookObj[IT].isValid;
-                if (!bookObj[IT].isValid) {
+                valid = valid && userObj[IT].isValid;
+                if (!userObj[IT].isValid) {
                     break;
                 }
             }
@@ -164,24 +156,26 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         valid = valid && isValid;
         return valid;
     }
-   
 
-    // add book function 
+
+    // add user function 
 
     async create() {
-        if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
-      
-        let roleList = (this.state.order.order_items.value || []).map((item: any) => { return { count: item.count, book_id: { id: item.book.id } } });
-
-        const newOrder = {
-            person_id: this.state.order.person_id.value,
-            roles: roleList,
+        const neworder = {
+            // person_id: "string",
+            /*order_items :{
+                book_id:"string",
+                count : number,
+            }[]
+            */
         }
-        let res = await this._orderService.create(newOrder).catch(error => {
+
+        let res = await this._orderService.create(neworder).catch(error => {
             this.handleError({ error: error.response });
         });
         this.setState({ ...this.state, createLoader: false });
+
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
@@ -192,12 +186,15 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 
-        let roleList = (this.state.order.order_items.value || []).map((item: any) => { return { count: item.count, book_id: { id: item.book.id } } });
-
         const newOrder = {
-            person_id: this.state.order.person_id.value,
-            roles: roleList,
+            // person_id: "string",
+            /*order_items :{
+                book_id:"string",
+                count : number,
+            }[]
+            */
         }
+
         let res = await this._orderService.update(newOrder, this.order_id!).catch(e => {
             this.handleError({ error: e.response });
         });
@@ -206,33 +203,86 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
             this.props.history.push('/order/manage');
             this.apiSuccessNotify();
         }
+
     }
 
-    ////////////////// navigatin func ///////////////////////
+    ////////// navigation function //////////////////
 
     backTO() {
         this.gotoOrderManage();
     }
 
     gotoOrderManage() {
-        this.props.history.push('/order/manage'); // /admin
+        this.props.history.push('/order/manage');
     }
 
-    /////////// reset form /////////////
+    ////// request for person ////////
+
+    private personRequstError_txt: string = Localization.no_item_found;
+
+    async promiseOptions2(inputValue: any, callBack: any) {
+        let filter = undefined;
+        if (inputValue) {
+            filter = { person: inputValue };
+        }
+        let res: any = await this._personService.search(10, 0, filter).catch(err => {
+            let err_msg = this.handleError({ error: err.response, notify: false });
+            this.personRequstError_txt = err_msg.body;
+        });
+
+        if (res) {
+            let persons = res.data.result.map((ps: any) => {
+                return { label: this.getPersonFullName(ps), value: ps }
+            });
+            this.personRequstError_txt = Localization.no_item_found;
+            callBack(persons);
+        } else {
+            callBack();
+        }
+    }
+
+    private setTimeout_person_val: any;
+    debounce_300(inputValue: any, callBack: any) {
+        if (this.setTimeout_person_val) {
+            clearTimeout(this.setTimeout_person_val);
+        }
+        this.setTimeout_person_val = setTimeout(() => {
+            this.promiseOptions2(inputValue, callBack);
+        }, 1000);
+    }
+
+    select_noOptionsMessage(obj: { inputValue: string }) {
+        return this.personRequstError_txt;
+    }
+
+
+    /////////////////////////////////////
+
+
+    bookRollChange(list: any[], isValid: boolean) {
+        this.setState({
+            ...this.state,
+            order: {
+                ...this.state.order, order_items: { value: list, isValid: isValid }
+            }
+            , isFormValid: this.checkFormValidate(isValid, 'order-items')
+        })
+    }
+
+    // reset form /////////////
 
     resetForm() {
         this.setState({
             ...this.state,
             order: {
-                person_id: { value: undefined, isValid: true },
+                person: { value: null, isValid: false },
                 order_items: { value: undefined, isValid: false },
             },
             isFormValid: false,
         })
     }
 
-    /////////////////// render ////////////////////////
-
+    ////// render ////////
     render() {
         return (
             <>
@@ -244,19 +294,31 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                     {
                                         this.state.saveMode === SAVE_MODE.CREATE
                                             ?
-                                            <h2 className="text-bold text-dark">{Localization.create_book}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.create_order}</h2>
                                             :
-                                            <h2 className="text-bold text-dark">{Localization.book_update}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.order_update}</h2>
                                     }
                                 </div>
                                 {/* start give data by inputs */}
                                 <div className="row">
-                                    <div className="col-md-6 col-sm-12">
+                                    <div className="col-md-3 col-sm-6">
+                                        <label >{Localization.person}{<span className="text-danger">*</span>}</label>
+                                        <AsyncSelect
+                                            placeholder={Localization.person}
+                                            cacheOptions
+                                            defaultOptions
+                                            value={this.state.order.person.value}
+                                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                                            noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                                            onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
+                                        />
+                                    </div>
+                                    <div className="col-md-6 col-sm-6">
                                         <OrderItems
                                             defaultValue={this.state.order.order_items.value}
                                             onChange={(list, isValid) => this.bookRollChange(list, isValid)}
                                             required
-                                            label={Localization.roles}
+                                            label={Localization.order}
                                         ></OrderItems>
                                     </div>
                                 </div>
@@ -285,14 +347,21 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                     </BtnLoader>
                                                 </>
                                                 :
-                                                <BtnLoader
-                                                    btnClassName="btn btn-info shadow-default shadow-hover"
-                                                    loading={this.state.updateLoader}
-                                                    onClick={() => this.update()}
-                                                    disabled={!this.state.isFormValid}
-                                                >
-                                                    {Localization.update}
-                                                </BtnLoader>
+                                                <>
+                                                    {
+                                                        this.state.saveBtnVisibility ?
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-info shadow-default shadow-hover"
+                                                                loading={this.state.updateLoader}
+                                                                onClick={() => this.update()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.update}
+                                                            </BtnLoader>
+                                                            : ''
+                                                    }
+                                                </>
+
                                         }
                                     </div>
                                     <BtnLoader

@@ -233,7 +233,10 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
 /////  start request for order by id  /////////
   async fetchByOrderId(order_id :any) {
-    let res = await this._orderService.byId(order_id).catch(error => {
+    // let res = await this._orderService.byId(order_id).catch(error => {
+    //   this.handleError({ error: error.response });
+    // });
+    await this._orderService.byId(order_id).catch(error => {
       this.handleError({ error: error.response });
     });
   }

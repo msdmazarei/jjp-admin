@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
-import Select from 'react-select'
 import { IPerson } from '../../../model/model.person';
-import { BOOK_ROLES } from '../../../enum/Book';
+import { BOOK_ROLES, BOOK_TYPES } from '../../../enum/Book';
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { IToken } from '../../../model/model.token';
@@ -141,22 +140,25 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
-            filter = { person: inputValue };
+            filter = { title: inputValue };
         }
-        let res: any = await this._personService.search(10, 0, filter).catch(err => {
+        let res: any = await this._bookService.search(10, 0,filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false });
             this.personRequstError_txt = err_msg.body;
         });
 
         if (res) {
-            let persons = res.data.result.map((ps: any) => {
-                return { label: this.getPersonFullName(ps), value: ps }
+            let books = res.data.result.map((ps: any) => {
+                const b_type: any = ps.type;
+                const b_t: BOOK_TYPES = b_type;
+                let type = Localization.book_type_list[b_t];
+                return { label: ps.title + " - " + type , value: ps }
             });
             this.personRequstError_txt = Localization.no_item_found;
-            callBack(persons);
+            callBack(books);
         } else {
             callBack();
-        }
+        } 
     }
 
     private setTimeout_val: any;
@@ -194,10 +196,10 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                         <Fragment key={item.id}>
                             <div className="pl-5 mt-4">
                                 <div className="row">
-                                    <div className="col-md-5">
-                                        <label htmlFor="">{Localization.person}</label>
+                                    <div className="col-md-6">
+                                        <label htmlFor="">{Localization.book}</label>
                                         <AsyncSelect
-                                            placeholder={Localization.person}
+                                            placeholder={Localization.book}
                                             cacheOptions
                                             defaultOptions
                                             value={item.person}
@@ -206,6 +208,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                                             onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
                                         />
                                     </div>
+                                    
                                     <div className="col-2 mt-2">
                                         <BtnLoader
                                             btnClassName="btn btn-danger btn-sm mt-4"

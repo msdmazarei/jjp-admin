@@ -206,13 +206,12 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     // add order function 
 
     async create() {
+        if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
-        if (this.state.order_items.value === []) {
-            return;
-        }
 
+        const person:IPerson = this.state.person.value!;
         const newOrder = {
-            person_id: this.state.person.value,
+            person_id: person!.id,
             items: this.state.order_items.value.map((oi: { count: number, book: IBook }) => {
                 return {
                     book_id: oi.book.id,

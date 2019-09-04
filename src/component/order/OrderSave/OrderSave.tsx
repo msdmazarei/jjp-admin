@@ -60,7 +60,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         // },
         person: {
             value: undefined,
-            isValid: true,
+            isValid: false,
         },
         order_items: {
             value: [],
@@ -174,19 +174,32 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
         let valid = true;
-        let orderObj: any = { ...this.state };
-
-        for (let i = 0; i < Object.keys(this.state).length; i++) {
-            let IT = Object.keys(this.state)[i];
-            if (IT !== inputType) {
-                valid = valid && orderObj[IT].isValid;
-                if (!orderObj[IT].isValid) {
-                    break;
-                }
+        if(inputType === "order-items"){
+            valid = valid && this.state.person.isValid;
+            if(!this.state.person.isValid){
+                return false;
+            }
+        } 
+        if(inputType === "person"){
+            valid = valid && this.state.order_items.isValid;
+            if(!this.state.order_items.isValid ){
+                return false;
             }
         }
         valid = valid && isValid;
         return valid;
+        
+        // for (let i = 0; i < Object.keys(this.state).length; i++) {
+        //     let IT = Object.keys(this.state)[i];
+        //     if (IT !== inputType) {
+        //         valid = valid && orderObj[IT].isValid;
+        //         if (!orderObj[IT].isValid) {
+        //             break;
+        //         }
+        //     }
+        // }
+        // valid = valid && isValid;
+        // return valid;
     }
 
 
@@ -305,7 +318,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     resetForm() {
         this.setState({
             ...this.state,
-                person: { value: null, isValid: true },
+                person: { value: null, isValid: false },
                 order_items: { value: undefined, isValid: false },
                 isFormValid: false,
         })

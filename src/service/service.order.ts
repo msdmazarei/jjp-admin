@@ -1,4 +1,5 @@
-import { BaseService,IAPI_Response , IAPI_ResponseList } from './service.base';
+import { BaseService, IAPI_Response, IAPI_ResponseList } from './service.base';
+import { IBook } from '../model/model.book';
 
 interface IOrderItem {
     book_id: string;
@@ -20,15 +21,23 @@ export class OrderService extends BaseService {
 
     // for test ///
     byId(order_id: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.get(`/order/${order_id}`);
+    }
+
+    getOrder_items(order_id: string): Promise<IAPI_ResponseList<{
+        book: IBook,
+        count: number,
+        order: any, // todo: IOrder
+    }>> {
         return this.axiosTokenInstance.get(`/order-items/order/${order_id}`);
     }
 
-    update(book: any, id: string) {
-        return this.axiosTokenInstance.put(`/books/${id}`, book);
+    update(newOrder: any, id: string) {
+        return this.axiosTokenInstance.put(`/orders/${id}`, newOrder);
     }
 
-    create(book: any) {
-        return this.axiosTokenInstance.post('/books', book);
+    create(newOrder: any) {
+        return this.axiosTokenInstance.post('/orders', newOrder);
     }
     ///////////////
 

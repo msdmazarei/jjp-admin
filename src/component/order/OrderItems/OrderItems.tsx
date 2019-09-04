@@ -45,14 +45,14 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
     }
     componentWillReceiveProps(nextProps: IProps) {
         // return;
-        // if (
-        //     JSON.stringify(this.convertInnerToOuter(this.convertOuterToInner(nextProps.defaultValue || [])))
-        //     !== JSON.stringify(this.convertInnerToOuter(this.state.list))
-        // ) {
         if (
-            JSON.stringify(this.convertOuterToInner((nextProps.defaultValue || [])))
-            !== JSON.stringify(this.convertOuterToInner(this.convertInnerToOuter(this.state.list)))
+            JSON.stringify(this.convertInnerToOuter(this.convertOuterToInner(nextProps.defaultValue || [])))
+            !== JSON.stringify(this.convertInnerToOuter(this.state.list))
         ) {
+            // if (
+            //     JSON.stringify(this.convertOuterToInner((nextProps.defaultValue || [])))
+            //     !== JSON.stringify(this.convertOuterToInner(this.convertInnerToOuter(this.state.list)))
+            // ) {
 
             let newList = [...nextProps.defaultValue || []];
             this.setState({ ...this.state, list: this.convertOuterToInner(newList) }, () => {

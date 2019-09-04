@@ -93,34 +93,16 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         let res = await this._orderService.getOrder_items(order_id).catch(error => {
             this.handleError({ error: error.response });
         });
-        // await this.__waitOnMe();
         if (res) {
             let list = res.data.result;
-            // let order_obj: any = {
-            //     person_id: {
-            //         value: undefined,
-            //         isValid: false,
-            //     },
-            //     person: {
-            //         value: undefined,
-            //         isValid: false,
-            //     },
-            //     order_items: {
-            //         value: [],
-            //         isValid: false
-            //     },
-            // };
-            // order_obj.person_id.value = list[0].order.person.id;
-            // order_obj.person_id.isValid = true;
-            // order_obj.person.value = list[0].order.person;
-            // order_obj.person.isValid = true;
 
-            const order_items: { value: { count: number, book: IBook }[], isValid: boolean } = { value: [], isValid: true };
+            const order_items: { value: { count: number, book: IBook, id: string; }[], isValid: boolean } = { value: [], isValid: true };
             list.forEach((item) => {
                 // order_obj.order_items.value.push({
                 order_items.value.push({
                     book: item.book,
-                    count: item.count
+                    count: item.count,
+                    id: item.id
                 });
             });
 
@@ -129,20 +111,14 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
             this.setState({
                 ...this.state,
                 // order: order_obj,
-                person: { value: list[0].order.person, isValid: true },
+                person: { value: { value: list[0].order.person, label: this.getPersonFullName(list[0].order.person) }, isValid: true },
                 order_items: order_items,
                 saveBtnVisibility: true
             })
         }
 
     }
-    __waitOnMe() {
-        return new Promise((res, rej) => {
-            setTimeout(() => {
-                res(true)
-            }, 0)
-        });
-    }
+
 
     // on change functions 
 
@@ -151,19 +127,19 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         let newperson = { ...selectedPerson };
         let isValid = true;      // newperson = selectedPerson;
         this.setState({
-            ...this.state,  person: {
-                    ...this.state.person,
-                    value: newperson,
-                    isValid: true,
-                },
+            ...this.state, person: {
+                ...this.state.person,
+                value: newperson,
+                isValid: true,
+            },
             isFormValid: this.checkFormValidate(isValid, 'person'),
         });
     }
 
     orderItemsChange(list: any[], isValid: boolean) {
         this.setState({
-                ...this.state, order_items : { value: list, isValid: isValid }, 
-                    isFormValid: this.checkFormValidate(isValid, 'order-items')
+            ...this.state, order_items: { value: list, isValid: isValid },
+            isFormValid: this.checkFormValidate(isValid, 'order-items')
         })
     }
 
@@ -174,21 +150,21 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
         let valid = true;
-        if(inputType === "order-items"){
+        if (inputType === "order-items") {
             valid = valid && this.state.person.isValid;
-            if(!this.state.person.isValid){
+            if (!this.state.person.isValid) {
                 return false;
             }
-        } 
-        if(inputType === "person"){
+        }
+        if (inputType === "person") {
             valid = valid && this.state.order_items.isValid;
-            if(!this.state.order_items.isValid ){
+            if (!this.state.order_items.isValid) {
                 return false;
             }
         }
         valid = valid && isValid;
         return valid;
-        
+
         // for (let i = 0; i < Object.keys(this.state).length; i++) {
         //     let IT = Object.keys(this.state)[i];
         //     if (IT !== inputType) {
@@ -209,7 +185,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
 
-        const person:IPerson = this.state.person.value!;
+        const person: IPerson = this.state.person.value!;
         const newOrder = {
             person_id: person!.id,
             items: this.state.order_items.value.map((oi: { count: number, book: IBook }) => {
@@ -317,9 +293,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     resetForm() {
         this.setState({
             ...this.state,
-                person: { value: null, isValid: false },
-                order_items: { value: undefined, isValid: false },
-                isFormValid: false,
+            person: { value: null, isValid: false },
+            order_items: { value: undefined, isValid: false },
+            isFormValid: false,
         })
     }
 

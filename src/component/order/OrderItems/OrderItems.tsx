@@ -12,18 +12,17 @@ import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { BookService } from '../../../service/service.book';
 import { IBook } from '../../../model/model.book';
-import { Input } from '../../form/input/Input';
 
 interface IBookRow {
     id: string;
-    count: number | 1;
+    count: number;
     book: { label: string, value: IBook } | undefined;
 }
 interface IState {
     list: IBookRow[];
 }
 
-type TOuterListItem = { id?: string, count: number | 0, book: IBook | undefined };
+type TOuterListItem = { id?: string, count: number, book: IBook };
 interface IProps {
     onChange: (list: TOuterListItem[], isValid: boolean) => void;
     defaultValue?: TOuterListItem[] | null;
@@ -41,12 +40,11 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
     _personService = new PersonService();
     _bookService = new BookService();
 
-
-
     componentDidMount() {
         this._personService.setToken(this.props.token);
     }
     componentWillReceiveProps(nextProps: IProps) {
+        // return;
         if (
             JSON.stringify(this.convertInnerToOuter(this.convertOuterToInner(nextProps.defaultValue || [])))
             !== JSON.stringify(this.convertInnerToOuter(this.state.list))
@@ -80,7 +78,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
             return {
                 id: item.id,
                 count: item.count,
-                book: (item.book || { value: undefined }).value
+                book: (item.book! || {}).value
             }
         });
     }
@@ -96,15 +94,6 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                 book: item.book ? { label: item.book.title + " - " + type, value: item.book } : undefined
             }
         });
-    }
-
-    handleCountChange(val: number, index: number) {
-        let newlist = [...this.state.list];
-        newlist[index].count = val;
-        this.setState({ ...this.state, list: newlist },
-            () => {
-                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
-            });
     }
 
 
@@ -133,6 +122,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
     handleBookChange = (selectedBook: any, index: number) => {
         let newlist = [...this.state.list];
         newlist[index].book = selectedBook;
+        newlist[index].count = 1;
         this.setState({ ...this.state, list: newlist },
             () => {
                 this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
@@ -181,28 +171,39 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
 
     ///////////////////   book counter func ////////////////////////
 
-    private updateCartItem_up(item : any,index : number) {
-        if (!this.is_countable_book(item.book)) {
-          return;
+    private updateCartItem_up(item: any, index: number) {
+        if (!this.is_countable_book(item.book.value)) {
+            return;
         }
         let newlist = [...this.state.list]
-        newlist[index].count=newlist[index].count!+1;
-      }
-    
-      private updateCartItem_down(item : any,index : number) {
-        if (!this.is_countable_book(item.book)) {
-          return;
+        newlist[index].count = newlist[index].count + 1;
+        this.setState({ ...this.state, list: newlist },
+            () => {
+                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+            });
+    }
+
+    private updateCartItem_down(item: any, index: number) {
+        if (!this.is_countable_book(item.book.value)) {
+            return;
         }
         let newlist = [...this.state.list]
-        newlist[index].count=newlist[index].count!-1;
-      }
-    
-      private is_countable_book(book:any): boolean {
+        if (newlist[index].count < 2) {
+            return;
+        }
+        newlist[index].count = newlist[index].count - 1;
+        this.setState({ ...this.state, list: newlist },
+            () => {
+                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+            });
+    }
+
+    private is_countable_book(book: IBook): boolean {
         if (book.type === BOOK_TYPES.Hard_Copy || book.type === BOOK_TYPES.DVD) {
-          return true;
+            return true;
         }
         return false;
-      }
+    }
 
 
     ////////////////////////////////////////////////////////////////
@@ -245,36 +246,43 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                                         item.book
                                             ?
                                             <div className="item-count-wrapper text-center mr-3">
-                                                {
-                                                    this.is_countable_book(item.book) ?
-                                                        <div className="btn btn-light btn-sm cursor-pointer"
-                                                            onClick={() => this.updateCartItem_up(item,index)}>
-                                                            <i className="fa fa-angle-up"></i>
-                                                        </div>
-                                                        : ''
+                                                <div className={
+                                                    !this.is_countable_book(item.book.value)
+                                                        ?
+                                                        "btn btn-light btn-sm cursor-pointer disabled"
+                                                        :
+                                                        "btn btn-light btn-sm cursor-pointer"
                                                 }
-
+                                                    onClick={() => this.updateCartItem_up(item, index)}>
+                                                    <i className="fa fa-angle-up"></i>
+                                                </div>
                                                 {
-                                                    this.is_countable_book(item.book) ?
+                                                    this.is_countable_book(item.book.value) ?
                                                         <div className="item-count rounded">{item.count}</div>
                                                         :
                                                         <div className="item-count rounded disable">{item.count}</div>
                                                 }
+                                                <div className={
+                                                    "btn btn-light btn-sm cursor-pointer " +
+                                                    (item.count! < 2 ? 'disabled' : '')
+                                                }
+                                                    onClick={() => this.updateCartItem_down(item, index)}>
+                                                    <i className="fa fa-angle-down"></i>
+                                                </div>
+                                            </div>
+                                            :
+                                            ""
+                                    }
+                                    {
+                                        item.book && item.book.value.price
+                                            ?
+                                            <div className="total-price rounded">
                                                 {
-                                                    this.is_countable_book(item.book) ?
-                                                        <div className={
-                                                            "btn btn-light btn-sm cursor-pointer " +
-                                                            (item.count! < 2 ? 'disabled' : '')
-                                                        }
-                                                            onClick={() => this.updateCartItem_down(item,index)}>
-                                                            <i className="fa fa-angle-down"></i>
-                                                        </div>
-                                                        : ''
+                                                    item.count * item.book.value.price
                                                 }
                                             </div>
                                             :
-                                            <div className="item-count rounded">1</div>
-
+                                            ""
                                     }
                                     <div className="col-1 mt-2">
                                         <BtnLoader

@@ -123,7 +123,7 @@ var routes = [
       isitem: false
     },
     {
-      path: "/prder/:order_id/edit",
+      path: "/order/:order_id/edit",
       name: Localization.order_update,
       component: OrderSave,               
       layout: "/admin",

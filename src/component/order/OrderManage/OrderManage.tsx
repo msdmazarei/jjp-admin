@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
@@ -132,12 +132,12 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   selectedOrder: any;
   selectedOrderList: {
-    person:{
-      label:string;
-      value:IPerson;
+    person: {
+      label: string;
+      value: IPerson;
     };
-    items:{
-      count:number;
+    items: {
+      count: number;
       book: IBook;
     }[];
   } | undefined;
@@ -255,7 +255,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   /////  start show details of order by user function define  /////////
 
-  onShowOrderDetailsModal(order :{person:{label:string;value:IPerson;};items:{count:number;book: IBook;}[]}) {
+  onShowOrderDetailsModal(order: { person: { label: string; value: IPerson; }; items: { count: number; book: IBook; }[] }) {
     this.selectedOrderList = order;
     this.setState({ ...this.state, orderDetailsModalShow: true });
   }
@@ -266,7 +266,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       orderDetailsModalShow: false
     });
   }
-  
+
   async fetchOrderById(order_id: string) {
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
       this.handleError({ error: error.response });
@@ -275,35 +275,35 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     if (res) {
       let list = res.data.result;
 
-      const order_items: { count: number, book: IBook}[] =[];
-      list.forEach((item : any) => {
+      const order_items: { count: number, book: IBook }[] = [];
+      list.forEach((item: any) => {
         order_items.push({
           book: item.book,
           count: item.count
         });
       });
 
-      const order:{
-        person:{
-          label:string;
-          value:IPerson;
+      const order: {
+        person: {
+          label: string;
+          value: IPerson;
         };
-        items:{
-          count:number;
+        items: {
+          count: number;
           book: IBook;
         }[];
       } = {
-        person:{
+        person: {
           label: this.getUserFullName(list[0].order.person),
           value: list[0].order.person,
         },
-        items:order_items
+        items: order_items
       }
 
       this.onShowOrderDetailsModal(order);
     }
   }
-  
+
 
   render_order_details_modal() {
     return (
@@ -312,14 +312,39 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           <Modal.Body>
             <p className="delete-modal-content">
               <span className="text-muted">
-                {Localization.order}:&nbsp;
+                {Localization.Customer_Specifications}:&nbsp;
               </span>
-              {this.selectedOrderList !== undefined
-              ?
-              ""
-              :
-              ""
-              }
+              <p>
+                {this.selectedOrderList !== undefined
+                  ?
+                  Localization.full_name + ": " + this.selectedOrderList.person.label
+                  :
+                  ""
+                }
+              </p>
+              <p>
+                {this.selectedOrderList !== undefined
+                  ?
+                  this.selectedOrderList.items.map((item, index) => (
+                    <Fragment key={index}>
+                      {
+                        <p>
+                          <span>
+                            {item.book.title}
+                          </span>
+                          <span>:      </span>
+                          <span>
+                            {item.count}
+                          </span>
+                        </p>
+
+                      }
+                    </Fragment>
+                  ))
+                  :
+                  ""
+                }
+              </p>
             </p>
           </Modal.Body>
           <Modal.Footer>
@@ -451,7 +476,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
 
 
-  
+
 
 
   handleSelectInputChange(value: any[], inputType: any) {

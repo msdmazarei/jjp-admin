@@ -14,6 +14,8 @@ import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import Select from 'react-select';
 import { OrderService } from "../../../service/service.order";
+import { IPerson } from "../../../model/model.person";
+import { IBook } from "../../../model/model.book";
 
 /// define props & state ///////
 export interface IProps {
@@ -38,6 +40,7 @@ interface IState {
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
+  orderDetailsModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
@@ -46,6 +49,14 @@ interface IState {
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
   tags_inputValue: string;
+  ordersByUser: {
+    person: {
+      value: { label: string, value: IPerson } | any;
+    };
+    order_items: {
+      value: { count: number, book: IBook }[] | any,
+    };
+  };
 }
 
 // define class of Order 
@@ -66,7 +77,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "name", title: Localization.full_name, cellTemplateFunc: (row:any) => {
+          field: "name", title: Localization.full_name, cellTemplateFunc: (row: any) => {
             if (row.person) {
               return <div title={this.getPersonFullName(row.person)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {this.getPersonFullName(row.person)}
@@ -99,7 +110,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       actions: [
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
         { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
-        { text: <i title={Localization.order} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => {this.fetchByOrderId(row.id) } },
+        { text: <i title={Localization.order} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => { this.fetchOrderById(row.id) } },
       ]
     },
     OrderError: undefined,
@@ -110,6 +121,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
     removeModalShow: false,
+    orderDetailsModalShow: false,
     filter: {
       title: {
         value: undefined,
@@ -123,6 +135,14 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     setRemoveLoader: false,
     setPriceLoader: false,
     tags_inputValue: '',
+    ordersByUser: {
+      person: {
+        value: undefined,
+      },
+      order_items: {
+        value: [],
+      },
+    },
   }
 
   selectedOrder: any;
@@ -139,7 +159,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   // delete modal function define
 
-  onShowRemoveModal(order:any) {
+  onShowRemoveModal(order: any) {
     this.selectedOrder = order;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -231,16 +251,79 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
   /////  end request for table data  ///////// 
 
-/////  start request for order by id  /////////
-  async fetchByOrderId(order_id :any) {
-    // let res = await this._orderService.byId(order_id).catch(error => {
-    //   this.handleError({ error: error.response });
-    // });
-    await this._orderService.byId(order_id).catch(error => {
-      this.handleError({ error: error.response });
+  /////  start request for order by id  /////////
+
+  onShowOrderDetailsModal(list: any) {
+    this.setState({ ...this.state, orderDetailsModalShow: true });
+  }
+  onHideOrderDetailsModal() {
+    this.selectedOrder = undefined;
+    this.setState({
+      ...this.state, ordersByUser: {
+        person: {
+          value: undefined,
+        },
+        order_items: {
+          value: [],
+        },
+      },
+      orderDetailsModalShow: false
     });
   }
+  
+  async fetchOrderById(order_id: string) {
+    let res = await this._orderService.getOrder_items(order_id).catch(error => {
+      this.handleError({ error: error.response });
+    });
+    if (res) {
+      let list = res.data.result;
+
+      const order_items: { value: { count: number, book: IBook, id: string; }[], isValid: boolean } = { value: [], isValid: true };
+      list.forEach((item) => {
+        order_items.value.push({
+          book: item.book,
+          count: item.count,
+          id: item.id
+        });
+      });
+
+      this.setState({
+        ...this.state, ordersByUser: {
+          person: { value: { value: list[0].order.person, label: this.getPersonFullName(list[0].order.person) }},
+          order_items: order_items,
+        }
+      })
+      this.onShowOrderDetailsModal(list);
+    }
+  }
   /////  end request for order by id  ///////// 
+
+  /////  start modal of each order details  /////////
+
+  render_order_details_modal() {
+    if (!this.state.ordersByUser.person.value || this.state.ordersByUser.order_items.value === []) return;
+    return (
+      <>
+        <Modal show={this.state.orderDetailsModalShow} onHide={() => this.onHideOrderDetailsModal()}>
+          <Modal.Body>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.order}:&nbsp;
+              </span>
+            </p>
+            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideOrderDetailsModal()}>{Localization.close}</button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+  /////  end modal of each order details  ///////////
+
+
 
 
   // previous button create
@@ -565,6 +648,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedOrder)}
+        {this.render_order_details_modal()}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

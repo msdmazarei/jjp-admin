@@ -49,19 +49,12 @@ interface IState {
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
   tags_inputValue: string;
-  ordersByUser: {
-    person: {
-      value: { label: string, value: IPerson } | any;
-    };
-    order_items: {
-      value: { count: number, book: IBook }[] | any,
-    };
-  };
 }
 
 // define class of Order 
 
 class OrderManageComponent extends BaseComponent<IProps, IState>{
+
   state = {
     order_table: {
       list: [],
@@ -135,17 +128,19 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     setRemoveLoader: false,
     setPriceLoader: false,
     tags_inputValue: '',
-    ordersByUser: {
-      person: {
-        value: undefined,
-      },
-      order_items: {
-        value: [],
-      },
-    },
   }
 
   selectedOrder: any;
+  selectedOrderList: {
+    person:{
+      label:string;
+      value:IPerson;
+    };
+    items:{
+      count:number;
+      book: IBook;
+    }[];
+  } | undefined;
   private _orderService = new OrderService();
 
   constructor(props: IProps) {
@@ -153,11 +148,54 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     this._orderService.setToken(this.props.token)
   }
 
+  componentDidMount() {
+    this.fetchOrders();
+  }
+
+  /////  start request for table data  /////////
+
+  async fetchOrders() {
+    let res = await this._orderService.search(
+      this.state.pager_limit,
+      this.state.pager_offset,
+      this.getFilter()
+    ).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({
+        ...this.state,
+        prevBtnLoader: false,
+        nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
+      });
+    });
+    if (res) {
+      this.setState({
+        ...this.state, order_table: {
+          ...this.state.order_table,
+          list: res.data.result
+        },
+        prevBtnLoader: false,
+        nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
+      });
+    }
+  }
+
+  /////  end request for table data  ///////// 
+
+
+  /////  start for update row function  /////////
+
   updateRow(order_id: any) {
     this.props.history.push(`/order/${order_id.id}/edit`);
   }
 
-  // delete modal function define
+  /////  end for update row function  /////////
+
+
+  ////// start delete modal function define  //////
 
   onShowRemoveModal(order: any) {
     this.selectedOrder = order;
@@ -212,61 +250,19 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  // define axios for give data
+  ////// end delete modal function define  ///////
 
 
-  componentDidMount() {
-    this.fetchOrders();
-  }
+  /////  start show details of order by user function define  /////////
 
-
-  /////  start request for table data  /////////
-  async fetchOrders() {
-    let res = await this._orderService.search(
-      this.state.pager_limit,
-      this.state.pager_offset,
-      this.getFilter()
-    ).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({
-        ...this.state,
-        prevBtnLoader: false,
-        nextBtnLoader: false,
-        tableProcessLoader: false,
-        filterSearchBtnLoader: false,
-      });
-    });
-    if (res) {
-      this.setState({
-        ...this.state, order_table: {
-          ...this.state.order_table,
-          list: res.data.result
-        },
-        prevBtnLoader: false,
-        nextBtnLoader: false,
-        tableProcessLoader: false,
-        filterSearchBtnLoader: false,
-      });
-    }
-  }
-  /////  end request for table data  ///////// 
-
-  /////  start request for order by id  /////////
-
-  onShowOrderDetailsModal(list: any) {
+  onShowOrderDetailsModal(order :{person:{label:string;value:IPerson;};items:{count:number;book: IBook;}[]}) {
+    this.selectedOrderList = order;
     this.setState({ ...this.state, orderDetailsModalShow: true });
   }
   onHideOrderDetailsModal() {
     this.selectedOrder = undefined;
     this.setState({
-      ...this.state, ordersByUser: {
-        person: {
-          value: undefined,
-        },
-        order_items: {
-          value: [],
-        },
-      },
+      ...this.state,
       orderDetailsModalShow: false
     });
   }
@@ -275,33 +271,41 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
       this.handleError({ error: error.response });
     });
+
     if (res) {
       let list = res.data.result;
 
-      const order_items: { value: { count: number, book: IBook, id: string; }[], isValid: boolean } = { value: [], isValid: true };
-      list.forEach((item) => {
-        order_items.value.push({
+      const order_items: { count: number, book: IBook}[] =[];
+      list.forEach((item : any) => {
+        order_items.push({
           book: item.book,
-          count: item.count,
-          id: item.id
+          count: item.count
         });
       });
 
-      this.setState({
-        ...this.state, ordersByUser: {
-          person: { value: { value: list[0].order.person, label: this.getPersonFullName(list[0].order.person) }},
-          order_items: order_items,
-        }
-      })
-      this.onShowOrderDetailsModal(list);
+      const order:{
+        person:{
+          label:string;
+          value:IPerson;
+        };
+        items:{
+          count:number;
+          book: IBook;
+        }[];
+      } = {
+        person:{
+          label: this.getUserFullName(list[0].order.person),
+          value: list[0].order.person,
+        },
+        items:order_items
+      }
+
+      this.onShowOrderDetailsModal(order);
     }
   }
-  /////  end request for order by id  ///////// 
-
-  /////  start modal of each order details  /////////
+  
 
   render_order_details_modal() {
-    if (!this.state.ordersByUser.person.value || this.state.ordersByUser.order_items.value === []) return;
     return (
       <>
         <Modal show={this.state.orderDetailsModalShow} onHide={() => this.onHideOrderDetailsModal()}>
@@ -310,8 +314,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               <span className="text-muted">
                 {Localization.order}:&nbsp;
               </span>
+              {this.selectedOrderList !== undefined
+              ?
+              ""
+              :
+              ""
+              }
             </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideOrderDetailsModal()}>{Localization.close}</button>
@@ -321,12 +330,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  /////  end modal of each order details  ///////////
+  /////  end show details of order by user function define  /////////
 
-
-
-
-  // previous button create
+  ///// start previous button create  //////////
 
   pager_previous_btn_render() {
     if (this.state.order_table.list && (this.state.order_table.list! || []).length) {
@@ -369,7 +375,10 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // next button create
+  ///// end previous button create  //////////
+
+
+  ///// start next button create ////////////////
 
   pager_next_btn_render() {
     if (this.state.order_table.list && (this.state.order_table.list! || []).length) {
@@ -397,8 +406,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
+  ///// end next button create ////////////////
 
-  // on previous click
+  ///// start on previous click ///////
 
   onPreviousClick() {
     this.setState({
@@ -413,7 +423,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
-  // on next click
+  // end on previous click ///////
+
+  ///// start on next click /////////
 
   onNextClick() {
     this.setState({
@@ -427,6 +439,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
+  ///// end on next click /////////
+
+
 
   ///// navigation function //////
 
@@ -436,31 +451,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
 
 
-  //////   tag filter //////////////
-
-  handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
-    if (!this.state.tags_inputValue) return;
-    switch (event.key) {
-      case 'Enter':
-      case 'Tab':
-        const newVal = this.state.tags_inputValue;
-        this.setState({
-          ...this.state,
-          filter: {
-            ...this.state.filter,
-            tags: {
-              ...this.state.filter.tags,
-              value: [
-                ...this.state.filter.tags.value,
-                { label: newVal, value: newVal }
-              ]
-            }
-          },
-          tags_inputValue: ''
-        });
-        event.preventDefault();
-    }
-  };
+  
 
 
   handleSelectInputChange(value: any[], inputType: any) {
@@ -481,10 +472,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
 
-
-
-
-  /////  onChange & search & reset function for search box ///////////
+  ///// start onChange & search & reset function for search box ///////////
 
   handleFilterInputChange(value: string, isValid: boolean) {
     this.setState({
@@ -558,6 +546,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     return;
   }
 
+  ///// end onChange & search & reset function for search box ///////////
+
+
   //////render call Table component //////
 
   render() {
@@ -597,7 +588,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                         onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
                         value={this.state.filter.tags.value}
                         placeholder={Localization.tags}
-                        onKeyDown={(e) => this.handle_tagsKeyDown(e)}
                         inputValue={this.state.tags_inputValue}
                         menuIsOpen={false}
                         components={{

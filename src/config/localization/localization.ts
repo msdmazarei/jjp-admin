@@ -298,6 +298,7 @@ interface ILocalization extends LocalizedStringsMethods {
     order_update:string;
     status:string;
     total_price:string;
+    Customer_Specifications : string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

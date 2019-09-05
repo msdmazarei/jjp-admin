@@ -286,6 +286,7 @@ export const en = {
     order_update:"order update",
     status:"status",
     total_price:"total price",
+    Customer_Specifications: "Customer Specifications",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

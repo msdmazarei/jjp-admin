@@ -286,6 +286,7 @@ export const ar = {
     order_update:"بروزرسانی سفارش",
     status:"وضعیت",
     total_price:"مبلغ کل",
+    Customer_Specifications:"مشخصات سفارش دهنده",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

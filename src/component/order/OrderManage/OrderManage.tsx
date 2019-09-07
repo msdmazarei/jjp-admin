@@ -104,6 +104,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
         { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
         { text: <i title={Localization.order} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => { this.fetchOrderById(row.id) } },
+        { text: <i title={Localization.invoice} className="table-action-shadow-hover fa fa-file-text-o text-info pt-2"></i>, ac_func: (row: any) => { this.fetchOrderById(row.id) } },
       ]
     },
     OrderError: undefined,
@@ -132,6 +133,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   selectedOrder: any;
   selectedOrderList: {
+    total_price: number;
     person: {
       label: string;
       value: IPerson;
@@ -141,6 +143,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       book: IBook;
     }[];
   } | undefined;
+
   private _orderService = new OrderService();
 
   constructor(props: IProps) {
@@ -255,7 +258,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   /////  start show details of order by user function define  /////////
 
-  onShowOrderDetailsModal(order: { person: { label: string; value: IPerson; }; items: { count: number; book: IBook; }[] }) {
+  onShowOrderDetailsModal(order: { total_price: number; person: { label: string; value: IPerson; }; items: { count: number; book: IBook; }[] }) {
     this.selectedOrderList = order;
     this.setState({ ...this.state, orderDetailsModalShow: true });
   }
@@ -284,6 +287,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       });
 
       const order: {
+        total_price: number;
         person: {
           label: string;
           value: IPerson;
@@ -293,6 +297,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           book: IBook;
         }[];
       } = {
+        total_price: list[0].order.total_price,
         person: {
           label: this.getUserFullName(list[0].order.person),
           value: list[0].order.person,
@@ -325,22 +330,36 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               <p>
                 {this.selectedOrderList !== undefined
                   ?
-                  this.selectedOrderList.items.map((item, index) => (
-                    <Fragment key={index}>
-                      {
-                        <p>
-                          <span>
-                            {item.book.title}
-                          </span>
-                          <span>:      </span>
-                          <span>
-                            {item.count}
-                          </span>
-                        </p>
-
-                      }
-                    </Fragment>
-                  ))
+                  <>
+                    <table className="table table-dark table-hover table-borderless">
+                      <thead>
+                        <tr>
+                          <th scope="col">{Localization.title}</th>
+                          <th scope="col">{Localization.count}</th>
+                          <th scope="col">{Localization.price}</th>
+                          <th scope="col">{Localization.total_price}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.selectedOrderList.items.map((item, index) => (
+                          <Fragment key={index}>
+                            {
+                              <tr className="table-dark">
+                                <td className="table-dark text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
+                                <td className="table-dark">{item.count}</td>
+                                <td className="table-dark">{item.book.price}</td>
+                                <td className="table-dark">{item.book.price! * item.count}</td>
+                              </tr>
+                            }
+                          </Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="pull-right">
+                      {Localization.Total_purchase}:&nbsp;
+                      <span>{this.selectedOrderList.total_price}</span>
+                    </p>
+                  </>
                   :
                   ""
                 }

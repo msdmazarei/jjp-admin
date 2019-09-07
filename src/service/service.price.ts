@@ -8,6 +8,11 @@ export class PriceService extends BaseService {
             book_id: book_id,
             price: price
         });
+    };
+
+    calcPrice(items: {book_id: string;count: number;}[], person_id: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.post('/prices/calc-price', { items, person_id });
     }
+
 
 }

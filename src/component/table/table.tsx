@@ -11,12 +11,20 @@ export interface IProps_table {
         cellTemplateFunc?: (row: any) => JSX.Element | string;
     }[],
     actions?: {
+        access?: (row: any) => boolean;
         text: any;
         ac_func: (row: any) => void
     }[]
 }
 // define class of table
 export class Table<T extends IProps_table> extends React.Component<T>{
+
+    getAccess_action(row: any, act_acs?: (row: any) => boolean) {
+        if (act_acs) {
+            return act_acs(row);
+        }
+        return true;
+    }
 
     render() {
         return (
@@ -63,7 +71,12 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                                     {
                                                         this.props.actions ?
                                                             this.props.actions.map((ac, index) => (
-                                                                <div className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
+                                                                (this.getAccess_action(row, ac.access))
+                                                                    ?
+                                                                    <div className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
+                                                                    :
+                                                                    ''
+                                                                    // <div className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
                                                             ))
                                                             : ''
                                                     }
@@ -74,7 +87,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                     ))
                                     :
                                     <tr>
-                                        <td colSpan={this.props.colHeaders.length+1} className="p-5 text-center">
+                                        <td colSpan={this.props.colHeaders.length + 1} className="p-5 text-center">
                                             <span className="text-warning ">{Localization.no_item_found}</span>
                                         </td>
                                     </tr>

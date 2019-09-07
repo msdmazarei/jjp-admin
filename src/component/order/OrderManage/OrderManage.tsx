@@ -103,14 +103,18 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
-        { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-primary pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
+        { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>,
+         ac_func: (row: any) => { this.onShowRemoveModal(row) },
+         access: (row: any) => { return this.orderCheckoutAccess(row) }
+         },
+        { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-primary pt-2"></i>
+        , ac_func: (row: any) => { this.updateRow(row) },
+          access: (row: any) => { return this.orderCheckoutAccess(row) }},
         { text: <i title={Localization.order} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => { this.fetchOrderById(row.id) } },
         {
           text: <i title={Localization.invoice} className="table-action-shadow-hover fa fa-money text-success pt-2"></i>,
           ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
-          access: (row: any) => { return this.orderCheckoutAccess(row) }
-        },
+          access: (row: any) => { return this.orderCheckoutAccess(row) }},
       ]
     },
     OrderError: undefined,

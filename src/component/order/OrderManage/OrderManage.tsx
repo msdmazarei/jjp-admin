@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
+import { Modal, Row } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -41,12 +41,14 @@ interface IState {
   pager_limit: number;
   removeModalShow: boolean;
   orderDetailsModalShow: boolean;
+  GetInvoiceModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   filter: any,
   setRemoveLoader: boolean;
+  setGetInvoiceLoader: boolean;
   setPriceLoader: boolean;
   tags_inputValue: string;
 }
@@ -102,9 +104,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       ],
       actions: [
         { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
-        { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-info pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
+        { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-primary pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
         { text: <i title={Localization.order} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => { this.fetchOrderById(row.id) } },
-        { text: <i title={Localization.invoice} className="table-action-shadow-hover fa fa-file-text-o text-info pt-2"></i>, ac_func: (row: any) => { this.fetchOrderById(row.id) } },
+        {
+          text: <i title={Localization.invoice} className="table-action-shadow-hover fa fa-money text-success pt-2"></i>,
+          ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
+          access: (row: any) => { return this.orderCheckoutAccess(row) }
+        },
       ]
     },
     OrderError: undefined,
@@ -116,6 +122,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
     removeModalShow: false,
     orderDetailsModalShow: false,
+    GetInvoiceModalShow: false,
     filter: {
       title: {
         value: undefined,
@@ -127,10 +134,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       }
     },
     setRemoveLoader: false,
+    setGetInvoiceLoader: false,
     setPriceLoader: false,
     tags_inputValue: '',
-  }
+  };
 
+  order_id!: string;
+  person_id!: string;
   selectedOrder: any;
   selectedOrderList: {
     total_price: number;
@@ -149,6 +159,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   constructor(props: IProps) {
     super(props);
     this._orderService.setToken(this.props.token)
+  }
+
+  orderCheckoutAccess(row: any) {
+    if (row.status === "Invoiced") {
+      return false;
+    }
+    return true;
   }
 
   componentDidMount() {
@@ -375,6 +392,156 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   /////  end show details of order by user function define  /////////
+
+
+
+
+
+  /////  start get invoice of order by user function define  /////////
+
+  onShowOrderGetInvoice(order: { total_price: number; person: { label: string; value: IPerson; }; items: { count: number; book: IBook; }[] }, order_id: string, person_id: string) {
+    this.order_id = order_id;
+    this.person_id = person_id;
+    this.selectedOrderList = order;
+    this.setState({ ...this.state, GetInvoiceModalShow: true });
+  }
+  onHideOrderGetInvoice() {
+    this.order_id = "";
+    this.person_id = "";
+    this.selectedOrder = undefined;
+    this.setState({
+      ...this.state,
+      GetInvoiceModalShow: false
+    });
+  }
+
+  async fetchOrderById_GetInvoice(order_id: string) {
+    let res = await this._orderService.getOrder_items(order_id).catch(error => {
+      this.handleError({ error: error.response });
+    });
+
+    if (res) {
+      let list = res.data.result;
+
+      const order_items: { count: number, book: IBook }[] = [];
+      list.forEach((item: any) => {
+        order_items.push({
+          book: item.book,
+          count: item.count
+        });
+      });
+      const order_id: string = list[0].order_id;
+      const person_id: string = list[0].order.person_id;
+      const order: {
+        total_price: number;
+        person: {
+          label: string;
+          value: IPerson;
+        };
+        items: {
+          count: number;
+          book: IBook;
+        }[];
+      } = {
+        total_price: list[0].order.total_price,
+        person: {
+          label: this.getUserFullName(list[0].order.person),
+          value: list[0].order.person,
+        },
+        items: order_items
+      }
+
+      this.onShowOrderGetInvoice(order, order_id, person_id);
+    }
+  }
+
+  async getInvoice(order_id: string, person_id: string) {
+    this.setState({ ...this.state, setGetInvoiceLoader: true });
+    let res = await this._orderService.checkout(order_id, person_id).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({ ...this.state, setGetInvoiceLoader: false });
+    });
+    if (res) {
+      this.setState({ ...this.state, setGetInvoiceLoader: false });
+      this.apiSuccessNotify();
+      this.fetchOrders();
+      this.onHideRemoveModal();
+    }
+  }
+
+
+  render_order_GetInvoice() {
+    return (
+      <>
+        <Modal show={this.state.GetInvoiceModalShow} onHide={() => this.onHideOrderGetInvoice()}>
+          <Modal.Body>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.Customer_Specifications}:&nbsp;
+              </span>
+              <p>
+                {this.selectedOrderList !== undefined
+                  ?
+                  Localization.full_name + ": " + this.selectedOrderList.person.label
+                  :
+                  ""
+                }
+              </p>
+              <p>
+                {this.selectedOrderList !== undefined
+                  ?
+                  <>
+                    <table className="table table-dark table-hover table-borderless">
+                      <thead>
+                        <tr>
+                          <th scope="col">{Localization.title}</th>
+                          <th scope="col">{Localization.count}</th>
+                          <th scope="col">{Localization.price}</th>
+                          <th scope="col">{Localization.total_price}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.selectedOrderList.items.map((item, index) => (
+                          <Fragment key={index}>
+                            {
+                              <tr className="table-dark">
+                                <td className="table-dark text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
+                                <td className="table-dark">{item.count}</td>
+                                <td className="table-dark">{item.book.price}</td>
+                                <td className="table-dark">{item.book.price! * item.count}</td>
+                              </tr>
+                            }
+                          </Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="pull-right">
+                      {Localization.Total_purchase}:&nbsp;
+                      <span>{this.selectedOrderList.total_price}</span>
+                    </p>
+                  </>
+                  :
+                  ""
+                }
+              </p>
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideOrderGetInvoice()}>{Localization.close}</button>
+            <BtnLoader
+              btnClassName="btn btn-primary shadow-default shadow-hover"
+              onClick={() => this.getInvoice(this.order_id, this.person_id)}
+              loading={this.state.setGetInvoiceLoader}
+            >
+              {Localization.invoice}
+            </BtnLoader>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+  /////  end get invoice of order by user function define  /////////
 
   ///// start previous button create  //////////
 
@@ -683,6 +850,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         </div>
         {this.render_delete_modal(this.selectedOrder)}
         {this.render_order_details_modal()}
+        {this.render_order_GetInvoice()}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

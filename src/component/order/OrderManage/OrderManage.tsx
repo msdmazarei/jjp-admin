@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
-import { Modal, Row } from "react-bootstrap";
+import { Modal} from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";

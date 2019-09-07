@@ -29,6 +29,7 @@ export class OrderService extends BaseService {
         count: number;
         order: any; // todo: IOrder
         id: string;
+        order_id:string;
     }>> {
         return this.axiosTokenInstance.get(`/order-items/order/${order_id}`);
     }

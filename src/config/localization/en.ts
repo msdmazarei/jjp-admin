@@ -287,6 +287,10 @@ export const en = {
     status:"status",
     total_price:"total price",
     Customer_Specifications: "Customer Specifications",
+    count: "count",
+    Total_purchase:"Total purchase",
+    invoice:"invoice",
+    recalculate:"recalculate",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

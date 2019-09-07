@@ -299,6 +299,10 @@ interface ILocalization extends LocalizedStringsMethods {
     status:string;
     total_price:string;
     Customer_Specifications : string;
+    count:string;
+    Total_purchase:string;
+    invoice:string;
+    recalculate: string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

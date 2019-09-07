@@ -285,8 +285,12 @@ export const ar = {
     create_order:"ایجاد سفارش",
     order_update:"بروزرسانی سفارش",
     status:"وضعیت",
-    total_price:"مبلغ کل",
+    total_price:"قیمت کل",
     Customer_Specifications:"مشخصات سفارش دهنده",
+    count:"تعداد",
+    Total_purchase:"مجموع خرید",
+    invoice:"فاکتور",
+    recalculate:"محاسبه مجدد",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

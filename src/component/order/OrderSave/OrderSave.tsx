@@ -15,6 +15,7 @@ import AsyncSelect from 'react-select/async';
 import { OrderItems } from '../OrderItems/OrderItems';
 import { OrderService } from '../../../service/service.order';
 import { IBook } from '../../../model/model.book';
+import { PriceService } from '../../../service/service.price';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -42,6 +43,8 @@ interface IState {
     createLoader: boolean;
     updateLoader: boolean;
     saveBtnVisibility: boolean;
+    fetchPrice_loader: boolean;
+    totalPrice: number | string;
 }
 interface IProps {
     match: any;
@@ -72,10 +75,13 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         createLoader: false,
         updateLoader: false,
         saveBtnVisibility: false,
+        fetchPrice_loader: false,
+        totalPrice: 0,
     }
 
     private _orderService = new OrderService();
     private _personService = new PersonService();
+    private _priceService = new PriceService();
     private order_id: string | undefined;
 
     componentDidMount() {
@@ -133,16 +139,23 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                 isValid: true,
             },
             isFormValid: this.checkFormValidate(isValid, 'person'),
+        }, () => {
+            this.fetchPrice();
         });
+        // this.fetchPrice();
     }
 
     orderItemsChange(list: any[], isValid: boolean) {
-        this.setState({
-            ...this.state, order_items: { value: list, isValid: isValid },
-            isFormValid: this.checkFormValidate(isValid, 'order-items')
-        })
-    }
+        this.setState(
+            {
+                ...this.state, order_items: { value: list, isValid: isValid },
+                isFormValid: this.checkFormValidate(isValid, 'order-items')
+            }, () => {
+                this.fetchPrice();
+            }
+        );
 
+    }
 
 
 
@@ -163,6 +176,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
             }
         }
         valid = valid && isValid;
+        // if (valid) {
+        //     this.fetchPrice();
+        // }
         return valid;
 
         // for (let i = 0; i < Object.keys(this.state).length; i++) {
@@ -185,9 +201,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
 
-        const person: IPerson = this.state.person.value!;
+        const person: { label: string, value: IPerson } = this.state.person.value!;
         const newOrder = {
-            person_id: person!.id,
+            person_id: person!.value.id,
             items: this.state.order_items.value.map((oi: { count: number, book: IBook }) => {
                 return {
                     book_id: oi.book.id,
@@ -215,9 +231,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         if (this.state.order_items.value === []) {
             return;
         }
-
+        const person: { label: string, value: IPerson } = this.state.person.value!;
         const newOrder = {
-            person_id: this.state.person.value,
+            person_id: person!.value.id,
             items: this.state.order_items.value.map((oi: { count: number, book: IBook }) => {
                 return {
                     book_id: oi.book.id,
@@ -288,6 +304,49 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
 
 
+    /////  start calc total price by person_id & items list /////
+
+    private async fetchPrice(toastError: boolean = true) {
+        if (!this.state.isFormValid) return;
+        if (!this.state.person.value === undefined || this.state.order_items.value === []) return;
+
+        this.setState({ ...this.state, fetchPrice_loader: true });
+
+        let order_items = this.state.order_items.value.map((oi: { count: number, book: IBook }) => {
+            return {
+                book_id: oi.book.id,
+                count: oi.count,
+            }
+        })
+        const person: { label: string, value: IPerson } = this.state.person.value!;
+        const person_id: string = person!.value.id;
+
+        let res_fetchPrice = await this._priceService.calcPrice(order_items, person_id).catch(error => {
+            let msgObj = this.handleError({ error: error.response, notify: toastError });
+            this.setState({ ...this.state, fetchPrice_loader: false, totalPrice: msgObj.body });
+        });
+
+        // this.setState({ ...this.state, fetchPrice_loader: false });
+
+        if (res_fetchPrice) {
+            this.setState({ ...this.state, totalPrice: res_fetchPrice.data.total_price, fetchPrice_loader: false });
+        }
+
+    }
+
+    totalPrice_render() {
+        // this.state.totalPrice.toLocaleString()
+        if (typeof this.state.totalPrice === 'string') {
+            return <small className="text-danger">{this.state.totalPrice}</small>
+        } else {
+            return (this.state.totalPrice || '').toLocaleString();
+        }
+    }
+
+    /////  end calc total price by person_id & items list /////
+
+
+
     // reset form /////////////
 
     resetForm() {
@@ -318,7 +377,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                 </div>
                                 {/* start give data by inputs */}
                                 <div className="row">
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-6 col-sm-12">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         <AsyncSelect
                                             placeholder={Localization.person}
@@ -330,13 +389,44 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                             onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
                                         />
                                     </div>
-                                    <div className="col-md-6 col-sm-6">
-                                        <OrderItems
-                                            defaultValue={this.state.order_items.value}
-                                            onChange={(list, isValid) => this.orderItemsChange(list, isValid)}
-                                            required
-                                            label={Localization.order}
-                                        ></OrderItems>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-12 col-sm-12">
+                                        <div className="mt-4">
+                                            <OrderItems
+                                                defaultValue={this.state.order_items.value}
+                                                onChange={(list, isValid) => this.orderItemsChange(list, isValid)}
+                                                required
+                                                label={Localization.order}
+                                            ></OrderItems>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-6 col-sm-12">
+                                        {
+                                            <div className="mt-4">
+                                                <h4 className="d-inline-block text-muted">{Localization.total_price}: </h4>
+                                                {
+                                                    !this.state.isFormValid
+                                                        ?
+                                                        0
+                                                        :
+                                                        <BtnLoader
+                                                            btnClassName="btn py-0"
+                                                            loading={this.state.fetchPrice_loader}
+                                                            onClick={() => this.fetchPrice()}
+                                                        >
+                                                            <h4 className="mb-0 text-info">
+                                                                {this.totalPrice_render()}
+                                                                <small className="ml-3">({Localization.recalculate})</small>
+                                                            </h4>
+                                                        </BtnLoader>
+                                                }
+
+                                            </div>
+                                        }
+
                                     </div>
                                 </div>
                                 {/* end of give data by inputs */}

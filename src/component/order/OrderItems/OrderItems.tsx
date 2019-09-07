@@ -235,6 +235,16 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                         <Fragment key={item.id}>
                             <div className="pl-5 mt-4">
                                 <div className="row">
+                                    <div  title={Localization.remove} className="col-md-1 mt-2">
+                                        <BtnLoader
+                                            btnClassName="btn btn-outline-danger btn-remove-orderitems btn-sm mt-4"
+                                            onClick={() => this.removeRow(index)}
+                                            loading={false}
+                                            disabled={false}
+                                        >
+                                            &times;
+                                        </BtnLoader>
+                                    </div>
                                     <div className="col-md-6">
                                         <label htmlFor="">{Localization.book}</label>
                                         <AsyncSelect
@@ -247,63 +257,57 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
                                             onChange={(selectedBook) => this.handleBookChange(selectedBook, index)}
                                         />
                                     </div>
-                                    {
-                                        item.book
-                                            ?
-                                            <div className="item-count-wrapper text-center mr-3">
-                                                <div className={
-                                                    !this.is_countable_book(item.book.value)
-                                                        ?
-                                                        "btn btn-light btn-sm cursor-pointer disabled"
-                                                        :
-                                                        "btn btn-light btn-sm cursor-pointer"
-                                                }
-                                                    onClick={() => this.updateCartItem_up(item, index)}>
-                                                    <i className="fa fa-angle-up"></i>
+                                    <div className="col-md-2">
+                                        {
+                                            item.book
+                                                ?
+                                                <div className="item-count-wrapper text-center mr-3">
+                                                    <div className={
+                                                        !this.is_countable_book(item.book.value)
+                                                            ?
+                                                            "btn btn-light btn-sm cursor-pointer disabled"
+                                                            :
+                                                            "btn btn-light btn-sm cursor-pointer"
+                                                    }
+                                                        onClick={() => this.updateCartItem_up(item, index)}>
+                                                        <i className="fa fa-angle-up"></i>
+                                                    </div>
+                                                    {
+                                                        this.is_countable_book(item.book.value) ?
+                                                            <div className="item-count rounded">{item.count}</div>
+                                                            :
+                                                            <div className="item-count rounded disable">{item.count}</div>
+                                                    }
+                                                    <div className={
+                                                        "btn btn-light btn-sm cursor-pointer " +
+                                                        (item.count! < 2 ? 'disabled' : '')
+                                                    }
+                                                        onClick={() => this.updateCartItem_down(item, index)}>
+                                                        <i className="fa fa-angle-down"></i>
+                                                    </div>
                                                 </div>
-                                                {
-                                                    this.is_countable_book(item.book.value) ?
-                                                        <div className="item-count rounded">{item.count}</div>
-                                                        :
-                                                        <div className="item-count rounded disable">{item.count}</div>
-                                                }
-                                                <div className={
-                                                    "btn btn-light btn-sm cursor-pointer " +
-                                                    (item.count! < 2 ? 'disabled' : '')
-                                                }
-                                                    onClick={() => this.updateCartItem_down(item, index)}>
-                                                    <i className="fa fa-angle-down"></i>
+                                                :
+                                                ""
+                                        }
+                                    </div>
+                                    <div className="col-md-3">
+                                        {
+                                            item.book && item.book.value.price
+                                                ?
+                                                <div className="total-price rounded">
+                                                    {
+                                                        (item.count * item.book.value.price).toLocaleString()
+                                                    }
                                                 </div>
-                                            </div>
-                                            :
-                                            ""
-                                    }
-                                    {
-                                        item.book && item.book.value.price
-                                            ?
-                                            <div className="total-price rounded">
-                                                {
-                                                    item.count * item.book.value.price
-                                                }
-                                            </div>
-                                            :
-                                            ""
-                                    }
-                                    <div className="col-1 mt-2">
-                                        <BtnLoader
-                                            btnClassName="btn btn-danger btn-sm mt-4"
-                                            onClick={() => this.removeRow(index)}
-                                            loading={false}
-                                            disabled={false}
-                                        >
-                                            &times;
-                                        </BtnLoader>
+                                                :
+                                                ""
+                                        }
                                     </div>
                                 </div>
                             </div>
                         </Fragment>
                     ))}
-                    <div className="mx-4 px-3 my-3">
+                    <div className="mx-4 px-3 my-4">
                         <div className="row">
                             <div className="d-flex justify-content-start">
                                 <BtnLoader

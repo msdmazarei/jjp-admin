@@ -5,7 +5,7 @@ import { NavLink, Link } from "react-router-dom";
 // import { PropTypes} from "prop-types";      //commented for error and see line 154
 
 // javascript plugin used to create scrollbars on windows
-import PerfectScrollbar from "perfect-scrollbar";
+// import PerfectScrollbar from "perfect-scrollbar";
 
 // reactstrap components
 import { Nav } from "reactstrap";
@@ -28,18 +28,18 @@ class Sidebar extends React.Component<any,any> {
     return this.props.location.pathname.indexOf(routeName) > -1 ? "active" : "";
   }
   componentDidMount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      let sidebar:any=this.refs.sidebar;
-      ps = new PerfectScrollbar(sidebar, {
-        suppressScrollX: true,
-        suppressScrollY: false
-      });
-    }
+    // if (navigator.platform.indexOf("Win") > -1) {
+    //   let sidebar:any=this.refs.sidebar;
+    //   ps = new PerfectScrollbar(sidebar, {
+    //     suppressScrollX: true,
+    //     suppressScrollY: false
+    //   });
+    // }
   }
   componentWillUnmount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps.destroy();
-    }
+    // if (navigator.platform.indexOf("Win") > -1) {
+    //   ps.destroy();
+    // }
   }
   linkOnClick = () => {
     document.documentElement.classList.remove("nav-open");

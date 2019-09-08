@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import PerfectScrollbar from "perfect-scrollbar";
+// import PerfectScrollbar from "perfect-scrollbar";
 
 // core components
 import { AdminNavbar } from "../../component/Navbars/AdminNavbar";
@@ -25,7 +25,7 @@ interface IProps {
   location: Location; // HSTR.Location;
 }
 
-let ps: any;
+// let ps: any;
 
 class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IProps, any> {
   constructor(props: any) {
@@ -52,38 +52,38 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
   }
 
   componentDidMount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      document.documentElement.className += " perfect-scrollbar-on";
-      document.documentElement.classList.remove("perfect-scrollbar-off");
-      let refsss: any = this.refs;
-      if (!refsss.mainPanel) { return; }
-      ps = new PerfectScrollbar(refsss.mainPanel, { suppressScrollX: true });
-      let tables: any = document.querySelectorAll(".table-responsive");
-      for (let i = 0; i < tables.length; i++) {
-        ps = new PerfectScrollbar(tables[i]);
-      }
-    }
+    // if (navigator.platform.indexOf("Win") > -1) {
+    //   document.documentElement.className += " perfect-scrollbar-on";
+    //   document.documentElement.classList.remove("perfect-scrollbar-off");
+    //   let refsss: any = this.refs;
+    //   if (!refsss.mainPanel) { return; }
+    //   ps = new PerfectScrollbar(refsss.mainPanel, { suppressScrollX: true });
+    //   let tables: any = document.querySelectorAll(".table-responsive");
+    //   for (let i = 0; i < tables.length; i++) {
+    //     ps = new PerfectScrollbar(tables[i]);
+    //   }
+    // }
   }
   componentWillUnmount() {
-    if (navigator.platform.indexOf("Win") > -1) {
-      ps && ps.destroy();
-      document.documentElement.className += " perfect-scrollbar-off";
-      document.documentElement.classList.remove("perfect-scrollbar-on");
-    }
+    // if (navigator.platform.indexOf("Win") > -1) {
+    //   ps && ps.destroy();
+    //   document.documentElement.className += " perfect-scrollbar-off";
+    //   document.documentElement.classList.remove("perfect-scrollbar-on");
+    // }
   }
   componentDidUpdate(e: any) {
-    if (e.history.action === "PUSH") {
-      if (navigator.platform.indexOf("Win") > -1) {
-        let tables: any = document.querySelectorAll(".table-responsive");
-        for (let i = 0; i < tables.length; i++) {
-          ps = new PerfectScrollbar(tables[i]);
-        }
-      }
-      document.documentElement.scrollTop = 0;
-      (document.scrollingElement || { scrollTop: undefined }).scrollTop = 0;
-      let refsss: any = this.refs;
-      refsss.mainPanel.scrollTop = 0;
-    }
+    // if (e.history.action === "PUSH") {
+    //   if (navigator.platform.indexOf("Win") > -1) {
+    //     let tables: any = document.querySelectorAll(".table-responsive");
+    //     for (let i = 0; i < tables.length; i++) {
+    //       ps = new PerfectScrollbar(tables[i]);
+    //     }
+    //   }
+    //   document.documentElement.scrollTop = 0;
+    //   (document.scrollingElement || { scrollTop: undefined }).scrollTop = 0;
+    //   let refsss: any = this.refs;
+    //   refsss.mainPanel.scrollTop = 0;
+    // }
   }
   // this function opens and closes the sidebar on small devices
   toggleSidebar = () => {

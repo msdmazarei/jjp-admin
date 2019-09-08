@@ -9,6 +9,19 @@
         .dropdown-item{
           padding-right: 0!important;
           padding-left: 0!important;
+          display: flex!important;
+          .action-text-wrapper{
+            width: 2rem!important;
+            text-align: center!important;
+            .fa{
+              text-align: center!important;
+              padding-top: 0.5rem!important;
+            }
+          }
+          .action-name{
+            padding-top: 0.3rem!important;
+            padding-right: 0.7rem!important;
+          }
         }
       }
       &:before{

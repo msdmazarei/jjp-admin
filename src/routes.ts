@@ -128,7 +128,7 @@ var routes = [
       component: OrderSave,               
       layout: "/admin",
       isitem: false,
-      brandName: ['user', 'edit']
+      brandName: ['order', 'edit']
     },
     // order end
 ];

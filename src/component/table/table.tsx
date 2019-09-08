@@ -76,7 +76,6 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                                                     <div className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
                                                                     :
                                                                     ''
-                                                                    // <div className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</div>
                                                             ))
                                                             : ''
                                                     }

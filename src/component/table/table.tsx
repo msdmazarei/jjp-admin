@@ -12,6 +12,7 @@ export interface IProps_table {
         cellTemplateFunc?: (row: any) => JSX.Element | string;
     }[],
     actions?: {
+        name?:string;
         access?: (row: any) => boolean;
         text: any;
         ac_func: (row: any) => void
@@ -70,7 +71,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                             ))}
                                             {this.props.actions
                                                 ?
-                                                <td className="py-0 px-1 text-center action-col">
+                                                <td className="py-0 px-1 text-center">
                                                     {
                                                         this.props.actions
                                                             ?
@@ -82,16 +83,25 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                                                     className="px-3 bg-light btn"
                                                                     id="dropdown-split-basic"
                                                                 >
-                                                                    <i title={Localization.more} className="fa fa-ellipsis-v"></i>
+                                                                    <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
                                                                 </Dropdown.Toggle>
                                                                 <Dropdown.Menu
-                                                                className="dropdown-menu-right"
+                                                                className="dropdown-menu-right action-dropdown-menu"
                                                                 >
                                                                     {
                                                                         this.props.actions.map((ac, index) => (
                                                                             (this.getAccess_action(row, ac.access))
                                                                                 ?
-                                                                                <Dropdown.Item className="text-center" key={index} onClick={() => ac.ac_func(row)}>{ac.text}</Dropdown.Item>
+                                                                                <Dropdown.Item className="text-center" key={index} onClick={() => ac.ac_func(row)}>
+                                                                                    <>
+                                                                                    <div className="text-center action-text-wrapper">
+                                                                                        {ac.text}
+                                                                                    </div>
+                                                                                    <span className="action-name">
+                                                                                        {ac.name}
+                                                                                    </span>
+                                                                                    </>
+                                                                                    </Dropdown.Item>
                                                                                 :
                                                                                 ''
                                                                         ))

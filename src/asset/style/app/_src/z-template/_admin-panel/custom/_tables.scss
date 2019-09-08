@@ -159,6 +159,19 @@
 .table-responsive{
   overflow: scroll;
   padding-bottom: 10px;
+  .action-col{
+    // min-width: 5rem!important;
+    // max-width: 3rem!important;
+    .dropdown{
+      min-width: 3.5rem!important;
+      .dropdown-menu{
+        min-width: 5rem!important;
+        max-width: 5rem!important;
+        // right: 20%!important;
+        // left: 25%!important;
+      }
+    }
+  }
 }
 
 #tables .table-responsive{

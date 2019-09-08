@@ -131,8 +131,12 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
-        { text: <i title={Localization.update} className="table-action-shadow-hover fa fa-pencil-square-o text-primary pt-2"></i>, ac_func: (row: any) => { this.updateRow(row) } },
+        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+         ac_func: (row: any) => { this.onShowRemoveModal(row) },
+         name:Localization.remove },
+        { text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+         ac_func: (row: any) => { this.updateRow(row) },
+         name:Localization.update },
       ]
     },
     filter: {

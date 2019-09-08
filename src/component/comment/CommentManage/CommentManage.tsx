@@ -167,8 +167,12 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="table-action-shadow-hover fa fa-trash text-danger pt-2 mt-1"></i>, ac_func: (row: any) => { this.onShowRemoveModal(row) } },
-        { text: <i title={Localization.show_comment} className="table-action-shadow-hover fa fa-eye text-info pt-2"></i>, ac_func: (row: any) => { this.onShowCommentModal(row) } },
+        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+         ac_func: (row: any) => { this.onShowRemoveModal(row) },
+         name:Localization.remove },
+        { text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
+         ac_func: (row: any) => { this.onShowCommentModal(row) } ,
+         name:Localization.show_comment},
       ]
     },
     CommentError: undefined,

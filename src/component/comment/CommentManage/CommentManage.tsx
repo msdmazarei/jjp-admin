@@ -349,6 +349,10 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   componentDidMount() {
+    this.setState({
+      ...this.state,
+      tableProcessLoader:true
+    })
     this.fetchComments();
   }
 
@@ -630,7 +634,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           </div>
           <div className="row">
             <div className="col-12">
-              <Table list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders} actions={this.state.comment_table.actions}></Table>
+              <Table loading={this.state.tableProcessLoader} list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders} actions={this.state.comment_table.actions}></Table>
               <div>
                 {this.pager_previous_btn_render()}
                 {this.pager_next_btn_render()}

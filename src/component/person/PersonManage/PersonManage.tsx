@@ -237,6 +237,10 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   componentDidMount() {
+    this.setState({
+      ...this.state,
+      tableProcessLoader:true
+    })
     this.fetchPersons();
   }
 
@@ -505,7 +509,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           </div>
           <div className="row">
             <div className="col-12">
-              <Table list={this.state.person_table.list} colHeaders={this.state.person_table.colHeaders} actions={this.state.person_table.actions}></Table>
+              <Table loading={this.state.tableProcessLoader} list={this.state.person_table.list} colHeaders={this.state.person_table.colHeaders} actions={this.state.person_table.actions}></Table>
               <div>
                 {this.pager_previous_btn_render()}
                 {this.pager_next_btn_render()}

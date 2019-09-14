@@ -1,5 +1,11 @@
+.table-custom-scroll-x{
+  overflow-x: scroll!important;
+}
+.table-custom-scroll-y{
+  height: auto;
+  overflow-y: auto!important;
+}
 .table{
-  
   > tbody > tr > td {
     color: rgba(255, 255, 255, 0.7) !important;
 

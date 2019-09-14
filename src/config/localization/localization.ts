@@ -303,6 +303,7 @@ interface ILocalization extends LocalizedStringsMethods {
     Total_purchase:string;
     invoice:string;
     recalculate: string;
+    creation_date:string;
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

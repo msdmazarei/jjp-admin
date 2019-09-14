@@ -291,6 +291,7 @@ export const en = {
     Total_purchase:"Total purchase",
     invoice:"invoice",
     recalculate:"recalculate",
+    creation_date:"creation date",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

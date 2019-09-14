@@ -294,6 +294,7 @@ export const fa = {
     Total_purchase:"مجموع خرید",
     invoice:"فاکتور",
     recalculate:"محاسبه مجدد",
+    creation_date:"تاریخ ایجاد",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

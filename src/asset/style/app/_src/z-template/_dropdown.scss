@@ -1,5 +1,10 @@
 .dropdown{
     display: inline-block!important;
+    &.show{
+      .dropdown-menu.show {
+        margin-bottom: 1rem;
+      }
+    }
     .dropdown-icon{
       cursor: pointer!important;
     }

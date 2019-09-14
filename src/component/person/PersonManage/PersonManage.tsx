@@ -14,10 +14,10 @@ import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
-// import { PriceService } from "../../../service/service.price";
-// import { Input } from '../../form/input/Input';
-// import { async } from "q";
-// import { string } from "prop-types";
+import 'moment/locale/fa';
+import 'moment/locale/ar';
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
 
 //// props & state define ////////
 export interface IProps {
@@ -87,6 +87,15 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                 </div>
               </div>
             }
+          }
+        },
+        {
+          field: "creation_date", title: Localization.creation_date,
+          cellTemplateFunc: (row: IPerson) => {
+            if (row.creation_date) {
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+            }
+            return '';
           }
         },
         {
@@ -175,6 +184,28 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   updateRow(person_id: any) {
     this.props.history.push(`/person/${person_id.id}/edit`);
   }
+
+  // timestamp to date 
+
+  getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+    }
+    else {
+      return moment(timestamp * 1000).format('YYYY/MM/DD');
+    }
+  }
+
+  _getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return this.getFromNowDate(timestamp);
+    }
+    else {
+      return this.getFromNowDate(timestamp);
+    }
+  }
+
+
 
   /////// delete modal function define ////////
 

@@ -18,6 +18,10 @@ import { BOOK_TYPES } from "../../../enum/Book";
 import { AppRegex } from "../../../config/regex";
 import { PriceService } from "../../../service/service.price";
 import Select from 'react-select';
+import 'moment/locale/fa';
+import 'moment/locale/ar';
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
 
 /// define props & state ///////
 export interface IProps {
@@ -107,6 +111,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
+          field: "creation_date", title: Localization.creation_date,
+          cellTemplateFunc: (row: IBook) => {
+            if (row.creation_date) {
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+            }
+            return '';
+          }
+        },
+        {
           field: "price", title: Localization.price,
           cellTemplateFunc: (row: IBook) => {
             // row.price = 3436465;
@@ -148,15 +161,21 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         { field: "pub_year", title: Localization.publication_date },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
-         ac_func: (row: any) => { this.onShowRemoveModal(row) },
-         name:Localization.remove },
-        { text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
-         ac_func: (row: any) => { this.updateRow(row) },
-         name:Localization.update},
-        { text: <i title={Localization.Pricing} className="fa fa-money text-success"></i>,
-         ac_func: (row: any) => { this.onShowPriceModal(row) }, 
-         name:Localization.Pricing},
+        {
+          text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+          ac_func: (row: any) => { this.onShowRemoveModal(row) },
+          name: Localization.remove
+        },
+        {
+          text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+          ac_func: (row: any) => { this.updateRow(row) },
+          name: Localization.update
+        },
+        {
+          text: <i title={Localization.Pricing} className="fa fa-money text-success"></i>,
+          ac_func: (row: any) => { this.onShowPriceModal(row) },
+          name: Localization.Pricing
+        },
       ]
     },
     BookError: undefined,
@@ -197,8 +216,37 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this._priceService.setToken(this.props.token)
   }
 
+  componentDidMount() {
+    moment.locale("en");
+    this.setState({
+      ...this.state,
+      tableProcessLoader: true
+    })
+    this.fetchBooks();
+  }
+
   updateRow(book_id: any) {
     this.props.history.push(`/book/${book_id.id}/edit`);
+  }
+
+  // timestamp to date 
+
+  getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+    }
+    else {
+      return moment(timestamp * 1000).format('YYYY/MM/DD');
+    }
+  }
+
+  _getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return this.getFromNowDate(timestamp);
+    }
+    else {
+      return this.getFromNowDate(timestamp);
+    }
   }
 
   // delete modal function define
@@ -337,13 +385,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
 
-  componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader:true
-    })
-    this.fetchBooks();
-  }
+
 
   async fetchBooks() {
     let res = await this._bookService.search(

@@ -16,6 +16,10 @@ import Select from 'react-select';
 import { OrderService } from "../../../service/service.order";
 import { IPerson } from "../../../model/model.person";
 import { IBook } from "../../../model/model.book";
+import 'moment/locale/fa';
+import 'moment/locale/ar';
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
 
 /// define props & state ///////
 export interface IProps {
@@ -77,6 +81,15 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               return <div title={this.getPersonFullName(row.person)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {this.getPersonFullName(row.person)}
               </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "creation_date", title: Localization.creation_date,
+          cellTemplateFunc: (row: any) => {
+            if (row.creation_date) {
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
             }
             return '';
           }
@@ -181,6 +194,26 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader:true
     })
     this.fetchOrders();
+  }
+
+    // timestamp to date 
+
+  getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+    }
+    else {
+      return moment(timestamp * 1000).format('YYYY/MM/DD');
+    }
+  }
+
+  _getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return this.getFromNowDate(timestamp);
+    }
+    else {
+      return this.getFromNowDate(timestamp);
+    }
   }
 
   /////  start request for table data  /////////

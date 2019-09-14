@@ -15,6 +15,10 @@ import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
 import { CommentService } from "../../../service/service.comment";
 import { IComment } from "../../../model/model.comment";
+import 'moment/locale/fa';
+import 'moment/locale/ar';
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
 
 /// define props & state ///////
 export interface IProps {
@@ -82,6 +86,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
               return <div title={row.body} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.body}
               </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "creation_date", title: Localization.creation_date,
+          cellTemplateFunc: (row: IComment) => {
+            if (row.creation_date) {
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
             }
             return '';
           }
@@ -204,6 +217,27 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   constructor(props: IProps) {
     super(props);
     this._commentService.setToken(this.props.token)
+  }
+
+
+  // timestamp to date 
+
+  getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+    }
+    else {
+      return moment(timestamp * 1000).format('YYYY/MM/DD');
+    }
+  }
+
+  _getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return this.getFromNowDate(timestamp);
+    }
+    else {
+      return this.getFromNowDate(timestamp);
+    }
   }
 
   // comment show modal function define

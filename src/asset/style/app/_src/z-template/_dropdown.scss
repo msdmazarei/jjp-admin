@@ -44,3 +44,9 @@
       }
     }
 }
+
+@media screen and (max-width: 991px){
+  .dropdown-toggle:after{
+    display: none!important;
+  }
+}

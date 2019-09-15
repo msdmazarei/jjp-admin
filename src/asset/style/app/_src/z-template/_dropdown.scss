@@ -50,3 +50,14 @@
     display: none!important;
   }
 }
+
+body:not(.rtl){
+  .dropdown{
+    .dropdown-menu.dropdown-menu-right{
+      &::before{
+        left:135px!important;
+        right:auto!important;
+      }
+    }
+  }
+}

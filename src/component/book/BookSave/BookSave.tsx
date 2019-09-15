@@ -28,6 +28,10 @@ enum SAVE_MODE {
 interface IState {
     // book: any;//IBook | undefined;
     book: {
+        title: {
+            value: string | undefined,
+            isValid: boolean
+        };
         edition: {
             value: string | undefined;
             isValid: boolean;
@@ -37,10 +41,6 @@ interface IState {
             isValid: boolean;
         };
         pub_year: {
-            value: string | undefined,
-            isValid: boolean
-        };
-        title: {
             value: string | undefined,
             isValid: boolean
         };
@@ -56,20 +56,28 @@ interface IState {
             value: string | undefined,
             isValid: boolean
         };
-        from_editor: {
-            value: string | undefined,
+        type: {
+            value: BOOK_TYPES | BOOK_TYPES[] | null,
             isValid: boolean
         };
-        description: {
-            value: string | undefined,
+        price: {
+            value: number | undefined,
             isValid: boolean
         };
         genre: {
             value: BOOK_GENRE[] | null,
             isValid: boolean
         };
-        type: {
-            value: BOOK_TYPES | BOOK_TYPES[] | null,
+        tags: {
+            value: { label: string, value: string }[];
+            isValid: boolean;
+        };
+        from_editor: {
+            value: string | undefined,
+            isValid: boolean
+        };
+        description: {
+            value: string | undefined,
             isValid: boolean
         };
         roles: {
@@ -80,10 +88,7 @@ interface IState {
             value: [] | any,
             isValid: boolean
         };
-        tags: {
-            value: { label: string, value: string }[];
-            isValid: boolean;
-        };
+        
     };
     isFormValid: boolean;
     saveMode: SAVE_MODE;
@@ -102,6 +107,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
     state = {
         book: {
+            title: {
+                value: undefined,
+                isValid: false
+            },
             edition: {
                 value: undefined,
                 isValid: true
@@ -113,10 +122,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             pub_year: {
                 value: undefined,
                 isValid: true
-            },
-            title: {
-                value: undefined,
-                isValid: false
             },
             isben: {
                 value: undefined,
@@ -130,6 +135,22 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 value: undefined,
                 isValid: true
             },
+            type: {
+                value: null,
+                isValid: false
+            },
+            price: {
+                value: undefined,
+                isValid: true
+            },
+            genre: {
+                value: null,
+                isValid: true
+            },
+            tags: {
+                value: [],
+                isValid: true
+            },
             from_editor: {
                 value: undefined,
                 isValid: true
@@ -138,14 +159,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 value: undefined,
                 isValid: true
             },
-            genre: {
-                value: null,
-                isValid: true
-            },
-            type: {
-                value: null,
-                isValid: false
-            },
             roles: {
                 value: undefined,
                 isValid: false
@@ -153,11 +166,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             images: {
                 value: undefined,
                 isValid: true
-            },
-            tags: {
-                value: [],
-                isValid: true
-            }
+            }  
         },
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
@@ -238,6 +247,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     duration: { ...this.state.book.duration, value: res.data.duration, isValid: true },
                     from_editor: { ...this.state.book.from_editor, value: res.data.from_editor, isValid: true },
                     description: { ...this.state.book.description, value: res.data.description, isValid: true },
+                    price: { ...this.state.book.price, value: res.data.price, isValid: true },
                     genre: { ...this.state.book.genre, value: genreList, isValid: true },
                     roles: { ...this.state.book.roles, value: res.data.roles, isValid: true },
                     type: { ...this.state.book.type, value: typeList, isValid: true },
@@ -361,6 +371,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
+            price: this.state.book.price.value,
             genre: genreList,
             types: typeList,
             roles: roleList,
@@ -402,6 +413,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
+            price: this.state.book.price.value,
             genre: genreList,
             roles: roleList,
             images: imgUrls,
@@ -496,6 +508,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 genre: { value: null, isValid: true },
                 roles: { value: undefined, isValid: false },
                 type: { value: null, isValid: false },
+                price: { value: undefined, isValid: true },
                 images: { value: undefined, isValid: true },
                 tags: { value: [], isValid: true },
             },
@@ -548,7 +561,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                 </div>
                                 {/* start give data by inputs */}
                                 <div className="row">
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "title")}
                                             label={Localization.title}
@@ -558,7 +571,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             readOnly={this.state.saveMode === SAVE_MODE.EDIT}
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, 'edition')}
                                             label={Localization.edition}
@@ -566,7 +579,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             defaultValue={this.state.book.edition.value}
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, 'language')}
                                             label={Localization.language}
@@ -574,7 +587,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             defaultValue={this.state.book.language.value}
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "pub_year")}
                                             label={Localization.publication_date}
@@ -584,7 +597,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "isben")}
                                             label={Localization.book_isben}
@@ -592,7 +605,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             defaultValue={this.state.book.isben.value}
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "pages")}
                                             label={Localization.pages}
@@ -602,7 +615,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "duration")}
                                             label={Localization.duration}
@@ -612,8 +625,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
-
-                                    <div className="col-md-3 col-sm-6">
+                                    <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.type} <span className="text-danger">*</span></label>
                                             <Select
@@ -625,6 +637,16 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
                                             />
                                         </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-6">
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "price")}
+                                            label={Localization.price}
+                                            placeholder={Localization.price}
+                                            defaultValue={this.state.book.price.value}
+                                            pattern={AppRegex.number}
+                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
+                                        />
                                     </div>
                                     <div className="col-md-6 col-sm-12">
                                         <div className="form-group">

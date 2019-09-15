@@ -514,7 +514,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <div className="template-box mb-4">
                 <div className="row">
-                  <div className="col-4">
+                  <div className="col-sm-6 col-xl-4">
                     <Input
                       onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
                       label={Localization.username}

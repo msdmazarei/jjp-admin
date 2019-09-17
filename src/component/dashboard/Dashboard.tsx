@@ -1,6 +1,9 @@
 import React from "react";
 import { Localization } from "../../config/localization/localization";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Brush, ReferenceLine } from 'recharts';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Brush, ReferenceLine,
+  ResponsiveContainer
+} from 'recharts';
 import { TInternationalization } from "../../config/setup";
 import { IToken } from "../../model/model.token";
 
@@ -39,8 +42,20 @@ class Dashboard extends React.Component<IProps, IState> {
         loader: true,
       })
     }
+  }
 
+  resize(): number {
+    return 50;
+  }
 
+  private pie_wrapper: any;
+  calc_pie_width(): number {
+    // debugger;
+    if (this.pie_wrapper) {
+      // this.pie_wrapper
+      return this.pie_wrapper.offsetWidth;
+    }
+    return 200;
   }
 
   render() {
@@ -123,7 +138,7 @@ class Dashboard extends React.Component<IProps, IState> {
       { name: '37', uv: -63, pv: 464 },
       { name: '38', uv: -91, pv: -2 },
       { name: '39', uv: -66, pv: 154 },
-      { name: '40', uv: -50, pv: 186 },
+      { name: '47', uv: -50, pv: 186 },
     ];
 
     // const files = this.state.files.map((file: any) => (
@@ -134,38 +149,42 @@ class Dashboard extends React.Component<IProps, IState> {
     return (
       <div className="content">
         <div className="row">
-          <div className="col-12">
+          <div className="col-12 ">
             <h2>{Localization.dashboard}</h2>
             <div className="row">
-              <div className="col-6 text-center">
+              <div className="col-12 col-md-6 text-center">
                 {
                   this.state.loader
                     ?
                     <i className="fa fa-spinner fa-3x fa-spin mt-5"></i>
                     :
-                    <BarChart width={750} height={450} data={data} margin={{top: 5, right: 30, left: 20, bottom: 5,}}>
+                    <ResponsiveContainer width="100%" height={500}>
+                    <BarChart width={750} height={450} data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip />
-                      <Legend />
                       <Bar dataKey="pv" fill="#8884d8" />
                       <Bar dataKey="uv" fill="#82ca9d" />
+                      <Legend />
                     </BarChart>
+                    </ResponsiveContainer>
                 }
               </div>
-              <div className="col-6 text-center">
+              <div className="col-12 col-md-6 text-center" ref={r => this.pie_wrapper = r}>
                 {
                   this.state.loader
                     ?
                     <i className="fa fa-spinner fa-3x fa-spin"></i>
                     :
-                    <PieChart width={600} height={600}>
-                      <Pie data={data01} dataKey="value" cx={220} cy={220} outerRadius={60} fill="#8884d8" />
-                      <Pie data={data02} dataKey="value" cx={220} cy={220} innerRadius={90} outerRadius={180} fill="#82ca9d" label />
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
+                    <ResponsiveContainer width="100%" height={500}>
+                      <PieChart>
+                        <Pie data={data01} dataKey="value"  outerRadius={60} fill="#8884d8" />
+                        <Pie data={data02} dataKey="value"  innerRadius={90} outerRadius={120} fill="#82ca9d" label />
+                        <Tooltip />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
                 }
               </div>
             </div>
@@ -176,7 +195,8 @@ class Dashboard extends React.Component<IProps, IState> {
                     ?
                     <i className="fa fa-spinner fa-3x fa-spin"></i>
                     :
-                    <BarChart width={1500} height={700} data={data3} margin={{ top: 5, right: 30, left: 20, bottom: 5,}}>
+                    <ResponsiveContainer width="100%" height={500}>
+                    <BarChart width={1500} height={700} data={data3} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
@@ -188,6 +208,7 @@ class Dashboard extends React.Component<IProps, IState> {
                       <Bar dataKey="uv" fill="#82ca9d" />
                       <Legend />
                     </BarChart>
+                    </ResponsiveContainer>
                 }
               </div>
             </div>

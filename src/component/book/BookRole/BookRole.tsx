@@ -12,6 +12,8 @@ import { Localization } from '../../../config/localization/localization';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
+import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
+
 
 interface IRoleRow {
     id: string;
@@ -20,6 +22,9 @@ interface IRoleRow {
 }
 interface IState {
     list: IRoleRow[];
+    quickPersonModalStatus: boolean;
+    person: IPerson | undefined;
+    quickPerson_index: number | undefined;
 }
 
 type TOuterListItem = { role: BOOK_ROLES | undefined, person: IPerson | undefined, id?: string };
@@ -34,7 +39,10 @@ interface IProps {
 
 class BookRoleComponent extends BaseComponent<IProps, IState> {
     state = {
-        list: this.convertOuterToInner(this.props.defaultValue || []) // todo
+        list: this.convertOuterToInner(this.props.defaultValue || []), // todo
+        quickPersonModalStatus: false,
+        person: undefined,
+        quickPerson_index: undefined,
     }
     roleOptions = [
         { value: 'Author', label: Localization.role_type_list.Author },
@@ -167,6 +175,40 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         return valid;
     }
 
+    ////////   start crate quick person  //////////
+
+    quickpersonOpen(index: number) {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: true,
+            quickPerson_index: index,
+        })
+
+    }
+    quickpersonClose() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: false,
+        })
+    }
+
+    seterPerson(person: IPerson, index: number) {
+        let newlist = [...this.state.list];
+        const selectedPerson: {
+            label: string;
+            value: IPerson
+        } = {
+            label: this.getPersonFullName(person),
+            value: person
+        }
+        newlist[index].person = selectedPerson;
+        this.setState({ ...this.state, list: newlist },
+            () => {
+                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+            });
+    }
+    ////////   end crate quick person  //////////
+
     render() {
         return (
             <>
@@ -198,6 +240,11 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                                     </div>
                                     <div className="col-md-5">
                                         <label htmlFor="">{Localization.person}</label>
+                                        <i
+                                            title={Localization.Quick_person_creation}
+                                            className="fa fa-plus-circle text-success mx-1"
+                                            onClick={() => this.quickpersonOpen(index)}
+                                        ></i>
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
@@ -237,6 +284,19 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
+                {
+                    // this.state.quickPersonModalStatus
+                    // ?
+                    <QuickPerson
+                        onCreate={(person: IPerson, index: number) => this.seterPerson(person, index)}
+                        // index={this.state.index}
+                        data={this.state.quickPerson_index}
+                        modalShow={this.state.quickPersonModalStatus}
+                        onHide={() => this.quickpersonClose()}
+                    ></QuickPerson>
+                    // :
+                    // ""
+                }
             </>
         )
     }

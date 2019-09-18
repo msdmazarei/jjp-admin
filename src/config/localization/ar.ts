@@ -292,6 +292,7 @@ export const ar = {
     invoice:"فاکتور",
     recalculate:"محاسبه مجدد",
     creation_date:"تاریخ ایجاد",
+    Quick_person_creation:"ایجاد سریع شخص",
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

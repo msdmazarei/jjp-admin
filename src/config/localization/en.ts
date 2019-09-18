@@ -292,6 +292,7 @@ export const en = {
     invoice:"invoice",
     recalculate:"recalculate",
     creation_date:"creation date",
+    Quick_person_creation:"Quick person creation",
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

@@ -276,6 +276,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchPersons() {
+    this.setState({...this.state,tableProcessLoader: true});
     let res = await this._personService.search(
       this.state.pager_limit, 
       this.state.pager_offset,

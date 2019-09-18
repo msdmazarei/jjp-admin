@@ -219,6 +219,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   /////  start request for table data  /////////
 
   async fetchOrders() {
+    this.setState({...this.state,tableProcessLoader: true});
     let res = await this._orderService.search(
       this.state.pager_limit,
       this.state.pager_offset,

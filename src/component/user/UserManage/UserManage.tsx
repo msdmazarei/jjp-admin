@@ -284,6 +284,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchUsers() {
+    this.setState({...this.state,tableProcessLoader: true});
     let res = await this._userService.search(
       this.state.pager_limit, 
       this.state.pager_offset,

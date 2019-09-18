@@ -391,6 +391,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchComments() {
+    this.setState({...this.state,tableProcessLoader: true});
     let res = await this._commentService.search(
       this.state.pager_limit,
       this.state.pager_offset,

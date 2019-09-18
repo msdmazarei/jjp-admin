@@ -388,6 +388,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
 
   async fetchBooks() {
+    this.setState({...this.state,tableProcessLoader:true})
     let res = await this._bookService.search(
       this.state.pager_limit,
       this.state.pager_offset,

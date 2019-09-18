@@ -24,9 +24,9 @@ class Dashboard extends React.Component<IProps, IState> {
     num: 10000,
   }
 
-  constructor(props: IProps) {
-    super(props);
-  }
+  // constructor(props: IProps) {
+  //   super(props);
+  // }
 
 
   resTrue() {

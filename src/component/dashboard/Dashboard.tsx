@@ -6,6 +6,9 @@ import {
 } from 'recharts';
 import { TInternationalization } from "../../config/setup";
 import { IToken } from "../../model/model.token";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import fa from "date-fns/locale/fa-IR"
 
 export interface IProps {
   history: History;
@@ -16,13 +19,21 @@ export interface IProps {
 interface IState {
   loader: boolean;
   num: number;
+  startDate: Date | null;
 }
 
 class Dashboard extends React.Component<IProps, IState> {
   state = {
     loader: true,
     num: 10000,
+    startDate: new Date()
   }
+  handleChange(date: Date | null) {
+    this.setState({
+      ...this.state,
+      startDate: date
+    });
+  };
 
   // constructor(props: IProps) {
   //   super(props);
@@ -151,6 +162,12 @@ class Dashboard extends React.Component<IProps, IState> {
         <div className="row">
           <div className="col-12 ">
             <h2>{Localization.dashboard}</h2>
+            <DatePicker
+              // dateFormat="yyyy/MM/dd"
+              selected={this.state.startDate}
+              onChange={(date: Date | null) => this.handleChange(date)}
+              locale={fa}
+               />
             <div className="row">
               <div className="col-12 col-md-6 text-center">
                 {
@@ -159,15 +176,15 @@ class Dashboard extends React.Component<IProps, IState> {
                     <i className="fa fa-spinner fa-3x fa-spin mt-5"></i>
                     :
                     <ResponsiveContainer width="100%" height={500}>
-                    <BarChart width={750} height={450} data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="pv" fill="#8884d8" />
-                      <Bar dataKey="uv" fill="#82ca9d" />
-                      <Legend />
-                    </BarChart>
+                      <BarChart width={750} height={450} data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="pv" fill="#8884d8" />
+                        <Bar dataKey="uv" fill="#82ca9d" />
+                        <Legend />
+                      </BarChart>
                     </ResponsiveContainer>
                 }
               </div>
@@ -179,8 +196,8 @@ class Dashboard extends React.Component<IProps, IState> {
                     :
                     <ResponsiveContainer width="100%" height={500}>
                       <PieChart>
-                        <Pie data={data01} dataKey="value"  outerRadius={60} fill="#8884d8" />
-                        <Pie data={data02} dataKey="value"  innerRadius={90} outerRadius={120} fill="#82ca9d" label />
+                        <Pie data={data01} dataKey="value" outerRadius={60} fill="#8884d8" />
+                        <Pie data={data02} dataKey="value" innerRadius={90} outerRadius={120} fill="#82ca9d" label />
                         <Tooltip />
                         <Legend />
                       </PieChart>
@@ -196,18 +213,18 @@ class Dashboard extends React.Component<IProps, IState> {
                     <i className="fa fa-spinner fa-3x fa-spin"></i>
                     :
                     <ResponsiveContainer width="100%" height={500}>
-                    <BarChart width={1500} height={700} data={data3} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
-                      <ReferenceLine y={0} stroke="#000" />
-                      <Brush dataKey="name" height={30} stroke="#8884d8" />
-                      <Bar dataKey="pv" fill="#8884d8" />
-                      <Bar dataKey="uv" fill="#82ca9d" />
-                      <Legend />
-                    </BarChart>
+                      <BarChart width={1500} height={700} data={data3} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
+                        <ReferenceLine y={0} stroke="#000" />
+                        <Brush dataKey="name" height={30} stroke="#8884d8" />
+                        <Bar dataKey="pv" fill="#8884d8" />
+                        <Bar dataKey="uv" fill="#82ca9d" />
+                        <Legend />
+                      </BarChart>
                     </ResponsiveContainer>
                 }
               </div>

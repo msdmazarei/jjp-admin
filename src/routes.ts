@@ -33,9 +33,10 @@ var routes = [
   {
     path: "/book/create",
     name: Localization.create_book,
+    icon: "fa fa-plus",
     component: BookSave,
     layout: "/admin",
-    isitem: false
+    isitem: true,
   },
   {
     path: "/book/:book_id/edit",

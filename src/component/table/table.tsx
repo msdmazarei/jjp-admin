@@ -32,7 +32,18 @@ export class Table<T extends IProps_table> extends React.Component<T>{
     render() {
         return (
             <>
-                <div className="table-responsive table-custom-scroll-x table-custom-scroll-y template-box mb-3">
+                <div className="table-responsive table-custom-scroll-x table-custom-scroll-y template-box mb-3 position-relative">
+
+                    <div className={
+                        "lds-roller-wrapper gutter-0 "
+                        + (this.props.loading ? '' : 'd-none')
+                    }>
+                        <div className="lds-roller">
+                            <div></div><div></div><div></div><div></div>
+                            <div></div><div></div><div></div><div></div>
+                        </div>
+                    </div>
+
                     <table className="table table-striped table-bordered table-hover table-sm table-bordered bg-white mb-0">
                         <thead className="thead-light">
                             <tr className="table-light">
@@ -54,86 +65,86 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                             </tr>
                         </thead>
                         <tbody>
-                                {
-                                    (this.props.loading)
-                                        ?
-                                        <tr>
-                                            <td colSpan={this.props.colHeaders.length + 1} className="p-5 text-center">
-                                                <i className="fa fa-spinner fa-3x fa-spin"></i>
-                                            </td>
-                                        </tr>
-                                        :
-                                        (this.props.list && this.props.list.length)
-                                            ?
-                                            this.props.list.map((row, index) => (
-                                                <tr className="table-light" key={index}>
-                                                    {this.props.colHeaders.map((ch, index) => (
-                                                        <td key={index}>
-                                                            {
-                                                                ch.cellTemplateFunc
-                                                                    ?
-                                                                    ch.cellTemplateFunc(row)
-                                                                    :
-                                                                    row[ch.field]
-                                                            }
-                                                        </td>
-                                                    ))}
-                                                    {this.props.actions
-                                                        ?
-                                                        <td className="py-0 px-1 text-center">
-                                                            {
-                                                                this.props.actions
-                                                                    ?
-                                                                    <Dropdown>
-                                                                        <Dropdown.Toggle
-                                                                            title={Localization.more}
-                                                                            split
-                                                                            variant="light"
-                                                                            className="px-3 bg-light btn"
-                                                                            id="dropdown-split-basic"
-                                                                        >
-                                                                            <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
-                                                                        </Dropdown.Toggle>
-                                                                        <Dropdown.Menu
-                                                                            className="dropdown-menu-right action-dropdown-menu"
-                                                                        >
-                                                                            {
-                                                                                this.props.actions.map((ac, index) => (
-                                                                                    (this.getAccess_action(row, ac.access))
-                                                                                        ?
-                                                                                        <Dropdown.Item className="text-center" key={index} onClick={() => ac.ac_func(row)}>
-                                                                                            <>
-                                                                                                <div className="text-center action-text-wrapper">
-                                                                                                    {ac.text}
-                                                                                                </div>
-                                                                                                <span className="action-name">
-                                                                                                    {ac.name}
-                                                                                                </span>
-                                                                                            </>
-                                                                                        </Dropdown.Item>
-                                                                                        :
-                                                                                        ''
-                                                                                ))
-                                                                            }
-                                                                        </Dropdown.Menu>
-                                                                    </Dropdown >
-                                                                    :
-                                                                    ''
-                                                            }
-                                                        </td>
-                                                        :
-                                                        ''
+                            {
+                                // (this.props.loading)
+                                //     ?
+                                //     <tr>
+                                //         <td colSpan={this.props.colHeaders.length + 1} className="p-5 text-center">
+                                //             <i className="fa fa-spinner fa-3x fa-spin"></i>
+                                //         </td>
+                                //     </tr>
+                                //     :
+                                (this.props.list && this.props.list.length)
+                                    ?
+                                    this.props.list.map((row, index) => (
+                                        <tr className="table-light" key={index}>
+                                            {this.props.colHeaders.map((ch, index) => (
+                                                <td key={index}>
+                                                    {
+                                                        ch.cellTemplateFunc
+                                                            ?
+                                                            ch.cellTemplateFunc(row)
+                                                            :
+                                                            row[ch.field]
                                                     }
-                                                </tr>
-                                            ))
-                                            :
-                                            <tr>
-                                                <td colSpan={this.props.colHeaders.length + 1} className="p-5 text-center">
-                                                    <span className="text-warning ">{Localization.no_item_found}</span>
                                                 </td>
-                                            </tr>
+                                            ))}
+                                            {this.props.actions
+                                                ?
+                                                <td className="py-0 px-1 text-center">
+                                                    {
+                                                        this.props.actions
+                                                            ?
+                                                            <Dropdown>
+                                                                <Dropdown.Toggle
+                                                                    title={Localization.more}
+                                                                    split
+                                                                    variant="light"
+                                                                    className="px-3 bg-light btn"
+                                                                    id="dropdown-split-basic"
+                                                                >
+                                                                    <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
+                                                                </Dropdown.Toggle>
+                                                                <Dropdown.Menu
+                                                                    className="dropdown-menu-right action-dropdown-menu"
+                                                                >
+                                                                    {
+                                                                        this.props.actions.map((ac, index) => (
+                                                                            (this.getAccess_action(row, ac.access))
+                                                                                ?
+                                                                                <Dropdown.Item className="text-center" key={index} onClick={() => ac.ac_func(row)}>
+                                                                                    <>
+                                                                                        <div className="text-center action-text-wrapper">
+                                                                                            {ac.text}
+                                                                                        </div>
+                                                                                        <span className="action-name">
+                                                                                            {ac.name}
+                                                                                        </span>
+                                                                                    </>
+                                                                                </Dropdown.Item>
+                                                                                :
+                                                                                ''
+                                                                        ))
+                                                                    }
+                                                                </Dropdown.Menu>
+                                                            </Dropdown >
+                                                            :
+                                                            ''
+                                                    }
+                                                </td>
+                                                :
+                                                ''
+                                            }
+                                        </tr>
+                                    ))
+                                    :
+                                    <tr>
+                                        <td colSpan={this.props.colHeaders.length + 1} className="p-5 text-center">
+                                            <span className="text-warning ">{Localization.no_item_found}</span>
+                                        </td>
+                                    </tr>
 
-                                }
+                            }
                         </tbody>
                     </table>
                 </div>

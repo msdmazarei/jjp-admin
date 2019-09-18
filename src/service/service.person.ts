@@ -4,7 +4,7 @@ import { IPerson } from "../model/model.person";
 export class PersonService extends BaseService {
 
     
-    create(person: any) {
+    create(person: any):Promise<IAPI_Response<IPerson>> {
         return this.axiosTokenInstance.post('/persons',person);
     }
     

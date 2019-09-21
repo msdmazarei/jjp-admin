@@ -1,15 +1,18 @@
 import React from "react";
+import { History } from 'history';
+import { MapDispatchToProps, connect } from "react-redux";
+import { Dispatch } from "redux";
+import { redux_state } from "../../redux/app_state";
+import { BaseComponent } from "../_base/BaseComponent";
+import { TInternationalization } from "../../config/setup";
+import { IToken } from "../../model/model.token";
 import { Localization } from "../../config/localization/localization";
+
+import { AppDatePicker } from "../form/app-datePicker/AppDatePicker";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Brush, ReferenceLine,
   ResponsiveContainer
 } from 'recharts';
-import { TInternationalization } from "../../config/setup";
-import { IToken } from "../../model/model.token";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import fa from "date-fns/locale/fa-IR"
-
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
@@ -18,26 +21,30 @@ export interface IProps {
 
 interface IState {
   loader: boolean;
-  num: number;
-  startDate: Date | null;
+  flag: boolean;
+  timeStamp: number;
 }
 
-class Dashboard extends React.Component<IProps, IState> {
+class DashboardComponent extends BaseComponent<IProps, IState> {
   state = {
     loader: true,
-    num: 10000,
-    startDate: new Date()
+    flag: false,
+    timeStamp: 0
   }
-  handleChange(date: Date | null) {
-    this.setState({
-      ...this.state,
-      startDate: date
-    });
-  };
+
 
   // constructor(props: IProps) {
   //   super(props);
   // }
+
+  componentDidMount() {
+    if (this.props.internationalization.flag === "fa") {
+      this.setState({
+        ...this.state,
+        flag: false,
+      })
+    }
+  }
 
 
   resTrue() {
@@ -69,10 +76,19 @@ class Dashboard extends React.Component<IProps, IState> {
     return 200;
   }
 
+  setTimeStamp(number: number) {
+    this.setState({
+      ...this.state,
+      timeStamp: number,
+    });
+  }
+
+
+
   render() {
     const data = [
       {
-        name: 'ali', uv: this.state.num, pv: 6000, amt: 2400,
+        name: 'ali', uv: 4000, pv: 6000, amt: 2400,
       },
       {
         name: 'hamid', uv: 3000, pv: 1398, amt: 2210,
@@ -162,12 +178,21 @@ class Dashboard extends React.Component<IProps, IState> {
         <div className="row">
           <div className="col-12 ">
             <h2>{Localization.dashboard}</h2>
-            <DatePicker
-              // dateFormat="yyyy/MM/dd"
-              selected={this.state.startDate}
-              onChange={(date: Date | null) => this.handleChange(date)}
-              locale={fa}
-               />
+            <div className="row">
+              <div className="col-3">
+
+                <AppDatePicker
+                  // value={'2019-09-19'}
+                  value={'1398-06-28'}
+                  isGregorian={this.state.flag}
+                  inputFormat="YYYY-M-D"
+                  inputJalaaliFormat="jYYYY-jM-jD"
+                  timePicker={false}
+                  // onchange={(timeStamp: number) => this.setTimeStamp(timeStamp)}
+                  class="form-control"
+                ></AppDatePicker>
+              </div>
+            </div>
             <div className="row">
               <div className="col-12 col-md-6 text-center">
                 {
@@ -238,4 +263,21 @@ class Dashboard extends React.Component<IProps, IState> {
     );
   }
 }
-export default Dashboard;
+
+
+const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
+  return {
+  };
+};
+
+const state2props = (state: redux_state) => {
+  return {
+    internationalization: state.internationalization,
+    token: state.token,
+  };
+};
+
+export const Dashboard = connect(
+  state2props,
+  dispatch2props
+)(DashboardComponent);

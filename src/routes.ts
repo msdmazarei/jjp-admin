@@ -1,4 +1,4 @@
-import Dashboard from "./component/dashboard/Dashboard";
+import { Dashboard } from "./component/dashboard/Dashboard";
 import { BookManage } from "./component/book/BookManage/BookManage";
 import { BookSave } from "./component/book/BookSave/BookSave";
 import { PersonManage } from "./component/person/PersonManage/PersonManage";

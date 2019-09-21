@@ -10,7 +10,12 @@ import { Provider } from 'react-redux';
 import { Store2, persistor } from './redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { App } from './component/app/App';
-
+// import * as dirObj from 'react-datepicker2';
+// const project = dirObj.readDirectory(__dirname + '/..', {
+//   fileTransform: (file: dirObj.File) => {
+//     return file.fullpath;
+//   }
+// });
 // const hist = createBrowserHistory();
 
 ReactDOM.render(

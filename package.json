@@ -33,6 +33,7 @@
     "react-datepicker2": "^3.0.3",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.7",
+    "react-hichestan-datetimepicker": "^2.0.2",
     "react-localization": "^1.0.14",
     "react-redux": "^7.1.0",
     "react-router": "^5.0.1",
@@ -44,6 +45,7 @@
     "recharts": "^1.7.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^5.10.0",
+    "rezvani-datepicker": "^2.0.24",
     "typescript": "3.5.3"
   },
   "scripts": {

@@ -21,30 +21,40 @@ export interface IProps {
 
 interface IState {
   loader: boolean;
-  flag: boolean;
-  timeStamp: number;
+  timeStampFrom: number;
+  timeStampTo: number;
+  defultValue: string;
 }
 
 class DashboardComponent extends BaseComponent<IProps, IState> {
   state = {
     loader: true,
-    flag: false,
-    timeStamp: 0
+    timeStampFrom: 0,
+    timeStampTo: 0,
+    defultValue: "2000/05/09",
+
   }
 
+  // componentDidMount(){
+  //   console.log(this.state.timeStampFrom);
+  // }
+
+
+  timeStampSet(timeStamp : number){
+    this.setState({
+      ...this.state,
+      timeStampFrom:timeStamp,
+    },() => this.timestamp())
+  }
+
+  timestamp(){
+    console.log(this.state.timeStampFrom)
+  }
 
   // constructor(props: IProps) {
   //   super(props);
   // }
 
-  componentDidMount() {
-    if (this.props.internationalization.flag === "fa") {
-      this.setState({
-        ...this.state,
-        flag: false,
-      })
-    }
-  }
 
 
   resTrue() {
@@ -76,12 +86,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     return 200;
   }
 
-  setTimeStamp(number: number) {
-    this.setState({
-      ...this.state,
-      timeStamp: number,
-    });
-  }
+
 
 
 
@@ -179,17 +184,10 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
           <div className="col-12 ">
             <h2>{Localization.dashboard}</h2>
             <div className="row">
-              <div className="col-3">
-
+              <div className="col-2">
                 <AppDatePicker
-                  // value={'2019-09-19'}
-                  value={'1398-06-28'}
-                  isGregorian={this.state.flag}
-                  inputFormat="YYYY-M-D"
-                  inputJalaaliFormat="jYYYY-jM-jD"
-                  timePicker={false}
-                  // onchange={(timeStamp: number) => this.setTimeStamp(timeStamp)}
-                  class="form-control"
+                  defaultValue={this.state.defultValue}
+                  onChange={(timeStamp:number) => this.timeStampSet(timeStamp)}
                 ></AppDatePicker>
               </div>
             </div>

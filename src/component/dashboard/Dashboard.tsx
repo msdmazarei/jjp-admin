@@ -7,254 +7,305 @@ import { BaseComponent } from "../_base/BaseComponent";
 import { TInternationalization } from "../../config/setup";
 import { IToken } from "../../model/model.token";
 import { Localization } from "../../config/localization/localization";
-
-import { AppDatePicker } from "../form/app-datePicker/AppDatePicker";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Brush, ReferenceLine,
-  ResponsiveContainer
-} from 'recharts';
+import { IBook } from "../../model/model.book";
+// import { AppDatePicker } from "../form/app-datePicker/AppDatePicker";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Brush, ReferenceLine, ResponsiveContainer, LabelList } from 'recharts';
+import { Table, IProps_table } from "../table/table";
+import { IComment } from "../../model/model.comment";
+import { BOOK_TYPES } from "../../enum/Book";
+import 'moment/locale/fa';
+import 'moment/locale/ar';
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
+import { CommentService } from "../../service/service.comment";
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
   token: IToken;
+
 }
 
 interface IState {
-  loader: boolean;
+  comment_table: IProps_table;
+  commentTableLoader: boolean;
+  gregorianCalender: boolean;
   timeStampFrom: number;
   timeStampTo: number;
   defultValue: string;
+  maxMinSell: {
+    date: string;
+    max_book: string;
+    min_book: string;
+    max_count: number,
+    min_count: number,
+  }[];
 }
 
 class DashboardComponent extends BaseComponent<IProps, IState> {
   state = {
-    loader: true,
+    commentTableLoader: false,
+    comment_table: {
+      list: [],
+      colHeaders: [
+        {
+          field: "creation_date", title: Localization.creation_date,
+          cellTemplateFunc: (row: IComment) => {
+            if (row.creation_date) {
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "creator", title: Localization.user, cellTemplateFunc: (row: IComment) => {
+            if (row.creator) {
+              return <div title={row.creator} className="text-nowrap-ellipsis max-w-100px d-inline-block">
+                {row.creator}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "name last_name", title: Localization.full_name, cellTemplateFunc: (row: IComment) => {
+            if (row.person) {
+              return <div title={this.getPersonFullName(row.person)} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {this.getPersonFullName(row.person)}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "book title", title: Localization.book_title, cellTemplateFunc: (row: IComment) => {
+            if (row.book && row.book.title) {
+              return <div title={row.book.title} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.book.title}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "book type", title: Localization.book_type, cellTemplateFunc: (row: IComment) => {
+            if (row.book && row.book.type) {
+              const b_type: any = row.book.type;
+              const b_t: BOOK_TYPES = b_type;
+              return Localization.book_type_list[b_t];
+            }
+            else {
+              return <div className="text-muted text-center">-</div>;
+            }
+          }
+        },
+        {
+          field: "body", title: Localization.comment, cellTemplateFunc: (row: IComment) => {
+            if (row.person) {
+              return <div title={row.body} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {row.body}
+              </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "reports", title: Localization.number_of_reports, cellTemplateFunc: (row: IComment) => {
+            if (row.reports) {
+              return <div title={row.reports.toLocaleString()} className="text-center">
+                {row.reports}{
+                  row.reported_by_user
+                    ?
+                    <span> - <i title={Localization.reported_by_user} className="fa fa-check text-danger"></i></span>
+                    :
+                    ""
+                }
+              </div>
+            }
+            else {
+              return <div className="text-muted text-center">-</div>;
+            }
+          }
+        },
+      ],
+    },
+    gregorianCalender: true,
     timeStampFrom: 0,
     timeStampTo: 0,
     defultValue: "2000/05/09",
-
+    maxMinSell: [],
   }
 
-  // componentDidMount(){
-  //   console.log(this.state.timeStampFrom);
-  // }
+  /// end of state
 
-
-  timeStampSet(timeStamp : number){
-    this.setState({
-      ...this.state,
-      timeStampFrom:timeStamp,
-    },() => this.timestamp())
+  constructor(props: IProps) {
+    super(props);
+    this._commentService.setToken(this.props.token)
   }
 
-  timestamp(){
-    console.log(this.state.timeStampFrom)
-  }
-
-  // constructor(props: IProps) {
-  //   super(props);
-  // }
-
-
-
-  resTrue() {
-    if (this.state.loader) {
+  componentDidMount() {
+    if (this.props.internationalization.flag === "fa") {
       this.setState({
         ...this.state,
-        loader: false,
+        gregorianCalender: false,
+        commentTableLoader: true,
       })
+    } else {
+      this.setState({
+        ...this.state,
+        gregorianCalender: true,
+        commentTableLoader: true,
+      })
+    };
+    this.fetchComments();
+  }
+
+
+  // start list of services for request define
+
+  private _commentService = new CommentService();
+
+  // end list of services for request define
+
+  // start request & set data for comment table
+
+  async fetchComments() {
+    this.setState({ ...this.state, commentTableLoader: true });
+    let res = await this._commentService.search(10,0,{book: true}).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({
+        ...this.state,
+        commentTableLoader: false,
+      });
+    });
+    if (res) {
+      this.setState({
+        ...this.state,
+        comment_table:{
+          ...this.state.comment_table,
+          list:res.data.result
+        },
+        commentTableLoader: false,
+      });
+    }
+  }
+
+  // end request & set data for comment table
+
+
+  // start timestamp to date for comment table
+
+  getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
     }
     else {
-      this.setState({
-        ...this.state,
-        loader: true,
-      })
+      return moment(timestamp * 1000).format('YYYY/MM/DD');
     }
   }
 
-  resize(): number {
-    return 50;
-  }
-
-  private pie_wrapper: any;
-  calc_pie_width(): number {
-    // debugger;
-    if (this.pie_wrapper) {
-      // this.pie_wrapper
-      return this.pie_wrapper.offsetWidth;
+  _getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return this.getFromNowDate(timestamp);
     }
-    return 200;
+    else {
+      return this.getFromNowDate(timestamp);
+    }
   }
 
+  // end timestamp to date for comment table
 
+  static() {
+    const sells: {
+      timestamp: number;
+      max_book_name: string;
+      min_book_name: string;
+      max_book_type: string;
+      min_book_type: string;
+      max_count: number;
+      min_count: number;
+    }[] = [
+        {
+          timestamp: 23568745261,
+          max_book_name: "1",
+          max_book_type: "1",
+          min_book_name: "1",
+          min_book_type: "1",
+          max_count: 2,
+          min_count: 1,
+        },
+        {
+          timestamp: 23568745261,
+          max_book_name: "2",
+          max_book_type: "2",
+          min_book_name: "2",
+          min_book_type: "2",
+          max_count: 4,
+          min_count: 3,
+        },
+        {
+          timestamp: 23568745261,
+          max_book_name: "3",
+          max_book_type: "3",
+          min_book_name: "3",
+          min_book_type: "3",
+          max_count: 6,
+          min_count: 5,
+        },
+        {
+          timestamp: 23568745261,
+          max_book_name: "4",
+          max_book_type: "4",
+          min_book_name: "4",
+          min_book_type: "4",
+          max_count: 8,
+          min_count: 7,
+        },
+        {
+          timestamp: 23568745261,
+          max_book_name: "5",
+          max_book_type: "5",
+          min_book_name: "5",
+          min_book_type: "5",
+          max_count: 10,
+          min_count: 9,
+        },
+        {
+          timestamp: 23568745261,
+          max_book_name: "6",
+          max_book_type: "6",
+          min_book_name: "6",
+          min_book_type: "6",
+          max_count: 12,
+          min_count: 11,
+        },
+        {
+          timestamp: 23568745261,
+          max_book_name: "7",
+          max_book_type: "7",
+          min_book_name: "7",
+          min_book_type: "7",
+          max_count: 13,
+          min_count: 12,
+        },
+      ];
 
+    return sells;
+  }
 
 
   render() {
-    const data = [
-      {
-        name: 'ali', uv: 4000, pv: 6000, amt: 2400,
-      },
-      {
-        name: 'hamid', uv: 3000, pv: 1398, amt: 2210,
-      },
-      {
-        name: 'Page C', uv: 2000, pv: 9800, amt: 2290,
-      },
-      {
-        name: 'Page D', uv: 2780, pv: 3908, amt: 2000,
-      },
-      {
-        name: 'Page E', uv: 1890, pv: 4800, amt: 2181,
-      },
-      {
-        name: 'Page F', uv: 2390, pv: 3800, amt: 2500,
-      },
-      {
-        name: 'Page G', uv: 3490, pv: 4300, amt: 2100,
-      },
-    ];
-    const data01 = [
-      { name: 'Group A', value: 400 }, { name: 'Group B', value: 300 },
-      { name: 'Group C', value: 300 }, { name: 'Group D', value: 200 },
-    ];
-    const data02 = [
-      { name: 'A1', value: 100 },
-      { name: 'A2', value: 300 },
-      { name: 'B1', value: 100 },
-      { name: 'B2', value: 80 },
-      { name: 'B3', value: 40 },
-      { name: 'B4', value: 30 },
-      { name: 'B5', value: 50 },
-      { name: 'C1', value: 100 },
-      { name: 'C2', value: 200 },
-      { name: 'D1', value: 150 },
-      { name: 'D2', value: 50 },
-    ];
-    const data3 = [
-      { name: '1', uv: 300, pv: 456 },
-      { name: '2', uv: -145, pv: 230 },
-      { name: '3', uv: -100, pv: 345 },
-      { name: '4', uv: -8, pv: 450 },
-      { name: '5', uv: 100, pv: 321 },
-      { name: '6', uv: 9, pv: 235 },
-      { name: '7', uv: 53, pv: 267 },
-      { name: '8', uv: 252, pv: -378 },
-      { name: '9', uv: 79, pv: -210 },
-      { name: '10', uv: 294, pv: -23 },
-      { name: '12', uv: 43, pv: 45 },
-      { name: '13', uv: -74, pv: 90 },
-      { name: '14', uv: -71, pv: 130 },
-      { name: '15', uv: -117, pv: 11 },
-      { name: '16', uv: -186, pv: 107 },
-      { name: '17', uv: -16, pv: 926 },
-      { name: '18', uv: -125, pv: 653 },
-      { name: '19', uv: 222, pv: 366 },
-      { name: '20', uv: 372, pv: 486 },
-      { name: '21', uv: 182, pv: 512 },
-      { name: '22', uv: 164, pv: 302 },
-      { name: '23', uv: 316, pv: 425 },
-      { name: '24', uv: 131, pv: 467 },
-      { name: '25', uv: 291, pv: -190 },
-      { name: '26', uv: -47, pv: 194 },
-      { name: '27', uv: -415, pv: 371 },
-      { name: '28', uv: -182, pv: 376 },
-      { name: '29', uv: -93, pv: 295 },
-      { name: '30', uv: -99, pv: 322 },
-      { name: '31', uv: -52, pv: 246 },
-      { name: '32', uv: 154, pv: 33 },
-      { name: '33', uv: 205, pv: 354 },
-      { name: '34', uv: 70, pv: 258 },
-      { name: '35', uv: -25, pv: 359 },
-      { name: '36', uv: -59, pv: 192 },
-      { name: '37', uv: -63, pv: 464 },
-      { name: '38', uv: -91, pv: -2 },
-      { name: '39', uv: -66, pv: 154 },
-      { name: '47', uv: -50, pv: 186 },
-    ];
 
-    // const files = this.state.files.map((file: any) => (
-    //   <li key={file.name}>
-    //     {file.name} - {file.size} bytes
-    //   </li>
-    // ))
     return (
       <div className="content">
         <div className="row">
           <div className="col-12 ">
             <h2>{Localization.dashboard}</h2>
-            <div className="row">
-              <div className="col-2">
-                <AppDatePicker
-                  defaultValue={this.state.defultValue}
-                  onChange={(timeStamp:number) => this.timeStampSet(timeStamp)}
-                ></AppDatePicker>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12 col-md-6 text-center">
-                {
-                  this.state.loader
-                    ?
-                    <i className="fa fa-spinner fa-3x fa-spin mt-5"></i>
-                    :
-                    <ResponsiveContainer width="100%" height={500}>
-                      <BarChart width={750} height={450} data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="pv" fill="#8884d8" />
-                        <Bar dataKey="uv" fill="#82ca9d" />
-                        <Legend />
-                      </BarChart>
-                    </ResponsiveContainer>
-                }
-              </div>
-              <div className="col-12 col-md-6 text-center" ref={r => this.pie_wrapper = r}>
-                {
-                  this.state.loader
-                    ?
-                    <i className="fa fa-spinner fa-3x fa-spin"></i>
-                    :
-                    <ResponsiveContainer width="100%" height={500}>
-                      <PieChart>
-                        <Pie data={data01} dataKey="value" outerRadius={60} fill="#8884d8" />
-                        <Pie data={data02} dataKey="value" innerRadius={90} outerRadius={120} fill="#82ca9d" label />
-                        <Tooltip />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                }
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-12">
-                {
-                  this.state.loader
-                    ?
-                    <i className="fa fa-spinner fa-3x fa-spin"></i>
-                    :
-                    <ResponsiveContainer width="100%" height={500}>
-                      <BarChart width={1500} height={700} data={data3} margin={{ top: 5, right: 30, left: 20, bottom: 5, }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend verticalAlign="top" wrapperStyle={{ lineHeight: '40px' }} />
-                        <ReferenceLine y={0} stroke="#000" />
-                        <Brush dataKey="name" height={30} stroke="#8884d8" />
-                        <Bar dataKey="pv" fill="#8884d8" />
-                        <Bar dataKey="uv" fill="#82ca9d" />
-                        <Legend />
-                      </BarChart>
-                    </ResponsiveContainer>
-                }
-              </div>
-            </div>
-            <button
-              onClick={() => this.resTrue()}
-            >res</button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-xl-6 col-12">
+            <h2>{Localization.comment}</h2>
+            <Table loading={this.state.commentTableLoader} list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders}></Table>
           </div>
         </div>
       </div>

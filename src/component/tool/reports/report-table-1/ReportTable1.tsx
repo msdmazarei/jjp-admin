@@ -261,13 +261,6 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         return (
             this.report_render()
         )
-        // return () => {
-        //     return this.report_render();
-        //     return {
-        //         tools: this.tools_render(),
-        //         report: this.report_render(),
-        //     }
-        // }
     }
 }
 

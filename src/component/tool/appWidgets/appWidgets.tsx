@@ -17,6 +17,8 @@ interface IState {
     minimize: boolean;
     restore: boolean;
     close: boolean;
+
+    child_tools: JSX.Element | undefined
 }
 
 class AppWidgetsComponent extends BaseComponent<IProps, IState> {
@@ -24,10 +26,7 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         minimize: false,
         restore: true,
         close: false,
-    }
-
-    refreshFunction() {
-
+        child_tools: undefined,
     }
 
     minimizeFunction() {
@@ -49,12 +48,14 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
 
     restoreFunction() {
         if (this.state.restore) {
+            document.body.classList.add("widget-open");
             this.setState({
                 ...this.state,
                 restore: false,
                 minimize: false,
             })
         } else {
+            document.body.classList.remove("widget-open");
             this.setState({
                 ...this.state,
                 restore: true,
@@ -63,28 +64,37 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
     }
 
     closeFunction() {
-        this.setState({
-            ...this.state,
-            close: true,
-        })
+        if (this.state.restore === false && this.state.close === false) {
+            this.setState({
+                ...this.state,
+                close: true,
+            });
+            document.body.classList.remove("widget-open");
+        } else {
+            this.setState({
+                ...this.state,
+                close: true,
+            });
+        }
+    }
+
+    init_tools(tools: JSX.Element) {
+        this.setState({ child_tools: tools });
     }
 
     render() {
-        // console.log(this.props.children)
         return (
             <>
                 <div className={
                     "app-widget " +
                     (this.state.close ? "d-none" : '') +
                     ' ' +
-                    (this.state.restore ? "template-box rounded bg-dark" : "full-screen bg-dark")
+                    (this.state.restore ? "template-box rounded bg-info" : "full-screen bg-info")
                 }>
                     <div className="widget-header px-1 mt-1 ">
-                        <div className="d-inline-block pull-left">
-                            <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                                <i className="fa fa-refresh"></i>
-                            </button>
-                        </div>
+                        {
+                            this.state.child_tools
+                        }
                         <div className="d-inline-block pull-right">
                             <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.minimizeFunction()}>
                                 {
@@ -110,7 +120,9 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                     <div className={"widget-body " + (this.state.minimize ? "d-none" : "my-1")}>
-                        {this.props.children}
+                        {
+                            React.cloneElement(this.props.children as any, { init_tools: (ts: JSX.Element) => this.init_tools(ts) })
+                        }
                     </div>
                     <div className={"widget-footer " + (this.state.minimize ? "d-none" : "")}>
 

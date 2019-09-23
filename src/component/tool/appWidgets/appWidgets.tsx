@@ -90,7 +90,7 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
                                 {
                                     this.state.minimize
                                         ?
-                                        <i className="fa fa-eye"></i>
+                                        <i className="fa fa-plus"></i>
                                         :
                                         <i className="fa fa-window-minimize"></i>
                                 }

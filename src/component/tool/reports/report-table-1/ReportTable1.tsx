@@ -9,18 +9,18 @@ import moment_jalaali from 'moment-jalaali';
 import { TInternationalization } from "../../../../config/setup";
 import { IToken } from "../../../../model/model.token";
 import { IProps_table, Table } from "../../../table/table";
-import { BaseComponent } from "../../../_base/BaseComponent";
 import { Localization } from "../../../../config/localization/localization";
 import { IComment } from "../../../../model/model.comment";
 import { BOOK_TYPES } from "../../../../enum/Book";
 import { CommentService } from "../../../../service/service.comment";
 import { redux_state } from "../../../../redux/app_state";
+import { ReportBase } from "../ReportBase";
 
 export interface IProps {
     history?: History;
     internationalization: TInternationalization;
     token: IToken;
-
+    init_tools: (tools: JSX.Element) => void
 }
 
 interface IState {
@@ -39,7 +39,7 @@ interface IState {
     }[];
 }
 
-class ReportCommentTableComponent extends BaseComponent<IProps, IState> {
+class ReportCommentTableComponent extends ReportBase<IProps, IState> {
     state = {
         commentTableLoader: false,
         comment_table: {
@@ -154,7 +154,40 @@ class ReportCommentTableComponent extends BaseComponent<IProps, IState> {
                 commentTableLoader: true,
             })
         };
+        this.init_tools();
         this.fetchComments();
+    }
+
+    tools() {
+        return (
+            <>
+                <div className="d-inline-block pull-left">
+                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
+                        <i className="fa fa-refresh"></i>
+                    </button>
+                </div>
+
+                <div className="d-inline-block pull-left">
+                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
+                        <i className="fa fa-home"></i>
+                    </button>
+                </div>
+
+                <div className="d-inline-block pull-left">
+                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
+                        <i className="fa fa-trash"></i>
+                    </button>
+                </div>
+            </>
+        )
+    }
+
+    refreshFunction() {
+        this.fetchComments();
+    }
+
+    init_tools() {
+        this.props.init_tools(this.tools());
     }
 
 
@@ -212,11 +245,29 @@ class ReportCommentTableComponent extends BaseComponent<IProps, IState> {
 
     // end timestamp to date for comment table
 
+    tools_render() {
+        return (
+            <div>haeder</div>
+        )
+    }
 
-    render() {
+    report_render() {
         return (
             <Table loading={this.state.commentTableLoader} list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders}></Table>
         );
+    }
+
+    render() {
+        return (
+            this.report_render()
+        )
+        // return () => {
+        //     return this.report_render();
+        //     return {
+        //         tools: this.tools_render(),
+        //         report: this.report_render(),
+        //     }
+        // }
     }
 }
 

@@ -20,3 +20,8 @@
     z-index: 999999999999999999999 !important;
   }
 }
+.widget-open {
+  .sidebar {
+    display: none !important;
+  }
+}

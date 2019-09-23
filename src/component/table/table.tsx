@@ -59,7 +59,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                     </Fragment>
                                 ))}
                                 {
-                                    this.props.actions ? <th className="text-center">#</th> : <th></th>
+                                    this.props.actions ? <th className="text-center">#</th> : undefined
                                 }
 
                             </tr>
@@ -133,7 +133,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                                     }
                                                 </td>
                                                 :
-                                                <th></th>
+                                                undefined
                                             }
                                         </tr>
                                     ))

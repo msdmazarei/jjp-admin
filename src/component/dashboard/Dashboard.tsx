@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { History } from 'history';
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -8,7 +8,8 @@ import { TInternationalization } from "../../config/setup";
 import { IToken } from "../../model/model.token";
 import { Localization } from "../../config/localization/localization";
 import { AppWidgets } from "../tool/appWidgets/appWidgets";
-import { ReportCommentTable } from "../tool/reports/report-table-1/ReportTable1";
+import { TReport, reportListMapCmp } from "../tool/reports/ReportUtils";
+
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
@@ -16,17 +17,31 @@ export interface IProps {
 }
 
 interface IState {
-
+  report_cmp_list: string[];
 }
 
 class DashboardComponent extends BaseComponent<IProps, IState> {
   state = {
+    report_cmp_list: []
   }
   /// end of state
 
   // constructor(props: IProps) {
   //   super(props);
   // }
+  async componentDidMount() {
+    let res = await this.grtUserReport('test').catch(e => { });
+    if (res) {
+      this.setState({ report_cmp_list: res });
+    }
+  }
+
+  grtUserReport(uer_id: string): Promise<TReport[]> {
+    return new Promise((res, rej) => {
+      res(["newst_comment"])
+    })
+  }
+
 
   render() {
     return (
@@ -37,11 +52,20 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
           </div>
         </div>
         <div className="row">
-          <div className="col-12 col-xl-6">
-            <AppWidgets>
-              <ReportCommentTable />
-            </AppWidgets>
-          </div>
+          {
+            this.state.report_cmp_list.map((report: TReport, r_index) => {
+              const Cmpname = reportListMapCmp[report];
+              return (
+                <Fragment key={r_index}>
+                  <div className="col-12 col-xl-6">
+                    <AppWidgets>
+                      <Cmpname />
+                    </AppWidgets>
+                  </div>
+                </Fragment>
+              )
+            })
+          }
         </div>
       </div>
     );

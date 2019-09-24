@@ -305,6 +305,15 @@ interface ILocalization extends LocalizedStringsMethods {
     recalculate: string;
     creation_date:string;
     Quick_person_creation:string;
+    type_of_report:{
+        monthly:string;
+        weekly:string;
+    };
+    type_of_report_kind:{
+        most_Selling:string;
+        lowest_selling:string;
+        both:string;
+    };
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

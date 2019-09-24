@@ -296,6 +296,15 @@ export const fa = {
     recalculate:"محاسبه مجدد",
     creation_date:"تاریخ ایجاد",
     Quick_person_creation:"ایجاد سریع شخص",
+    type_of_report:{
+        monthly:"ماهانه",
+        weekly:"هفتگی",
+    },
+    type_of_report_kind:{
+        most_Selling:"بیشترین فروش",
+        lowest_selling:"کمترین فروش",
+        both:"هر دو",
+    },
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

@@ -293,6 +293,15 @@ export const en = {
     recalculate:"recalculate",
     creation_date:"creation date",
     Quick_person_creation:"Quick person creation",
+    type_of_report:{
+        monthly:"monthly",
+        weekly:"weekly",
+    },
+    type_of_report_kind:{
+        most_Selling:"most_Selling",
+        lowest_selling:"Lowest selling",
+        both:"both",
+    },
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

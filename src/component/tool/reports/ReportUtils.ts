@@ -1,13 +1,15 @@
 import { ReportCommentTable } from './report-table-1/ReportTable1';
-import {ReportBestSellsChart} from './report-chart-1/ReportChart1'
+import {ReportBestSellsChart} from './report-chart-1/ReportChart1';
+import {ReportlastSellWithTypeTable}  from './report-table-2/ReportTable2';
 
-export type TReport = 'newst_comment' | 'best_sells_chart'
+export type TReport = 'newst_comment' | 'best_sells_chart' | 'last_sell_with_type'
 
 
 export const reportListMapCmp: {
     [key in TReport]: any;
 } = {
     newst_comment: ReportCommentTable,
-    best_sells_chart: ReportBestSellsChart
+    best_sells_chart: ReportBestSellsChart,
+    last_sell_with_type : ReportlastSellWithTypeTable
 }
 

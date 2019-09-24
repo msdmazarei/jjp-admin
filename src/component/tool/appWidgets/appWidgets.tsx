@@ -34,6 +34,7 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
             return;
         }
         if (this.state.minimize) {
+            
             this.setState({
                 ...this.state,
                 minimize: false,
@@ -82,49 +83,53 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         this.setState({ child_tools: tools });
     }
 
+    widget_header_tools() {
+        return (
+            <>
+                <div className="tool" onClick={() => this.minimizeFunction()}>
+                    {
+                        this.state.minimize
+                            ?
+                            <i className="fa fa-plus"></i>
+                            :
+                            <i className="fa fa-window-minimize"></i>
+                    }
+                </div>
+                <div className="tool" onClick={() => this.restoreFunction()}>
+                    {
+                        this.state.restore
+                            ?
+                            <i className="fa fa-window-maximize"></i>
+                            :
+                            <i className="fa fa-window-restore"></i>
+                    }
+                </div>
+                <div className="tool" onClick={() => this.closeFunction()}>
+                    <i className="fa fa-times"></i>
+                </div>
+            </>
+        )
+    }
+
     render() {
         return (
             <>
                 <div className={
-                    "app-widget my-2" +
+                    "app-widget mb-3 " +
                     (this.state.close ? "d-none" : '') +
                     ' ' +
-                    (this.state.restore ? "template-box rounded bg-info" : "full-screen bg-info")
+                    (this.state.restore ? "template-box rounded" : "full-screen")
                 }>
-                    <div className="widget-header px-1 mt-1 ">
-                        {
-                            this.state.child_tools
-                        }
-                        <div className="d-inline-block pull-right">
-                            <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.minimizeFunction()}>
-                                {
-                                    this.state.minimize
-                                        ?
-                                        <i className="fa fa-plus"></i>
-                                        :
-                                        <i className="fa fa-window-minimize"></i>
-                                }
-                            </button>
-                            <button className="btn btn-sm btn-outline-secondary mb-2 mx-1" onClick={() => this.restoreFunction()}>
-                                {
-                                    this.state.restore
-                                        ?
-                                        <i className="fa fa-window-maximize"></i>
-                                        :
-                                        <i className="fa fa-window-restore"></i>
-                                }
-                            </button>
-                            <button className="btn btn-sm btn-outline-danger mb-2" onClick={() => this.closeFunction()}>
-                                <i className="fa fa-times"></i>
-                            </button>
-                        </div>
+                    <div className="widget-header px-1--mt-1 ">
+                        <div className="tools external-tools">{this.state.child_tools}</div>
+                        <div className="tools widget-header-tools">{this.widget_header_tools()}</div>
                     </div>
-                    <div className={"widget-body " + (this.state.minimize ? "d-none" : "my-1")}>
+                    <div id={"widget-body"} className={this.state.minimize ? "d-none" : "widget-body p"}>
                         {
                             React.cloneElement(this.props.children as any, { init_tools: (ts: JSX.Element) => this.init_tools(ts) })
                         }
                     </div>
-                    <div className={"widget-footer " + (this.state.minimize ? "d-none" : "")}>
+                    <div className={this.state.minimize ? "d-none" : "widget-footer "} >
 
                     </div>
                 </div>

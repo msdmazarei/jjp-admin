@@ -56,83 +56,83 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
             colHeaders: [
                 {
                     field: "title", title: Localization.title, cellTemplateFunc: (row: IBook) => {
-                      if (row.title) {
-                        return <div title={row.title} className="text-nowrap-ellipsis max-w-200px d-inline-block">
-                          {row.title}
-                        </div>
-                      }
-                      return '';
+                        if (row.title) {
+                            return <div title={row.title} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                                {row.title}
+                            </div>
+                        }
+                        return '';
                     }
-                  },
-                  {
+                },
+                {
                     field: "images", title: Localization.images, templateFunc: () => {
-                      return <b>{Localization.images}</b>
+                        return <b>{Localization.images}</b>
                     },
                     cellTemplateFunc: (row: IBook) => {
-                      if (row.images && row.images.length) {
-                        return <div className="text-center" >
-                          <div className="d-inline-block w-100px h-100px">
-                            <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
-                          </div>
-                        </div>
-                      }
-                      else {
-                        return <div className="text-center">
-                          <div className="d-inline-block w-100px h-100px">
-                            <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt="" />
-                          </div>
-                        </div>
-                      }
+                        if (row.images && row.images.length) {
+                            return <div className="text-center" >
+                                <div className="d-inline-block w-100px h-100px">
+                                    <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
+                                </div>
+                            </div>
+                        }
+                        else {
+                            return <div className="text-center">
+                                <div className="d-inline-block w-100px h-100px">
+                                    <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt="" />
+                                </div>
+                            </div>
+                        }
                     }
-                  },
-                  {
+                },
+                {
                     field: "type", title: Localization.type,
                     cellTemplateFunc: (row: IBook) => {
-                      if (row.type) {
-                        const b_type: any = row.type;
-                        const b_t: BOOK_TYPES = b_type;
-                        return Localization.book_type_list[b_t];
-                      }
-                      return '';
+                        if (row.type) {
+                            const b_type: any = row.type;
+                            const b_t: BOOK_TYPES = b_type;
+                            return Localization.book_type_list[b_t];
+                        }
+                        return '';
                     }
-                  },
-                  {
+                },
+                {
                     field: "creation_date", title: Localization.creation_date,
                     cellTemplateFunc: (row: IBook) => {
-                      if (row.creation_date) {
-                        return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
-                      }
-                      return '';
+                        if (row.creation_date) {
+                            return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+                        }
+                        return '';
                     }
-                  },
-                  {
+                },
+                {
                     field: "price", title: Localization.price,
                     cellTemplateFunc: (row: IBook) => {
-                      // row.price = 3436465;
-                      if (row.price) {
-                        return <span className="text-info">
-                          {row.price.toLocaleString()}
-                        </span>
-                      }
-                      else {
-                        return <div className="text-muted text-center">-</div>;
-                      }
+                        // row.price = 3436465;
+                        if (row.price) {
+                            return <span className="text-info">
+                                {row.price.toLocaleString()}
+                            </span>
+                        }
+                        else {
+                            return <div className="text-muted text-center">-</div>;
+                        }
                     }
-                  },
-                  {
+                },
+                {
                     field: "rate",
                     title: Localization.vote_s,
                     cellTemplateFunc: (row: IBook) => {
-                      if (row.rate) {
-                        return <span>
-                          {row.rate} {Localization.from} 5 <small>({row.rate_no})</small>
-                        </span>
-                      }
-                      return '';
+                        if (row.rate) {
+                            return <span>
+                                {row.rate} {Localization.from} 5 <small>({row.rate_no})</small>
+                            </span>
+                        }
+                        return '';
                     }
-                  },
-                  { field: "duration", title: Localization.duration },
-                  { field: "pub_year", title: Localization.publication_date },
+                },
+                { field: "duration", title: Localization.duration },
+                { field: "pub_year", title: Localization.publication_date },
             ],
         },
         type: this.typeOptions[0],
@@ -152,7 +152,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
             ...this.state,
             type: value,
         },
-        () => this.get_split(this.state.lastSellWithType_table.list,this.state.type.value))
+            () => this.get_split(this.state.lastSellWithType_table.list, this.state.type.value))
     }
 
     // end set type of book
@@ -247,7 +247,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
         };
         if (type === "Audio") {
             return Audio
-        }else{
+        } else {
             return Hard_Copy
         }
     }
@@ -330,21 +330,25 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     report_render() {
         return (
             <>
-                <div className="row">
-                    <div className="col-6">
-                        <label htmlFor="">{Localization.type}</label>
-                        <Select
-                            onChange={(value: any) => this.handleSelectInputChange(value)}
-                            options={this.typeOptions}
-                            value={this.state.type}
-                            placeholder={Localization.type}
-                        />
+                <div className="row my-3">
+                    <div className="col-12 col-md-6">
+                        <div className="ml-2">
+                            <label htmlFor="">{Localization.type}</label>
+                            <Select
+                                onChange={(value: any) => this.handleSelectInputChange(value)}
+                                options={this.typeOptions}
+                                value={this.state.type}
+                                placeholder={Localization.type}
+                            />
+                        </div>
                     </div>
                 </div>
-                <Table 
-                loading={this.state.lastSellWithTypeTableLoader} 
-                list={this.get_split(this.state.lastSellWithType_table.list,this.state.type.value)} 
-                colHeaders={this.state.lastSellWithType_table.colHeaders}></Table>
+                <Table
+                    loading={this.state.lastSellWithTypeTableLoader}
+                    list={this.get_split(this.state.lastSellWithType_table.list, this.state.type.value)}
+                    colHeaders={this.state.lastSellWithType_table.colHeaders}
+                >
+                </Table>
             </>
         );
     }

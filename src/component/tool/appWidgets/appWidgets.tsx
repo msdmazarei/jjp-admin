@@ -86,7 +86,7 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         return (
             <>
                 <div className={
-                    "app-widget " +
+                    "app-widget my-2" +
                     (this.state.close ? "d-none" : '') +
                     ' ' +
                     (this.state.restore ? "template-box rounded bg-info" : "full-screen bg-info")

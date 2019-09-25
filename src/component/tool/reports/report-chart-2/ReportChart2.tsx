@@ -10,6 +10,7 @@ import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
+import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from "recharts";
 
 
 export interface IProps {
@@ -63,7 +64,6 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     }
 
 
-
     // start function for set type & kind of report
 
     handleReportChange(value: { label: string, value: string }) {
@@ -78,15 +78,13 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
     // start define custom tools & pass that to widget
 
-
     tools() {
         return (
             <>
-                
+
             </>
         )
     }
-
 
     init_tools() {
         this.props.init_tools(this.tools());
@@ -112,30 +110,46 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
     data_option_returner(value: string | undefined) {
 
-        const monthly = [
-            { name: 'book 1', value: 100 },
-            { name: 'book 2', value: 200 },
-            { name: 'book 3', value: 300 },
-            { name: 'book 4', value: 400 },
-            { name: 'book 5', value: 500 },
+        const yearly:any[] = [
+            { name: 'فروردین', value: 320 },
+            { name: 'اردیبهشت ', value: 310 },
+            { name: ' خرداد', value: 250 },
+            { name: 'تیر', value: 220 },
+            { name: 'مرداد', value: 200 },
+            { name: 'شهریور', value: 260 },
+            { name: 'مهر', value: 500 },
+            { name: 'آبان', value: 600 },
+            { name: 'آذر', value: 650 },
+            { name: 'دی', value: 400 },
+            { name: 'بهمن', value: 550 },
+            { name: 'اسفند', value: 380 },
         ];
+        const last_quarter= yearly.length >=4 ? yearly.slice(yearly.length-3,yearly.length) : yearly.slice(0,yearly.length);
+        const spring = yearly.length >=4 ? yearly.slice(0,3) : yearly.slice(0,yearly.length);
+        const summer = yearly.length >=7 ? yearly.slice(3,6) : yearly.slice(3,yearly.length);
+        const fall = yearly.length >=10 ? yearly.slice(6,9) : yearly.slice(6,yearly.length);
+        const winter = yearly.length >=12 ? yearly.slice(9,12) : yearly.slice(9,yearly.length);
 
-        const weekly = [
-            { name: 'book 1', value: 100 },
-            { name: 'book 2', value: 100 },
-            { name: 'book 3', value: 100 },
-            { name: 'book 4', value: 100 },
-            { name: 'book 5', value: 100 },
-        ];
-
-        if (value === "monthly") {
-            return monthly
-        }
-        else if (value === "weekly") {
-            return weekly
+        if (value === "yearly") {
+            return yearly;
+        };
+        if (value === "last_quarter") {
+            return last_quarter;
+        };
+        if (value === "spring") {
+            return spring;
+        };
+        if (value === "summer") {
+            return summer;
+        };
+        if (value === "fall") {
+            return fall;
+        };
+        if (value === "winter") {
+            return winter;
         }
         else {
-            return monthly
+            return yearly;
         };
     }
 
@@ -145,7 +159,8 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     // start function for return user custom data chart color
 
     data_option_color_returner() {
-        const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', 'red'];
+        const COLORS = ['#green', '#00C49F', '#gray', '#FF8042', 'red', 'blue',
+            '#gray', '#00C49F', '#green', '#FF8042', 'blue', 'red'];
         return COLORS
     }
 
@@ -158,103 +173,29 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
         const data: any = this.data_option_returner(this.state.type_of_report.value)
 
-        if (per === "yearly") {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-
-                        </div>
-                    </div>
+        return <>
+            <div className="col-12">
+                <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                        <LineChart
+                            // width={500}
+                            // height={200}
+                            data={data}
+                            syncId="anyId"
+                            margin={{
+                                top: 10, right: 50, left: 0, bottom: 0,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="1 1" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" />
+                        </LineChart>
+                    </ResponsiveContainer>
                 </div>
-            </>
-        };
-        if (per === "last_quarter") {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "spring") {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "summer") {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "fall") {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "winter") {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-
+            </div>
+        </>
     }
 
     // end return_report function
@@ -278,9 +219,47 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
-                {
-                    this.report_status(this.state.type_of_report.value)
-                }
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.report + " "}
+                            {
+                                this.state.type_of_report.value === "yearly"
+                                    ?
+                                    Localization.annual_Reports.yearly
+                                    :
+                                    this.state.type_of_report.value === "last_quarter"
+                                        ?
+                                        Localization.annual_Reports.last_quarter
+                                        :
+                                        this.state.type_of_report.value === "spring"
+                                            ?
+                                            Localization.annual_Reports.spring
+                                            :
+                                            this.state.type_of_report.value === "summer"
+                                                ?
+                                                Localization.annual_Reports.summer
+                                                :
+                                                this.state.type_of_report.value === "fall"
+                                                    ?
+                                                    Localization.annual_Reports.fall
+                                                    :
+                                                    this.state.type_of_report.value === "winter"
+                                                        ?
+                                                        Localization.annual_Reports.winter
+                                                        :
+                                                        ""
+                            }
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            {
+                                this.report_status(this.state.type_of_report.value)
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

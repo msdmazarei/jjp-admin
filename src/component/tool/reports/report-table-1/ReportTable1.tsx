@@ -20,7 +20,8 @@ export interface IProps {
     history?: History;
     internationalization: TInternationalization;
     token: IToken;
-    init_tools: (tools: JSX.Element) => void
+    init_title: (cmpTitle: JSX.Element) => void;
+    init_tools: (tools: JSX.Element) => void;
 }
 
 interface IState {
@@ -29,14 +30,6 @@ interface IState {
     gregorianCalender: boolean;
     timeStampFrom: number;
     timeStampTo: number;
-    defultValue: string;
-    maxMinSell: {
-        date: string;
-        max_book: string;
-        min_book: string;
-        max_count: number,
-        min_count: number,
-    }[];
 }
 
 class ReportCommentTableComponent extends ReportBase<IProps, IState> {
@@ -129,9 +122,9 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         gregorianCalender: true,
         timeStampFrom: 0,
         timeStampTo: 0,
-        defultValue: "2000/05/09",
-        maxMinSell: [],
     }
+
+    private _report_title:string="10 Latest Report";
 
     /// end of state
 
@@ -154,12 +147,14 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
                 commentTableLoader: true,
             })
         };
+        this.init_title();
         this.init_tools();
         this.fetchComments();
     }
 
 
     // start define custom tools & pass that to widget
+
 
     tools() {
         return (
@@ -175,6 +170,19 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
 
     init_tools() {
         this.props.init_tools(this.tools());
+    }
+
+    title_render() {
+        return (
+            <>
+                <div className="text-center">{this._report_title}</div>
+            </>
+        )
+    }
+
+    async init_title() {
+        await this.waitOnMe();
+        this.props.init_title(this.title_render());
     }
 
     // end define custom tools & pass that to widget

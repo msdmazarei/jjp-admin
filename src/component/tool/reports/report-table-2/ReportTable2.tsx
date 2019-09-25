@@ -22,7 +22,8 @@ export interface IProps {
     history?: History;
     internationalization: TInternationalization;
     token: IToken;
-    init_tools: (tools: JSX.Element) => void
+    init_title: (cmpTitle: JSX.Element) => void;
+    init_tools: (tools: JSX.Element) => void;
 }
 
 interface IState {
@@ -142,6 +143,9 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
 
     /// end of state
 
+    private _report_title: string = "20 Latest Report";
+
+
 
     // start set type of book
 
@@ -183,6 +187,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 lastSellWithTypeTableLoader: true,
             })
         };
+        this.init_title();
         this.init_tools();
         this.fetchLastSellWithType();
     }
@@ -269,6 +274,19 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
 
     init_tools() {
         this.props.init_tools(this.tools());
+    }
+
+    title_render() {
+        return (
+            <>
+                <div className="text-center">{this._report_title}</div>
+            </>
+        )
+    }
+
+    async init_title() {
+        await this.waitOnMe();
+        this.props.init_title(this.title_render());
     }
 
     // end function define & pass report tools to wrapper widget

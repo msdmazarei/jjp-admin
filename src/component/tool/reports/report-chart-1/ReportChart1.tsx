@@ -17,6 +17,7 @@ export interface IProps {
     history?: History;
     internationalization: TInternationalization;
     token: IToken;
+    init_title: (cmpTitle: JSX.Element) => void;
     init_tools: (tools: JSX.Element) => void;
 }
 
@@ -58,11 +59,14 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     }
     /// end of state
 
+    private _report_title:string="30 Latest Report";
+
     constructor(props: IProps) {
         super(props);
     }
 
     componentDidMount() {
+        this.init_title();
         this.init_tools();
     }
 
@@ -100,6 +104,19 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     init_tools() {
         this.props.init_tools(this.tools());
+    }
+
+    title_render() {
+        return (
+            <>
+                <div className="text-center">{this._report_title}</div>
+            </>
+        )
+    }
+
+    async init_title() {
+        await this.waitOnMe();
+        this.props.init_title(this.title_render());
     }
 
     // end define custom tools & pass that to widget

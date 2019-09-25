@@ -10,7 +10,6 @@ import { TInternationalization } from "../../../../config/setup";
 import { IToken } from "../../../../model/model.token";
 import { IProps_table, Table } from "../../../table/table";
 import { Localization } from "../../../../config/localization/localization";
-import { IComment } from "../../../../model/model.comment";
 import { BOOK_TYPES } from "../../../../enum/Book";
 import { redux_state } from "../../../../redux/app_state";
 import { ReportBase } from "../ReportBase";

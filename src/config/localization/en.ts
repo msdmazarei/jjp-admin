@@ -302,6 +302,14 @@ export const en = {
         lowest_selling:"Lowest selling",
         both:"both",
     },
+    annual_Reports:{
+        spring:"spring",
+        summer:"summer",
+        fall:"fall",
+        winter:"winter",
+        last_quarter:"last_quarter",
+        yearly:"yearly",
+    },
     genre_type_list:{
         Comedy: "comedy",
         Drama: "drama",

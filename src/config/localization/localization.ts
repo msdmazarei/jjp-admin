@@ -5,6 +5,7 @@ import { fa } from './fa';
 import { en } from './en';
 import { ar } from './ar';
 import { BOOK_TYPES, BOOK_GENRE, BOOK_ROLES } from '../../enum/Book';
+import { string } from 'prop-types';
 
 interface ILocalization extends LocalizedStringsMethods {
     [key: string]: any; // todo
@@ -314,6 +315,14 @@ interface ILocalization extends LocalizedStringsMethods {
         lowest_selling:string;
         both:string;
     };
+    annual_Reports:{
+        spring:string;
+        summer:string;
+        fall:string;
+        winter:string;
+        last_quarter:string;
+        yearly:string;
+    }
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

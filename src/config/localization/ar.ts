@@ -302,6 +302,14 @@ export const ar = {
         lowest_selling:"کمترین فروش",
         both:"هر دو",
     },
+    annual_Reports:{
+        spring:"بهار",
+        summer:"تابستان",
+        fall:"پائیز",
+        winter:"زمستان",
+        last_quarter:"سه ماهه اخیر",
+        yearly:"سالانه",
+    },
     genre_type_list:{
         Comedy:"کمدی",
         Drama:"درام",

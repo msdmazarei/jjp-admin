@@ -158,26 +158,13 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         this.fetchComments();
     }
 
+
+    // start define custom tools & pass that to widget
+
     tools() {
         return (
             <>
-                <div className="d-inline-block pull-left">
-                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                        <i className="fa fa-refresh"></i>
-                    </button>
-                </div>
-
-                <div className="d-inline-block pull-left">
-                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                        <i className="fa fa-home"></i>
-                    </button>
-                </div>
-
-                <div className="d-inline-block pull-left">
-                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                        <i className="fa fa-trash"></i>
-                    </button>
-                </div>
+                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
             </>
         )
     }
@@ -190,12 +177,15 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         this.props.init_tools(this.tools());
     }
 
+    // end define custom tools & pass that to widget
+
 
     // start list of services for request define
 
     private _commentService = new CommentService();
 
     // end list of services for request define
+
 
     // start request & set data for comment table
 
@@ -245,11 +235,6 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
 
     // end timestamp to date for comment table
 
-    tools_render() {
-        return (
-            <div>haeder</div>
-        )
-    }
 
     report_render() {
         return (

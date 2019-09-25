@@ -8,7 +8,7 @@ import { TInternationalization } from "../../../../config/setup";
 import { IToken } from "../../../../model/model.token";
 import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
-import { PieChart, Pie, Cell, Legend, ResponsiveContainer, } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, } from 'recharts';
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 
@@ -17,7 +17,7 @@ export interface IProps {
     history?: History;
     internationalization: TInternationalization;
     token: IToken;
-
+    init_tools: (tools: JSX.Element) => void;
 }
 
 interface IState {
@@ -29,6 +29,7 @@ interface IState {
         label: string;
         value: number;
     } | undefined;
+    barChart: boolean;
 }
 
 class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
@@ -52,19 +53,56 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     state = {
         type_of_report: this.reportOptions[0],
-        type_of_report_kind: this.reportOptionsKind[0]
-
+        type_of_report_kind: this.reportOptionsKind[0],
+        barChart: false,
     }
     /// end of state
 
-
-    // constructor(props: IProps) {
-    //     super(props);
-    // }
+    constructor(props: IProps) {
+        super(props);
+    }
 
     componentDidMount() {
-
+        this.init_tools();
     }
+
+    // start define custom tools & pass that to widget
+
+    tools() {
+        return (
+            <>
+                <div>
+                    <i className="tool fa fa-pie-chart" onClick={() => this.setChartToPie()}></i>
+                </div>
+                <div>
+                    <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
+                </div>
+            </>
+        )
+    }
+
+    setChartToPie() {
+        if (this.state.barChart === true) {
+            this.setState({
+                ...this.state,
+                barChart: false,
+            })
+        };
+    }
+    setChartToBar() {
+        if (this.state.barChart === false) {
+            this.setState({
+                ...this.state,
+                barChart: true,
+            })
+        };
+    }
+
+    init_tools() {
+        this.props.init_tools(this.tools());
+    }
+
+    // end define custom tools & pass that to widget
 
 
 
@@ -75,7 +113,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             type_of_report: value,
         },
-            () => this.data_option_max_returner(this.state.type_of_report!.value)
+            // () => this.data_option_max_returner(this.state.type_of_report!.value)
         )
     }
 
@@ -84,7 +122,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             type_of_report_kind: value,
         },
-            () => this.data_option_max_returner(this.state.type_of_report!.value)
+            // () => this.data_option_max_returner(this.state.type_of_report!.value)
         )
     }
 
@@ -130,19 +168,19 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     data_option_min_returner(value: string | undefined) {
 
         const monthly = [
-            { name: 'book 1', value: 454 },
-            { name: 'book 2', value: 654 },
-            { name: 'book 3', value: 645 },
-            { name: 'book 4', value: 576 },
-            { name: 'book 5', value: 455 },
+            { name: 'book 1', value: 500 },
+            { name: 'book 2', value: 500 },
+            { name: 'book 3', value: 500 },
+            { name: 'book 4', value: 500 },
+            { name: 'book 5', value: 500 },
         ];
 
         const weekly = [
-            { name: 'book 1', value: 545 },
-            { name: 'book 2', value: 256 },
-            { name: 'book 3', value: 300 },
-            { name: 'book 4', value: 895 },
-            { name: 'book 5', value: 125 },
+            { name: 'book 1', value: 200 },
+            { name: 'book 2', value: 200 },
+            { name: 'book 3', value: 200 },
+            { name: 'book 4', value: 200 },
+            { name: 'book 5', value: 200 },
         ];
 
         if (value === "monthly") {
@@ -169,9 +207,9 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     // end function for return user custom data chart color
 
 
-    // start return_report function
+    // start return_report in pie chart function
 
-    report_status(per: string, kind: number) {
+    report_status_in_pie_chart(per: string, kind: number) {
 
         const max: any = this.data_option_max_returner(this.state.type_of_report.value)
         const min: any = this.data_option_min_returner(this.state.type_of_report.value)
@@ -184,7 +222,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                             {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
                         </div>
                     </div>
-                    <div className="col-12" style={{minHeight:'500px'}}>
+                    <div className="col-12" style={{ minHeight: '500px' }}>
                         <div style={{ width: '100%', height: 600 }}>
                             <ResponsiveContainer>
                                 <PieChart>
@@ -423,7 +461,278 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     }
 
-    // end return_report function
+    // end return_report in pie chart function
+
+
+    // start return_report in pie chart function
+
+    report_status_in_bar_chart(per: string, kind: number) {
+
+        const max: any = this.data_option_max_returner(this.state.type_of_report.value)
+        const min: any = this.data_option_min_returner(this.state.type_of_report.value)
+
+        if (per === "monthly" && kind === 0) {
+            return <>
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
+                        </div>
+                    </div>
+                    <div className="col-12" style={{ minHeight: '500px' }}>
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={max}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={min}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            </>
+        };
+        if (per === "weekly" && kind === 0) {
+            return <>
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={max}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={min}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            </>
+        };
+        if (per === "monthly" && kind === 1) {
+            return <>
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={max}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            </>
+        };
+        if (per === "monthly" && kind === 2) {
+            return <>
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={min}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            </>
+        };
+        if (per === "weekly" && kind === 1) {
+            return <>
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={max}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            </>
+        };
+        if (per === "weekly" && kind === 2) {
+            return <>
+                <div className="row">
+                    <div className="col-12">
+                        <div className="text-center">
+                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div style={{ width: '100%', height: 600 }}>
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={min}
+                                    margin={{
+                                        top: 5, right: 30, left: 20, bottom: 5,
+                                    }}
+
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis stroke="#8884d8" />
+                                    <Bar dataKey="value">
+                                        {
+                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                        }
+                                    </Bar>
+                                    <Legend />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            </>
+        };
+
+    }
+
+    // end return_report in pie chart function
 
 
 
@@ -454,7 +763,11 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
                 {
-                    this.report_status(this.state.type_of_report.value, this.state.type_of_report_kind.value)
+                    this.state.barChart
+                        ?
+                        this.report_status_in_bar_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
+                        :
+                        this.report_status_in_pie_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
                 }
             </div>
         );

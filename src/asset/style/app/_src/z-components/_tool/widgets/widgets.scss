@@ -1,7 +1,7 @@
 .app-widget {
   display: block;
   background-color: $white;
-  &.app-widget-fix-height{
+  &.app-widget-fix-height {
     height: 500px;
   }
 
@@ -28,6 +28,8 @@
           opacity: 1;
         }
       }
+      // .widget-header-title {
+      // }
     }
   }
   .widget-body {
@@ -54,9 +56,9 @@
 }
 
 body.widget-open {
-  &::-webkit-scrollbar{
-    display: none!important;
-    background: transparent!important;
+  &::-webkit-scrollbar {
+    display: none !important;
+    background: transparent !important;
   }
   .sidebar {
     display: none !important;

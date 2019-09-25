@@ -5,7 +5,6 @@ import { fa } from './fa';
 import { en } from './en';
 import { ar } from './ar';
 import { BOOK_TYPES, BOOK_GENRE, BOOK_ROLES } from '../../enum/Book';
-import { string } from 'prop-types';
 
 interface ILocalization extends LocalizedStringsMethods {
     [key: string]: any; // todo

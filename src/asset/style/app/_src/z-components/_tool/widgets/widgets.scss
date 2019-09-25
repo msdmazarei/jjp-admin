@@ -51,7 +51,7 @@
     right: 0;
     bottom: 0;
     z-index: 1050;
-    margin-bottom: 0 !important;
+    // margin-bottom: 0 !important;
     height: auto;
   }
 
@@ -75,7 +75,8 @@
 }
 
 body.widget-open {
-  overflow: hidden;
+  // overflow: hidden;
+
   // &::-webkit-scrollbar {
   //   display: none !important;
   //   background: transparent !important;
@@ -83,4 +84,12 @@ body.widget-open {
   // .sidebar {
   //   display: none; // !important;
   // }
+
+  // &.widget-minimize{
+  //   overflow: hidden;
+  // }
+
+  &:not(.widget-minimize) {
+    overflow: hidden;
+  }
 }

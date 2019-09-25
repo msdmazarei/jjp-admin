@@ -35,11 +35,17 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         //     return;
         // }
         if (this.state.minimize) {
+            if (!this.state.restore) {
+                document.body.classList.remove("widget-minimize");
+            }
             this.setState({
                 ...this.state,
                 minimize: false,
             })
         } else {
+            if (!this.state.restore) {
+                document.body.classList.add("widget-minimize");
+            }
             this.setState({
                 ...this.state,
                 minimize: true,
@@ -124,7 +130,7 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
     render() {
         return (
             <>
-                <div className={"app-widget mb-3 template-box rounded " +
+                <div className={"app-widget mb-3-- template-box rounded " +
                     (this.state.close ? "app-widget-close" : '') +
                     ' ' +
                     (this.state.restore ? "" : "app-widget-full-screen") +

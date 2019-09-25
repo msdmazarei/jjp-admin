@@ -57,7 +57,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
               const Cmpname = reportListMapCmp[report];
               return (
                 <Fragment key={r_index}>
-                  <div className="col-12 col-xl-6">
+                  <div className="col-12 col-xl-6 mb-3">
                     <AppWidgets>
                       <Cmpname />
                     </AppWidgets>

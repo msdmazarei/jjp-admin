@@ -34,7 +34,6 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
             return;
         }
         if (this.state.minimize) {
-            
             this.setState({
                 ...this.state,
                 minimize: false,
@@ -114,17 +113,18 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
     render() {
         return (
             <>
-                <div className={
-                    "app-widget mb-3 " +
-                    (this.state.close ? "d-none" : '') +
-                    ' ' +
-                    (this.state.restore ? "template-box rounded" : "full-screen")
-                }>
+                <div className={"app-widget mb-3 " +
+                                (this.state.close ? "d-none" : '') +
+                                ' ' +
+                                (this.state.restore ? "template-box rounded" : "full-screen")+
+                                ' ' +
+                                (!this.state.minimize? "app-widget-fix-height" : "")
+                                }>
                     <div className="widget-header px-1--mt-1 ">
                         <div className="tools external-tools">{this.state.child_tools}</div>
                         <div className="tools widget-header-tools">{this.widget_header_tools()}</div>
                     </div>
-                    <div id={"widget-body"} className={this.state.minimize ? "d-none" : "widget-body p"}>
+                    <div className={this.state.minimize ? "d-none" : "widget-body p"}>
                         {
                             React.cloneElement(this.props.children as any, { init_tools: (ts: JSX.Element) => this.init_tools(ts) })
                         }

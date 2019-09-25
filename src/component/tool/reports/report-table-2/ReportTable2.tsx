@@ -258,23 +258,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     tools() {
         return (
             <>
-                <div className="d-inline-block pull-left">
-                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                        <i className="fa fa-refresh"></i>
-                    </button>
-                </div>
-
-                <div className="d-inline-block pull-left">
-                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                        <i className="fa fa-home"></i>
-                    </button>
-                </div>
-
-                <div className="d-inline-block pull-left">
-                    <button className="btn btn-sm btn-outline-secondary mb-2" onClick={() => this.refreshFunction()}>
-                        <i className="fa fa-trash"></i>
-                    </button>
-                </div>
+                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
             </>
         )
     }

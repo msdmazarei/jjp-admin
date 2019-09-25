@@ -8,7 +8,7 @@ import { TInternationalization } from "../../../../config/setup";
 import { IToken } from "../../../../model/model.token";
 import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
-import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 
@@ -61,9 +61,9 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     private _report_title:string="30 Latest Report";
 
-    constructor(props: IProps) {
-        super(props);
-    }
+    // constructor(props: IProps) {
+    //     super(props);
+    // }
 
     componentDidMount() {
         this.init_title();

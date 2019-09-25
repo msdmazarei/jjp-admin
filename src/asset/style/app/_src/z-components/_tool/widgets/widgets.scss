@@ -1,10 +1,10 @@
 .app-widget {
   display: block;
   background-color: $white;
-  &.app-widget-fix-height {
-    height: 500px;
-  }
-
+  height: 400px;
+  // &.app-widget-fix-height {
+  //   height: 500px;
+  // }
   .widget-header {
     height: 1.25rem; // !important;
     display: flex;
@@ -44,23 +44,43 @@
     display: block;
   }
 
-  &.full-screen {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    z-index: 999999999999999999999 !important;
+  &.app-widget-full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1050;
+    margin-bottom: 0 !important;
     height: auto;
+  }
+
+  &.app-widget-minimize {
+    bottom: auto;
+    height: auto;
+
+    .widget-body,
+    .widget-footer {
+      display: none;
+    }
+
+    .widget-header {
+      margin-bottom: 0;
+    }
+  }
+
+  &.app-widget-close {
+    display: none;
   }
 }
 
 body.widget-open {
-  &::-webkit-scrollbar {
-    display: none !important;
-    background: transparent !important;
-  }
-  .sidebar {
-    display: none !important;
-  }
+  overflow: hidden;
+  // &::-webkit-scrollbar {
+  //   display: none !important;
+  //   background: transparent !important;
+  // }
+  // .sidebar {
+  //   display: none; // !important;
+  // }
 }

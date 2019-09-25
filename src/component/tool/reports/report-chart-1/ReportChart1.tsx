@@ -756,8 +756,8 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     render() {
 
         return (
-            <div>
-                <div className="row my-3">
+            <>
+                <div className="row mb-3">
                     <div className="col-12 col-md-6">
                         <div className="ml-2">
                             <label htmlFor="">{Localization.report}</label>
@@ -786,7 +786,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                         :
                         this.report_status_in_pie_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
                 }
-            </div>
+            </>
         );
     }
 }

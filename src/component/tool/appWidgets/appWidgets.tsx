@@ -18,7 +18,7 @@ interface IState {
     restore: boolean;
     close: boolean;
     child_tools: JSX.Element | undefined;
-    child_title:JSX.Element | undefined;
+    child_title: JSX.Element | undefined;
 }
 
 class AppWidgetsComponent extends BaseComponent<IProps, IState> {
@@ -27,13 +27,13 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         restore: true,
         close: false,
         child_tools: undefined,
-        child_title:undefined,
+        child_title: undefined,
     }
 
     minimizeFunction() {
-        if (!this.state.restore) {
-            return;
-        }
+        // if (!this.state.restore) {
+        //     return;
+        // }
         if (this.state.minimize) {
             this.setState({
                 ...this.state,
@@ -80,15 +80,17 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
     }
 
     init_title(cmpTitle: JSX.Element) {
-        this.setState({ 
+        this.setState({
             ...this.state,
-            child_title: cmpTitle });
+            child_title: cmpTitle
+        });
     }
 
     init_tools(tools: JSX.Element) {
         this.setState({
             ...this.state,
-             child_tools: tools });
+            child_tools: tools
+        });
     }
 
     widget_header_tools() {
@@ -122,27 +124,27 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
     render() {
         return (
             <>
-                <div className={"app-widget mb-3 " +
-                                (this.state.close ? "d-none" : '') +
-                                ' ' +
-                                (this.state.restore ? "template-box rounded" : "full-screen")+
-                                ' ' +
-                                (!this.state.minimize? "app-widget-fix-height" : "")
-                                }>
-                    <div className="widget-header px-1--mt-1 ">
+                <div className={"app-widget mb-3 template-box rounded " +
+                    (this.state.close ? "app-widget-close" : '') +
+                    ' ' +
+                    (this.state.restore ? "" : "app-widget-full-screen") +
+                    ' ' +
+                    (this.state.minimize ? "app-widget-minimize" : "")
+                }>
+                    <div className="widget-header">
                         <div className="tools external-tools">{this.state.child_tools}</div>
                         <div className="widget-header-title">{this.state.child_title}</div>
                         <div className="tools widget-header-tools">{this.widget_header_tools()}</div>
                     </div>
-                    <div className={this.state.minimize ? "d-none" : "widget-body p"}>
+                    <div className="widget-body">
                         {
-                            React.cloneElement(this.props.children as any, { 
+                            React.cloneElement(this.props.children as any, {
                                 init_tools: (ts: JSX.Element) => this.init_tools(ts),
                                 init_title: (title: JSX.Element) => this.init_title(title),
-                             })
+                            })
                         }
                     </div>
-                    <div className={this.state.minimize ? "d-none" : "widget-footer "} >
+                    <div className="widget-footer">
 
                     </div>
                 </div>

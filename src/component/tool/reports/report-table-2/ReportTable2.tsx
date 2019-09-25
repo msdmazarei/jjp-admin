@@ -331,7 +331,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     report_render() {
         return (
             <>
-                <div className="row my-3">
+                <div className="row mb-3">
                     <div className="col-12 col-md-6">
                         <div className="ml-2">
                             <label htmlFor="">{Localization.type}</label>

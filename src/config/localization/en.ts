@@ -294,6 +294,7 @@ export const en = {
     creation_date:"creation date",
     Quick_person_creation:"Quick person creation",
     type_of_report:{
+        Reporting_Period:"Reporting Period",
         monthly:"monthly",
         weekly:"weekly",
     },
@@ -309,6 +310,13 @@ export const en = {
         winter:"winter",
         last_quarter:"last_quarter",
         yearly:"yearly",
+    },
+    name_of_report:{
+        ten_Recent_Comments : "10 Recent Comments",
+        The_best_selling_and_least_selling_of_recent_weeks_and_months : "The best selling and least selling of recent weeks and months",
+        fifteen_books_have_recently_been_sold_by_type : "15 books have recently been sold by type",
+        Monthly_sale_seasonal_and_yearly : "Monthly sales - seasonal and yearly",
+        Compare_publishers_sales_by_time_period : "Compare publishers'sales by time period",
     },
     genre_type_list:{
         Comedy: "comedy",

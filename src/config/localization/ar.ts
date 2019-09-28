@@ -294,6 +294,7 @@ export const ar = {
     creation_date:"تاریخ ایجاد",
     Quick_person_creation:"ایجاد سریع شخص",
     type_of_report:{
+        Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",
         weekly:"هفتگی",
     },
@@ -309,6 +310,13 @@ export const ar = {
         winter:"زمستان",
         last_quarter:"سه ماهه اخیر",
         yearly:"سالانه",
+    },
+    name_of_report:{
+        ten_Recent_Comments : "10 کامنت اخیر",
+        The_best_selling_and_least_selling_of_recent_weeks_and_months : "پرفروش ترین و کم فروش ترین یک هفته - ماه اخیر",
+        fifteen_books_have_recently_been_sold_by_type : "15 کتاب فروش رفته اخیر به تفکیک نوع",
+        Monthly_sale_seasonal_and_yearly : "فروش ماهانه - فصلی و سالانه",
+        Compare_publishers_sales_by_time_period : "مقایسه فروش ناشرین به تفکیک دوره زمانی",
     },
     genre_type_list:{
         Comedy:"کمدی",

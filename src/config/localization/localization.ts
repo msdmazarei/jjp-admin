@@ -306,6 +306,7 @@ interface ILocalization extends LocalizedStringsMethods {
     creation_date:string;
     Quick_person_creation:string;
     type_of_report:{
+        Reporting_Period : string;
         monthly:string;
         weekly:string;
     };
@@ -322,6 +323,13 @@ interface ILocalization extends LocalizedStringsMethods {
         last_quarter:string;
         yearly:string;
     }
+    name_of_report:{
+        ten_Recent_Comments : string;
+        The_best_selling_and_least_selling_of_recent_weeks_and_months : string;
+        fifteen_books_have_recently_been_sold_by_type : string;
+        Monthly_sale_seasonal_and_yearly : string;
+        Compare_publishers_sales_by_time_period : string;
+    };
     genre_type_list:{
         [key in BOOK_GENRE]: string;
     };

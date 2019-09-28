@@ -8,7 +8,7 @@ import { TInternationalization } from "../../../../config/setup";
 import { IToken } from "../../../../model/model.token";
 import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
-import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis,Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 
@@ -59,7 +59,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     }
     /// end of state
 
-    private _report_title:string=Localization.name_of_report.The_best_selling_and_least_selling_of_recent_weeks_and_months;
+    private _report_title: string = Localization.name_of_report.The_best_selling_and_least_selling_of_recent_weeks_and_months;
 
     // constructor(props: IProps) {
     //     super(props);
@@ -193,11 +193,11 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
         ];
 
         const weekly = [
-            { name: 'book 1', value: 200 },
+            { name: 'book 1', value: 100 },
             { name: 'book 2', value: 200 },
-            { name: 'book 3', value: 200 },
-            { name: 'book 4', value: 200 },
-            { name: 'book 5', value: 200 },
+            { name: 'book 3', value: 300 },
+            { name: 'book 4', value: 400 },
+            { name: 'book 5', value: 500 },
         ];
 
         if (value === "monthly") {
@@ -231,12 +231,18 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
         const max: any = this.data_option_max_returner(this.state.type_of_report.value)
         const min: any = this.data_option_min_returner(this.state.type_of_report.value)
 
-        if (per === "monthly" && kind === 0) {
+        if (kind === 0) {
             return <>
                 <div className="row">
                     <div className="col-12">
                         <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
+                            {
+                                per === "monthly"
+                                    ?
+                                    Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly
+                                    :
+                                    Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly
+                            }
                         </div>
                     </div>
                     <div className="col-12" style={{ minHeight: '500px' }}>
@@ -255,7 +261,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
+                                    <Tooltip position={{ x: 0, y: 0 }} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -263,7 +269,13 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                     </div>
                     <div className="col-12">
                         <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly}
+                            {
+                                per === "monthly"
+                                    ?
+                                    Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly
+                                    :
+                                    Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly
+                            }
                         </div>
                     </div>
                     <div className="col-12">
@@ -282,7 +294,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
+                                    <Tooltip position={{ x: 0, y: 0 }} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -290,13 +302,26 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
             </>
-        };
-        if (per === "weekly" && kind === 0) {
+        } else if (kind !== 0) {
             return <>
                 <div className="row">
                     <div className="col-12">
                         <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly}
+                            {
+                                per === "monthly" && kind === 1
+                                    ?
+                                    Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly
+                                    :
+                                    per === "monthly" && kind === 2
+                                        ?
+                                        Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly
+                                        :
+                                        per === "weekly" && kind === 1
+                                            ?
+                                            Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly
+                                            :
+                                            Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly
+                            }
                         </div>
                     </div>
                     <div className="col-12">
@@ -304,7 +329,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                             <ResponsiveContainer>
                                 <PieChart>
                                     <Pie
-                                        data={max}
+                                        data={kind === 1 ? max : min}
                                         dataKey="value"
                                         isAnimationActive={true}
                                         outerRadius={150}
@@ -315,34 +340,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <PieChart>
-                                    <Pie
-                                        data={min}
-                                        dataKey="value"
-                                        isAnimationActive={true}
-                                        outerRadius={150}
-                                        fill="white"
-                                        label
-                                    >
-                                        {
-                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
+                                    <Tooltip position={{ x: 0, y: 0 }} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -351,139 +349,6 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                 </div>
             </>
         };
-        if (per === "monthly" && kind === 1) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <PieChart>
-                                    <Pie
-                                        data={max}
-                                        dataKey="value"
-                                        isAnimationActive={true}
-                                        outerRadius={150}
-                                        fill="red"
-                                        label
-                                    >
-                                        {
-                                            this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "monthly" && kind === 2) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <PieChart>
-                                    <Pie
-                                        data={min}
-                                        dataKey="value"
-                                        isAnimationActive={true}
-                                        outerRadius={150}
-                                        fill="red"
-                                        label
-                                    >
-                                        {
-                                            this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "weekly" && kind === 1) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <PieChart>
-                                    <Pie
-                                        data={max}
-                                        dataKey="value"
-                                        isAnimationActive={true}
-                                        outerRadius={150}
-                                        fill="red"
-                                        label
-                                    >
-                                        {
-                                            this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "weekly" && kind === 2) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <PieChart>
-                                    <Pie
-                                        data={min}
-                                        dataKey="value"
-                                        isAnimationActive={true}
-                                        outerRadius={150}
-                                        fill="red"
-                                        label
-                                    >
-                                        {
-                                            this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Pie>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-
     }
 
     // end return_report in pie chart function
@@ -496,12 +361,18 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
         const max: any = this.data_option_max_returner(this.state.type_of_report.value)
         const min: any = this.data_option_min_returner(this.state.type_of_report.value)
 
-        if (per === "monthly" && kind === 0) {
+        if (kind === 0) {
             return <>
                 <div className="row">
                     <div className="col-12">
                         <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
+                            {
+                                per === "monthly"
+                                    ?
+                                    Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly
+                                    :
+                                    Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly
+                            }
                         </div>
                     </div>
                     <div className="col-12" style={{ minHeight: '500px' }}>
@@ -521,14 +392,20 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
-                                    <Tooltip position={{x:0,y:0}} />
+                                    <Tooltip position={{ x: 0, y: 0 }} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
                     <div className="col-12">
                         <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly}
+                            {
+                                per === "monthly"
+                                    ?
+                                    Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly
+                                    :
+                                    Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly
+                            }
                         </div>
                     </div>
                     <div className="col-12">
@@ -549,6 +426,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{ x: 0, y: 0 }} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -556,20 +434,33 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
             </>
-        };
-        if (per === "weekly" && kind === 0) {
+        } else if (kind !== 0) {
             return <>
                 <div className="row">
                     <div className="col-12">
                         <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly}
+                            {
+                                per === "monthly" && kind === 1
+                                    ?
+                                    Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly
+                                    :
+                                    per === "monthly" && kind === 2
+                                        ?
+                                        Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly
+                                        :
+                                        per === "weekly" && kind === 1
+                                            ?
+                                            Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly
+                                            :
+                                            Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly
+                            }
                         </div>
                     </div>
                     <div className="col-12">
                         <div style={{ width: '100%', height: 600 }}>
                             <ResponsiveContainer>
                                 <BarChart
-                                    data={max}
+                                    data={kind === 1 ? max : min}
                                     margin={{
                                         top: 5, right: 30, left: 20, bottom: 5,
                                     }}
@@ -583,35 +474,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <BarChart
-                                    data={min}
-                                    margin={{
-                                        top: 5, right: 30, left: 20, bottom: 5,
-                                    }}
-
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis stroke="#8884d8" />
-                                    <Bar dataKey="value">
-                                        {
-                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Bar>
+                                    <Tooltip position={{ x: 0, y: 0 }} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -620,147 +483,6 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                 </div>
             </>
         };
-        if (per === "monthly" && kind === 1) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.monthly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <BarChart
-                                    data={max}
-                                    margin={{
-                                        top: 5, right: 30, left: 20, bottom: 5,
-                                    }}
-
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis stroke="#8884d8" />
-                                    <Bar dataKey="value">
-                                        {
-                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Bar>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "monthly" && kind === 2) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.monthly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <BarChart
-                                    data={min}
-                                    margin={{
-                                        top: 5, right: 30, left: 20, bottom: 5,
-                                    }}
-
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis stroke="#8884d8" />
-                                    <Bar dataKey="value">
-                                        {
-                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Bar>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "weekly" && kind === 1) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.most_Selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <BarChart
-                                    data={max}
-                                    margin={{
-                                        top: 5, right: 30, left: 20, bottom: 5,
-                                    }}
-
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis stroke="#8884d8" />
-                                    <Bar dataKey="value">
-                                        {
-                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Bar>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-        if (per === "weekly" && kind === 2) {
-            return <>
-                <div className="row">
-                    <div className="col-12">
-                        <div className="text-center">
-                            {Localization.type_of_report_kind.lowest_selling + " " + Localization.type_of_report.weekly}
-                        </div>
-                    </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            <ResponsiveContainer>
-                                <BarChart
-                                    data={min}
-                                    margin={{
-                                        top: 5, right: 30, left: 20, bottom: 5,
-                                    }}
-
-                                >
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis stroke="#8884d8" />
-                                    <Bar dataKey="value">
-                                        {
-                                            this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
-                                        }
-                                    </Bar>
-                                    <Tooltip position={{x:0,y:0}} />
-                                    <Legend />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-                </div>
-            </>
-        };
-
     }
 
     // end return_report in pie chart function

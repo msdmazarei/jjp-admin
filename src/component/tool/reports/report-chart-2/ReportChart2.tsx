@@ -51,7 +51,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     }
     /// end of state
 
-    private _report_title: string = "40 Latest Report";
+    private _report_title: string = Localization.name_of_report.Monthly_sale_seasonal_and_yearly;
 
 
     // constructor(props: IProps) {
@@ -189,7 +189,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                             <CartesianGrid strokeDasharray="1 1" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip />
+                            <Tooltip position={{x:-50,y:-100}} />
                             <Line type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" />
                         </LineChart>
                     </ResponsiveContainer>
@@ -209,12 +209,12 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                 <div className="row mb-3">
                     <div className="col-12 col-md-6">
                         <div className="ml-2">
-                            <label htmlFor="">{Localization.report}</label>
+                            <label htmlFor="">{Localization.type_of_report.Reporting_Period}</label>
                             <Select
                                 onChange={(value: any) => this.handleReportChange(value)}
                                 options={this.reportOptions}
                                 value={this.state.type_of_report}
-                                placeholder={Localization.report}
+                                placeholder={Localization.type_of_report.Reporting_Period}
                             />
                         </div>
                     </div>

@@ -143,7 +143,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
 
     /// end of state
 
-    private _report_title: string = "20 Latest Report";
+    private _report_title: string = Localization.name_of_report.fifteen_books_have_recently_been_sold_by_type;
 
 
 

@@ -124,7 +124,7 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         timeStampTo: 0,
     }
 
-    private _report_title:string="10 Latest Report";
+    private _report_title:string=Localization.name_of_report.ten_Recent_Comments;
 
     /// end of state
 

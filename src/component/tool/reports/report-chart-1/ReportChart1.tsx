@@ -8,7 +8,7 @@ import { TInternationalization } from "../../../../config/setup";
 import { IToken } from "../../../../model/model.token";
 import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
-import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis,Tooltip } from 'recharts';
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 
@@ -59,7 +59,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     }
     /// end of state
 
-    private _report_title:string="30 Latest Report";
+    private _report_title:string=Localization.name_of_report.The_best_selling_and_least_selling_of_recent_weeks_and_months;
 
     // constructor(props: IProps) {
     //     super(props);
@@ -255,6 +255,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -281,6 +282,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -313,6 +315,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -339,6 +342,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -371,6 +375,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -403,6 +408,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -435,6 +441,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -467,6 +474,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_max_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Pie>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
@@ -513,6 +521,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{x:0,y:0}} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -574,6 +583,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -636,6 +646,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -670,6 +681,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -704,6 +716,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -738,6 +751,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
+                                    <Tooltip position={{x:0,y:0}} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -760,12 +774,12 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                 <div className="row mb-3">
                     <div className="col-12 col-md-6">
                         <div className="ml-2">
-                            <label htmlFor="">{Localization.report}</label>
+                            <label htmlFor="">{Localization.type_of_report.Reporting_Period}</label>
                             <Select
                                 onChange={(value: any) => this.handleReportChange(value)}
                                 options={this.reportOptions}
                                 value={this.state.type_of_report}
-                                placeholder={Localization.report}
+                                placeholder={Localization.type_of_report.Reporting_Period}
                             />
                         </div>
                     </div>

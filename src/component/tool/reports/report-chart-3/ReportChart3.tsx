@@ -10,7 +10,7 @@ import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from "recharts";
+import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, Brush } from "recharts";
 
 
 export interface IProps {
@@ -233,6 +233,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                                         <Line type="monotone" dataKey={item.value} stroke={this.data_option_color_returner()[index]} fill="#8884d8" />
                                     )
                             }
+                            <Brush dataKey="name" height={20} stroke="#8884d8" />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>

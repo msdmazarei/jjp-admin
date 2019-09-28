@@ -10,7 +10,7 @@ import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer } from "recharts";
+import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, PieChart, Pie, Legend, Cell, BarChart, Bar } from "recharts";
 
 
 export interface IProps {
@@ -26,6 +26,9 @@ interface IState {
         label: string;
         value: string;
     } | undefined;
+    lineChart: boolean;
+    barChart: boolean;
+    pieChart: boolean;
 }
 
 class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
@@ -48,6 +51,9 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
     state = {
         type_of_report: this.reportOptions[0],
+        lineChart: false,
+        barChart: true,
+        pieChart: false,
     }
     /// end of state
 
@@ -81,9 +87,44 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     tools() {
         return (
             <>
-
+                <div>
+                    <i className="tool fa fa-line-chart" onClick={() => this.setChartToLine()}></i>
+                </div>
+                <div>
+                    <i className="tool fa fa-pie-chart" onClick={() => this.setChartToPie()}></i>
+                </div>
+                <div>
+                    <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
+                </div>
             </>
         )
+    }
+
+    setChartToLine() {
+        this.setState({
+            ...this.state,
+            lineChart: true,
+            pieChart: false,
+            barChart: false
+        })
+    }
+
+    setChartToPie() {
+        this.setState({
+            ...this.state,
+            lineChart: false,
+            pieChart: true,
+            barChart: false
+        })
+    }
+
+    setChartToBar() {
+        this.setState({
+            ...this.state,
+            lineChart: false,
+            pieChart: false,
+            barChart: true
+        })
     }
 
     init_tools() {
@@ -110,7 +151,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
     data_option_returner(value: string | undefined) {
 
-        const yearly:any[] = [
+        const yearly: any[] = [
             { name: 'فروردین', value: 320 },
             { name: 'اردیبهشت ', value: 310 },
             { name: ' خرداد', value: 250 },
@@ -124,11 +165,11 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
             { name: 'بهمن', value: 550 },
             { name: 'اسفند', value: 380 },
         ];
-        const last_quarter= yearly.length >=4 ? yearly.slice(yearly.length-3,yearly.length) : yearly.slice(0,yearly.length);
-        const spring = yearly.length >=4 ? yearly.slice(0,3) : yearly.slice(0,yearly.length);
-        const summer = yearly.length >=7 ? yearly.slice(3,6) : yearly.slice(3,yearly.length);
-        const fall = yearly.length >=10 ? yearly.slice(6,9) : yearly.slice(6,yearly.length);
-        const winter = yearly.length >=12 ? yearly.slice(9,12) : yearly.slice(9,yearly.length);
+        const last_quarter = yearly.length >= 4 ? yearly.slice(yearly.length - 3, yearly.length) : yearly.slice(0, yearly.length);
+        const spring = yearly.length >= 4 ? yearly.slice(0, 3) : yearly.slice(0, yearly.length);
+        const summer = yearly.length >= 7 ? yearly.slice(3, 6) : yearly.slice(3, yearly.length);
+        const fall = yearly.length >= 10 ? yearly.slice(6, 9) : yearly.slice(6, yearly.length);
+        const winter = yearly.length >= 12 ? yearly.slice(9, 12) : yearly.slice(9, yearly.length);
 
         if (value === "yearly") {
             return yearly;
@@ -159,17 +200,17 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     // start function for return user custom data chart color
 
     data_option_color_returner() {
-        const COLORS = ['#green', '#00C49F', '#gray', '#FF8042', 'red', 'blue',
-            '#gray', '#00C49F', '#green', '#FF8042', 'blue', 'red'];
+        const COLORS = ['green', '#00C49F', 'gray', '#FF8042', 'red', 'blue',
+            'gray', '#00C49F', 'green', '#FF8042', 'blue', 'red'];
         return COLORS
     }
 
     // end function for return user custom data chart color
 
 
-    // start return_report function
+    // start return_report function in chart status
 
-    report_status(per: string) {
+    report_status_in_line_chart(per: string) {
 
         const data: any = this.data_option_returner(this.state.type_of_report.value)
 
@@ -178,8 +219,6 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                 <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
                         <LineChart
-                            // width={500}
-                            // height={200}
                             data={data}
                             syncId="anyId"
                             margin={{
@@ -189,9 +228,71 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                             <CartesianGrid strokeDasharray="1 1" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip position={{x:-50,y:-100}} />
+                            <Tooltip position={{ x: -50, y: -100 }} />
                             <Line type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" />
                         </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+        </>
+    }
+
+    report_status_in_pie_chart(per: string) {
+
+        const data: any = this.data_option_returner(this.state.type_of_report.value)
+
+        return <>
+            <div className="row">
+                <div className="col-12">
+                    <div style={{ width: '100%', height: 600 }}>
+                        <ResponsiveContainer>
+                            <PieChart>
+                                <Pie
+                                    data={data}
+                                    dataKey="value"
+                                    isAnimationActive={true}
+                                    outerRadius={150}
+                                    fill="red"
+                                    label
+                                >
+                                    {
+                                        this.data_option_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                    }
+                                </Pie>
+                                <Tooltip position={{ x: 0, y: 0 }} />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+        </>
+    }
+
+    report_status_in_bar_chart(per: string) {
+
+        const data: any = this.data_option_returner(this.state.type_of_report.value)
+
+        return <>
+            <div className="col-12">
+                <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                        <BarChart
+                            data={data}
+                            margin={{
+                                top: 5, right: 30, left: 20, bottom: 5,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis stroke="#8884d8" />
+                            <Bar dataKey="value">
+                                {
+                                    this.data_option_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
+                                }
+                            </Bar>
+                            <Tooltip position={{ x: 0, y: 0 }} />
+                        </BarChart>
                     </ResponsiveContainer>
                 </div>
             </div>
@@ -255,7 +356,15 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                     <div className="col-12">
                         <div style={{ width: '100%', height: 600 }}>
                             {
-                                this.report_status(this.state.type_of_report.value)
+                                this.state.lineChart === true && this.state.barChart === false && this.state.pieChart === false
+                                    ?
+                                    this.report_status_in_line_chart(this.state.type_of_report.value)
+                                    :
+                                    this.state.lineChart === false && this.state.barChart === false && this.state.pieChart === true
+                                        ?
+                                        this.report_status_in_pie_chart(this.state.type_of_report.value)
+                                        :
+                                        this.report_status_in_bar_chart(this.state.type_of_report.value)
                             }
                         </div>
                     </div>

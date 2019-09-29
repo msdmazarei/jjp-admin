@@ -11,8 +11,6 @@ import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import { ResponsiveContainer, Tooltip, LabelList } from "recharts";
 import { FunnelChart, Funnel } from 'recharts';
-import { PersonService } from "../../../../service/service.person";
-import { OrderService, IOrderItems } from "../../../../service/service.order";
 
 
 

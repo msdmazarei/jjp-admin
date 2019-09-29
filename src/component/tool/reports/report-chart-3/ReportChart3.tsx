@@ -10,7 +10,7 @@ import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
-import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, Brush } from "recharts";
+import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, Brush, BarChart, Legend, Bar, LabelList } from "recharts";
 
 
 export interface IProps {
@@ -30,6 +30,8 @@ interface IState {
         label: string;
         value: string;
     }[] | undefined;
+    barChart: boolean;
+    lineChart: boolean;
 }
 
 class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState> {
@@ -65,8 +67,10 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     state = {
         type_of_report: this.reportOptions[0],
         compear_options: this.compearOptions,
-
+        barChart: false,
+        lineChart: true,
     }
+
     /// end of state
 
     private _report_title: string = Localization.name_of_report.Compare_publishers_sales_by_time_period;
@@ -97,7 +101,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     // start function for set type & kind of report
 
     handleCompearOptions(value: any[]) {
-        if(value.length<=1){
+        if (value.length <= 1) {
             return;
         }
         this.setState({
@@ -114,9 +118,30 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     tools() {
         return (
             <>
-
+                <div>
+                    <i className="tool fa fa-line-chart" onClick={() => this.setChartToLine()}></i>
+                </div>
+                <div>
+                    <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
+                </div>
             </>
         )
+    }
+
+    setChartToLine() {
+        this.setState({
+            ...this.state,
+            lineChart: true,
+            barChart: false,
+        });
+    }
+
+    setChartToBar() {
+        this.setState({
+            ...this.state,
+            lineChart: false,
+            barChart: true,
+        });
     }
 
     init_tools() {
@@ -200,9 +225,9 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     // end function for return user custom data chart color
 
 
-    // start return_report function
+    // start return_report function with selected option
 
-    report_status(per: string) {
+    report_status_in_line_chart() {
 
         const data: any = this.data_option_returner(this.state.type_of_report.value)
 
@@ -211,8 +236,6 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                 <div style={{ width: '100%', height: 250 }}>
                     <ResponsiveContainer>
                         <LineChart
-                            // width={500}
-                            // height={200}
                             data={data}
                             syncId="anyId"
                             margin={{
@@ -222,15 +245,17 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                             <CartesianGrid strokeDasharray="1 1" />
                             <XAxis dataKey="name" />
                             <YAxis />
-                            <Tooltip position={{x:-50,y:-150}} />
+                            <Tooltip position={{ x: -50, y: -150 }} />
                             {
                                 !this.state.compear_options.length
                                     ?
-                                    <Line type="monotone" dataKey="p1" stroke="red" fill="red" />
+                                    <Line type="monotone" dataKey='جام جم' stroke="red" fill="red" />
                                     :
                                     this.state.compear_options.map((item, index) =>
 
-                                        <Line type="monotone" dataKey={item.value} stroke={this.data_option_color_returner()[index]} fill="#8884d8" />
+                                        <Line
+                                            key={index}
+                                            type="monotone" dataKey={item.value} stroke={this.data_option_color_returner()[index]} fill="#8884d8" />
                                     )
                             }
                             <Brush dataKey="name" height={20} stroke="#8884d8" />
@@ -241,7 +266,52 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
         </>
     }
 
-    // end return_report function
+    report_status_in_bar_chart() {
+
+        const data: any = this.data_option_returner(this.state.type_of_report.value)
+
+        return <>
+            <div className="col-12">
+                <div style={{ width: '100%', height: 250 }}>
+                    <ResponsiveContainer>
+                        <BarChart
+                            data={data}
+                            margin={{
+                                top: 10, right: 50, left: 0, bottom: 0,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="1 1" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip position={{ x: -50, y: -150 }} />
+                            <Legend />
+                            {
+                                !this.state.compear_options.length
+                                    ?
+                                    <Bar dataKey="p1" stroke="red" fill="red" />
+                                    :
+                                    this.state.compear_options.map((item, index) =>
+
+                                        <Bar
+                                            dataKey={item.value}
+                                            stroke={this.data_option_color_returner()[index]}
+                                            fill={this.data_option_color_returner()[index]}
+                                            minPointSize={10}
+                                        >
+                                            <LabelList dataKey={item.value} position="top" angle={90}/>
+                                        </Bar>
+
+                                    )
+                            }
+                            <Brush dataKey="name" height={20} stroke="#8884d8" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+        </>
+    }
+
+    // end return_report function with selected option
 
 
 
@@ -310,7 +380,15 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                     <div className="col-12">
                         <div style={{ width: '100%', height: 600 }}>
                             {
-                                this.report_status(this.state.type_of_report.value)
+                                this.state.lineChart === true && this.state.barChart === false
+                                    ?
+                                    this.report_status_in_line_chart()
+                                    :
+                                    this.state.lineChart === false && this.state.barChart === true
+                                        ?
+                                        this.report_status_in_bar_chart()
+                                        :
+                                        undefined
                             }
                         </div>
                     </div>

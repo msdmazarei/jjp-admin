@@ -329,6 +329,7 @@ interface ILocalization extends LocalizedStringsMethods {
         fifteen_books_have_recently_been_sold_by_type : string;
         Monthly_sale_seasonal_and_yearly : string;
         Compare_publishers_sales_by_time_period : string;
+        User_to_customer_conversion_process_chart : string;
     };
     genre_type_list:{
         [key in BOOK_GENRE]: string;

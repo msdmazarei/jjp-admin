@@ -317,6 +317,7 @@ export const ar = {
         fifteen_books_have_recently_been_sold_by_type : "15 کتاب فروش رفته اخیر به تفکیک نوع",
         Monthly_sale_seasonal_and_yearly : "فروش ماهانه - فصلی و سالانه",
         Compare_publishers_sales_by_time_period : "مقایسه فروش ناشرین به تفکیک دوره زمانی",
+        User_to_customer_conversion_process_chart:"نمودار فرآیند تبدیل کاربر به مشتری",
     },
     genre_type_list:{
         Comedy:"کمدی",

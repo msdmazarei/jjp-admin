@@ -317,6 +317,7 @@ export const en = {
         fifteen_books_have_recently_been_sold_by_type : "15 books have recently been sold by type",
         Monthly_sale_seasonal_and_yearly : "Monthly sales - seasonal and yearly",
         Compare_publishers_sales_by_time_period : "Compare publishers'sales by time period",
+        User_to_customer_conversion_process_chart:"User-to-customer conversion process chart",
     },
     genre_type_list:{
         Comedy: "comedy",

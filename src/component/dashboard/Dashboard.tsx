@@ -38,7 +38,12 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
 
   grtUserReport(uer_id: string): Promise<TReport[]> {
     return new Promise((res, rej) => {
-      res(["newst_comment","best_sells_chart","last_sell_with_type","year_sell_with_month","Compear_publisher_sells"])
+      res(["newst_comment", "best_sells_chart", 
+      "last_sell_with_type",
+       "year_sell_with_month",
+        "Compear_publisher_sells",
+        'store_customer_performance'
+      ])
     })
   }
 

@@ -124,7 +124,7 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         timeStampTo: 0,
     }
 
-    private _report_title:string=Localization.name_of_report.ten_Recent_Comments;
+    private _report_title: string = Localization.name_of_report.ten_Recent_Comments;
 
     /// end of state
 
@@ -160,8 +160,34 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         return (
             <>
                 <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
+                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
             </>
         )
+    }
+
+    goToPdfFunction(e: any) {
+        // debugger;
+        // const print : any = document.
+        // window.open()!.document.body.classList.add("only-print-visibility")
+        const widget = this.upToParent(e.currentTarget, 'app-widget');
+        const table = widget && widget.querySelector('.widget-body table');
+        
+        // debugger;
+        const newTab = window.open();
+        if (newTab) {
+            newTab.document.body.appendChild(table);
+            newTab.print();
+        }
+    }
+
+    upToParent(el: any, className: string) {
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.classList.contains(className)) {
+                return el;
+            }
+        }
+        return null;
     }
 
     refreshFunction() {

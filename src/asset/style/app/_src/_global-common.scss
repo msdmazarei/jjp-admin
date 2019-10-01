@@ -11,6 +11,19 @@ body {
   //font-family: $font-app;//farsi, Arial, serif;
   //direction: rtl;
   //text-align: right;
+  &.printStatus{
+    background-color: white;
+    table{
+      tbody{
+        tr{
+          td{
+            background-color: white !important;
+            color: black !important;
+          }
+        }
+      }
+    }
+  }
 
   a {
     // color: app-color(default, color);

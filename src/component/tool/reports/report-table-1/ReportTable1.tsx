@@ -165,18 +165,26 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         )
     }
 
+
+
     goToPdfFunction(e: any) {
-        // debugger;
-        // const print : any = document.
-        // window.open()!.document.body.classList.add("only-print-visibility")
         const widget = this.upToParent(e.currentTarget, 'app-widget');
-        const table = widget && widget.querySelector('.widget-body table');
-        
-        // debugger;
+        const content = widget && widget.querySelector('.widget-body table');
+        const table = content!.cloneNode(true)
         const newTab = window.open();
+        const head = document.querySelector('html head');
+        const style = head!.cloneNode(true)
         if (newTab) {
-            newTab.document.body.appendChild(table);
+            const oldHeadNewTab = newTab.document.querySelector('head')!;
+            oldHeadNewTab!.parentNode!.removeChild(oldHeadNewTab);
+            newTab.document.querySelector('html')!.prepend(style!);
+            newTab.document.body.classList.add('rtl');
+            newTab.document.body.classList.add('printStatus');
+            newTab.document.body.classList.add('only-print-visibility');
+            const body = newTab.document.querySelector('body')!;
+            body.appendChild(table);
             newTab.print();
+            // newTab.close();
         }
     }
 
@@ -189,6 +197,7 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         }
         return null;
     }
+
 
     refreshFunction() {
         this.fetchComments();

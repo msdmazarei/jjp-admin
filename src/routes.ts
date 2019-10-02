@@ -107,30 +107,80 @@ var routes = [
     isitem: true
   },
   // comment end
-    // order start
-    {
-      path: "/order/manage",
-      name: Localization.order,
-      icon: "fa fa-shopping-cart",
-      component: OrderManage,
-      layout: "/admin",
-      isitem: true
-    },
-    {
-      path: "/order/create",
-      name: Localization.create_order,
-      component: OrderSave,       
-      layout: "/admin",
-      isitem: false
-    },
-    {
-      path: "/order/:order_id/edit",
-      name: Localization.order_update,
-      component: OrderSave,               
-      layout: "/admin",
-      isitem: false,
-      brandName: ['order', 'edit']
-    },
-    // order end
+  // order start
+  {
+    path: "/order/manage",
+    name: Localization.order,
+    icon: "fa fa-shopping-cart",
+    component: OrderManage,
+    layout: "/admin",
+    isitem: true
+  },
+  {
+    path: "/order/create",
+    name: Localization.create_order,
+    component: OrderSave,
+    layout: "/admin",
+    isitem: false
+  },
+  {
+    path: "/order/:order_id/edit",
+    name: Localization.order_update,
+    component: OrderSave,
+    layout: "/admin",
+    isitem: false,
+    brandName: ['order', 'edit']
+  },
+  // order end
+  // group start
+  {
+    path: "/group/manage",
+    name: "گروه ها",//Localization.groups,
+    icon: "fa fa-users",
+    // component: GroupManage,
+    layout: "/admin",
+    isitem: true
+  },
+  // {
+  //   path: "/group/create",
+  //   name: Localization.group_order,
+  //   component: GroupSave,
+  //   layout: "/admin",
+  //   isitem: false
+  // },
+  // {
+  //   path: "/group/:group_id/edit",
+  //   name: Localization.group_update,
+  //   component: GroupSave,
+  //   layout: "/admin",
+  //   isitem: false,
+  //   brandName: ['group', 'edit']
+  // },
+  // group end
+  // access start
+  {
+    path: "/access/manage",
+    name: "دسترسی ها",//Localization.access,
+    icon: "fa fa-universal-access",
+    // component: AccessManage,
+    layout: "/admin",
+    isitem: true
+  },
+  // {
+  //   path: "/access/create",
+  //   name: Localization.access_order,
+  //   component: AccessSave,
+  //   layout: "/admin",
+  //   isitem: false
+  // },
+  // {
+  //   path: "/access/:access_id/edit",
+  //   name: Localization.access_update,
+  //   component: AccessSave,
+  //   layout: "/admin",
+  //   isitem: false,
+  //   brandName: ['access', 'edit']
+  // },
+  // access end
 ];
 export default routes;

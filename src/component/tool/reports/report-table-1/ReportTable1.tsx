@@ -15,7 +15,7 @@ import { BOOK_TYPES } from "../../../../enum/Book";
 import { CommentService } from "../../../../service/service.comment";
 import { redux_state } from "../../../../redux/app_state";
 import { ReportBase } from "../ReportBase";
-
+import { CSVLink } from "react-csv";
 export interface IProps {
     history?: History;
     internationalization: TInternationalization;
@@ -153,19 +153,32 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
     }
 
 
-    // start define custom tools & pass that to widget
+    // start request & set data for comment table
 
-
-    tools() {
-        return (
-            <>
-                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
-                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
-            </>
-        )
+    async fetchComments() {
+        this.setState({ ...this.state, commentTableLoader: true });
+        let res = await this._commentService.search(10, 0, { book: true }).catch(error => {
+            this.handleError({ error: error.response });
+            this.setState({
+                ...this.state,
+                commentTableLoader: false,
+            });
+        });
+        if (res) {
+            this.setState({
+                ...this.state,
+                comment_table: {
+                    ...this.state.comment_table,
+                    list: res.data.result
+                },
+                commentTableLoader: false,
+            });
+        }
     }
 
+    // end request & set data for comment table
 
+    // start report export in pdf format tool function 
 
     goToPdfFunction(e: any) {
         const widget = this.upToParent(e.currentTarget, 'app-widget');
@@ -173,7 +186,7 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         const table = content!.cloneNode(true)
         const newTab = window.open();
         const head = document.querySelector('html head');
-        const style = head!.cloneNode(true)
+        const style = head!.cloneNode(true);
         if (newTab) {
             const oldHeadNewTab = newTab.document.querySelector('head')!;
             oldHeadNewTab!.parentNode!.removeChild(oldHeadNewTab);
@@ -198,6 +211,118 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         return null;
     }
 
+    // end report export in pdf format tool function 
+
+
+    // start report export in excel format tool function 
+
+    excelDataHeaderPassToDownloader() {
+
+        const headers = [
+            { label: Localization.creation_date, key: "creation_date" },
+            { label: Localization.user, key: "creator" },
+            { label: Localization.full_name, key: "fullname" },
+            { label: Localization.book_title, key: "book_title" },
+            { label: Localization.book_type, key: "book_type" },
+            { label: Localization.comment, key: "comment" },
+            { label: Localization.number_of_reports, key: "number_of_reports" }
+        ];
+
+        return headers
+    }
+
+    excelDataPassToDownloader(list: any[]) {
+        if (list.length === 0) {
+            return [{
+                creation_date: 'ftuyg',
+                creator: 'ftuyg',
+                fullname: 'ftuyg',
+                book_title: 'ftuyg',
+                book_type: 'ftuyg',
+                comment: 'ftuyg',
+                number_of_reports: 'ftuyg',
+            },{
+                creation_date: 'ftuyg',
+                creator: 'ftuyg',
+                fullname: 'ftuyg',
+                book_title: 'ftuyg',
+                book_type: 'ftuyg',
+                comment: 'ftuyg',
+                number_of_reports: 'ftuyg',
+            },{
+                creation_date: 'ftuyg',
+                creator: 'ftuyg',
+                fullname: 'ftuyg',
+                book_title: 'ftuyg',
+                book_type: 'ftuyg',
+                comment: 'ftuyg',
+                number_of_reports: 'ftuyg',
+            }]
+        };
+        const newList: any[] = []
+
+        list.map(item => {
+            newList.push({
+                creation_date: this.getTimestampToDate(item.creation_date),
+                creator: item.creator,
+                fullname: this.getPersonFullName(item.person),
+                book_title: item.book!.title,
+                book_type: item.book!.type,
+                comment: item.body,
+                number_of_reports: item.reports ? item.reports : "-",
+            })
+        });
+
+        if (newList === []) {
+            return [{
+                creation_date: 'lllll',
+                creator: 'ftlllllllluyg',
+                fullname: 'ftllllllluyg',
+                book_title: 'ftlllllluyg',
+                book_type: 'ftlllllllluyg',
+                comment: 'ftuyllllllllg',
+                number_of_reports: 'ftulllllyg',
+            },{
+                creation_date: 'ftulllllllyg',
+                creator: 'ftuyg',
+                fullname: 'ftuyg',
+                book_title: 'ftuyg',
+                book_type: 'ftuyg',
+                comment: 'ftuyg',
+                number_of_reports: 'ftuyg',
+            },{
+                creation_date: 'ftuyg',
+                creator: 'ftuyg',
+                fullname: 'ftuyg',
+                book_title: 'ftuyg',
+                book_type: 'ftuyg',
+                comment: 'ftuyg',
+                number_of_reports: 'ftuyg',
+            }]
+        };
+        return newList;
+    }
+
+    // end report export in excel format tool function 
+
+
+    // start define custom tools & pass that to widget
+
+    tools() {
+        return (
+            <>
+                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
+                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
+                <CSVLink
+                    data={this.excelDataPassToDownloader(this.state.comment_table.list)}
+                    headers={this.excelDataHeaderPassToDownloader()}
+                    filename={'ten-recent-comment.csv'}
+                >
+                    <i className="tool fa fa-file-excel-o"></i>
+                </CSVLink>
+            </>
+        )
+    }
 
     refreshFunction() {
         this.fetchComments();
@@ -228,32 +353,6 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
     private _commentService = new CommentService();
 
     // end list of services for request define
-
-
-    // start request & set data for comment table
-
-    async fetchComments() {
-        this.setState({ ...this.state, commentTableLoader: true });
-        let res = await this._commentService.search(10, 0, { book: true }).catch(error => {
-            this.handleError({ error: error.response });
-            this.setState({
-                ...this.state,
-                commentTableLoader: false,
-            });
-        });
-        if (res) {
-            this.setState({
-                ...this.state,
-                comment_table: {
-                    ...this.state.comment_table,
-                    list: res.data.result
-                },
-                commentTableLoader: false,
-            });
-        }
-    }
-
-    // end request & set data for comment table
 
 
     // start timestamp to date for comment table

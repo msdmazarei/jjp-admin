@@ -291,7 +291,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                                     this.data_option_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                 }
                             </Bar>
-                            <Tooltip position={{ x: 0, y: 0 }} />
+                            <Tooltip position={{ x: 0, y: 0 }} cursor={{fill: 'transparent'}}/>
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

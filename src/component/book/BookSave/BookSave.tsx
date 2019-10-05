@@ -297,13 +297,33 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookRollChange(list: any[], isValid: boolean) {
+        const isavl : boolean = isValid&&this.pressCheckValidation(list);
         this.setState({
             ...this.state,
             book: {
-                ...this.state.book, roles: { value: list, isValid: isValid }
+                ...this.state.book, roles: { value: list, isValid: isavl }
             }
-            , isFormValid: this.checkFormValidate(isValid, 'roles')
+            , isFormValid: this.checkFormValidate(isavl, 'roles')
         })
+    }
+
+    pressCheckValidation(list:any[]){
+        
+        let pressCounter:number = 0;
+
+        list.map((item:{ role: string, person: IPerson }) => 
+            item.role === "Press"
+            ?
+            pressCounter++
+            :
+            undefined
+        );
+
+        if(pressCounter === 1){
+            return true;
+        }else{
+            return false;
+        } 
     }
 
     //  check form validation for avtive button

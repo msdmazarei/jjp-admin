@@ -124,9 +124,17 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
         timeStampTo: 0,
     }
 
+    /// end of state
+
     private _report_title: string = Localization.name_of_report.ten_Recent_Comments;
 
-    /// end of state
+
+    // start list of services for request define
+
+    private _commentService = new CommentService();
+
+    // end list of services for request define
+
 
     constructor(props: IProps) {
         super(props);
@@ -147,9 +155,9 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
                 commentTableLoader: true,
             })
         };
+        this.fetchComments();
         this.init_title();
         this.init_tools();
-        this.fetchComments();
     }
 
 
@@ -172,11 +180,59 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
                     list: res.data.result
                 },
                 commentTableLoader: false,
-            });
+            }, () => this.init_renders());
         }
     }
 
+    init_renders() {
+        this.init_title();
+        this.init_tools();
+    }
+
     // end request & set data for comment table
+
+
+    // start define custom tools & pass that to widget
+
+    tools() {
+        return (
+            <>
+                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
+                <i className={this.state.comment_table.list.length === 0 ? 'd-none' : "tool fa fa-file-pdf-o"} onClick={(e) => this.goToPdfFunction(e)}></i>
+                <CSVLink
+                    headers={this.excelDataHeaderPassToDownloader()}
+                    data={this.excelDataPassToDownloader(this.state.comment_table.list)}
+                    filename={'ten-recent-comment.csv'}
+                >
+                    <i className={this.state.comment_table.list.length === 0 ? 'd-none' : "tool fa fa-file-excel-o"}></i>
+                </CSVLink>
+            </>
+        )
+    }
+
+    refreshFunction() {
+        this.fetchComments();
+    }
+
+    init_tools() {
+        this.props.init_tools(this.tools());
+    }
+
+    title_render() {
+        return (
+            <>
+                <div className="text-center">{this._report_title}</div>
+            </>
+        )
+    }
+
+    async init_title() {
+        await this.waitOnMe();
+        this.props.init_title(this.title_render());
+    }
+
+    // end define custom tools & pass that to widget
+
 
     // start report export in pdf format tool function 
 
@@ -232,127 +288,29 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
     }
 
     excelDataPassToDownloader(list: any[]) {
-        if (list.length === 0) {
-            return [{
-                creation_date: 'ftuyg',
-                creator: 'ftuyg',
-                fullname: 'ftuyg',
-                book_title: 'ftuyg',
-                book_type: 'ftuyg',
-                comment: 'ftuyg',
-                number_of_reports: 'ftuyg',
-            },{
-                creation_date: 'ftuyg',
-                creator: 'ftuyg',
-                fullname: 'ftuyg',
-                book_title: 'ftuyg',
-                book_type: 'ftuyg',
-                comment: 'ftuyg',
-                number_of_reports: 'ftuyg',
-            },{
-                creation_date: 'ftuyg',
-                creator: 'ftuyg',
-                fullname: 'ftuyg',
-                book_title: 'ftuyg',
-                book_type: 'ftuyg',
-                comment: 'ftuyg',
-                number_of_reports: 'ftuyg',
-            }]
-        };
-        const newList: any[] = []
 
-        list.map(item => {
-            newList.push({
+        const newList: any[] = list.map(item => {
+            let type;
+            if (item.book && item.book.type) {
+                const b_type: any = item.book.type;
+                const b_t: BOOK_TYPES = b_type;
+                type = Localization.book_type_list[b_t];
+            }
+            return {
                 creation_date: this.getTimestampToDate(item.creation_date),
                 creator: item.creator,
                 fullname: this.getPersonFullName(item.person),
                 book_title: item.book!.title,
-                book_type: item.book!.type,
+                book_type: type,
                 comment: item.body,
                 number_of_reports: item.reports ? item.reports : "-",
-            })
+            }
         });
 
-        if (newList === []) {
-            return [{
-                creation_date: 'lllll',
-                creator: 'ftlllllllluyg',
-                fullname: 'ftllllllluyg',
-                book_title: 'ftlllllluyg',
-                book_type: 'ftlllllllluyg',
-                comment: 'ftuyllllllllg',
-                number_of_reports: 'ftulllllyg',
-            },{
-                creation_date: 'ftulllllllyg',
-                creator: 'ftuyg',
-                fullname: 'ftuyg',
-                book_title: 'ftuyg',
-                book_type: 'ftuyg',
-                comment: 'ftuyg',
-                number_of_reports: 'ftuyg',
-            },{
-                creation_date: 'ftuyg',
-                creator: 'ftuyg',
-                fullname: 'ftuyg',
-                book_title: 'ftuyg',
-                book_type: 'ftuyg',
-                comment: 'ftuyg',
-                number_of_reports: 'ftuyg',
-            }]
-        };
         return newList;
     }
 
     // end report export in excel format tool function 
-
-
-    // start define custom tools & pass that to widget
-
-    tools() {
-        return (
-            <>
-                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
-                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
-                <CSVLink
-                    data={this.excelDataPassToDownloader(this.state.comment_table.list)}
-                    headers={this.excelDataHeaderPassToDownloader()}
-                    filename={'ten-recent-comment.csv'}
-                >
-                    <i className="tool fa fa-file-excel-o"></i>
-                </CSVLink>
-            </>
-        )
-    }
-
-    refreshFunction() {
-        this.fetchComments();
-    }
-
-    init_tools() {
-        this.props.init_tools(this.tools());
-    }
-
-    title_render() {
-        return (
-            <>
-                <div className="text-center">{this._report_title}</div>
-            </>
-        )
-    }
-
-    async init_title() {
-        await this.waitOnMe();
-        this.props.init_title(this.title_render());
-    }
-
-    // end define custom tools & pass that to widget
-
-
-    // start list of services for request define
-
-    private _commentService = new CommentService();
-
-    // end list of services for request define
 
 
     // start timestamp to date for comment table

@@ -33,9 +33,9 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
     /// start of state
 
     state = {
-        number_of_member:[],
+        number_of_member: [],
         number_of_order: [],
-        number_of_invoiced:0,
+        number_of_invoiced: 0,
     }
     /// end of state
 
@@ -57,53 +57,53 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
 
 
     // start service for request order & person number in system
-        /* start test request change after
-        private _personService = new PersonService();
-        private _orderService = new OrderService();
+    /* start test request change after
+    private _personService = new PersonService();
+    private _orderService = new OrderService();
 
-        // start member count
-        async fetchPersons() {
-            let res = await this._personService.search(1000, 0).catch(error => {
-                this.handleError({ error: error.response });
-            });
-            if (res) {
-                this.setState({
-                    ...this.state,
-                    number_of_member: res.data.result,
-                });
-            }
-        }
-        // end member count
-
-        // start number of order & invoced
-        async fetchOrders() {
-            let res = await this._orderService.search(1000,0, {}).catch(error => {
-              this.handleError({ error: error.response })});
-            if (res) {
-              this.setState({
-                ...this.state,
-                  number_of_order: res.data.result
-              },
-              () =>  this.invocied_counter(this.state.number_of_order));
-            }
-        }
-        // end number of order & invoced
-
-        async invocied_counter(list:any){
-            let invoced = 0;
-            await list.map((item:any,index:number) =>
-                item.status === "Invoiced"
-                ?
-                invoced++
-                :
-                undefined
-            )
+    // start member count
+    async fetchPersons() {
+        let res = await this._personService.search(1000, 0).catch(error => {
+            this.handleError({ error: error.response });
+        });
+        if (res) {
             this.setState({
                 ...this.state,
-                number_of_invoiced : invoced,
-            })
+                number_of_member: res.data.result,
+            });
         }
-        end test request change after */
+    }
+    // end member count
+
+    // start number of order & invoced
+    async fetchOrders() {
+        let res = await this._orderService.search(1000,0, {}).catch(error => {
+          this.handleError({ error: error.response })});
+        if (res) {
+          this.setState({
+            ...this.state,
+              number_of_order: res.data.result
+          },
+          () =>  this.invocied_counter(this.state.number_of_order));
+        }
+    }
+    // end number of order & invoced
+
+    async invocied_counter(list:any){
+        let invoced = 0;
+        await list.map((item:any,index:number) =>
+            item.status === "Invoiced"
+            ?
+            invoced++
+            :
+            undefined
+        )
+        this.setState({
+            ...this.state,
+            number_of_invoiced : invoced,
+        })
+    }
+    end test request change after */
     // end service for request order & person number in system
 
 
@@ -112,7 +112,7 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
     tools() {
         return (
             <>
-
+                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
             </>
         )
     }
@@ -136,10 +136,47 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
 
     // end define custom tools & pass that to widget
 
+    
+    // start report export in pdf format tool function 
+
+    goToPdfFunction(e: any) {
+        const widget = this.upToParent(e.currentTarget, 'app-widget');
+        const content = widget && widget.querySelector('.widget-body .chart');
+        const table = content!.cloneNode(true)
+        const newTab = window.open();
+        const head = document.querySelector('html head');
+        const style = head!.cloneNode(true);
+        if (newTab) {
+            const oldHeadNewTab = newTab.document.querySelector('head')!;
+            oldHeadNewTab!.parentNode!.removeChild(oldHeadNewTab);
+            newTab.document.querySelector('html')!.prepend(style!);
+            newTab.document.body.classList.add('rtl');
+            newTab.document.body.classList.add('printStatus');
+            newTab.document.body.classList.add('only-print-visibility');
+            const body = newTab.document.querySelector('body')!;
+            body.appendChild(table);
+            newTab.print();
+            // newTab.close();
+        }
+    }
+
+    upToParent(el: any, className: string) {
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.classList.contains(className)) {
+
+                return el;
+            }
+        }
+        return null;
+    }
+
+    // end report export in pdf format tool function
+
 
     // start data set on chart from state
 
-    data_option_returner(mem: number, ord: number, inv: number) : any[] {
+    data_option_returner(mem: number, ord: number, inv: number): any[] {
         const member: number = mem;
         const order: number = ord;
         const invoiced: number = inv;
@@ -183,10 +220,10 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
                             <Funnel
                                 dataKey="value"
                                 // data={this.data_option_returner(this.state.number_of_member.length, this.state.number_of_order.length,this.state.number_of_invoiced)}
-                                data={this.data_option_returner(72,61,35)}
+                                data={this.data_option_returner(72, 61, 35)}
                                 isAnimationActive={true}
                             >
-                             <LabelList dataKey="name"/>   
+                                <LabelList dataKey="name" />
                             </Funnel>
                         </FunnelChart>
                     </ResponsiveContainer>
@@ -203,7 +240,7 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
 
         return (
             <>
-                <div className="row">
+                <div className="row  chart">
                     <div className="col-12">
                         <div className="text-center">
 

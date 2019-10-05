@@ -135,7 +135,7 @@ var routes = [
   // group start
   {
     path: "/group/manage",
-    name: "گروه ها",//Localization.groups,
+    name: Localization.group,
     icon: "fa fa-users",
     // component: GroupManage,
     layout: "/admin",
@@ -143,7 +143,7 @@ var routes = [
   },
   // {
   //   path: "/group/create",
-  //   name: Localization.group_order,
+  //   name: Localization.create_group,
   //   component: GroupSave,
   //   layout: "/admin",
   //   isitem: false
@@ -157,30 +157,30 @@ var routes = [
   //   brandName: ['group', 'edit']
   // },
   // group end
-  // access start
+  // permission start
   {
-    path: "/access/manage",
-    name: "دسترسی ها",//Localization.access,
+    path: "/permission/manage",
+    name: Localization.permission,
     icon: "fa fa-universal-access",
-    // component: AccessManage,
+    // component: PermissionManage,
     layout: "/admin",
     isitem: true
   },
   // {
-  //   path: "/access/create",
-  //   name: Localization.access_order,
-  //   component: AccessSave,
+  //   path: "/permission/create",
+  //   name: Localization.create_permission,
+  //   component: PermissionSave,
   //   layout: "/admin",
   //   isitem: false
   // },
   // {
-  //   path: "/access/:access_id/edit",
-  //   name: Localization.access_update,
-  //   component: AccessSave,
+  //   path: "/permission/:permission_id/edit",
+  //   name: Localization.permission_update,
+  //   component: PermissionSave,
   //   layout: "/admin",
   //   isitem: false,
-  //   brandName: ['access', 'edit']
+  //   brandName: ['permission', 'edit']
   // },
-  // access end
+  // permission end
 ];
 export default routes;

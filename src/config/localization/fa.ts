@@ -296,6 +296,12 @@ export const fa = {
     recalculate:"محاسبه مجدد",
     creation_date:"تاریخ ایجاد",
     Quick_person_creation:"ایجاد سریع شخص",
+    group:"گروه",
+    create_group:"ایجاد گروه",
+    group_update:"بروزرسانی گروه",
+    permission:"دسترسی",
+    create_permission:"ایجاد دسترسی",
+    permission_update:"بروزرسانی دسترسی",
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

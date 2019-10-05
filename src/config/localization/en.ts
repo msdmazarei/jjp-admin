@@ -293,6 +293,12 @@ export const en = {
     recalculate:"recalculate",
     creation_date:"creation date",
     Quick_person_creation:"Quick person creation",
+    group:"group",
+    create_group:"Create a group",
+    group_update:"group update",
+    permission:"permission",
+    create_permission:"Create a permission",
+    permission_update:"permission update",
     type_of_report:{
         Reporting_Period:"Reporting Period",
         monthly:"monthly",

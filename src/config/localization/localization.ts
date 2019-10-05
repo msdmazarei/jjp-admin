@@ -305,6 +305,12 @@ interface ILocalization extends LocalizedStringsMethods {
     recalculate: string;
     creation_date:string;
     Quick_person_creation:string;
+    group:string;
+    create_group:string;
+    group_update:string;
+    permission:string;
+    create_permission:string;
+    permission_update:string;
     type_of_report:{
         Reporting_Period : string;
         monthly:string;

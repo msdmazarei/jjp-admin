@@ -242,7 +242,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                                         <label htmlFor="">{Localization.person}</label>
                                         <i
                                             title={Localization.Quick_person_creation}
-                                            className="fa fa-plus-circle text-success mx-1"
+                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
                                             onClick={() => this.quickpersonOpen(index)}
                                         ></i>
                                         <AsyncSelect

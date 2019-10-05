@@ -16,6 +16,7 @@ import { ReportBase } from "../ReportBase";
 import { BookService } from "../../../../service/service.book";
 import { IBook } from "../../../../model/model.book";
 import Select from 'react-select'
+import { CSVLink } from "react-csv";
 
 
 export interface IProps {
@@ -146,21 +147,6 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     private _report_title: string = Localization.name_of_report.fifteen_books_have_recently_been_sold_by_type;
 
 
-
-    // start set type of book
-
-    handleSelectInputChange(value: { label: string, value: string }) {
-
-        this.setState({
-            ...this.state,
-            type: value,
-        },
-            () => this.get_split(this.state.lastSellWithType_table.list, this.state.type.value))
-    }
-
-    // end set type of book
-
-
     // start list of services for request define
 
     private _bookService = new BookService();
@@ -187,9 +173,9 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 lastSellWithTypeTableLoader: true,
             })
         };
+        this.fetchLastSellWithType();
         this.init_title();
         this.init_tools();
-        this.fetchLastSellWithType();
     }
 
 
@@ -213,11 +199,152 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 },
                 lastSellWithTypeTableLoader: false,
             },
-                () => this.get_split(this.state.lastSellWithType_table.list, this.state.type.value));
+                () => this.init_renders());
         }
+    }
+    
+    init_renders() {
+        this.init_title();
+        this.init_tools();
+        this.get_split(this.state.lastSellWithType_table.list, this.state.type.value);
     }
 
     // end request & set data for comment table
+
+
+    // start function define & pass report tools to wrapper widget
+
+    tools() {
+        return (
+            <>
+                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
+                <i className={this.state.lastSellWithType_table.list.length === 0 ? 'd-none' : "tool fa fa-file-pdf-o"} onClick={(e) => this.goToPdfFunction(e)}></i>
+                <CSVLink
+                    headers={this.excelDataHeaderPassToDownloader()}
+                    data={this.excelDataPassToDownloader(this.get_split(this.state.lastSellWithType_table.list, this.state.type.value))}
+                    filename={'ten-recent-comment.csv'}
+                >
+                    <i className={this.state.lastSellWithType_table.list.length === 0 ? 'd-none' : "tool fa fa-file-excel-o"}></i>
+                </CSVLink>
+            </>
+        )
+    }
+
+    refreshFunction() {
+        this.fetchLastSellWithType();
+    }
+
+    init_tools() {
+        this.props.init_tools(this.tools());
+    }
+
+    title_render() {
+        return (
+            <>
+                <div className="text-center">{this._report_title}</div>
+            </>
+        )
+    }
+
+    async init_title() {
+        await this.waitOnMe();
+        this.props.init_title(this.title_render());
+    }
+
+    // end function define & pass report tools to wrapper widget
+
+
+    // start report export in pdf format tool function 
+
+    goToPdfFunction(e: any) {
+        const widget = this.upToParent(e.currentTarget, 'app-widget');
+        const content = widget && widget.querySelector('.widget-body table');
+        const table = content!.cloneNode(true)
+        const newTab = window.open();
+        const head = document.querySelector('html head');
+        const style = head!.cloneNode(true);
+        if (newTab) {
+            const oldHeadNewTab = newTab.document.querySelector('head')!;
+            oldHeadNewTab!.parentNode!.removeChild(oldHeadNewTab);
+            newTab.document.querySelector('html')!.prepend(style!);
+            newTab.document.body.classList.add('rtl');
+            newTab.document.body.classList.add('printStatus');
+            newTab.document.body.classList.add('only-print-visibility');
+            const body = newTab.document.querySelector('body')!;
+            body.appendChild(table);
+            newTab.print();
+            // newTab.close();
+        }
+    }
+
+    upToParent(el: any, className: string) {
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.classList.contains(className)) {
+                return el;
+            }
+        }
+        return null;
+    }
+
+    // end report export in pdf format tool function 
+
+
+    // start report export in excel format tool function 
+
+    excelDataHeaderPassToDownloader() {
+
+        const headers = [
+            { label: Localization.book_title, key: "book_title" },
+            { label: Localization.book_type, key: "book_type" },
+            { label: Localization.creation_date, key: "creation_date" },
+            { label: Localization.price, key: "price" },
+            { label: Localization.vote_s, key: "rate" },
+            { label: Localization.duration, key: "duration" },
+            { label: Localization.publication_date, key: "publication_date" },
+        ];
+
+        return headers
+    }
+
+    excelDataPassToDownloader(list: any[]) {
+
+        const newList: any[] = list.map(item => {
+            let type;
+            if (item && item.type) {
+                const b_type: any = item.type;
+                const b_t: BOOK_TYPES = b_type;
+                type = Localization.book_type_list[b_t];
+            }
+            return {
+                book_title : item.title ,
+                book_type: type,
+                creation_date: this.getTimestampToDate(item.creation_date),
+                price: item.price,
+                rate: item.rate + " " + Localization.from + " " + 5 ,
+                duration: item.duration,
+                publication_date: item.pub_year,
+            }
+        });
+
+        return newList;
+    }
+
+    // end report export in excel format tool function 
+
+
+    // start set type of book
+
+    handleSelectInputChange(value: { label: string, value: string }) {
+
+        this.setState({
+            ...this.state,
+            type: value,
+        },
+            () => this.get_split(this.state.lastSellWithType_table.list, this.state.type.value))
+    }
+
+    // end set type of book
 
 
     // start functio to split type of books in sevrel arrays
@@ -258,39 +385,6 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
 
     // end functio to split type of books in sevrel arrays
 
-    // start function define & pass report tools to wrapper widget
-
-    tools() {
-        return (
-            <>
-                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
-            </>
-        )
-    }
-
-    refreshFunction() {
-        this.fetchLastSellWithType();
-    }
-
-    init_tools() {
-        this.props.init_tools(this.tools());
-    }
-
-    title_render() {
-        return (
-            <>
-                <div className="text-center">{this._report_title}</div>
-            </>
-        )
-    }
-
-    async init_title() {
-        await this.waitOnMe();
-        this.props.init_title(this.title_render());
-    }
-
-    // end function define & pass report tools to wrapper widget
-
 
     // start timestamp to date for comment table
 
@@ -313,17 +407,6 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     }
 
     // end timestamp to date for comment table
-
-
-    // start function for render tools
-
-    tools_render() {
-        return (
-            <div>haeder</div>
-        )
-    }
-
-    // end function for render tools
 
 
     // start function for render content

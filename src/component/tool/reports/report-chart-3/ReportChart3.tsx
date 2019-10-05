@@ -118,12 +118,9 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     tools() {
         return (
             <>
-                <div>
-                    <i className="tool fa fa-line-chart" onClick={() => this.setChartToLine()}></i>
-                </div>
-                <div>
-                    <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
-                </div>
+                <i className="tool fa fa-line-chart" onClick={() => this.setChartToLine()}></i>
+                <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
+                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
             </>
         )
     }
@@ -163,6 +160,42 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
 
     // end define custom tools & pass that to widget
 
+
+    // start report export in pdf format tool function 
+
+    goToPdfFunction(e: any) {
+        const widget = this.upToParent(e.currentTarget, 'app-widget');
+        const content = widget && widget.querySelector('.widget-body .chart');
+        const table = content!.cloneNode(true)
+        const newTab = window.open();
+        const head = document.querySelector('html head');
+        const style = head!.cloneNode(true);
+        if (newTab) {
+            const oldHeadNewTab = newTab.document.querySelector('head')!;
+            oldHeadNewTab!.parentNode!.removeChild(oldHeadNewTab);
+            newTab.document.querySelector('html')!.prepend(style!);
+            newTab.document.body.classList.add('rtl');
+            newTab.document.body.classList.add('printStatus');
+            newTab.document.body.classList.add('only-print-visibility');
+            const body = newTab.document.querySelector('body')!;
+            body.appendChild(table);
+            newTab.print();
+            // newTab.close();
+        }
+    }
+
+    upToParent(el: any, className: string) {
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.classList.contains(className)) {
+
+                return el;
+            }
+        }
+        return null;
+    }
+
+    // end report export in pdf format tool function
 
     // start function for select to return user custom data for yearly report
 
@@ -246,6 +279,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                             <XAxis dataKey="name" />
                             <YAxis />
                             <Tooltip position={{ x: -50, y: -150 }} />
+                            <Legend />
                             {
                                 !this.state.compear_options.length
                                     ?
@@ -298,7 +332,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                                             fill={this.data_option_color_returner()[index]}
                                             minPointSize={10}
                                         >
-                                            <LabelList dataKey={item.value} position="top" angle={90}/>
+                                            <LabelList dataKey={item.value} position="top" angle={90} />
                                         </Bar>
 
                                     )
@@ -344,7 +378,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                         </div>
                     </div>
                 </div>
-                <div className="row">
+                <div className="row chart">
                     <div className="col-12">
                         <div className="text-center">
                             {Localization.report + " "}

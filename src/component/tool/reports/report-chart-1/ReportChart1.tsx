@@ -12,7 +12,6 @@ import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, Cartes
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 
-
 export interface IProps {
     history?: History;
     internationalization: TInternationalization;
@@ -75,12 +74,9 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     tools() {
         return (
             <>
-                <div>
-                    <i className="tool fa fa-pie-chart" onClick={() => this.setChartToPie()}></i>
-                </div>
-                <div>
-                    <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
-                </div>
+                <i className="tool fa fa-pie-chart" onClick={() => this.setChartToPie()}></i>
+                <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
+                <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
             </>
         )
     }
@@ -93,6 +89,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
             })
         };
     }
+
     setChartToBar() {
         if (this.state.barChart === false) {
             this.setState({
@@ -121,6 +118,41 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     // end define custom tools & pass that to widget
 
+
+    // start report export in pdf format tool function 
+
+    goToPdfFunction(e: any) {
+        const widget = this.upToParent(e.currentTarget, 'app-widget');
+        const content = widget && widget.querySelector('.widget-body .chart');
+        const table = content!.cloneNode(true)
+        const newTab = window.open();
+        const head = document.querySelector('html head');
+        const style = head!.cloneNode(true);
+        if (newTab) {
+            const oldHeadNewTab = newTab.document.querySelector('head')!;
+            oldHeadNewTab!.parentNode!.removeChild(oldHeadNewTab);
+            newTab.document.querySelector('html')!.prepend(style!);
+            newTab.document.body.classList.add('rtl');
+            newTab.document.body.classList.add('printStatus');
+            newTab.document.body.classList.add('only-print-visibility');
+            const body = newTab.document.querySelector('body')!;
+            body.appendChild(table);
+            newTab.print();
+            // newTab.close();
+        }
+    }
+
+    upToParent(el: any, className: string) {
+        while (el && el.parentNode) {
+            el = el.parentNode;
+            if (el.classList.contains(className)) {
+                return el;
+            }
+        }
+        return null;
+    }
+
+    // end report export in pdf format tool function 
 
 
     // start function for set type & kind of report
@@ -233,7 +265,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
         if (kind === 0) {
             return <>
-                <div className="row">
+                <div className="row chart">
                     <div className="col-12">
                         <div className="text-center">
                             {
@@ -304,7 +336,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
             </>
         } else if (kind !== 0) {
             return <>
-                <div className="row">
+                <div className="row chart">
                     <div className="col-12">
                         <div className="text-center">
                             {
@@ -363,7 +395,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
         if (kind === 0) {
             return <>
-                <div className="row">
+                <div className="row chart">
                     <div className="col-12">
                         <div className="text-center">
                             {
@@ -392,7 +424,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
-                                    <Tooltip position={{ x: 0, y: 0 }} cursor={{fill: 'transparent'}}/>
+                                    <Tooltip position={{ x: 0, y: 0 }} cursor={{ fill: 'transparent' }} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -426,7 +458,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
-                                    <Tooltip position={{ x: 0, y: 0 }} cursor={{fill: 'transparent'}}/>
+                                    <Tooltip position={{ x: 0, y: 0 }} cursor={{ fill: 'transparent' }} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -436,7 +468,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
             </>
         } else if (kind !== 0) {
             return <>
-                <div className="row">
+                <div className="row chart">
                     <div className="col-12">
                         <div className="text-center">
                             {
@@ -474,7 +506,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                                             this.data_option_min_returner(this.state.type_of_report.value)!.map((entry, index) => <Cell key={`cell-${index}`} fill={this.data_option_color_returner()[index % this.data_option_color_returner().length]} />)
                                         }
                                     </Bar>
-                                    <Tooltip position={{ x: 0, y: 0 }} cursor={{fill: 'transparent'}} />
+                                    <Tooltip position={{ x: 0, y: 0 }} cursor={{ fill: 'transparent' }} />
                                     <Legend />
                                 </BarChart>
                             </ResponsiveContainer>

@@ -8,7 +8,11 @@ import { UserSave } from "./component/user/UserSave/UserSave";
 import { CommentManage } from "./component/comment/CommentManage/CommentManage";
 import { OrderManage } from "./component/order/OrderManage/OrderManage";
 import { OrderSave } from "./component/order/OrderSave/OrderSave";
+import { GroupManage } from "./component/group/GroupManage/GroupManage";
 import { Localization } from "./config/localization/localization";
+import { GroupSave } from "./component/group/GroupSave/GroupSave";
+import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
+import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
 
 
 var routes = [
@@ -137,50 +141,50 @@ var routes = [
     path: "/group/manage",
     name: Localization.group,
     icon: "fa fa-users",
-    // component: GroupManage,
+    component: GroupManage,
     layout: "/admin",
     isitem: true
   },
-  // {
-  //   path: "/group/create",
-  //   name: Localization.create_group,
-  //   component: GroupSave,
-  //   layout: "/admin",
-  //   isitem: false
-  // },
-  // {
-  //   path: "/group/:group_id/edit",
-  //   name: Localization.group_update,
-  //   component: GroupSave,
-  //   layout: "/admin",
-  //   isitem: false,
-  //   brandName: ['group', 'edit']
-  // },
+  {
+    path: "/group/create",
+    name: Localization.create_group,
+    component: GroupSave,
+    layout: "/admin",
+    isitem: false
+  },
+  {
+    path: "/group/:group_id/edit",
+    name: Localization.group_update,
+    component: GroupSave,
+    layout: "/admin",
+    isitem: false,
+    brandName: ['group', 'edit']
+  },
   // group end
   // permission start
   {
     path: "/permission/manage",
     name: Localization.permission,
     icon: "fa fa-universal-access",
-    // component: PermissionManage,
+    component: PermissionManage,
     layout: "/admin",
     isitem: true
   },
-  // {
-  //   path: "/permission/create",
-  //   name: Localization.create_permission,
-  //   component: PermissionSave,
-  //   layout: "/admin",
-  //   isitem: false
-  // },
-  // {
-  //   path: "/permission/:permission_id/edit",
-  //   name: Localization.permission_update,
-  //   component: PermissionSave,
-  //   layout: "/admin",
-  //   isitem: false,
-  //   brandName: ['permission', 'edit']
-  // },
+  {
+    path: "/permission/create",
+    name: Localization.create_permission,
+    component: PermissionSave,
+    layout: "/admin",
+    isitem: false
+  },
+  {
+    path: "/permission/:permission_id/edit",
+    name: Localization.permission_update,
+    component: PermissionSave,
+    layout: "/admin",
+    isitem: false,
+    brandName: ['permission', 'edit']
+  },
   // permission end
 ];
 export default routes;

@@ -340,7 +340,7 @@ export const ar = {
         Author: 'مولف',
         Writer : 'نویسنده',
         Translator : 'مترجم',
-        Press : 'مطبوعات',
+        Press : 'ناشر',
         Contributer : 'مشارکت کننده',
         Designer : 'طراح',
     },

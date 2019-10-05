@@ -343,7 +343,7 @@ export const fa = {
         Author: 'مولف',
         Writer : 'نویسنده',
         Translator : 'مترجم',
-        Press : 'مطبوعات',
+        Press : 'ناشر',
         Contributer : 'مشارکت کننده',
         Designer : 'طراح',
     },

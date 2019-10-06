@@ -311,6 +311,7 @@ interface ILocalization extends LocalizedStringsMethods {
     permission:string;
     create_permission:string;
     permission_update:string;
+    each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher : string;
     type_of_report:{
         Reporting_Period : string;
         monthly:string;

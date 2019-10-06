@@ -562,6 +562,16 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         }
     };
 
+
+    typeInvalidFeedback() {
+        if(this.state.book.type.value === null&&!this.state.book.type.isValid){
+            return <div className="select-feedback d-none">{Localization.required_field}</div>
+        }
+        if(!this.state.book.type.isValid){
+            return <div className="select-feedback">{Localization.required_field}</div>
+        }
+    }
+
     /////////////////// render ////////////////////////
 
     render() {
@@ -657,6 +667,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 placeholder={Localization.type}
                                                 isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
                                             />
+                                            {this.typeInvalidFeedback()}
                                         </div>
                                     </div>
                                     <div className="col-md-4 col-sm-6">

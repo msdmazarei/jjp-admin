@@ -133,6 +133,15 @@ hr {
 .profile-img-rounded{
   border-radius: 50%!important;
 }
+
+.select-feedback {
+  background: transparent;
+  font-size: 80%;
+  color: #b44848;
+  margin-top: 0.25rem;
+  width: 100%;
+  @include calc(width, "100% - 2px");
+}
 /*
 select, textarea.form-control {
   &:not(:focus) {

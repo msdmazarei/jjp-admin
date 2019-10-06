@@ -88,7 +88,7 @@ interface IState {
             value: [] | any,
             isValid: boolean
         };
-        
+
     };
     isFormValid: boolean;
     saveMode: SAVE_MODE;
@@ -166,13 +166,13 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             images: {
                 value: undefined,
                 isValid: true
-            }  
+            }
         },
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
         updateLoader: false,
-        tags_inputValue: ''
+        tags_inputValue: '',
     }
 
     /////////// start Select's options define
@@ -297,7 +297,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookRollChange(list: any[], isValid: boolean) {
-        const isavl : boolean = isValid&&this.pressCheckValidation(list);
+        const isavl: boolean = isValid && this.pressCheckValidation(list);
         this.setState({
             ...this.state,
             book: {
@@ -307,24 +307,25 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    pressCheckValidation(list:any[]){
-        
-        let pressCounter:number = 0;
+    pressCheckValidation(list: any[]) {
 
-        list.map((item:{ role: string, person: IPerson }) => 
+        let pressCounter: number = 0;
+
+        list.map((item: { role: string, person: IPerson }) =>
             item.role === "Press"
-            ?
-            pressCounter++
-            :
-            undefined
+                ?
+                pressCounter++
+                :
+                undefined
         );
-
-        if(pressCounter === 1){
+        
+        if (pressCounter === 1) {
             return true;
-        }else{
+        } else {
             return false;
-        } 
+        };
     }
+
 
     //  check form validation for avtive button
 
@@ -721,8 +722,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         <BookRole
                                             defaultValue={this.state.book.roles.value}
                                             onChange={(list, isValid) => this.bookRollChange(list, isValid)}
+                                            validationFunc={(list) => this.pressCheckValidation(list)}
                                             required
                                             label={Localization.roles}
+                                            errorTxt={Localization.each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher}
                                         ></BookRole>
                                     </div>
                                     <div className="col-md-6 col-sm-12">

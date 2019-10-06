@@ -25,11 +25,17 @@ interface IState {
     quickPersonModalStatus: boolean;
     person: IPerson | undefined;
     quickPerson_index: number | undefined;
+    pressCountStatus: number;
+    isTouched: boolean;
+    isValid: boolean;
+    errorTxt: string;
 }
 
 type TOuterListItem = { role: BOOK_ROLES | undefined, person: IPerson | undefined, id?: string };
 interface IProps {
     onChange: (list: TOuterListItem[], isValid: boolean) => void;
+    validationFunc?: (list: TOuterListItem[]) => boolean;
+    errorTxt?: string;
     defaultValue?: TOuterListItem[] | null;
     internationalization: TInternationalization;
     token: IToken;
@@ -43,6 +49,10 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         quickPersonModalStatus: false,
         person: undefined,
         quickPerson_index: undefined,
+        pressCountStatus: 0,
+        isTouched: false,
+        isValid: false,
+        errorTxt: ''
     }
     roleOptions = [
         { value: 'Author', label: Localization.role_type_list.Author },
@@ -62,28 +72,56 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
             !== JSON.stringify(this.convertInnerToOuter(this.state.list))
         ) {
             let newList = [...nextProps.defaultValue || []];
-            this.setState({ ...this.state, list: this.convertOuterToInner(newList) }, () => {
-                this.props.onChange(newList, this.handleValidate(this.state.list));
+            const isValid = this.handleValidate(this.convertOuterToInner(newList));
+            this.setState({
+                ...this.state,
+                isValid: isValid,
+                list: this.convertOuterToInner(newList)
+            }, () => {
+                this.props.onChange(newList, isValid);
+                this.defultError_handler();
             });
+        }
+    }
+
+    defultError_handler() {
+        if (this.props.required) {
+            this.setState({
+                ...this.state,
+                errorTxt: 'requierd',
+            })
         }
     }
 
     addRow() {
         let newList = [...this.state.list]
         newList.push({ id: Math.random() + '', role: undefined, person: undefined });
-        this.setState({ ...this.state, list: newList }, () => {
-            this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newList));
+        const isValid = this.handleValidate(newList);
+        this.setState({
+            ...this.state,
+            isValid: isValid,
+            isTouched: true,
+            list: newList
+        }, () => {
+            this.props.onChange(this.convertInnerToOuter(this.state.list), isValid);
         });
     }
 
     removeRow(index: number) {
         let newlist = [...this.state.list]
         newlist.splice(index, 1);
-        this.setState({ ...this.state, list: newlist },
+        const isValid = this.handleValidate(newlist);
+        this.setState({
+            ...this.state,
+            isValid: isValid,
+            isTouched: true,
+            list: newlist
+        },
             () => {
-                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+                this.props.onChange(this.convertInnerToOuter(this.state.list), isValid);
             });
     }
+
     convertInnerToOuter(list: IRoleRow[]): TOuterListItem[] {
         let new_list = [...list];
         return new_list.map(item => {
@@ -108,18 +146,29 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     handleRoleChange(val: { label: string, value: BOOK_ROLES }, index: number) {
         let newlist = [...this.state.list];
         newlist[index].role = val;
-        this.setState({ ...this.state, list: newlist },
+        const isValid = this.handleValidate(newlist);
+        this.setState({
+            ...this.state,
+            isValid: isValid,
+            list: newlist
+        },
             () => {
-                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+                this.props.onChange(this.convertInnerToOuter(this.state.list), isValid);
             });
     }
+
 
     handlePersonChange = (selectedPerson: any, index: number) => {
         let newlist = [...this.state.list];
         newlist[index].person = selectedPerson;
-        this.setState({ ...this.state, list: newlist },
+        const isValid = this.handleValidate(newlist);
+        this.setState({
+            ...this.state,
+            isValid: isValid,
+            list: newlist/* ,isValid */
+        },
             () => {
-                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+                this.props.onChange(this.convertInnerToOuter(this.state.list), isValid);
             });
     }
 
@@ -160,7 +209,16 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         return this.personRequstError_txt;
     }
 
+    private _errorTxt = 'isReqi';
     handleValidate(list: IRoleRow[]): boolean {
+        const parentValid = this.props.validationFunc!(this.convertInnerToOuter(list));
+        if (!parentValid) {
+            this._errorTxt = this.props.errorTxt || 'not valid';
+            return false;
+        };
+
+        this._errorTxt = Localization.required_field;
+
         let valid = true;
         for (let i = 0; i < list.length; i++) {
             let obj = list[i];
@@ -202,12 +260,18 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
             value: person
         }
         newlist[index].person = selectedPerson;
+        const isValid = this.handleValidate(newlist);
         this.setState({ ...this.state, list: newlist },
             () => {
-                this.props.onChange(this.convertInnerToOuter(this.state.list), this.handleValidate(newlist));
+                this.props.onChange(this.convertInnerToOuter(this.state.list), isValid);
             });
     }
     ////////   end crate quick person  //////////
+
+    errorTxt_render() {
+        if (!this.state.isTouched || this.state.isValid) return;
+        return this._errorTxt;
+    }
 
     render() {
         return (
@@ -283,19 +347,17 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                             </div>
                         </div>
                     </div>
+                    <div className="text-center text-danger">
+                        {this.errorTxt_render()}
+                    </div>
                 </div>
                 {
-                    // this.state.quickPersonModalStatus
-                    // ?
                     <QuickPerson
                         onCreate={(person: IPerson, index: number) => this.seterPerson(person, index)}
-                        // index={this.state.index}
                         data={this.state.quickPerson_index}
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}
                     ></QuickPerson>
-                    // :
-                    // ""
                 }
             </>
         )

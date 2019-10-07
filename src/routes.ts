@@ -9,10 +9,10 @@ import { CommentManage } from "./component/comment/CommentManage/CommentManage";
 import { OrderManage } from "./component/order/OrderManage/OrderManage";
 import { OrderSave } from "./component/order/OrderSave/OrderSave";
 import { GroupManage } from "./component/group/GroupManage/GroupManage";
-import { Localization } from "./config/localization/localization";
 import { GroupSave } from "./component/group/GroupSave/GroupSave";
 import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
 import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
+import { Localization } from "./config/localization/localization";
 
 
 var routes = [

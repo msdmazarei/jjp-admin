@@ -1,35 +1,29 @@
-import { IAPI_Response,IAPI_ResponseList, BaseService } from "./service.base";
-import { IUser } from "../model/model.user";
+import { BaseService, IAPI_Response } from "./service.base";
 
-export class UserService extends BaseService {
+export class GroupService extends BaseService {
+
+    search(limit: number, offset: number, filter?: Object){
+        // return this.axiosTokenInstance.post(`/groups/_search`,{ limit, offset, filter });
+        return this.axiosTokenInstance.post(`/groups/_search`,{limit,offset,filter});
+    }
+
+
+    create(group: object) {
+        return this.axiosTokenInstance.post('/groups',group);
+    }
 
     
-    create(user: any) {
-        return this.axiosTokenInstance.post('/users',user);
-    }
-    
-    search(limit: number, offset: number, filter?: Object): Promise<IAPI_ResponseList<IUser>> {
-        return this.axiosTokenInstance.post(`/users/_search`, { limit, offset, filter });
-        // return this.instance.post(`http://book.mazarei.id.ir/persons/_search`, { limit, offset, filter});
-    }
-    // search(limit: number, offset: number): Promise<IAPI_ResponseList<IUser>> {
-    //     return this.axiosTokenInstance.post(`/books/_search`, { limit, offset });
-    // }
-
-    remove(userId: string) {
-        return this.axiosTokenInstance.delete(`/users/${userId}`);
-    }
-
-    byId(user_id: string): Promise<IAPI_Response<IUser>> {
-        return this.axiosTokenInstance.get(`/users/${user_id}`);
-    }
-
-    update(user: any, id: string) {
-        return this.axiosTokenInstance.put(`/users/${id}`, user);
+    update(group:object , group_id: string) {
+        return this.axiosTokenInstance.put(`/groups/${group_id}`,group);
     }
 
 
+    remove(group_id: string) {
+        return this.axiosTokenInstance.delete(`/groups/${group_id}`);
+    }
 
-
+    byId(group_id: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.get(`/groups/${group_id}`);
+    }
 
 }

@@ -1,7 +1,5 @@
 import React from 'react';
 import { Input } from '../../form/input/Input';
-import { PersonService } from "../../../service/service.person";
-import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
@@ -12,9 +10,7 @@ import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
 import { ToastContainer } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
-import { UserService } from '../../../service/service.user';
-import { IPerson } from '../../../model/model.person';
-import AsyncSelect from 'react-select/async';
+import { GroupService } from '../../../service/service.group';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -23,35 +19,21 @@ enum SAVE_MODE {
 }
 
 interface IState {
-    // user: any;//IUser | undefined;
-    user: {
-        username: {
+
+    group: {
+        groupname: {
             value: string | undefined;
-            isValid: boolean;
-        };
-        password: {
-            value: string | undefined;
-            isValid: boolean;
-        };
-        confirm_pass: {
-            value: string | undefined;
-            isValid: boolean;
-        };
-        person_id: {
-            value: string | undefined | undefined;
             isValid: boolean;
         };
     };
-    person: {
-        value: { label: string, value: IPerson } | undefined |null; // IPerson | any,
-        // isValid: boolean
-    };
+
     isFormValid: boolean;
     saveMode: SAVE_MODE;
     createLoader: boolean;
     updateLoader: boolean;
     saveBtnVisibility: boolean;
 }
+
 interface IProps {
     match: any;
     history: History;
@@ -62,28 +44,13 @@ interface IProps {
 class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
     state = {
-        user: {
-            username: {
-                value: undefined,
-                isValid: false,
-            },
-            password: {
-                value: undefined,
-                isValid: false,
-            },
-            confirm_pass: {
-                value: undefined,
-                isValid: false,
-            },
-            person_id: {
+        group: {
+            groupname: {
                 value: undefined,
                 isValid: false,
             },
         },
-        person: {
-                value: undefined,
-                // isValid: false,
-            },
+
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
@@ -91,140 +58,39 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
         saveBtnVisibility: false,
     }
 
-    private _userService = new UserService();
-    private _uploadService = new UploadService();
-    private user_id: string | undefined;
-    private _personService = new PersonService();
+    private _groupService = new GroupService();
+
+    private group_id: string | undefined;
 
     componentDidMount() {
-        this._userService.setToken(this.props.token);
-        this._uploadService.setToken(this.props.token);
-        this._personService.setToken(this.props.token);
+        this._groupService.setToken(this.props.token);
 
-        if (this.props.match.path.includes('/user/:user_id/edit')) {
+        if (this.props.match.path.includes('/group/:group_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.user_id = this.props.match.params.user_id;
-            this.fetchUserById(this.props.match.params.user_id);
+            this.group_id = this.props.match.params.group_id;
+            this.fetchGroupById(this.props.match.params.group_id);
         }
     }
 
-    async fetchUserById(user_id: string) {
-        let res = await this._userService.byId(user_id).catch(error => {
-            this.handleError({ error: error.response });
-        });
-        // await this.__waitOnMe();
-        if (res) {
-            this.setState({
-                ...this.state,
-                user: {
-                    ...this.state.user,
-                    username: { ...this.state.user.username, value: res.data.username, isValid: true },
-                    person_id: { ...this.state.user.person_id, value: res.data.person.id, isValid: true },
-                    password: { ...this.state.user.password,  isValid: true },
-                    confirm_pass: { ...this.state.user.confirm_pass,  isValid: true },
-
-                },
-                person: {
-                    ...this.state.person, value: {
-                        label: this.getPersonFullName(res.data.person),
-                        value: res.data.person
-                    }, 
-                    // isValid: true
-                },
-                saveBtnVisibility: true
-            })
-        }
-
-    }
-    __waitOnMe() {
-        return new Promise((res, rej) => {
-            setTimeout(() => {
-                res(true)
-            }, 0)
-        });
+    backTO() {
+        this.gotoGroupManage();
     }
 
-    // on change functions 
-
-    handleInputChange(value: any, isValid: boolean, inputType: any) {
-        this.setState({
-            ...this.state,
-            user: {
-                ...this.state.user, [inputType]: { value, isValid }
-            }
-            , isFormValid: this.checkFormValidate(isValid, inputType)
-        })
+    gotoGroupManage() {
+        this.props.history.push('/group/manage');
     }
-
-    handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
-        let newperson = { ...selectedPerson };
-        let isValid=true;      // newperson = selectedPerson;
-        this.setState({
-            ...this.state, user: {
-                ...this.state.user, person_id:{
-                    value : newperson.value.id,
-                    isValid:isValid,
-                }
-            },
-            person: {
-                ...this.state.person,
-                value: newperson,
-                // isValid:true,
-            },
-            isFormValid: this.checkFormValidate(isValid, 'person_id')
-        })
-    }
-
-    
-
-
-    //  check form validation for avtive button
-
-    checkFormValidate(isValid: boolean, inputType: any): boolean {
-        let valid = true;
-        let userObj: any = { ...this.state.user };
-
-        for (let i = 0; i < Object.keys(this.state.user).length; i++) {
-            let IT = Object.keys(this.state.user)[i];
-            if (IT !== inputType) {
-                valid = valid && userObj[IT].isValid;
-                if (!userObj[IT].isValid) {
-                    break;
-                }
-            }
-        }
-        valid = valid && isValid;
-        return valid;
-    }
-
-
-    //////  password confirm ////////////
-
-    confirmPassword_validation(val: any): boolean {
-        if (val === this.state.user.password.value) {
-            return true
-        }
-        return false;
-    }
-    
-    /////////////////////////////////////
-
-
-    // add user function 
 
     async create() {
-        if (!this.state.isFormValid || this.state.user.password.value !== this.state.user.confirm_pass.value) return;
         this.setState({ ...this.state, createLoader: true });
 
-        const newUser = {
-            username:this.state.user.username.value,
-            password:this.state.user.password.value,
-            person_id:this.state.user.person_id.value,
+        const groupobj = {
+            group: this.state.group.groupname.value,
         }
 
-        let res = await this._userService.create(newUser).catch(error => {
+        let res = await this._groupService.create(groupobj).catch(error => {
             this.handleError({ error: error.response });
         });
+
         this.setState({ ...this.state, createLoader: false });
 
         if (res) {
@@ -234,89 +100,77 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
-        
-        const newUser = {
-            person_id:this.state.user.person_id.value,
+
+        const groupobj = {
+            group: this.state.group.groupname.value,
         }
 
-        let res = await this._userService.update(newUser, this.user_id!).catch(e => {
+        let res = await this._groupService.update(groupobj, this.group_id!).catch(e => {
             this.handleError({ error: e.response });
         });
+
         this.setState({ ...this.state, updateLoader: false });
+
         if (res) {
-            this.props.history.push('/user/manage');
+            this.props.history.push('/group/manage');
             this.apiSuccessNotify();
         }
-
     }
 
-    ////////// navigation function //////////////////
+    async fetchGroupById(group_id: string) {
 
-    backTO() {
-        this.gotoUserManage();
-    }
-
-    gotoUserManage() {
-        this.props.history.push('/user/manage');
-    }
-
-    ////// request for person ////////
-
-    private personRequstError_txt: string = Localization.no_item_found;
-
-    async promiseOptions2(inputValue: any, callBack: any) {
-        let filter = undefined;
-        if (inputValue) {
-            filter = { person: inputValue };
-        }
-        let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
-            this.personRequstError_txt = err_msg.body;
+        let res = await this._groupService.byId(group_id).catch(error => {
+            this.handleError({ error: error.response });
         });
 
         if (res) {
-            let persons = res.data.result.map((ps: any) => {
-                return { label: this.getPersonFullName(ps), value: ps }
-            });
-            this.personRequstError_txt = Localization.no_item_found;
-            callBack(persons);
-        } else {
-            callBack();
+            this.setState({
+                ...this.state,
+                group: {
+                    ...this.state.group,
+                    groupname: { ...this.state.group.groupname, value: res.data.group, isValid: true },
+                },
+                saveBtnVisibility: true
+            })
         }
+
     }
 
-    private setTimeout_person_val: any;
-    debounce_300(inputValue: any, callBack: any) {
-        if (this.setTimeout_person_val) {
-            clearTimeout(this.setTimeout_person_val);
+    handleInputChange(value: any, isValid: boolean, inputType: any) {
+        this.setState({
+            ...this.state,
+            group: {
+                ...this.state.group, [inputType]: { value, isValid }
+            }
+            , isFormValid: this.checkFormValidate(isValid, inputType)
+        })
+    }
+
+    checkFormValidate(isValid: boolean, inputType: any): boolean {
+        let valid = true;
+        let groupObj: any = { ...this.state.group };
+
+        for (let i = 0; i < Object.keys(this.state.group).length; i++) {
+            let IT = Object.keys(this.state.group)[i];
+            if (IT !== inputType) {
+                valid = valid && groupObj[IT].isValid;
+                if (!groupObj[IT].isValid) {
+                    break;
+                }
+            }
         }
-        this.setTimeout_person_val = setTimeout(() => {
-            this.promiseOptions2(inputValue, callBack);
-        }, 1000);
+        valid = valid && isValid;
+        return valid;
     }
-
-    select_noOptionsMessage(obj: { inputValue: string }) {
-        return this.personRequstError_txt;
-    }
-
-
-    /////////////////////////////////////
-
-    // reset form /////////////
 
     resetForm() {
         this.setState({
             ...this.state,
-            user: {
-                username: { value: undefined, isValid: false },
-                password: { value: undefined, isValid: false },
-                confirm_pass: { value: undefined, isValid: false },
-                person_id: { value: undefined, isValid: false },
+            group: {
+                groupname: { value: undefined, isValid: false },
             },
-            // person: { value: undefined, isValid: false },
-            person: { value: null},
+
             isFormValid: false,
         })
     }
@@ -333,72 +187,20 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                     {
                                         this.state.saveMode === SAVE_MODE.CREATE
                                             ?
-                                            <h2 className="text-bold text-dark">{Localization.create_user}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.create_group}</h2>
                                             :
-                                            <h2 className="text-bold text-dark">{Localization.user_update}</h2>
+                                            <h2 className="text-bold text-dark">{Localization.group_update}</h2>
                                     }
                                 </div>
                                 {/* start give data by inputs */}
                                 <div className="row">
-                                    {
-                                        this.state.saveMode === SAVE_MODE.EDIT
-                                            ?
-                                            <>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <Input
-                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "username")}
-                                                        label={Localization.username}
-                                                        placeholder={Localization.username}
-                                                        defaultValue={this.state.user.username.value}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                            </>
-                                            :
-                                            <>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <Input
-                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "username")}
-                                                        label={Localization.username}
-                                                        placeholder={Localization.username}
-                                                        defaultValue={this.state.user.username.value}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <Input
-                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "password")}
-                                                        label={Localization.password}
-                                                        placeholder={Localization.password}
-                                                        defaultValue={this.state.user.password.value}
-                                                        required
-                                                        type="password"
-                                                    />
-                                                </div>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <Input
-                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, "confirm_pass")}
-                                                        label={Localization.confirm_password}
-                                                        placeholder={Localization.confirm_password}
-                                                        defaultValue={this.state.user.confirm_pass.value}
-                                                        required
-                                                        type="password"
-                                                        patternError={Localization.validation.confirmPassword}
-                                                        validationFunc={(val) => this.confirmPassword_validation(val)}
-                                                    />
-                                                </div>
-                                            </>
-                                    }
                                     <div className="col-md-3 col-sm-6">
-                                        <label >{Localization.person}{<span className="text-danger">*</span>}</label>
-                                        <AsyncSelect
-                                            placeholder={Localization.person}
-                                            cacheOptions
-                                            defaultOptions
-                                            value={this.state.person.value}
-                                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
-                                            noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                            onChange={(selectedPerson : any ) => this.handlePersonChange(selectedPerson)}
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "groupname")}
+                                            label={Localization.group}
+                                            placeholder={Localization.group}
+                                            defaultValue={this.state.group.groupname.value}
+                                            required
                                         />
                                     </div>
                                 </div>

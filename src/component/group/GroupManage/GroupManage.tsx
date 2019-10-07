@@ -12,25 +12,36 @@ import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
-import { IUser } from "../../../model/model.user";
-import { UserService } from "../../../service/service.user";import 'moment/locale/fa';
+import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import { GroupService } from "../../../service/service.group";
 
-//// props & state define ////////
+//// start define IProps ///
+
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
   token: IToken;
 }
 
+//// end define IProps ///
+
+
+//// start define IFilterUser ///
+
 interface IFilterUser {
-  user: {
+  group: {
     value: string | undefined;
     isValid: boolean;
   };
 } 
+
+//// end define IFilterUser ///
+
+
+//// start define IState ///
 
 interface IState {
   user_table: IProps_table;
@@ -40,20 +51,19 @@ interface IState {
   removeModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
-  priceModalShow: boolean;
-  price: {
-    value: number | undefined;
-    isValid: boolean;
-  },
   setRemoveLoader: boolean;
-  setPriceLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
   filter: IFilterUser,
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
 }
-///// define class of User //////
+
+//// end define IState ///
+
+
+/// start class define ///
+
 class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   state = {
@@ -61,87 +71,20 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "email", title: Localization.username, cellTemplateFunc: (row: IUser) => {
-            if (row.username) {
-              return <div title={row.username} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.username}
+          field: "group", title: Localization.group, cellTemplateFunc: (row: any) => {
+            if (row.group) {
+              return <div title={row.group} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.group}
               </div>
             }
             return '';
           }
         },
         {
-          field: "name", title: Localization.full_name, cellTemplateFunc: (row: IUser) => {
-            if (row.person.name) {
-              return <div title={this.getUserFullName(row.person)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
-                {this.getUserFullName(row.person)}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "image", title: Localization.image, templateFunc: () => { return <b>{Localization.image}</b> }, cellTemplateFunc: (row: IUser) => {
-            if (row.person.image) {
-              return <div title={Localization.image} className="text-center" >
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px profile-img-rounded" src={"/api/serve-files/" + row.person.image} alt="" onError={e => this.userImageOnError(e)} />
-                </div>
-              </div>
-            }
-            else {
-              return <div className="text-center">
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
-                </div>
-              </div>
-            }
-          }
-        },
-        {
-          field: "creation_date", title: Localization.creation_date,
-          cellTemplateFunc: (row: IUser) => {
-            if (row.creation_date) {
-              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
-            }
-            return '';
-          }
-        },
-        {
-          field: "cell_no", title: Localization.cell_no, cellTemplateFunc: (row: IUser) => {
-            if (row.person.cell_no) {
-              return <div title={row.person.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.person.cell_no}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "email", title: Localization.email, cellTemplateFunc: (row: IUser) => {
-            if (row.person.email) {
-              return <div title={row.person.email} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.person.email}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "phone", title: Localization.phone, cellTemplateFunc: (row: IUser) => {
-            if (row.person.phone) {
-              return <div title={row.person.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.person.phone}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "address", title: Localization.address, cellTemplateFunc: (row: IUser) => {
-            if (row.person.address) {
-              return <div title={row.person.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.person.address}
+          field: "description", title: Localization.description, cellTemplateFunc: (row: any) => {
+            if (row.description) {
+              return <div title={row.description} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.description}
               </div>
             }
             return '';
@@ -158,14 +101,10 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       ]
     },
     filter: {
-      user: {
+      group: {
         value: undefined,
         isValid: true,
       }
-    },
-    price: {
-      value: undefined,
-      isValid: false,
     },
     UserError: undefined,
     pager_offset: 0,
@@ -173,119 +112,46 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,
-    priceModalShow: false,
     setRemoveLoader: false,
-    setPriceLoader: false,
     isSearch: false,
     searchVal: undefined,
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
   }
 
-  selectedUser: IUser | undefined;
-  private _userService = new UserService();
-  // private _priceService = new PriceService();
+  selectedGroup: any | undefined;
+
+  private _groupService = new GroupService();
 
   constructor(props: IProps) {
     super(props);
-    this._userService.setToken(this.props.token)
+    this._groupService.setToken(this.props.token)
   }
-  updateRow(user_id: any) {
-    this.props.history.push(`/user/${user_id.id}/edit`);
-  }
-
-
-  // timestamp to date 
-
-  getTimestampToDate(timestamp: number) {
-    if (this.props.internationalization.flag === "fa") {
-      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
-    }
-    else {
-      return moment(timestamp * 1000).format('YYYY/MM/DD');
-    }
-  }
-
-  _getTimestampToDate(timestamp: number) {
-    if (this.props.internationalization.flag === "fa") {
-      return this.getFromNowDate(timestamp);
-    }
-    else {
-      return this.getFromNowDate(timestamp);
-    }
-  }
-
-  /////// delete modal function define ////////
-
-  onShowRemoveModal(user: IUser) {
-    this.selectedUser = user;
-    this.setState({ ...this.state, removeModalShow: true });
-  }
-
-  onHideRemoveModal() {
-    this.selectedUser = undefined;
-    this.setState({ ...this.state, removeModalShow: false });
-
-  }
-
-  async onRemoveUser(user_id: string) {
-    this.setState({ ...this.state, setRemoveLoader: true });
-    let res = await this._userService.remove(user_id).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({ ...this.state, setRemoveLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setRemoveLoader: false });
-      this.apiSuccessNotify();
-      this.fetchUsers();
-      this.onHideRemoveModal();
-    }
-  }
-
-  render_delete_modal(selectedUser: any) {
-    if (!this.selectedUser || !this.selectedUser.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.username}:&nbsp;
-            </span>
-              {this.selectedUser.name} {this.selectedUser.username}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveUser(selectedUser.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
-
-  // define axios for give data
 
   componentDidMount() {
     this.setState({
       ...this.state,
       tableProcessLoader:true
     })
-    this.fetchUsers();
+    this.fetchGroup();
   }
 
-  async fetchUsers() {
+  /// start navigation function for create ant update ///
+  gotoGroupCreate() {
+    this.props.history.push('/group/create');
+  }
+
+  updateRow(group_id: any) {
+    this.props.history.push(`/groups/${group_id.id}/edit`);
+  }
+
+  /// end navigation function for create ant update ///
+
+  /// start for all function for request ///
+
+  async fetchGroup() {
     this.setState({...this.state,tableProcessLoader: true});
-    let res = await this._userService.search(
+    let res = await this._groupService.search(
       this.state.pager_limit, 
       this.state.pager_offset,
       this.getFilter()
@@ -314,7 +180,162 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // previous button create
+  async onRemoveUser(group_id: string) {
+    this.setState({ ...this.state, setRemoveLoader: true });
+    let res = await this._groupService.remove(group_id).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({ ...this.state, setRemoveLoader: false });
+    });
+    if (res) {
+      this.setState({ ...this.state, setRemoveLoader: false });
+      this.apiSuccessNotify();
+      this.fetchGroup();
+      this.onHideRemoveModal();
+    }
+  }
+
+  /// end for all function for request ///
+
+
+  /// start remove functions and render ///
+
+  onShowRemoveModal(group: any) {
+    this.selectedGroup = group;
+    this.setState({ ...this.state, removeModalShow: true });
+  }
+
+  onHideRemoveModal() {
+    this.selectedGroup = undefined;
+    this.setState({ ...this.state, removeModalShow: false });
+
+  }
+
+  render_delete_modal(selectedGroup: any) {
+    if (!this.selectedGroup || !this.selectedGroup.id) return;
+    return (
+      <>
+        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
+          <Modal.Body>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.selectedGroup}:&nbsp;
+            </span>
+              {this.selectedGroup.description}
+            </p>
+            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
+
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
+            <BtnLoader
+              btnClassName="btn btn-danger shadow-default shadow-hover"
+              onClick={() => this.onRemoveUser(selectedGroup.id)}
+              loading={this.state.setRemoveLoader}
+            >
+              {Localization.remove}
+            </BtnLoader>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+  /// end remove functions and render ///
+
+
+  /// start search functions and onchange handler ///
+
+  handleFilterInputChange(value: string, isValid: boolean) {
+    this.setState({
+      ...this.state,
+      filter: {
+        ...this.state.filter,
+        group: {
+          value, isValid
+        }
+      },
+    });
+  }
+
+  filterReset() {
+    this.setState({
+      ...this.state, filter: {
+        ...this.state.filter,
+        group: {
+          value: undefined,
+          isValid: true
+        },
+      },
+      prevBtnLoader: false,
+      nextBtnLoader: false,
+    });
+  }
+
+  filterSearch() {
+    this.setState({
+      ...this.state,
+      filterSearchBtnLoader: true,
+      tableProcessLoader: true,
+      pager_offset: 0
+    }, () => {
+      // this.gotoTop();
+      this.setFilter();
+      this.fetchGroup()
+    });
+  }
+
+  private _filter: IFilterUser = {
+    group : { value: undefined, isValid: true },
+  };
+  isFilterEmpty(): boolean {
+    if (this._filter.group.value) {
+      return false;
+    }
+    // if ....
+    return true;
+  }
+  setFilter() {
+    this._filter = { ...this.state.filter };
+  }
+  getFilter() {
+    if (!this.isFilterEmpty()) {
+      let obj: any = {};
+      if (this._filter.group.isValid) {
+        obj['title'] = this._filter.group.value;
+      }
+      // if  ....
+      return obj;
+    }
+    return;
+  }
+
+  /// end search functions and onchange handler ///
+
+
+  /// start timestampe to date functions ///
+
+  getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+    }
+    else {
+      return moment(timestamp * 1000).format('YYYY/MM/DD');
+    }
+  }
+
+  _getTimestampToDate(timestamp: number) {
+    if (this.props.internationalization.flag === "fa") {
+      return this.getFromNowDate(timestamp);
+    }
+    else {
+      return this.getFromNowDate(timestamp);
+    }
+  }
+
+  /// end timestampe to date functions ///
+
+
+  /// start previous and next btn render's function ///
 
   pager_previous_btn_render() {
     if (this.state.user_table.list && (this.state.user_table.list! || []).length) {
@@ -357,8 +378,6 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // // next button create
-
   pager_next_btn_render() {
     if (this.state.user_table.list && (this.state.user_table.list! || []).length) {
       return (
@@ -385,7 +404,10 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // on previous click
+  /// end previous and next btn render's function ///
+
+
+  /// start previous and next btn onchange functions ///
 
   onPreviousClick() {
     this.setState({
@@ -395,14 +417,12 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader: true,
     }, () => {
       this.gotoTop();
-      this.fetchUsers()
+      this.fetchGroup()
       // {
-      //   this.state.isSearch ? this.fetchFilterUsers(this.state.searchVal) : this.fetchUsers()
+      //   this.state.isSearch ? this.fetchFilterGroupthis.state.searchVal) : this.fetchUsers()
       // }
     });
   }
-
-  // on next click
 
   onNextClick() {
     this.setState({
@@ -412,84 +432,14 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader: true,
     }, () => {
       this.gotoTop();
-      this.fetchUsers()
+      this.fetchGroup()
       // {
-      //   this.state.isSearch ? this.fetchFilterUsers(this.state.searchVal) : this.fetchUsers()
+      //   this.state.isSearch ? this.fetchFilterGroup(this.state.searchVal) : this.fetchGroup()
       // }
     });
   }
 
-  //// navigation function //////
-
-  gotoUserCreate() {
-    this.props.history.push('/user/create');
-  }
-
-  /////  onChange & search & reset function for search box ///////////
-
-  handleFilterInputChange(value: string, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        user: {
-          value, isValid
-        }
-      },
-    });
-  }
-
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        user: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
-  }
-
-  filterSearch() {
-    this.setState({
-      ...this.state,
-      filterSearchBtnLoader: true,
-      tableProcessLoader: true,
-      pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      this.setFilter();
-      this.fetchUsers()
-    });
-  }
-
-  private _filter: IFilterUser = {
-    user: { value: undefined, isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.user.value) {
-      return false;
-    }
-    // if ....
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.user.isValid) {
-        obj['username'] = this._filter.user.value;
-      }
-      // if  ....
-      return obj;
-    }
-    return;
-  }
+  /// end previous and next btn onchange functions ///
 
 
   //// render call Table component ///////
@@ -500,12 +450,12 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
         <div className="content">
           <div className="row">
             <div className="col-12">
-              <h2 className="text-bold text-dark pl-3">{Localization.user}</h2>
+              <h2 className="text-bold text-dark pl-3">{Localization.group}</h2>
               <BtnLoader
                 loading={false}
                 disabled={false}
                 btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoUserCreate()}
+                onClick={() => this.gotoGroupCreate()}
               >
                 {Localization.new}
               </BtnLoader>
@@ -518,9 +468,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
                   <div className="col-sm-6 col-xl-4">
                     <Input
                       onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.username}
-                      placeholder={Localization.username}
-                      defaultValue={this.state.filter.user.value}
+                      label={Localization.group}
+                      placeholder={Localization.group}
+                      defaultValue={this.state.filter.group.value}
                     />
                   </div>
                 </div>
@@ -535,7 +485,6 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
                       {Localization.search}
                     </BtnLoader>
                     <BtnLoader
-                      // disabled={this.state.tableProcessLoader}
                       loading={false}
                       btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
                       onClick={() => this.filterReset()}
@@ -557,7 +506,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
         </div>
-        {this.render_delete_modal(this.selectedUser)}
+        {this.render_delete_modal(this.selectedGroup)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

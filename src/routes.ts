@@ -168,7 +168,7 @@ var routes = [
     icon: "fa fa-universal-access",
     component: PermissionManage,
     layout: "/admin",
-    isitem: true
+    isitem: false,
   },
   {
     path: "/permission/create",

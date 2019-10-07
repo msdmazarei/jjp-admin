@@ -296,6 +296,7 @@ interface ILocalization extends LocalizedStringsMethods {
     order:string;
     create_order:string;
     order_update:string;
+    show_order:string;
     status:string;
     total_price:string;
     Customer_Specifications : string;
@@ -346,6 +347,10 @@ interface ILocalization extends LocalizedStringsMethods {
     };
     role_type_list: {
         [key in BOOK_ROLES]: string;
+    };
+    order_status:{
+        Invoiced:string;
+        Created:string;
     };
     validation_msg: {
         Just_enter_the_phone_number : string;

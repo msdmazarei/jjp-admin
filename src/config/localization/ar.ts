@@ -284,6 +284,7 @@ export const ar = {
     order:"سفارش",
     create_order:"ایجاد سفارش",
     order_update:"بروزرسانی سفارش",
+    show_order:'نمایش سفارش',
     status:"وضعیت",
     total_price:"قیمت کل",
     Customer_Specifications:"مشخصات سفارش دهنده",
@@ -350,6 +351,10 @@ export const ar = {
         Press : 'ناشر',
         Contributer : 'مشارکت کننده',
         Designer : 'طراح',
+    },
+    order_status:{
+        Invoiced:'فاکتور شده',
+        Created:'سفارش ثبت شده',
     },
     validation_msg: {
         Just_enter_the_phone_number : "فقط شماره تلفن وارد کنید",

@@ -284,6 +284,7 @@ export const en = {
     order:"order",
     create_order:"Create a order",
     order_update:"order update",
+    show_order:'show order',
     status:"status",
     total_price:"total price",
     Customer_Specifications: "Customer Specifications",
@@ -350,6 +351,10 @@ export const en = {
         Press : 'Press',
         Contributer : 'Contributer',
         Designer : 'Designer',
+    },
+    order_status:{
+        Invoiced:'invoiced',
+        Created:'created',
     },
     validation_msg: {
         Just_enter_the_phone_number : "Just enter the phone number",

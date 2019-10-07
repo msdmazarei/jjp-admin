@@ -155,6 +155,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         { text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
          ac_func: (row: any) => { this.updateRow(row) },
          name:Localization.update },
+         { text: <i title={Localization.group} className="fa fa-users text-info"></i>,
+         ac_func: (row: any) => { (this.updateRow(row)) },
+         name:Localization.group },
       ]
     },
     filter: {

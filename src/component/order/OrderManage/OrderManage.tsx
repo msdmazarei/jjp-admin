@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
-import { Modal} from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -89,7 +89,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           field: "creation_date", title: Localization.creation_date,
           cellTemplateFunc: (row: any) => {
             if (row.creation_date) {
-              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
             }
             return '';
           }
@@ -97,8 +97,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "status", title: Localization.status, cellTemplateFunc: (row: any) => {
             if (row.status) {
+              const o_status: string = (row.status === 'Created') ? Localization.order_status.Created : Localization.order_status.Invoiced ;
               return <div title={row.status} className="text-nowrap-ellipsis max-w-200px d-inline-block">
-                {row.status}
+                {o_status}
               </div>
             }
             return '';
@@ -116,21 +117,29 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
-         ac_func: (row: any) => { this.onShowRemoveModal(row) },
-         access: (row: any) => { return this.orderCheckoutAccess(row) },
-          name:Localization.remove},
-        { text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>
-        , ac_func: (row: any) => { this.updateRow(row) },
+        {
+          text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+          ac_func: (row: any) => { this.onShowRemoveModal(row) },
           access: (row: any) => { return this.orderCheckoutAccess(row) },
-          name:Localization.update},
-        { text: <i title={Localization.order} className="fa fa-eye text-info"></i>,
-         ac_func: (row: any) => { this.fetchOrderById(row.id) },
-         name:Localization.order },
-        { text: <i title={Localization.invoice} className="fa fa-money text-success"></i>,
+          name: Localization.remove
+        },
+        {
+          text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>
+          , ac_func: (row: any) => { this.updateRow(row) },
+          access: (row: any) => { return this.orderCheckoutAccess(row) },
+          name: Localization.update
+        },
+        {
+          text: <i title={Localization.show_order} className="fa fa-eye text-info"></i>,
+          ac_func: (row: any) => { this.fetchOrderById(row.id) },
+          name: Localization.show_order
+        },
+        {
+          text: <i title={Localization.invoice} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
           access: (row: any) => { return this.orderCheckoutAccess(row) },
-          name:Localization.invoice},
+          name: Localization.invoice
+        },
       ]
     },
     OrderError: undefined,
@@ -191,12 +200,12 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   componentDidMount() {
     this.setState({
       ...this.state,
-      tableProcessLoader:true
+      tableProcessLoader: true
     })
     this.fetchOrders();
   }
 
-    // timestamp to date 
+  // timestamp to date 
 
   getTimestampToDate(timestamp: number) {
     if (this.props.internationalization.flag === "fa") {
@@ -219,7 +228,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   /////  start request for table data  /////////
 
   async fetchOrders() {
-    this.setState({...this.state,tableProcessLoader: true});
+    this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._orderService.search(
       this.state.pager_limit,
       this.state.pager_offset,

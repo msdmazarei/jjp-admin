@@ -95,6 +95,7 @@ interface IState {
     createLoader: boolean;
     updateLoader: boolean;
     tags_inputValue: string;
+    isBookTypeInputTouch: boolean;
 }
 interface IProps {
     match: any;
@@ -173,6 +174,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         createLoader: false,
         updateLoader: false,
         tags_inputValue: '',
+        isBookTypeInputTouch: false,
     }
 
     /////////// start Select's options define
@@ -318,7 +320,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 :
                 undefined
         );
-        
+
         if (pressCounter === 1) {
             return true;
         } else {
@@ -562,15 +564,26 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         }
     };
 
+    typeInputTouch_handler() {
+        this.setState({
+            ...this.state,
+            isBookTypeInputTouch: true,
+        })
+    }
 
     typeInvalidFeedback() {
-        if(this.state.book.type.value === null&&!this.state.book.type.isValid){
-            return <div className="select-feedback d-none">{Localization.required_field}</div>
+        if (!this.state.isBookTypeInputTouch) {
+            return
+        };
+        if (this.state.isBookTypeInputTouch && this.state.book.type.isValid) {
+            return
         }
-        if(!this.state.book.type.isValid){
+        if (this.state.isBookTypeInputTouch && !this.state.book.type.isValid) {
             return <div className="select-feedback">{Localization.required_field}</div>
         }
     }
+
+
 
     /////////////////// render ////////////////////////
 
@@ -662,6 +675,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             <Select
                                                 isMulti
                                                 onChange={(value: any) => this.handleSelectInputChange(value, "type")}
+                                                onBlur={() => this.typeInputTouch_handler()}
                                                 options={this.typeOptions}
                                                 value={this.state.book.type.value}
                                                 placeholder={Localization.type}

@@ -468,8 +468,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
                   <div className="col-sm-6 col-xl-4">
                     <Input
                       onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.group}
-                      placeholder={Localization.group}
+                      label={Localization.title}
+                      placeholder={Localization.title}
                       defaultValue={this.state.filter.group.value}
                     />
                   </div>

@@ -75,15 +75,15 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           field: "image", title: Localization.image, templateFunc: () => { return <b>{Localization.image}</b> }, cellTemplateFunc: (row: IPerson) => {
             if (row.image) {
               return <div title={Localization.image} className="text-center" >
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px profile-img-rounded" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
+                <div className="d-inline-block w-50px h-50px">
+                  <img className="max-w-50px max-h-50px profile-img-rounded" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
+                <div className="d-inline-block w-50px h-50px">
+                  <img className="max-w-50px max-h-50px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                 </div>
               </div>
             }

@@ -13,10 +13,12 @@ import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
 import { IUser } from "../../../model/model.user";
-import { UserService } from "../../../service/service.user";import 'moment/locale/fa';
+import { UserService } from "../../../service/service.user"; import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import AsyncSelect from 'react-select/async';
+import { GroupService } from "../../../service/service.group";
 
 //// props & state define ////////
 export interface IProps {
@@ -30,7 +32,7 @@ interface IFilterUser {
     value: string | undefined;
     isValid: boolean;
   };
-} 
+}
 
 interface IState {
   user_table: IProps_table;
@@ -38,22 +40,22 @@ interface IState {
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
+  addGroupModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
-  priceModalShow: boolean;
-  price: {
-    value: number | undefined;
-    isValid: boolean;
-  },
   setRemoveLoader: boolean;
-  setPriceLoader: boolean;
+  setAddGroupLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
   filter: IFilterUser,
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
+  group: {
+    value: any[] | null,
+    isValid: boolean
+  };
 }
-///// define class of User //////
+
 class UserManageComponent extends BaseComponent<IProps, IState>{
 
   state = {
@@ -84,15 +86,15 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           field: "image", title: Localization.image, templateFunc: () => { return <b>{Localization.image}</b> }, cellTemplateFunc: (row: IUser) => {
             if (row.person.image) {
               return <div title={Localization.image} className="text-center" >
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px profile-img-rounded" src={"/api/serve-files/" + row.person.image} alt="" onError={e => this.userImageOnError(e)} />
+                <div className="d-inline-block w-50px h-50px">
+                  <img className="max-w-50px max-h-50px profile-img-rounded" src={"/api/serve-files/" + row.person.image} alt="" onError={e => this.userImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
+                <div className="d-inline-block w-50px h-50px">
+                  <img className="max-w-50px max-h-50px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                 </div>
               </div>
             }
@@ -102,7 +104,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           field: "creation_date", title: Localization.creation_date,
           cellTemplateFunc: (row: IUser) => {
             if (row.creation_date) {
-              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
             }
             return '';
           }
@@ -149,15 +151,21 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
-         ac_func: (row: any) => { this.onShowRemoveModal(row) },
-         name:Localization.remove },
-        { text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
-         ac_func: (row: any) => { this.updateRow(row) },
-         name:Localization.update },
-         { text: <i title={Localization.group} className="fa fa-users text-info"></i>,
-         ac_func: (row: any) => { (this.updateRow(row)) },
-         name:Localization.group },
+        {
+          text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+          ac_func: (row: any) => { this.onShowRemoveModal(row) },
+          name: Localization.remove
+        },
+        {
+          text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+          ac_func: (row: any) => { this.updateRow(row) },
+          name: Localization.update
+        },
+        {
+          text: <i title={Localization.group} className="fa fa-users text-info"></i>,
+          ac_func: (row: any) => { (this.onShowAddGroupModal(row)) },
+          name: Localization.group
+        },
       ]
     },
     filter: {
@@ -166,39 +174,95 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         isValid: true,
       }
     },
-    price: {
-      value: undefined,
-      isValid: false,
-    },
     UserError: undefined,
     pager_offset: 0,
     pager_limit: 5,
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,
-    priceModalShow: false,
+    addGroupModalShow: false,
     setRemoveLoader: false,
-    setPriceLoader: false,
+    setAddGroupLoader: false,
     isSearch: false,
     searchVal: undefined,
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
+    group: {
+      value: null,
+      isValid: false,
+    },
   }
 
   selectedUser: IUser | undefined;
+  selectedUserForGroup: IUser | undefined;
+  private groupRequstError_txt: string = Localization.no_item_found;
+  private setTimeout_group_val: any;
+  private _filter: IFilterUser = {
+    user: { value: undefined, isValid: true },
+  };
+
   private _userService = new UserService();
-  // private _priceService = new PriceService();
+  private _groupService = new GroupService();
 
   constructor(props: IProps) {
     super(props);
     this._userService.setToken(this.props.token)
+    this._groupService.setToken(this.props.token)
   }
+
+  componentDidMount() {
+    this.setState({
+      ...this.state,
+      tableProcessLoader: true
+    })
+    this.fetchUsers();
+  }
+
+  gotoUserCreate() {
+    this.props.history.push('/user/create');
+  }
+
   updateRow(user_id: any) {
     this.props.history.push(`/user/${user_id.id}/edit`);
   }
 
+  // start define axios for give data for user table /////
 
-  // timestamp to date 
+  async fetchUsers() {
+    this.setState({ ...this.state, tableProcessLoader: true });
+    let res = await this._userService.search(
+      this.state.pager_limit,
+      this.state.pager_offset,
+      this.getFilter()
+    ).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({
+        ...this.state,
+        prevBtnLoader: false,
+        nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
+      });
+    });
+
+    if (res) {
+      this.setState({
+        ...this.state, user_table: {
+          ...this.state.user_table,
+          list: res.data.result
+        },
+        prevBtnLoader: false,
+        nextBtnLoader: false,
+        tableProcessLoader: false,
+        filterSearchBtnLoader: false,
+      });
+    }
+  }
+
+  // end define axios for give data for user table /////
+
+
+  // start timestamp to date and reverse
 
   getTimestampToDate(timestamp: number) {
     if (this.props.internationalization.flag === "fa") {
@@ -218,7 +282,10 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  /////// delete modal function define ////////
+  // end timestamp to date and reverse
+
+
+  // start delete modal function define ////////
 
   onShowRemoveModal(user: IUser) {
     this.selectedUser = user;
@@ -275,49 +342,140 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
+  // end delete modal function define ////////
 
-  // define axios for give data
 
-  componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader:true
-    })
-    this.fetchUsers();
+  // start add group modal function define ////////
+
+  onShowAddGroupModal(user: IUser) {
+    this.selectedUserForGroup = user;
+    this.setState({ ...this.state, addGroupModalShow: true });
   }
 
-  async fetchUsers() {
-    this.setState({...this.state,tableProcessLoader: true});
-    let res = await this._userService.search(
-      this.state.pager_limit, 
-      this.state.pager_offset,
-      this.getFilter()
-      ).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({
-        ...this.state,
-        prevBtnLoader: false,
-        nextBtnLoader: false,
-        tableProcessLoader: false,
-        filterSearchBtnLoader: false,
-      });
+  onHideAddGroupModal() {
+    this.selectedUserForGroup = undefined;
+    this.setState({
+      ...this.state,
+      group: { value: null, isValid: false },
+      addGroupModalShow: false
+    });
+
+  }
+
+  debounce_300(inputValue: any, callBack: any) {
+    if (this.setTimeout_group_val) {
+      clearTimeout(this.setTimeout_group_val);
+    }
+    this.setTimeout_group_val = setTimeout(() => {
+      this.promiseOptions2(inputValue, callBack);
+    }, 1000);
+  }
+
+  async promiseOptions2(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { title: inputValue };
+    }
+    let res: any = await this._groupService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false });
+      this.groupRequstError_txt = err_msg.body;
     });
 
     if (res) {
-      this.setState({
-        ...this.state, user_table: {
-          ...this.state.user_table,
-          list: res.data.result
-        },
-        prevBtnLoader: false,
-        nextBtnLoader: false,
-        tableProcessLoader: false,
-        filterSearchBtnLoader: false,
+      let groups = res.data.result.map((ps: any) => {
+        return { label: ps.title, value: ps }
       });
+      this.groupRequstError_txt = Localization.no_item_found;
+      callBack(groups);
+    } else {
+      callBack();
     }
   }
 
-  // previous button create
+  select_noOptionsMessage(obj: { inputValue: string }) {
+    return this.groupRequstError_txt;
+  }
+
+  handleSelectInputChange(value: any[]) {
+    let isValid;
+    if (!value || !value.length) {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
+    this.setState({
+      ...this.state,
+      group: {
+        value: value || [], isValid: isValid
+      }
+    })
+  }
+
+  async onAddGroupToUser(user_id: string) {
+    this.setState({ ...this.state, setAddGroupLoader: true });
+    let res = await this._userService.remove(user_id).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({ ...this.state, setAddGroupLoader: false });
+    });
+    if (res) {
+      this.setState({ ...this.state, setAddGroupLoader: false });
+      this.apiSuccessNotify();
+      this.fetchUsers();
+      this.onHideRemoveModal();
+    }
+  }
+
+  render_AddGroupToUser_modal(selectedUserForGroup: any) {
+    if (!this.selectedUserForGroup || !this.selectedUserForGroup.id) return;
+    return (
+      <>
+        <Modal size='xl' show={this.state.addGroupModalShow} onHide={() => this.onHideAddGroupModal()}>
+          <Modal.Header>
+            <h2 className='text-bold text-dark text-center w-100'>افزودن گروه</h2>
+          </Modal.Header>
+          <Modal.Body>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.username}:&nbsp;
+              </span>
+              {this.selectedUserForGroup.name} {this.selectedUserForGroup.username}
+            </p>
+            <div className="row">
+              <div className="col-6">
+                <label >{Localization.group}{<span className="text-danger">*</span>}</label>
+                <AsyncSelect
+                  isMulti
+                  placeholder={Localization.group}
+                  cacheOptions
+                  defaultOptions
+                  value={this.state.group.value}
+                  loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                  noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                  onChange={(selectedPerson: any) => this.handleSelectInputChange(selectedPerson)}  
+                />
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideAddGroupModal()}>{Localization.close}</button>
+            <BtnLoader
+              btnClassName="btn btn-success shadow-default shadow-hover"
+              onClick={() => this.onAddGroupToUser(selectedUserForGroup.id)}
+              loading={this.state.setAddGroupLoader}
+              disabled={!this.state.group.isValid}
+            >
+              {Localization.create}
+            </BtnLoader>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+  // end add group modal function define ////////
+
+
+  // start previous and next button create ///////
 
   pager_previous_btn_render() {
     if (this.state.user_table.list && (this.state.user_table.list! || []).length) {
@@ -360,8 +518,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // // next button create
-
   pager_next_btn_render() {
     if (this.state.user_table.list && (this.state.user_table.list! || []).length) {
       return (
@@ -388,7 +544,10 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // on previous click
+  // end previous and next button create ///////
+
+
+  // start previous and next onclick function define ////
 
   onPreviousClick() {
     this.setState({
@@ -405,8 +564,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
-  // on next click
-
   onNextClick() {
     this.setState({
       ...this.state,
@@ -422,13 +579,10 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
-  //// navigation function //////
+  // end previous and next onclick function define ////
 
-  gotoUserCreate() {
-    this.props.history.push('/user/create');
-  }
 
-  /////  onChange & search & reset function for search box ///////////
+  /////  start onChange & search & reset function for search box ///////////
 
   handleFilterInputChange(value: string, isValid: boolean) {
     this.setState({
@@ -469,9 +623,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
-  private _filter: IFilterUser = {
-    user: { value: undefined, isValid: true },
-  };
   isFilterEmpty(): boolean {
     if (this._filter.user.value) {
       return false;
@@ -479,9 +630,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     // if ....
     return true;
   }
+
   setFilter() {
     this._filter = { ...this.state.filter };
   }
+
   getFilter() {
     if (!this.isFilterEmpty()) {
       let obj: any = {};
@@ -493,6 +646,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     }
     return;
   }
+
+  /////  end onChange & search & reset function for search box ///////////
 
 
   //// render call Table component ///////
@@ -561,6 +716,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedUser)}
+        {this.render_AddGroupToUser_modal(this.selectedUserForGroup)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

@@ -126,11 +126,11 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     },
     UserError: undefined,
     pager_offset: 0,
-    pager_limit: 5,
+    pager_limit: 10,
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,
-    addPermissionModalShow:true,
+    addPermissionModalShow:false,
     setRemoveLoader: false,
     setAddPermissionLoader:false,
     isSearch: false,
@@ -352,7 +352,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   }
 
   render_AddPermissionToGroup_modal(selectedGroupForPermission: any) {
-    // if (!this.selectedGroupForPermission || !this.selectedGroupForPermission.id) return;
+    if (!this.selectedGroupForPermission || !this.selectedGroupForPermission.id) return;
     return (
       <>
         <Modal size='xl' show={this.state.addPermissionModalShow} onHide={() => this.onHideAddPermissionModal()}>

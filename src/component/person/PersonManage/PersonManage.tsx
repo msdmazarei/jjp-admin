@@ -160,7 +160,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     },
     PersonError: undefined,
     pager_offset: 0,
-    pager_limit: 5,
+    pager_limit: 10,
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,

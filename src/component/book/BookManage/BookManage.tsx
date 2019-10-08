@@ -180,7 +180,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     },
     BookError: undefined,
     pager_offset: 0,
-    pager_limit: 5,
+    pager_limit: 10,
     prevBtnLoader: false,
     nextBtnLoader: false,
     filterSearchBtnLoader: false,

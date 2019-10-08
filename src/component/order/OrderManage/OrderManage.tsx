@@ -144,7 +144,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     },
     OrderError: undefined,
     pager_offset: 0,
-    pager_limit: 5,
+    pager_limit: 10,
     prevBtnLoader: false,
     nextBtnLoader: false,
     filterSearchBtnLoader: false,

@@ -85,15 +85,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           cellTemplateFunc: (row: IBook) => {
             if (row.images && row.images.length) {
               return <div className="text-center" >
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
+                <div className="d-inline-block w-50px h-50px">
+                  <img className="max-w-50px max-h-50px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
-                <div className="d-inline-block w-100px h-100px">
-                  <img className="max-w-100px max-h-100px" src={this.defaultBookImagePath} alt="" />
+                <div className="d-inline-block w-50px h-50px">
+                  <img className="max-w-50px max-h-50px" src={this.defaultBookImagePath} alt="" />
                 </div>
               </div>
             }

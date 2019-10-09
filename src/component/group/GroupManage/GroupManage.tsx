@@ -19,6 +19,7 @@ import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
 import { GroupService } from "../../../service/service.group";
 import { PermissionService } from "../../../service/service.permission";
+// import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
 
@@ -62,7 +63,7 @@ interface IState {
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   permissions: {
-    value: any[] | null,
+    value: { label: string | number, value: object }[] | null,
     isValid: boolean
   };
 }
@@ -79,21 +80,39 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "group", title: Localization.group, cellTemplateFunc: (row: any) => {
-            if (row.group) {
-              return <div title={row.group} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.group}
+          field: "title", title: Localization.title, cellTemplateFunc: (row: any) => {
+            if (row.title) {
+              return <div title={row.title} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.title}
               </div>
             }
             return '';
           }
         },
         {
-          field: "description", title: Localization.description, cellTemplateFunc: (row: any) => {
-            if (row.description) {
-              return <div title={row.description} className="text-nowrap-ellipsis max-w-150px d-inline-block">
-                {row.description}
+          field: "creator", title: Localization.creator, cellTemplateFunc: (row: any) => {
+            if (row.creator) {
+              return <div title={row.creator} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+                {row.creator}
               </div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "creation_date", title: Localization.creation_date,
+          cellTemplateFunc: (row: any) => {
+            if (row.creation_date) {
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "modification_date", title: Localization.modification_date,
+          cellTemplateFunc: (row: any) => {
+            if (row.modification_date) {
+              return <div title={this._getTimestampToDate(row.modification_date)}>{this.getTimestampToDate(row.modification_date)}</div>
             }
             return '';
           }
@@ -110,12 +129,11 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { this.onShowAddPermissionModal(row) },
           name: Localization.permission
         },
-
-        {
-          text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
-          ac_func: (row: any) => { this.updateRow(row) },
-          name: Localization.update
-        },
+        // {
+        //   text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+        //   ac_func: (row: any) => { this.updateRow(row) },
+        //   name: Localization.update
+        // },
       ]
     },
     filter: {
@@ -139,7 +157,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
     permissions: {
       value: null,
-      isValid: false,
+      isValid: true,
     },
   }
 
@@ -169,9 +187,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/group/create');
   }
 
-  updateRow(group_id: any) {
-    this.props.history.push(`/groups/${group_id.id}/edit`);
-  }
+  // updateRow(group_id: any) {
+  //   this.props.history.push(`/groups/${group_id.id}/edit`);
+  // }
 
   /// end navigation function for create ant update ///
 
@@ -246,9 +264,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           <Modal.Body>
             <p className="delete-modal-content">
               <span className="text-muted">
-                {Localization.selectedGroup}:&nbsp;
+                {Localization.name}{" "}{Localization.group}:&nbsp;
             </span>
-              {this.selectedGroup.description}
+              {this.selectedGroup.title}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
 
@@ -275,7 +293,32 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   onShowAddPermissionModal(group: any) {
     this.selectedGroupForPermission = group;
-    this.setState({ ...this.state, addPermissionModalShow: true });
+    this.setState({...this.state, addPermissionModalShow:true,})
+    // if(this.selectedGroupForPermission.id){
+    //   this.fetchGroupPermissions(this.selectedGroupForPermission.id);
+    // };
+  }
+
+  async fetchGroupPermissions(group_id: string) {
+    let res = await this._groupService.fetchGroupPermissions(group_id).catch(error => {
+      this.handleError({ error: error.response });
+    });
+
+    if (res) {
+
+      let newRes = res.data.result.map(item => { return { label: item.creation_date, value: { id:item.group_id } } });
+    
+      this.setState({
+        ...this.state,
+        permissions: {
+          ...this.state.permissions,
+          // value: res.data.result,
+          value: newRes,
+        },
+        addPermissionModalShow:true,
+      }
+      );
+    }
   }
 
   onHideAddPermissionModal() {
@@ -309,6 +352,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
     if (res) {
       let groups = res.data.result.map((ps: any) => {
+        // let per :any= ps.permission
+        // let permission : PERMISSIONS = per
+        // return { label:Localization.permissions_list[permission]?Localization.permissions_list[permission]:ps.permission, value: ps }
         return { label: ps.permission, value: ps }
       });
       this.permissionRequstError_txt = Localization.no_item_found;
@@ -322,32 +368,137 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     return this.permissionRequstError_txt;
   }
 
-  handleSelectInputChange(value: any[]) {
-    let isValid;
-    if (!value || !value.length) {
-      isValid = false;
-    } else {
-      isValid = true;
+  handleMultiSelectInputChange(newValue: any[]) {
+    const user_id: string = this.selectedGroupForPermission!.id;
+    if (this.state.permissions.value === null) {
+      this.onAddPermissionToGroup(newValue, user_id);
+      return;
     }
-    this.setState({
-      ...this.state,
-      permissions: {
-        value: value || [], isValid: isValid
-      }
-    })
+
+    if (newValue === null) {
+      this.onRemovePermissionFromGroup(newValue, user_id);
+      return;
+    }
+
+    const before: any[] = this.state.permissions.value!
+
+    if (newValue.length > before.length) {
+      this.onAddPermissionToGroup(newValue, user_id);
+      return;
+    }
+
+    if (newValue.length < before.length) {
+      this.onRemovePermissionFromGroup(newValue, user_id);
+      return;
+    }
+
+    // if (newValue.length = before.length) {
+    //   return;
+    // }
   }
 
-  async onAddpermissionToGroup(user_id: string) {
-    this.setState({ ...this.state, setAddPermissionLoader: true });
-    let res = await this._permissionService.remove(user_id).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({ ...this.state, setAddPermissionLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setAddPermissionLoader: false });
-      this.apiSuccessNotify();
-      this.fetchGroup();
-      this.onHideRemoveModal();
+  async onAddPermissionToGroup(newValue: any[], group_id: string) {
+
+    if (this.state.permissions.value === null) {
+      const newPermission: object = {
+        groups: [group_id],
+        permissions: [newValue[0].value.id],
+      };
+
+      let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          permissions: {
+            ...this.state.permissions,
+            value: newValue,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchGroup();
+        return;
+      }
+    } else {
+      const before: any[] = this.state.permissions.value!
+      let addDiff = newValue.filter(x => !before.includes(x));
+      const newPermission: object = {
+        groups: [group_id],
+        permissions: [addDiff[0].value.id],
+      };
+
+      let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          permissions: {
+            ...this.state.permissions,
+            value: newValue,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchGroup();
+      }
+    }
+  }
+
+  async onRemovePermissionFromGroup(newValue: any[], group_id: string) {
+
+    if (newValue === null) {
+
+      const oneItemHaveState: any[] = this.state.permissions.value!;
+
+      const removedPermission: object = {
+        groups: [group_id],
+        permissions: [oneItemHaveState[0].value.id],
+      };
+
+      let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          permissions: {
+            ...this.state.permissions,
+            value: null,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchGroup();
+        return;
+      }
+
+    } else {
+      const before: any[] = this.state.permissions.value!
+      let removeDiff = before.filter(x => !newValue.includes(x));
+
+      const removedPermission: object = {
+        groups: [group_id],
+        permissions: [removeDiff[0].value.id],
+      };
+
+      let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          permissions: {
+            ...this.state.permissions,
+            value: newValue,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchGroup();
+      }
     }
   }
 
@@ -377,21 +528,21 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
                   value={this.state.permissions.value}
                   loadOptions={(inputValue:any, callback:any) => this.debounce_300(inputValue, callback)}
                   noOptionsMessage={(obj:any) => this.select_noOptionsMessage(obj)}
-                  onChange={(selectedPerson: any) => this.handleSelectInputChange(selectedPerson)}  
+                  onChange={(selectedPerson: any) => this.handleMultiSelectInputChange(selectedPerson)}  
                 />
               </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideAddPermissionModal()}>{Localization.close}</button>
-            <BtnLoader
+            {/* <BtnLoader
               btnClassName="btn btn-success shadow-default shadow-hover"
               onClick={() => this.onAddpermissionToGroup(selectedGroupForPermission.id)}
               loading={this.state.setAddPermissionLoader}
               disabled={!this.state.permissions.isValid}
             >
               {Localization.create}
-            </BtnLoader>
+            </BtnLoader> */}
           </Modal.Footer>
         </Modal>
       </>

@@ -51,7 +51,7 @@ interface IState {
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   group: {
-    value: any[] | null,
+    value: { label: string | number, value: object }[] | null,
     isValid: boolean
   };
 }
@@ -189,7 +189,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
     group: {
       value: null,
-      isValid: false,
+      isValid: true,
     },
   }
 
@@ -349,7 +349,31 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   onShowAddGroupModal(user: IUser) {
     this.selectedUserForGroup = user;
-    this.setState({ ...this.state, addGroupModalShow: true });
+    if(this.selectedUserForGroup.id){
+      this.fetchUserGroups(this.selectedUserForGroup.id);
+    };
+  }
+
+  async fetchUserGroups(user_id: string) {
+    let res = await this._groupService.fetchUserGroups(user_id).catch(error => {
+      this.handleError({ error: error.response });
+    });
+
+    if (res) {
+
+      let newRes = res.data.result.map(item => { return { label: item.creation_date, value: { id:item.group_id } } });
+    
+      this.setState({
+        ...this.state,
+        group: {
+          ...this.state.group,
+          // value: res.data.result,
+          value: newRes,
+        },
+        addGroupModalShow:true,
+      }
+      );
+    }
   }
 
   onHideAddGroupModal() {
@@ -396,32 +420,137 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     return this.groupRequstError_txt;
   }
 
-  handleSelectInputChange(value: any[]) {
-    let isValid;
-    if (!value || !value.length) {
-      isValid = false;
-    } else {
-      isValid = true;
+  handleMultiSelectInputChange(newValue: any[]) {
+    const user_id: string = this.selectedUserForGroup!.id;
+    if (this.state.group.value === null) {
+      this.onAddGroupToUser(newValue, user_id);
+      return;
     }
-    this.setState({
-      ...this.state,
-      group: {
-        value: value || [], isValid: isValid
-      }
-    })
+
+    if (newValue === null) {
+      this.onRemoveGroupFromUser(newValue, user_id);
+      return;
+    }
+
+    const before: any[] = this.state.group.value!
+
+    if (newValue.length > before.length) {
+      this.onAddGroupToUser(newValue, user_id);
+      return;
+    }
+
+    if (newValue.length < before.length) {
+      this.onRemoveGroupFromUser(newValue, user_id);
+      return;
+    }
+
+    // if (newValue.length = before.length) {
+    //   return;
+    // }
   }
 
-  async onAddGroupToUser(user_id: string) {
-    this.setState({ ...this.state, setAddGroupLoader: true });
-    let res = await this._userService.remove(user_id).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({ ...this.state, setAddGroupLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setAddGroupLoader: false });
-      this.apiSuccessNotify();
-      this.fetchUsers();
-      this.onHideRemoveModal();
+  async onAddGroupToUser(newValue: any[], user_id: string) {
+
+    if (this.state.group.value === null) {
+      const newGroup: object = {
+        groups: [newValue[0].value.id],
+        users: [user_id],
+      };
+
+      let res = await this._groupService.addUserToGroup(newGroup).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          group: {
+            ...this.state.group,
+            value: newValue,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchUsers();
+        return;
+      }
+    } else {
+      const before: any[] = this.state.group.value!
+      let addDiff = newValue.filter(x => !before.includes(x));
+      const newGroup: object = {
+        groups: [addDiff[0].value.id],
+        users: [user_id],
+      };
+
+      let res = await this._groupService.addUserToGroup(newGroup).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          group: {
+            ...this.state.group,
+            value: newValue,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchUsers();
+      }
+    }
+  }
+
+  async onRemoveGroupFromUser(newValue: any[], user_id: string) {
+
+    if (newValue === null) {
+
+      const oneItemHaveState: any[] = this.state.group.value!;
+
+      const removedGroup: object = {
+        groups: [oneItemHaveState[0].value.id],
+        users: [user_id],
+      };
+
+      let res = await this._groupService.removeUserFromGroup(removedGroup).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          group: {
+            ...this.state.group,
+            value: null,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchUsers();
+        return;
+      }
+
+    } else {
+      const before: any[] = this.state.group.value!
+      let removeDiff = before.filter(x => !newValue.includes(x));
+
+      const removedGroup: object = {
+        groups: [removeDiff[0].value.id],
+        users: [user_id],
+      };
+
+      let res = await this._groupService.removeUserFromGroup(removedGroup).catch(error => {
+        this.handleError({ error: error.response });
+      });
+
+      if (res) {
+        this.setState({
+          ...this.state,
+          group: {
+            ...this.state.group,
+            value: newValue,
+          }
+        })
+        this.apiSuccessNotify();
+        this.fetchUsers();
+      }
     }
   }
 
@@ -438,7 +567,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               <span className="text-muted">
                 {Localization.username}:&nbsp;
               </span>
-              {this.selectedUserForGroup.name} {this.selectedUserForGroup.username}
+              {selectedUserForGroup.name} {selectedUserForGroup.username}
             </p>
             <div className="row">
               <div className="col-6">
@@ -451,21 +580,13 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
                   value={this.state.group.value}
                   loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                   noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                  onChange={(selectedPerson: any) => this.handleSelectInputChange(selectedPerson)}  
+                  onChange={(selectedGroup: any[]) => this.handleMultiSelectInputChange(selectedGroup)}
                 />
               </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideAddGroupModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-success shadow-default shadow-hover"
-              onClick={() => this.onAddGroupToUser(selectedUserForGroup.id)}
-              loading={this.state.setAddGroupLoader}
-              disabled={!this.state.group.isValid}
-            >
-              {Localization.create}
-            </BtnLoader>
           </Modal.Footer>
         </Modal>
       </>

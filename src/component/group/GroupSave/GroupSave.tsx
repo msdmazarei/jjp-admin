@@ -69,7 +69,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
         person: {
             value: undefined,
-            // isValid: false,
+            isValid: true,
         },
 
         isFormValid: false,
@@ -181,13 +181,21 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
     }
 
-    handleInputChange(value: any, isValid: boolean, inputType: any) {
+    handleInputChange(value: any, isValid: boolean) {
         this.setState({
             ...this.state,
             group: {
-                ...this.state.group, [inputType]: { value, isValid }
+                ...this.state.group,
+                groupname:{
+                    value:value,
+                    isValid:isValid,
+                },
+                person_id:{
+                    ...this.state.group.person_id,
+                    isValid:true,
+                }
             }
-            , isFormValid: this.checkFormValidate(isValid, inputType)
+            , isFormValid: this.checkFormValidate(isValid, "groupname")
         })
     }
 
@@ -302,7 +310,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                 <div className="row">
                                     <div className="col-md-3 col-sm-6">
                                         <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "groupname")}
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid)}
                                             label={Localization.title}
                                             placeholder={Localization.title}
                                             defaultValue={this.state.group.groupname.value}

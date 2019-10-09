@@ -5,6 +5,7 @@ import { fa } from './fa';
 import { en } from './en';
 import { ar } from './ar';
 import { BOOK_TYPES, BOOK_GENRE, BOOK_ROLES } from '../../enum/Book';
+import { PERMISSIONS } from '../../enum/Permission';
 
 interface ILocalization extends LocalizedStringsMethods {
     [key: string]: any; // todo
@@ -312,6 +313,8 @@ interface ILocalization extends LocalizedStringsMethods {
     permission:string;
     create_permission:string;
     permission_update:string;
+    creator:string;
+    modification_date:string;
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher : string;
     type_of_report:{
         Reporting_Period : string;
@@ -347,6 +350,9 @@ interface ILocalization extends LocalizedStringsMethods {
     };
     role_type_list: {
         [key in BOOK_ROLES]: string;
+    };
+    permissions_list: {
+        [key in PERMISSIONS]: string;
     };
     order_status:{
         Invoiced:string;

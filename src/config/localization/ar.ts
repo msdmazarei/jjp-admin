@@ -300,6 +300,8 @@ export const ar = {
     permission:"دسترسی",
     create_permission:"ایجاد دسترسی",
     permission_update:"بروزرسانی دسترسی",
+    creator:"ایجاد کننده",
+    modification_date:"تاریخ اصلاح",
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher:"هر کتاب باید تنها دارای یک ناشر باشد و افزودن کتاب بدون ناشر امکان پذیر نمی باشد",
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
@@ -351,6 +353,32 @@ export const ar = {
         Press : 'ناشر',
         Contributer : 'مشارکت کننده',
         Designer : 'طراح',
+    },
+    permissions_list: {
+        IS_OWNER : 'IS_OWNER',
+        ACCOUNT_ADD_PREMIUM : 'ایجاد حساب کاربری - ویژه',
+        ACCOUNT_EDIT_PREMIUM : 'ویرایش حساب کاربری - ویژه',
+        ACCOUNT_DELETE_PREMIUM : 'حذف حساب کاربری - ویژه',
+        ACCOUNT_GET_PREMIUM : 'مشاهده حساب کاربری - ویژه',
+
+        LIBRARY_ADD_PREMIUM : 'ایجاد کتابخانه - ویژه',
+        LIBRARY_EDIT_PREMIUM : 'ویرایش کتابخانه - ویژه',
+        LIBRARY_DELETE_PREMIUM : 'حذف کتابخانه - ویژه',
+        LIBRARY_GET_PREMIUM : 'مشاهده کتابخانه - ویژه',
+
+        RATE_DELETE_PREMIUM : 'حذف تعداد رای - ویژه',
+        RATE_EDIT_PREMIUM : 'ویرایش تعداد رای - ویژه',
+
+        BOOK_ADD_PREMIUM : 'ایجاد کتاب - ویژه',
+        BOOK_EDIT_PREMIUM : 'ویرایش کتاب - ویژه',
+        BOOK_DELETE_PREMIUM : 'حذف کتاب - ویژه',
+        BOOK_ADD_PRESS : 'ایجاد کتاب - ناشر',
+        BOOK_EDIT_PRESS : 'ویرایش کتاب - ناشر',
+        BOOK_DELETE_PRESS : 'حذف کتاب - ناشر',
+
+        COMMENT_ADD_PREMIUM : 'ایجاد کامنت - ویژه',
+        COMMENT_EDIT_PREMIUM : 'ویرایش کامنت - ویژه',
+        COMMENT_DELETE_PREMIUM : 'حذف کامنت - ویژه',
     },
     order_status:{
         Invoiced:'فاکتور شده',

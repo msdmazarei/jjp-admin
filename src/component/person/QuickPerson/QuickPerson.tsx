@@ -173,10 +173,10 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             person: {
-                name: { value: undefined, isValid: true },
-                last_name: { value: undefined, isValid: true },
+                name: { value: undefined, isValid: false },
+                last_name: { value: undefined, isValid: false },
                 address: { value: undefined, isValid: true },
-                phone: { value: undefined, isValid: false },
+                phone: { value: undefined, isValid: true },
                 email: { value: undefined, isValid: true },
                 cell_no: { value: undefined, isValid: true },
                 image: { value: [], isValid: true },

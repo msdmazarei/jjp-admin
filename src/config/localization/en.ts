@@ -248,6 +248,8 @@ export const en = {
     images: "images",
     images_list: "images list",
     person: "person",
+    legal_person:'legal person',
+    real_person : 'real person',
     DRAG_AND_DROP: "DRAG AND DROP",
     create_book: "Create a book",
     edit_book: "Edit the book",
@@ -303,6 +305,7 @@ export const en = {
     creator: "creator",
     modification_date: "modification_date",
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher: "Each book must have only one publisher and it is not possible to add a book without a publisher",
+    name_of_organization: "name of organization",
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

@@ -66,6 +66,7 @@ interface IState {
     value: { label: string | number, value: object }[] | null,
     isValid: boolean
   };
+  beforePermission_id_array: string[] | [];
 }
 
 //// end define IState ///
@@ -148,9 +149,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,
-    addPermissionModalShow:false,
+    addPermissionModalShow: false,
     setRemoveLoader: false,
-    setAddPermissionLoader:false,
+    setAddPermissionLoader: false,
     isSearch: false,
     searchVal: undefined,
     filterSearchBtnLoader: false,
@@ -159,6 +160,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       value: null,
       isValid: true,
     },
+    beforePermission_id_array: [],
   }
 
   selectedGroup: any | undefined;
@@ -289,25 +291,29 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   /// end remove functions and render ///
 
 
-   // start add permission modal function define ////////
+  // start add permission modal function define ////////
 
   onShowAddPermissionModal(group: any) {
     this.selectedGroupForPermission = group;
-    this.setState({...this.state, addPermissionModalShow:true,})
-    // if(this.selectedGroupForPermission.id){
-    //   this.fetchGroupPermissions(this.selectedGroupForPermission.id);
-    // };
+    // this.setState({ ...this.state, addPermissionModalShow: true, })
+    if (this.selectedGroupForPermission.id) {
+      this.fetchGroupPermissions(this.selectedGroupForPermission.id);
+    };
   }
 
   async fetchGroupPermissions(group_id: string) {
-    let res = await this._groupService.fetchGroupPermissions(group_id).catch(error => {
+    const groupData: object = {
+      groups: [group_id],
+    };
+    let res = await this._groupService.fetchGroupPermissions(groupData).catch(error => {
       this.handleError({ error: error.response });
     });
 
     if (res) {
 
-      let newRes = res.data.result.map(item => { return { label: item.creation_date, value: { id:item.group_id } } });
-    
+      let newRes = res.data.result.map(item => { return { label: item.permission.permission, value: { id: item.permission_id } } });
+      let beforePermission_id_array = res.data.result.length > 0 ? res.data.result.map(item => { return item.permission_id }) : [];
+
       this.setState({
         ...this.state,
         permissions: {
@@ -315,7 +321,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           // value: res.data.result,
           value: newRes,
         },
-        addPermissionModalShow:true,
+        addPermissionModalShow: true,
+        beforePermission_id_array: beforePermission_id_array,
       }
       );
     }
@@ -369,138 +376,224 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   }
 
   handleMultiSelectInputChange(newValue: any[]) {
-    const user_id: string = this.selectedGroupForPermission!.id;
-    if (this.state.permissions.value === null) {
-      this.onAddPermissionToGroup(newValue, user_id);
-      return;
-    }
-
-    if (newValue === null) {
-      this.onRemovePermissionFromGroup(newValue, user_id);
-      return;
-    }
-
-    const before: any[] = this.state.permissions.value!
-
-    if (newValue.length > before.length) {
-      this.onAddPermissionToGroup(newValue, user_id);
-      return;
-    }
-
-    if (newValue.length < before.length) {
-      this.onRemovePermissionFromGroup(newValue, user_id);
-      return;
-    }
-
-    // if (newValue.length = before.length) {
-    //   return;
-    // }
+    this.setState({
+      ...this.state,
+      permissions: {
+        ...this.state.permissions,
+        value: newValue,
+      }
+    })
   }
 
-  async onAddPermissionToGroup(newValue: any[], group_id: string) {
-
-    if (this.state.permissions.value === null) {
-      const newPermission: object = {
-        groups: [group_id],
-        permissions: [newValue[0].value.id],
-      };
-
-      let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
-        this.handleError({ error: error.response });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          permissions: {
-            ...this.state.permissions,
-            value: newValue,
-          }
-        })
-        this.apiSuccessNotify();
-        this.fetchGroup();
-        return;
-      }
-    } else {
-      const before: any[] = this.state.permissions.value!
-      let addDiff = newValue.filter(x => !before.includes(x));
-      const newPermission: object = {
-        groups: [group_id],
-        permissions: [addDiff[0].value.id],
-      };
-
-      let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
-        this.handleError({ error: error.response });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          permissions: {
-            ...this.state.permissions,
-            value: newValue,
-          }
-        })
-        this.apiSuccessNotify();
-        this.fetchGroup();
-      }
+  handle_on_update_permissions_btn(group_id: string) {
+    if (this.state.beforePermission_id_array.length > 0 && this.state.permissions.value !== null) {
+      const updated: any[] = this.state.permissions.value!;
+      const before_id_array: any[] = this.state.beforePermission_id_array;
+      let updated_id_array = updated.map(item => { return item.value.id });
+      let toRemovedItems = before_id_array.filter(x => !updated_id_array.includes(x));
+      let toAddedItems = updated_id_array.filter(x => !before_id_array.includes(x));
+      this.onRemovePermissionFromGroup(toRemovedItems, group_id);
+      this.onAddPermissionToGroup(toAddedItems, group_id);
+    };
+    if (this.state.beforePermission_id_array.length > 0 && this.state.permissions.value === null) {
+      let toRemovedItems = this.state.beforePermission_id_array;
+      this.onRemovePermissionFromGroup(toRemovedItems, group_id);
+    };
+    if (this.state.beforePermission_id_array.length === 0 && this.state.permissions.value !== null) {
+      const updated: any[] = this.state.permissions.value!;
+      let updated_id_array = updated.map(item => { return item.value.id });
+      let toAddedItems = updated_id_array;
+      this.onAddPermissionToGroup(toAddedItems, group_id);
+    };
+    if (this.state.beforePermission_id_array.length === 0 && this.state.permissions.value === null) {
+      return;
     }
   }
 
   async onRemovePermissionFromGroup(newValue: any[], group_id: string) {
 
-    if (newValue === null) {
+    if(newValue.length === 0){
+      return;
+    }
 
-      const oneItemHaveState: any[] = this.state.permissions.value!;
+    const removedPermission: object = {
+      groups: [group_id],
+      permissions: newValue,
+    };
 
-      const removedPermission: object = {
-        groups: [group_id],
-        permissions: [oneItemHaveState[0].value.id],
-      };
+    let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
+      this.handleError({ error: error.response });
+      this.fetchGroupPermissions(group_id);
+    });
 
-      let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
-        this.handleError({ error: error.response });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          permissions: {
-            ...this.state.permissions,
-            value: null,
-          }
-        })
-        this.apiSuccessNotify();
-        this.fetchGroup();
-        return;
-      }
-
-    } else {
-      const before: any[] = this.state.permissions.value!
-      let removeDiff = before.filter(x => !newValue.includes(x));
-
-      const removedPermission: object = {
-        groups: [group_id],
-        permissions: [removeDiff[0].value.id],
-      };
-
-      let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
-        this.handleError({ error: error.response });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          permissions: {
-            ...this.state.permissions,
-            value: newValue,
-          }
-        })
-        this.apiSuccessNotify();
-        this.fetchGroup();
-      }
+    if (res) {
+      this.fetchGroupPermissions(group_id);
+      this.apiSuccessNotify();
+      console.log(newValue);
+      return;
     }
   }
+
+  async onAddPermissionToGroup(newValue: any[], group_id: string) {
+
+    if(newValue.length === 0){
+      return;
+    }
+
+    const addedPermission: object = {
+      groups: [group_id],
+      permissions: newValue,
+    };
+
+    let res = await this._groupService.addPermissionToGroup(addedPermission).catch(error => {
+      this.handleError({ error: error.response });
+      this.fetchGroupPermissions(group_id);
+    });
+
+    if (res) {
+      this.fetchGroupPermissions(group_id);
+      this.apiSuccessNotify();
+      console.log(newValue);
+      return;
+    }
+  }
+
+
+  // handleMultiSelectInputChange(newValue: any[]) {
+  //   const user_id: string = this.selectedGroupForPermission!.id;
+  //   if (this.state.permissions.value === null) {
+  //     this.onAddPermissionToGroup(newValue, user_id);
+  //     return;
+  //   }
+
+  //   if (newValue === null) {
+  //     this.onRemovePermissionFromGroup(newValue, user_id);
+  //     return;
+  //   }
+
+  //   const before: any[] = this.state.permissions.value!
+
+  //   if (newValue.length > before.length) {
+  //     this.onAddPermissionToGroup(newValue, user_id);
+  //     return;
+  //   }
+
+  //   if (newValue.length < before.length) {
+  //     this.onRemovePermissionFromGroup(newValue, user_id);
+  //     return;
+  //   }
+
+  //   // if (newValue.length = before.length) {
+  //   //   return;
+  //   // }
+  // }
+
+  // async onAddPermissionToGroup(newValue: any[], group_id: string) {
+
+  //   if (this.state.permissions.value === null) {
+  //     const newPermission: object = {
+  //       groups: [group_id],
+  //       permissions: [newValue[0].value.id],
+  //     };
+
+  //     let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
+  //       this.handleError({ error: error.response });
+  //     });
+
+  //     if (res) {
+  //       this.setState({
+  //         ...this.state,
+  //         permissions: {
+  //           ...this.state.permissions,
+  //           value: newValue,
+  //         }
+  //       })
+  //       this.apiSuccessNotify();
+  //       // this.fetchGroup();
+  //       console.log(newValue);
+  //       return;
+  //     }
+  //   } else {
+  //     const before: any[] = this.state.permissions.value!
+  //     let addDiff = newValue.filter(x => !before.includes(x));
+  //     const newPermission: object = {
+  //       groups: [group_id],
+  //       permissions: [addDiff[0].value.id],
+  //     };
+
+  //     let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
+  //       this.handleError({ error: error.response });
+  //     });
+
+  //     if (res) {
+  //       this.setState({
+  //         ...this.state,
+  //         permissions: {
+  //           ...this.state.permissions,
+  //           value: newValue,
+  //         }
+  //       })
+  //       this.apiSuccessNotify();
+  //       // this.fetchGroup();
+  //       console.log(newValue);
+  //     }
+  //   }
+  // }
+
+  // async onRemovePermissionFromGroup(newValue: any[], group_id: string) {
+
+  //   if (newValue === null) {
+
+  //     const oneItemHaveState: any[] = this.state.permissions.value!;
+
+  //     const removedPermission: object = {
+  //       groups: [group_id],
+  //       permissions: [oneItemHaveState[0].value.id],
+  //     };
+
+  //     let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
+  //       this.handleError({ error: error.response });
+  //     });
+
+  //     if (res) {
+  //       this.setState({
+  //         ...this.state,
+  //         permissions: {
+  //           ...this.state.permissions,
+  //           value: null,
+  //         }
+  //       })
+  //       this.apiSuccessNotify();
+  //       this.fetchGroup();
+  //       return;
+  //     }
+
+  //   } else {
+  //     const before: any[] = this.state.permissions.value!
+  //     let removeDiff = before.filter(x => !newValue.includes(x));
+
+  //     const removedPermission: object = {
+  //       groups: [group_id],
+  //       permissions: [removeDiff[0].value.id],
+  //     };
+
+  //     let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
+  //       this.handleError({ error: error.response });
+  //     });
+
+  //     if (res) {
+  //       this.setState({
+  //         ...this.state,
+  //         permissions: {
+  //           ...this.state.permissions,
+  //           value: newValue,
+  //         }
+  //       })
+  //       this.apiSuccessNotify();
+  //       this.fetchGroup();
+  //     }
+  //   }
+  // }
 
   render_AddPermissionToGroup_modal(selectedGroupForPermission: any) {
     if (!this.selectedGroupForPermission || !this.selectedGroupForPermission.id) return;
@@ -515,34 +608,34 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
               <span className="text-muted">
                 {Localization.name}{" "}{Localization.group}:&nbsp;
               </span>
-              {/* {this.selectedGroupForPermission.name} {this.selectedGroupForPermission.username} */}
+              {this.selectedGroupForPermission.title}
             </p>
             <div className="row">
               <div className="col-6">
                 <label >{Localization.permission}</label>
                 <AsyncSelect
+                  isClearable={false}
                   isMulti
                   placeholder={Localization.permission}
                   cacheOptions
                   defaultOptions
                   value={this.state.permissions.value}
-                  loadOptions={(inputValue:any, callback:any) => this.debounce_300(inputValue, callback)}
-                  noOptionsMessage={(obj:any) => this.select_noOptionsMessage(obj)}
-                  onChange={(selectedPerson: any) => this.handleMultiSelectInputChange(selectedPerson)}  
+                  loadOptions={(inputValue: any, callback: any) => this.debounce_300(inputValue, callback)}
+                  noOptionsMessage={(obj: any) => this.select_noOptionsMessage(obj)}
+                  onChange={(selectedPerson: any) => this.handleMultiSelectInputChange(selectedPerson)}
                 />
               </div>
             </div>
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideAddPermissionModal()}>{Localization.close}</button>
-            {/* <BtnLoader
+            <BtnLoader
               btnClassName="btn btn-success shadow-default shadow-hover"
-              onClick={() => this.onAddpermissionToGroup(selectedGroupForPermission.id)}
+              onClick={() => this.handle_on_update_permissions_btn(selectedGroupForPermission.id)}
               loading={this.state.setAddPermissionLoader}
-              disabled={!this.state.permissions.isValid}
             >
-              {Localization.create}
-            </BtnLoader> */}
+              {Localization.update}
+            </BtnLoader>
           </Modal.Footer>
         </Modal>
       </>

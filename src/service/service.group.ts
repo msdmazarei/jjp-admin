@@ -47,8 +47,8 @@ export class GroupService extends BaseService {
         return this.axiosTokenInstance.post(`/group-permissions/remove`,permission);
     }
 
-    fetchGroupPermissions(group_id: string): Promise<IAPI_ResponseList<any>> {
-        return this.axiosTokenInstance.get(`/permission-groups/group/${group_id}`);
+    fetchGroupPermissions(groupData: object): Promise<IAPI_ResponseList<any>> {
+        return this.axiosTokenInstance.post(`/group-permissions/group`,groupData);
     }
 
 }

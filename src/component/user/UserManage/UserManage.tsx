@@ -349,7 +349,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   onShowAddGroupModal(user: IUser) {
     this.selectedUserForGroup = user;
-    if(this.selectedUserForGroup.id){
+    if (this.selectedUserForGroup.id) {
       this.fetchUserGroups(this.selectedUserForGroup.id);
     };
   }
@@ -361,8 +361,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
     if (res) {
 
-      let newRes = res.data.result.map(item => { return { label: item.creation_date, value: { id:item.group_id } } });
-    
+      let newRes = res.data.result.map(item => { return { label: item.group.title, value: { id: item.group_id } } });
+
       this.setState({
         ...this.state,
         group: {
@@ -370,7 +370,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           // value: res.data.result,
           value: newRes,
         },
-        addGroupModalShow:true,
+        addGroupModalShow: true,
       }
       );
     }
@@ -383,7 +383,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       group: { value: null, isValid: false },
       addGroupModalShow: false
     });
-
+    // this.fetchUsers();
   }
 
   debounce_300(inputValue: any, callBack: any) {
@@ -470,7 +470,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         })
         this.apiSuccessNotify();
-        this.fetchUsers();
         return;
       }
     } else {
@@ -494,7 +493,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         })
         this.apiSuccessNotify();
-        this.fetchUsers();
       }
     }
   }
@@ -523,7 +521,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         })
         this.apiSuccessNotify();
-        this.fetchUsers();
         return;
       }
 
@@ -549,7 +546,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         })
         this.apiSuccessNotify();
-        this.fetchUsers();
       }
     }
   }
@@ -573,6 +569,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               <div className="col-6">
                 <label >{Localization.group}{<span className="text-danger">*</span>}</label>
                 <AsyncSelect
+                  isClearable={false}
                   isMulti
                   placeholder={Localization.group}
                   cacheOptions

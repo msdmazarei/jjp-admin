@@ -31,7 +31,7 @@ interface IFilterPerson {
     value: string | undefined;
     isValid: boolean;
   };
-} 
+}
 
 interface IState {
   person_table: IProps_table;
@@ -90,10 +90,22 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
+          field: "type", title: Localization.type, cellTemplateFunc: (row: IPerson) => {
+            if (row.is_legal) {
+              return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">
+                {row.is_legal === true ? Localization.legal_person : Localization.real_person}
+              </div>
+            }
+            return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">
+              {Localization.real_person}
+            </div>;
+          }
+        },
+        {
           field: "creation_date", title: Localization.creation_date,
           cellTemplateFunc: (row: IPerson) => {
             if (row.creation_date) {
-              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
             }
             return '';
           }
@@ -140,12 +152,16 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: [
-        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
-         ac_func: (row: any) => { this.onShowRemoveModal(row) },
-         name:Localization.remove },
-        { text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
-         ac_func: (row: any) => { this.updateRow(row) },
-         name:Localization.update },
+        {
+          text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+          ac_func: (row: any) => { this.onShowRemoveModal(row) },
+          name: Localization.remove
+        },
+        {
+          text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+          ac_func: (row: any) => { this.updateRow(row) },
+          name: Localization.update
+        },
       ]
     },
     filter: {
@@ -270,18 +286,18 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   componentDidMount() {
     this.setState({
       ...this.state,
-      tableProcessLoader:true
+      tableProcessLoader: true
     })
     this.fetchPersons();
   }
 
   async fetchPersons() {
-    this.setState({...this.state,tableProcessLoader: true});
+    this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._personService.search(
-      this.state.pager_limit, 
+      this.state.pager_limit,
       this.state.pager_offset,
       this.getFilter()
-      ).catch(error => {
+    ).catch(error => {
       this.handleError({ error: error.response });
       this.setState({
         ...this.state,

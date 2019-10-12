@@ -53,6 +53,7 @@ interface IState {
             isValid: boolean
         };
     };
+    is_legal: boolean | null;
     isFormValid: boolean;
     saveMode: SAVE_MODE;
     createLoader: boolean;
@@ -99,6 +100,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                 isValid: true,
             },
         },
+        is_legal: false,
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
@@ -142,6 +144,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                     email: { ...this.state.person.email, value: res.data.email, isValid: true },
                     cell_no: { ...this.state.person.cell_no, value: res.data.cell_no, isValid: true },
                 },
+                is_legal: res.data.is_legal,
                 saveBtnVisibility: true
             })
         }
@@ -219,12 +222,13 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         }
         const newPerson = {
             name: this.state.person.name.value,
-            last_name: this.state.person.last_name.value,
+            last_name:this.state.is_legal === true ? '': this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
             image: imgUrls[0],
             email: this.state.person.email.value,
             cell_no: this.state.person.cell_no.value,
+            is_legal: this.state.is_legal,
         }
         let res = await this._personService.create(newPerson).catch(error => {
             this.handleError({ error: error.response });
@@ -249,12 +253,13 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         }
         const newPerson = {
             name: this.state.person.name.value,
-            last_name: this.state.person.last_name.value,
+            last_name:this.state.is_legal === true ? '':  this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
             image: imgUrls[0] || null, // '',
             email: this.state.person.email.value,
             cell_no: this.state.person.cell_no.value,
+            is_legal: this.state.is_legal,
         }
         let res = await this._personService.update(newPerson, this.person_id!).catch(e => {
             this.handleError({ error: e.response });
@@ -335,16 +340,52 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
 
     /////////////////
 
+
+    /// start is legal person handler function //////
+
+    personIsLegalHandler() {
+        if (this.state.is_legal === false) {
+            this.setState({
+                ...this.state,
+                person: {
+                    ...this.state.person,
+                    last_name: {
+                        value: undefined,
+                        isValid: true,
+                    }
+                },
+                isFormValid: this.state.person.name.isValid === true ? true : this.state.isFormValid,
+                is_legal: true,
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                person: {
+                    ...this.state.person,
+                    last_name: {
+                        value: undefined,
+                        isValid: false,
+                    }
+                },
+                is_legal: false,
+                isFormValid: false,
+            });
+        }
+    }
+
+    /// end is legal person handler function //////
+
+
     // reset form /////////////
 
     resetForm() {
         this.setState({
             ...this.state,
             person: {
-                name: { value: undefined, isValid: true },
-                last_name: { value: undefined, isValid: true },
+                name: { value: undefined, isValid: false },
+                last_name: { value: undefined, isValid: this.state.is_legal === true ? true : false },
                 address: { value: undefined, isValid: true },
-                phone: { value: undefined, isValid: false },
+                phone: { value: undefined, isValid: true },
                 email: { value: undefined, isValid: true },
                 cell_no: { value: undefined, isValid: true },
                 image: { value: [], isValid: true },
@@ -371,25 +412,66 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                     }
                                 </div>
                                 {/* start give data by inputs */}
+                                {
+                                    this.state.saveMode === SAVE_MODE.CREATE
+                                        ?
+                                        <div className="row">
+                                            <div className="col-12">
+                                                <div className="form-group">
+                                                    <input id={'person_is_legal_handler'} type="checkbox" className="app-checkbox-round"
+                                                        onChange={() => this.personIsLegalHandler()}
+                                                    />
+                                                    <label htmlFor={'person_is_legal_handler'}></label>
+                                                    <label htmlFor={'person_is_legal_handler'}>
+                                                        <h6 className="ml-2">{Localization.legal_person}</h6>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        :
+                                        undefined
+                                }
                                 <div className="row">
                                     <div className="col-md-3 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "name")}
-                                            label={Localization.name}
+                                            label={this.state.is_legal === true ? Localization.name_of_organization : Localization.name}
                                             placeholder={Localization.name}
                                             defaultValue={this.state.person.name.value}
                                             required
                                         />
                                     </div>
-                                    <div className="col-md-3 col-sm-6">
-                                        <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
-                                            label={Localization.lastname}
-                                            placeholder={Localization.lastname}
-                                            defaultValue={this.state.person.last_name.value}
-                                            required
-                                        />
-                                    </div>
+                                    {
+                                        this.state.saveMode === SAVE_MODE.EDIT
+                                            ?
+                                            this.state.is_legal === true
+                                                ?
+                                                undefined
+                                                :
+                                                <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
+                                                        label={Localization.lastname}
+                                                        placeholder={Localization.lastname}
+                                                        defaultValue={this.state.person.last_name.value}
+                                                        required
+                                                    />
+                                                </div>
+                                            :
+                                            this.state.is_legal === true
+                                                ?
+                                                undefined
+                                                :
+                                                <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
+                                                        label={Localization.lastname}
+                                                        placeholder={Localization.lastname}
+                                                        defaultValue={this.state.person.last_name.value}
+                                                        required
+                                                    />
+                                                </div>
+                                    }
                                     <div className="col-md-3 col-sm-6">
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, 'email')}
@@ -464,14 +546,14 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                                                     tmUrl = this.getTmpUrl(file);
                                                                                 }
                                                                                 return <Fragment key={index}>
-                                                                                <div className="img-item m-2">
-                                                                                    {
-                                                                                        (this.state.person.image.value) ? <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt="" onError={e => this.personImageOnError(e)}/> : <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt=""/>
-                                                                                    }
-                                                                                    {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
-                                                                                    <span className="mx-2 text-dark">{fileName} {fileSize}</span>
-                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
-                                                                                </div>
+                                                                                    <div className="img-item m-2">
+                                                                                        {
+                                                                                            (this.state.person.image.value) ? <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt="" onError={e => this.personImageOnError(e)} /> : <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
+                                                                                        }
+                                                                                        {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
+                                                                                        <span className="mx-2 text-dark">{fileName} {fileSize}</span>
+                                                                                        <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
+                                                                                    </div>
                                                                                 </Fragment>
                                                                             })
                                                                         }</div>

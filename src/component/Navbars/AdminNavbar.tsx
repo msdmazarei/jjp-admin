@@ -31,6 +31,7 @@ import { action_remove_token } from "../../redux/action/token";
 import { action_remove_authentication } from "../../redux/action/authentication";
 import { Localization } from '../../config/localization/localization';
 import { BaseComponent } from "../_base/BaseComponent";
+import { IPerson } from "../../model/model.person";
 // import { any } from "prop-types";
 
 
@@ -116,6 +117,39 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
     return imgUrl;
   }
 
+  getLogInUserName(){
+    let per = this.props.logged_in_user&& this.props.logged_in_user;
+    
+    if(per !== null && per !== undefined){
+      let userName = per.username;
+      return userName;
+    }
+
+    return;
+    
+  }
+  
+  getLogInUserFullName(){
+    let per = this.props.logged_in_user&& this.props.logged_in_user.person;
+    
+    if(per !== null && per !== undefined){
+      let fullname = this.getPersonFullName(per);
+      return fullname;
+    }
+
+    return;
+    
+  }
+
+  getLogInPersonEdit(){
+    let id = this.props.logged_in_user&& this.props.logged_in_user.person.id;
+    if(id !== null && id !== undefined){
+      this.props.history.push(`/person/${id}/edit`);
+    }
+    return;
+  }
+
+
   render() {
     return (
       <>
@@ -140,7 +174,7 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
                   <span className="navbar-toggler-bar bar3" />
                 </button>
               </div>
-              <NavbarBrand  onClick={e => e.preventDefault()}>
+              <NavbarBrand onClick={e => e.preventDefault()}>
                 {this.props.brandText}
               </NavbarBrand>
             </div>
@@ -196,6 +230,14 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
                       <DropdownItem className="nav-item">Settings</DropdownItem>
                     </NavLink> */}
                     {/* <DropdownItem divider tag="li" /> */}
+                    <NavLink tag="li">
+                      <DropdownItem
+                        className="nav-item"
+                        onClick={() => this.getLogInPersonEdit()}
+                      >
+                        {this.getLogInUserName()}{" "}<small>{"("}{this.getLogInUserFullName()}{")"}</small>
+                      </DropdownItem>
+                    </NavLink>
                     <NavLink tag="li">
                       <DropdownItem
                         className="nav-item"

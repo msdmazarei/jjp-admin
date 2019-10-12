@@ -14,4 +14,5 @@ export interface IPerson extends BaseModel {
     bio?: string;   ///
     following_list?: string[];
     wish_list?: IBook[];
+    is_legal:boolean | null;
 }

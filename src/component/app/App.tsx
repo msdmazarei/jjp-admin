@@ -11,6 +11,7 @@ import { BaseService } from '../../service/service.base';
 import { Modal } from 'react-bootstrap';
 import { redux_state } from '../../redux/app_state';
 
+
 import { AdminLayout } from '../../layouts/Admin/Admin';
 // import { Dashboard } from '../dashboard/Dashboard';
 // import NotFound from '../layout/main/not-found/NotFound';
@@ -52,6 +53,7 @@ const appRoutes = (
             <Route exact path="/permission/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/permission/create" render={props => <AdminLayout {...props} />} />              
             <Route exact path="/permission/:permission_id/edit" render={props => <AdminLayout {...props} />} />    
+            <Route exact path="/profile" render={props => <AdminLayout {...props} />} />
             {/* <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} /> */}
             {/* <Route exact path="/" component={() => <Redirect to="/dashboard" />} /> */}
             {/* <RouteLayoutMain exact path="/dashboard" component={Dashboard} /> */}

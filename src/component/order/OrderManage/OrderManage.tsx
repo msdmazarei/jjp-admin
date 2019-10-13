@@ -95,6 +95,15 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
+          field: "modification_date", title: Localization.modification_date,
+          cellTemplateFunc: (row: any) => {
+            if (row.modification_date) {
+              return <div title={this._getTimestampToDate(row.modification_date)}>{this.getTimestampToDate(row.modification_date)}</div>
+            }
+            return '';
+          }
+        },
+        {
           field: "status", title: Localization.status, cellTemplateFunc: (row: any) => {
             if (row.status) {
               const o_status: string = (row.status === 'Created') ? Localization.order_status.Created : Localization.order_status.Invoiced ;

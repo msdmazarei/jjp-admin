@@ -92,11 +92,11 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "type", title: Localization.type, cellTemplateFunc: (row: IPerson) => {
             if (row.is_legal) {
-              return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">
+              return <div className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.is_legal === true ? Localization.legal_person : Localization.real_person}
               </div>
             }
-            return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">
+            return <div className="text-nowrap-ellipsis max-w-100px d-inline-block">
               {Localization.real_person}
             </div>;
           }

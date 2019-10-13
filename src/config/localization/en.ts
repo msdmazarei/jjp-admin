@@ -78,6 +78,8 @@ export const en = {
         mobileFormat: 'mobile format is not valid',
         smsCodeFormat: 'code is not valid.',
         confirmPassword: 'confirm password not match password.',
+        emailFormat: 'email format is not valid',
+        phoneFormat: 'phone format is not valid',
     },
     username: 'username',
     password: 'password',

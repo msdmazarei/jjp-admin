@@ -90,6 +90,8 @@ interface ILocalization extends LocalizedStringsMethods {
         mobileFormat: string;
         smsCodeFormat: string;
         confirmPassword: string;
+        emailFormat: string;
+        phoneFormat: string;
     },
     username: string;
     password: string;

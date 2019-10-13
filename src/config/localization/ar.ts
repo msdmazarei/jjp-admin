@@ -78,6 +78,8 @@ export const ar = {
         mobileFormat: 'فرمت موبایل صحیح نیست',
         smsCodeFormat: 'فرمت کد صحیح نیست.',
         confirmPassword: 'رمز عبور با تایید آن همخوانی ندارد.',
+        emailFormat: 'فرمت ایمیل صحیح نیست',
+        phoneFormat: 'فرمت تلفن صحیح نیست',
     },
     username: 'نام کاربری',
     password: 'رمز عبور',

@@ -436,7 +436,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "name")}
                                             label={this.state.is_legal === true ? Localization.name_of_organization : Localization.name}
-                                            placeholder={Localization.name}
+                                            placeholder={this.state.is_legal === true ? Localization.name_of_organization : Localization.name}
                                             defaultValue={this.state.person.name.value}
                                             required
                                         />

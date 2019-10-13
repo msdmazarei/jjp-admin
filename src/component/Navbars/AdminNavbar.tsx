@@ -31,7 +31,7 @@ import { action_remove_token } from "../../redux/action/token";
 import { action_remove_authentication } from "../../redux/action/authentication";
 import { Localization } from '../../config/localization/localization';
 import { BaseComponent } from "../_base/BaseComponent";
-import { IPerson } from "../../model/model.person";
+// import { IPerson } from "../../model/model.person";
 // import { any } from "prop-types";
 
 

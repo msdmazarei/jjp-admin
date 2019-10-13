@@ -179,6 +179,13 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
     is_legalChangeFalseOnHide(){
         this.setState({
             ...this.state,
+            person:{
+                ...this.state.person,
+                last_name:{
+                    ...this.state.person.last_name,
+                    isValid:false,
+                }
+            },
             is_legal:false,
         });
         this.props.onHide();

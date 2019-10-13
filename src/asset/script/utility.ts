@@ -58,4 +58,27 @@ export abstract class Utility {
         }
     }
 
+    static round_num_decimals(float: number, fixed: number = 2): number {
+        if (!float) return 0;
+        const pfixed = Math.pow(10, fixed);
+        return Math.round(float * pfixed) / pfixed;
+    }
+
+    static noRound_num_decimals(float: number, fixed: number = 2): number {
+        if (!float) return 0;
+        const pfixed = Math.pow(10, fixed);
+        return Math.trunc(float * pfixed) / pfixed; // === parseInt(value) === ~~value
+    }
+
+    private static persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
+    private static arabicNumbers = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+    static fix_phrase_numbers(str: string) {
+        if (typeof str === 'string') {
+            for (var i = 0; i < 10; i++) {
+                str = str.replace(this.persianNumbers[i], i.toLocaleString()).replace(this.arabicNumbers[i], i.toLocaleString());
+            }
+        }
+        return str;
+    };
+
 }

@@ -47,6 +47,7 @@ interface IState {
             isValid: boolean
         };
     };
+    is_legal: boolean | null;
     isFormValid: boolean;
     quickPersonAddBtnLoader: boolean;
     // index: number;
@@ -94,6 +95,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                 isValid: true,
             },
         },
+        is_legal: false,
         isFormValid: false,
         quickPersonAddBtnLoader: false,
         // index: 0,
@@ -128,22 +130,27 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         }
         const newPerson = {
             name: this.state.person.name.value,
-            last_name: this.state.person.last_name.value,
+            last_name: this.state.is_legal === true ? '':   this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
             image: imgUrls[0],
             email: this.state.person.email.value,
             cell_no: this.state.person.cell_no.value,
+            is_legal: this.state.is_legal,
         }
         let res = await this._quickPersonService.create(newPerson).catch(error => {
             this.handleError({ error: error.response });
         });
-        this.setState({ ...this.state, quickPersonAddBtnLoader: false, });
+
+        this.setState({
+            ...this.state,
+            quickPersonAddBtnLoader: false, 
+        });
 
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
-            this.props.onHide();
+            this.is_legalChangeFalseOnHide();
             if (this.props.onCreate) {
                 this.props.onCreate(res.data, this.props.data); // this.state.index
             }
@@ -169,12 +176,38 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    resetForm() {
+    is_legalChangeFalseOnHide(){
+        this.setState({
+            ...this.state,
+            is_legal:false,
+        });
+        this.props.onHide();
+    }
+
+    is_legalChangeFalseOnHideBtn(){
         this.setState({
             ...this.state,
             person: {
                 name: { value: undefined, isValid: false },
                 last_name: { value: undefined, isValid: false },
+                address: { value: undefined, isValid: true },
+                phone: { value: undefined, isValid: true },
+                email: { value: undefined, isValid: true },
+                cell_no: { value: undefined, isValid: true },
+                image: { value: [], isValid: true },
+            },
+            is_legal:false,
+            isFormValid: false,
+        })
+        this.props.onHide();
+    }
+
+    resetForm() {
+        this.setState({
+            ...this.state,
+            person: {
+                name: { value: undefined, isValid: false },
+                last_name: { value: undefined, isValid: this.state.is_legal === true ? true : false },
                 address: { value: undefined, isValid: true },
                 phone: { value: undefined, isValid: true },
                 email: { value: undefined, isValid: true },
@@ -270,6 +303,40 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         })
     }
 
+    /// start is legal person handler function //////
+
+    personIsLegalHandler() {
+        if (this.state.is_legal === false) {
+            this.setState({
+                ...this.state,
+                person: {
+                    ...this.state.person,
+                    last_name: {
+                        value: undefined,
+                        isValid: true,
+                    }
+                },
+                isFormValid: this.state.person.name.isValid === true ? true : this.state.isFormValid,
+                is_legal: true,
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                person: {
+                    ...this.state.person,
+                    last_name: {
+                        value: undefined,
+                        isValid: false,
+                    }
+                },
+                is_legal: false,
+                isFormValid: false,
+            });
+        }
+    }
+
+    /// end is legal person handler function //////
+
     render_quick_person() {
         return (
             <>
@@ -281,24 +348,41 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-6">
+                            <div className="col-12">
+                                <div className="form-group">
+                                    <input id={'person_is_legal_handler_quick_person'} type="checkbox" className="app-checkbox-round"
+                                        onChange={() => this.personIsLegalHandler()}
+                                    />
+                                    <label htmlFor={'person_is_legal_handler_quick_person'}></label>
+                                    <label htmlFor={'person_is_legal_handler_quick_person'}>
+                                        <h6 className="ml-2 text-dark">{Localization.legal_person}</h6>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className={this.state.is_legal === true ? "col-12" : "col-6"}>
                                 <Input
                                     onChange={(value, isValid) => this.handleInputChange(value, isValid, "name")}
-                                    label={Localization.name}
-                                    placeholder={Localization.name}
+                                    label={this.state.is_legal === true ? Localization.name_of_organization : Localization.name}
+                                    placeholder={this.state.is_legal === true ? Localization.name_of_organization : Localization.name}
                                     defaultValue={this.state.person.name.value}
                                     required
                                 />
                             </div>
-                            <div className="col-6">
-                                <Input
-                                    onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
-                                    label={Localization.lastname}
-                                    placeholder={Localization.lastname}
-                                    defaultValue={this.state.person.last_name.value}
-                                    required
-                                />
-                            </div>
+                            {
+                                this.state.is_legal === true
+                                    ?
+                                    undefined
+                                    :
+                                    <div className="col-6">
+                                        <Input
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'last_name')}
+                                            label={Localization.lastname}
+                                            placeholder={Localization.lastname}
+                                            defaultValue={this.state.person.last_name.value}
+                                            required
+                                        />
+                                    </div>
+                            }
                             <div className="col-12">
                                 <Input
                                     onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
@@ -364,7 +448,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.props.onHide()}>{Localization.close}</button>
+                        <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.is_legalChangeFalseOnHideBtn()}>{Localization.close}</button>
                         <BtnLoader
                             loading={this.state.quickPersonAddBtnLoader}
                             btnClassName="btn btn-system shadow-default shadow-hover"

@@ -12,6 +12,7 @@ import { GroupManage } from "./component/group/GroupManage/GroupManage";
 import { GroupSave } from "./component/group/GroupSave/GroupSave";
 import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
 import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
+import { Profile } from './component/profile/Profile'
 import { Localization } from "./config/localization/localization";
 
 
@@ -186,5 +187,15 @@ var routes = [
     brandName: ['permission', 'edit']
   },
   // permission end
+  // profile start
+  {
+    path: "/profile",
+    name: Localization.profile,
+    component: Profile,
+    layout: "/admin",
+    isitem: false,
+    brandName: ['profile', 'edit']
+  },
+  // profile end
 ];
 export default routes;

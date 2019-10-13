@@ -142,11 +142,7 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
   }
 
   getLogInPersonEdit(){
-    let id = this.props.logged_in_user&& this.props.logged_in_user.person.id;
-    if(id !== null && id !== undefined){
-      this.props.history.push(`/person/${id}/edit`);
-    }
-    return;
+    this.props.history.push(`/profile`);
   }
 
 

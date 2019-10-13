@@ -117,31 +117,31 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
     return imgUrl;
   }
 
-  getLogInUserName(){
-    let per = this.props.logged_in_user&& this.props.logged_in_user;
-    
-    if(per !== null && per !== undefined){
+  getLogInUserName() {
+    let per = this.props.logged_in_user && this.props.logged_in_user;
+
+    if (per !== null && per !== undefined) {
       let userName = per.username;
       return userName;
     }
 
     return;
-    
+
   }
-  
-  getLogInUserFullName(){
-    let per = this.props.logged_in_user&& this.props.logged_in_user.person;
-    
-    if(per !== null && per !== undefined){
+
+  getLogInUserFullName() {
+    let per = this.props.logged_in_user && this.props.logged_in_user.person;
+
+    if (per !== null && per !== undefined) {
       let fullname = this.getPersonFullName(per);
       return fullname;
     }
 
-    return;
-    
+      return ;
+
   }
 
-  getLogInPersonEdit(){
+  getLogInPersonEdit() {
     this.props.history.push(`/profile`);
   }
 
@@ -231,7 +231,8 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
                         className="nav-item"
                         onClick={() => this.getLogInPersonEdit()}
                       >
-                        {this.getLogInUserName()}{" "}<small>{"("}{this.getLogInUserFullName()}{")"}</small>
+                        <span className="d-inline-block">{this.getLogInUserName()}</span>
+                        <small className="d-inline-block">({this.getLogInUserFullName()})</small>
                       </DropdownItem>
                     </NavLink>
                     <NavLink tag="li">

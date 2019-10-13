@@ -18,6 +18,7 @@ import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
+import { FixNumber } from '../../form/fix-number/FixNumber';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -685,7 +686,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         </div>
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        <Input
+                                        <FixNumber
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "price")}
                                             label={Localization.price}
                                             placeholder={Localization.price}

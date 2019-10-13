@@ -22,6 +22,7 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import { FixNumber } from "../../form/fix-number/FixNumber";
 
 /// define props & state ///////
 export interface IProps {
@@ -355,7 +356,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               </span>
               {this.selectedBook.title}
             </p>
-            <Input
+            <FixNumber
               onChange={(value, isValid) => this.handlePriceInputChange(value, isValid)}
               label={Localization.Pricing}
               placeholder={Localization.price}

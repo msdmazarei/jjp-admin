@@ -1,0 +1,30 @@
+.app-durationpicker {
+  &.form-group {
+    .form-control {
+      padding-top: 7px;
+      &.inputs-wrapper {
+        color: #000!important;
+        padding-bottom: 15px!important;
+        .w-30p {
+          width: 30%;
+          max-width: 30% !important;
+          .form-group{
+            margin-bottom: 0!important;
+            border: none!important;
+            border-radius: 0!important;
+            input{
+              border: none!important;
+              border-radius: 0!important;
+              max-height: 20px!important;
+              padding: 0;
+            }
+          }
+        }
+        .w-3p {
+          width: 3%;
+          max-width: 3% !important;
+        }
+      }
+    }
+  }
+}

@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import Dropzone from 'react-dropzone';
 import { AppRegex } from '../../../config/regex';
 import { IPerson } from '../../../model/model.person';
+import { FixNumber } from '../../form/fix-number/FixNumber';
 
 interface IState {
     person: {
@@ -391,7 +392,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                                     </div>
                             }
                             <div className="col-12">
-                                <Input
+                                <FixNumber
                                     onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
                                     label={Localization.cell_no}
                                     placeholder={Localization.cell_no}

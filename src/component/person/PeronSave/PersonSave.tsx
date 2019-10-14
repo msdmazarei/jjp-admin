@@ -14,6 +14,7 @@ import { Localization } from '../../../config/localization/localization';
 import { IToken } from '../../../model/model.token';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
+import { FixNumber } from '../../form/fix-number/FixNumber';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -483,7 +484,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input
+                                        <FixNumber
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "phone")}
                                             label={Localization.phone}
                                             placeholder={Localization.phone}
@@ -493,7 +494,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        <Input
+                                        <FixNumber
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "cell_no")}
                                             label={Localization.cell_no}
                                             placeholder={Localization.cell_no}

@@ -643,7 +643,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        <Input
+                                        <FixNumber
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "isben")}
                                             label={Localization.book_isben}
                                             placeholder={Localization.book_isben}
@@ -651,7 +651,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        <Input
+                                        <FixNumber
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "pages")}
                                             label={Localization.pages}
                                             placeholder={Localization.pages}
@@ -661,7 +661,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        <Input
+                                        <FixNumber      // change this to cpm for time
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "duration")}
                                             label={Localization.duration}
                                             placeholder={Localization.duration}

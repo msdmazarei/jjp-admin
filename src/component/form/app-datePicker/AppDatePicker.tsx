@@ -9,60 +9,78 @@ import { redux_state } from '../../../redux/app_state';
 import { DateInput } from 'react-hichestan-datetimepicker';
 interface IState {
     value: string;
-    timeStamp:number;
+    timeStamp: number;
 }
 
 interface IProps {
     history?: History;
     internationalization: TInternationalization;
     token: IToken;
-    defaultValue:string;
-    value?:string;
-    name?:string;
-    className?:string;
-    placeholder?:string;
-    style?:{};
-    gregorian?:boolean;
-    autoOk?:boolean;
-    onChange?:(timeStamp : number) => void
+    defaultValue?: string;
+    outTimeStamp?: number;
+    value?: string;
+    name?: string;
+    className?: string;
+    placeholder?: string;
+    style?: {};
+    gregorian?: boolean;
+    autoOk?: boolean;
+    onChange?: (timeStamp: any) => void
 }
 
 class AppDatePickerComponent extends BaseComponent<IProps, IState> {
     state = {
         value: '',
-        timeStamp:0,
+        timeStamp: 0,
     }
 
-    componentDidMount(){
-        this.setState({
-            ...this.state,
-            value: this.props.defaultValue
-        })
+    componentDidMount() {
+        this.changeTimeStampOutToString()
     }
 
     handleChange(value: any) {
         const t = value.target;
         const val = t.value;
-        const ts = new Date(val).getTime()/1000;
+        const ts = new Date(val).getTime() / 1000;
         this.setState({
             ...this.state,
             value: val,
-            timeStamp:ts,
-        },() => this.transferTimestamp());
+            timeStamp: ts,
+        }, () => this.transferTimestamp());
     }
 
-    transferTimestamp(){
-        if(this.props.onChange){
+    transferTimestamp() {
+        if (this.props.onChange) {
             this.props.onChange(this.state.timeStamp)
         }
     }
 
-    
+    changeTimeStampOutToString() {
+        if (this.props.defaultValue) {
+            this.setState({
+                ...this.state,
+                value: this.props.defaultValue
+            })
+        } else if (this.props.outTimeStamp) {
+            let defVal = new Date((this.props.outTimeStamp*1000)).toString();
+            this.setState({
+                ...this.state,
+                value: defVal
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                value: ''
+            })
+        }
+    }
+
+
     render() {
         return (
             <div>
                 <DateInput
-                    defaultValue={this.props.defaultValue}
+                    defaultValue={this.state.value}
                     value={this.state.value}
                     name={this.props.name}
                     autoOk={this.props.autoOk}

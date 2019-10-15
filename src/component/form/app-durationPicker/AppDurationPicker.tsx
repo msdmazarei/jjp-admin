@@ -14,8 +14,8 @@ interface IProps {
     token: IToken;
 
     defultValue?: number | string;
-    onChangeReturnNumber?: (timestamp: number) => void;
-    onChangeReturnString?: (timestamp: string) => void;
+    onChangeReturnNumber?: (timestamp: number , isValid:boolean) => void;
+    onChangeReturnString?: (timestamp: string , isValid:boolean) => void;
     className?: string;
     disable?: boolean;
     cmpLable?: string;
@@ -98,14 +98,14 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
     returnerValueToFather() {
         let stringDuration = (this.state.duration).toString();
         if (this.props.onChangeReturnNumber && this.props.onChangeReturnString) {
-            this.props.onChangeReturnNumber(this.state.duration);
-            this.props.onChangeReturnString(stringDuration);
+            this.props.onChangeReturnNumber(this.state.duration , this.validationFunc());
+            this.props.onChangeReturnString(stringDuration , this.validationFunc());
         };
         if (this.props.onChangeReturnNumber) {
-            this.props.onChangeReturnNumber(this.state.duration);
+            this.props.onChangeReturnNumber(this.state.duration , this.validationFunc());
         };
         if (this.props.onChangeReturnString) {
-            this.props.onChangeReturnString(stringDuration);
+            this.props.onChangeReturnString(stringDuration , this.validationFunc());
         };
         return;
     }
@@ -168,6 +168,9 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
         }, () => this.returnerValueToFather());
     }
 
+    validationFunc(){
+        return true;
+    }
 
     render() {
         return (

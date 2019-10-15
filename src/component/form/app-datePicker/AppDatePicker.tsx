@@ -27,8 +27,8 @@ interface IProps {
     gregorian?: boolean;
     autoOk?: boolean;
     disable?: boolean;
-    onChangeReturnNumber?: (timeStamp: number) => void
-    onChangeReturnString?: (timeStamp: string) => void
+    onChangeReturnNumber?: (timeStamp: number , isValid:boolean) => void
+    onChangeReturnString?: (timeStamp: string , isValid:boolean) => void
 }
 
 class AppDatePickerComponent extends BaseComponent<IProps, IState> {
@@ -55,17 +55,21 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
         }, () => this.transferTimestamp());
     }
 
+    validationFunc(){
+        return true;
+    }
+
     transferTimestamp() {
         let stringTimeStamp = (this.state.timeStamp).toString();
         if (this.props.onChangeReturnNumber && this.props.onChangeReturnString) {
-            this.props.onChangeReturnNumber(this.state.timeStamp);
-            this.props.onChangeReturnString(stringTimeStamp);
+            this.props.onChangeReturnNumber(this.state.timeStamp , this.validationFunc());
+            this.props.onChangeReturnString(stringTimeStamp , this.validationFunc());
         }
         if (this.props.onChangeReturnNumber) {
-            this.props.onChangeReturnNumber(this.state.timeStamp);
+            this.props.onChangeReturnNumber(this.state.timeStamp , this.validationFunc());
         }
         if (this.props.onChangeReturnString) {
-            this.props.onChangeReturnString(stringTimeStamp);
+            this.props.onChangeReturnString(stringTimeStamp , this.validationFunc());
         }
         return;
     }

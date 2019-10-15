@@ -9,8 +9,6 @@ import { IToken } from "../../model/model.token";
 import { Localization } from "../../config/localization/localization";
 import { AppWidgets } from "../tool/appWidgets/appWidgets";
 import { TReport, reportListMapCmp } from "../tool/reports/ReportUtils";
-import { AppDatePicker } from "../form/app-datePicker/AppDatePicker";
-import { AppDurationPicker } from "../form/app-durationPicker/AppDurationPicker";
 
 export interface IProps {
   history: History;
@@ -50,39 +48,12 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     })
   }
 
-  consoler(ts:number){
-    console.log(ts);
-  }
-
   render() {
     return (
       <div className="content">
         <div className="row">
-          <div className="col-12 ">
+          <div className="col-12">
             <h2>{Localization.dashboard}</h2>
-          </div>
-        </div>
-        {/* <div className="my-5">
-          <div className="col-md-3 col-sm-6 mt-4">
-            <AppDatePicker
-              className='form-control mt-2'
-              defaultValue='1398/05/22'
-              outTimeStamp ={1626662287}
-              placeholder='Enter Date'
-              onChange={(ts:number) => this.consoler(ts)}
-            ></AppDatePicker>
-          </div>
-        </div> */}
-        <div className="row">
-          <div className="col-4">
-            <AppDurationPicker
-              cmpLable={Localization.duration}
-              hourPlaceholder={Localization.hour}
-              minutePlaceholder={Localization.minute}
-              secondPlaceholder={Localization.second}
-              defultValue=''
-              onChange={(ts:number) => this.consoler(ts)}
-            />
           </div>
         </div>
         <div className="row">

@@ -1,0 +1,59 @@
+.app-datepicker {
+  &.form-group {
+    .date-input-with-dialog-main {
+      max-width: 100%!important;
+      min-width: 0!important;
+      .form-control {
+        padding-top: 7px;
+        &.inputs-wrapper {
+          color: #000 !important;
+          padding-bottom: 15px !important;
+          .w-30p {
+            width: 30%;
+            max-width: 30% !important;
+            .form-group {
+              margin-bottom: 0 !important;
+              border: none !important;
+              border-radius: 0 !important;
+              input {
+                border: none !important;
+                border-radius: 0 !important;
+                max-height: 20px !important;
+                padding: 0;
+              }
+            }
+          }
+          .w-3p {
+            width: 3%;
+            max-width: 3% !important;
+          }
+        }
+        &.bg-color-disable {
+          background-color: #e3e3e3 !important;
+          cursor: not-allowed !important;
+          pointer-events: none;
+        }
+      }
+      .date-input-with-dialog-calendar {
+        left: 0 !important;
+      }
+      .date-input-with-dialog-empty {
+        display: none !important;
+      }
+      .JDatePicker{
+        button{
+          &:last-child{
+            display: none;
+          }
+        }
+      }
+    }
+    &.all-event-disable{
+      .date-input-with-dialog-main {
+        .date-input-with-dialog-calendar {
+          display: none!important;
+        }
+      }
+    }
+  }
+}

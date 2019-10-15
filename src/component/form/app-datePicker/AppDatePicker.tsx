@@ -17,15 +17,18 @@ interface IProps {
     internationalization: TInternationalization;
     token: IToken;
     defaultValue?: string;
-    outTimeStamp?: number;
+    outTimeStamp?: number | string;
     value?: string;
     name?: string;
     className?: string;
     placeholder?: string;
     style?: {};
+    lable?: string;
     gregorian?: boolean;
     autoOk?: boolean;
-    onChange?: (timeStamp: any) => void
+    disable?: boolean;
+    onChangeReturnNumber?: (timeStamp: number) => void
+    onChangeReturnString?: (timeStamp: string) => void
 }
 
 class AppDatePickerComponent extends BaseComponent<IProps, IState> {
@@ -39,6 +42,9 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
     }
 
     handleChange(value: any) {
+        if (this.props.disable) {
+            return;
+        }
         const t = value.target;
         const val = t.value;
         const ts = new Date(val).getTime() / 1000;
@@ -50,9 +56,18 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
     }
 
     transferTimestamp() {
-        if (this.props.onChange) {
-            this.props.onChange(this.state.timeStamp)
+        let stringTimeStamp = (this.state.timeStamp).toString();
+        if (this.props.onChangeReturnNumber && this.props.onChangeReturnString) {
+            this.props.onChangeReturnNumber(this.state.timeStamp);
+            this.props.onChangeReturnString(stringTimeStamp);
         }
+        if (this.props.onChangeReturnNumber) {
+            this.props.onChangeReturnNumber(this.state.timeStamp);
+        }
+        if (this.props.onChangeReturnString) {
+            this.props.onChangeReturnString(stringTimeStamp);
+        }
+        return;
     }
 
     changeTimeStampOutToString() {
@@ -62,7 +77,14 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                 value: this.props.defaultValue
             })
         } else if (this.props.outTimeStamp) {
-            let defVal = new Date((this.props.outTimeStamp*1000)).toString();
+            let outPropsValue = Number(this.props.outTimeStamp);
+            if (isNaN(outPropsValue)) {
+                this.setState({
+                    ...this.state,
+                    value: ''
+                })
+            }
+            let defVal = new Date((outPropsValue * 1000)).toString();
             this.setState({
                 ...this.state,
                 value: defVal
@@ -78,22 +100,22 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
 
     render() {
         return (
-            <div>
-                <DateInput
-                    defaultValue={this.state.value}
-                    value={this.state.value}
-                    name={this.props.name}
-                    autoOk={this.props.autoOk}
-                    className={this.props.className}
-                    onChange={(value: any) => this.handleChange(value)}
-                    placeholder={this.props.placeholder}
-                    style={this.props.style}
-                    gregorian={this.props.gregorian}
-                />
-            </div>
+            <div className={this.props.disable ? "row form-group app-datepicker all-event-disable" : "row form-group app-datepicker"}   >
+                <label htmlFor="">{this.props.lable ? this.props.lable : ""}</label>
+                    <DateInput
+                        defaultValue={this.state.value}
+                        value={this.state.value}
+                        name={this.props.name}
+                        autoOk={this.props.autoOk}
+                        className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
+                        onChange={(value: any) => this.handleChange(value)}
+                        placeholder={this.props.placeholder}
+                        style={this.props.style}
+                        gregorian={this.props.gregorian}
+                    />
+                </div>
         )
     }
-
 }
 
 const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {

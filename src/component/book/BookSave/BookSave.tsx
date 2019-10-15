@@ -19,6 +19,8 @@ import { IToken } from '../../../model/model.token';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
+import { AppDurationPicker } from '../../form/app-durationPicker/AppDurationPicker';
+import { AppDatePicker } from '../../form/app-datePicker/AppDatePicker';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -42,7 +44,7 @@ interface IState {
             isValid: boolean;
         };
         pub_year: {
-            value: string | undefined,
+            value: number | undefined,
             isValid: boolean
         };
         isben: {
@@ -215,6 +217,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             this.book_id = this.props.match.params.book_id;
             this.fetchBookById(this.props.match.params.book_id);
         }
+
+
+        // setTimeout(() => {
+        //     this.setState({ book: { ...this.state.book, pub_year: { value: 1571134116617, isValid: true } } })
+        // }, 3000)
     }
 
     async fetchBookById(book_id: string) {
@@ -633,13 +640,20 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        <Input
+                                        {/* <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "pub_year")}
                                             label={Localization.publication_date}
                                             placeholder={Localization.publication_date}
                                             defaultValue={this.state.book.pub_year.value}
                                             pattern={AppRegex.integer}
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
+                                        /> */}
+                                        <AppDatePicker
+                                            lable={Localization.publication_date}
+                                            outTimeStamp={this.state.book.pub_year.value}
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "pub_year")}
+                                            placeholder={Localization.publication_date}
+                                            autoOk={true}
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">
@@ -660,15 +674,23 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
-                                    <div className="col-md-4 col-sm-6">
-                                        <FixNumber      // change this to cpm for time
+                                    <div className="col-md-4 col-sm-6 px-3">
+                                        <AppDurationPicker
+                                            defultValue={this.state.book.duration.value}
+                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "duration")}
+                                            cmpLable={Localization.duration}
+                                            hourPlaceholder={Localization.hour}
+                                            minutePlaceholder={Localization.minute}
+                                            secondPlaceholder={Localization.second}
+                                        />
+                                        {/* <FixNumber      // change this to cpm for time
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "duration")}
                                             label={Localization.duration}
                                             placeholder={Localization.duration}
                                             defaultValue={this.state.book.duration.value}
                                             pattern={AppRegex.number}
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
-                                        />
+                                        /> */}
                                     </div>
                                     <div className="col-md-4 col-sm-6">
                                         <div className="form-group">

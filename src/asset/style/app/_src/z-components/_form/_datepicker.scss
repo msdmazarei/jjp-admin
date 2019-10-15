@@ -4,6 +4,9 @@
       max-width: 100%!important;
       min-width: 0!important;
       .form-control {
+        &.date-input-with-dialog-input{
+          pointer-events: none!important;
+        }
         padding-top: 7px;
         &.inputs-wrapper {
           color: #000 !important;
@@ -41,6 +44,7 @@
         display: none !important;
       }
       .JDatePicker{
+        box-shadow: 2px 2px 7px 4px #ddd!important;
         button{
           &:last-child{
             display: none;

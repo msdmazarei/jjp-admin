@@ -2,21 +2,19 @@ import React from 'react';
 import { connect, MapDispatchToProps } from 'react-redux';
 import { Dispatch } from 'redux';
 import { TInternationalization } from '../../../config/setup';
-import { IToken } from '../../../model/model.token';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { redux_state } from '../../../redux/app_state';
 import { FixNumber } from '../fix-number/FixNumber';
+import { AppRegex } from '../../../config/regex';
+import { Localization } from '../../../config/localization/localization';
 
 
 interface IProps {
     history?: History;
     internationalization: TInternationalization;
-    token: IToken;
 
-    defultValue?: number | string;
-    onChangeReturnNumber?: (timestamp: number , isValid:boolean) => void;
-    onChangeReturnString?: (timestamp: string , isValid:boolean) => void;
-    className?: string;
+    defultValue?: number | string | undefined;
+    onChange?: (timestamp: string , isValid:boolean) => void;
     disable?: boolean;
     cmpLable?: string;
     hourPlaceholder?: string;
@@ -42,6 +40,67 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         this.convertOutTimeStampToInnerFormat();
+    }
+
+    componentWillReceiveProps(nextProps: IProps) {
+        if (nextProps.defultValue === undefined) {
+            this.setState({
+                ...this.state,
+                duration: 0,
+                h: 0,
+                m: 0,
+                s: 0,
+            }, () => this.returnerValueToFather())
+        }
+        if(nextProps.defultValue !== this.props.defultValue){
+            if (nextProps.defultValue === undefined) {
+                this.setState({
+                    ...this.state,
+                    duration: 0,
+                    h: 0,
+                    m: 0,
+                    s: 0,
+                }, () => this.returnerValueToFather())
+            }
+            let outTime = Number(nextProps.defultValue);
+            if (outTime < 60) {
+                this.setState({
+                    duration: outTime,
+                    s: outTime,
+                    m: 0,
+                    h: 0,
+                });
+            } else if (outTime >= 60 && outTime < 3600) {
+                let minute = Math.floor(outTime / 60);
+                let second = outTime - (minute * 60);
+                this.setState({
+                    duration: outTime,
+                    h: 0,
+                    m: minute,
+                    s: second,
+                });
+            } else {
+                let hour = Math.floor(outTime / 3600);
+                if ((outTime - (hour * 3600)) < 60) {
+                    let second = outTime % 3600;
+                    this.setState({
+                        duration: outTime,
+                        h: hour,
+                        m: 0,
+                        s: second,
+                    });
+                } else {
+                    let minute = Math.floor(((outTime - (hour * 3600)) / 60));
+                    let second = (outTime - ((hour * 3600) + (minute * 60)));
+                    this.setState({
+                        duration: outTime,
+                        h: hour,
+                        m: minute,
+                        s: second,
+                    });
+                }
+            }
+        }
     }
 
     convertOutTimeStampToInnerFormat() {
@@ -97,15 +156,8 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
 
     returnerValueToFather() {
         let stringDuration = (this.state.duration).toString();
-        if (this.props.onChangeReturnNumber && this.props.onChangeReturnString) {
-            this.props.onChangeReturnNumber(this.state.duration , this.validationFunc());
-            this.props.onChangeReturnString(stringDuration , this.validationFunc());
-        };
-        if (this.props.onChangeReturnNumber) {
-            this.props.onChangeReturnNumber(this.state.duration , this.validationFunc());
-        };
-        if (this.props.onChangeReturnString) {
-            this.props.onChangeReturnString(stringDuration , this.validationFunc());
+        if (this.props.onChange) {
+            this.props.onChange(stringDuration , this.validationFunc());
         };
         return;
     }
@@ -174,7 +226,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
 
     render() {
         return (
-            <div className="row form-group app-durationpicker">
+            <div className="row form-group app-durationpicker px-3">
                 <label htmlFor="">{this.props.cmpLable ? this.props.cmpLable : ""}</label>
                 <div className={this.props.disable ? "form-control inputs-wrapper bg-color-disable" : "form-control inputs-wrapper"}>
                     <div className="row">
@@ -185,6 +237,8 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                                 placeholder={this.props.secondPlaceholder ? this.props.secondPlaceholder : ""}
                                 defaultValue={this.state.s}
                                 onChange={(value) => this.onSecondChange(value)}
+                                pattern={AppRegex.number}
+                                patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                             />
                         </div>
                         <div className="w-3p font-weight-bold">
@@ -196,6 +250,8 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                                 placeholder={this.props.minutePlaceholder ? this.props.minutePlaceholder : ""}
                                 defaultValue={this.state.m}
                                 onChange={(value) => this.onMinuteChange(value)}
+                                pattern={AppRegex.number}
+                                patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                             />
                         </div>
                         <div className="w-3p font-weight-bold">
@@ -207,6 +263,8 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                                 placeholder={this.props.hourPlaceholder ? this.props.hourPlaceholder : ""}
                                 defaultValue={this.state.h}
                                 onChange={(value) => this.onHourChange(value)}
+                                pattern={AppRegex.number}
+                                patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                             />
                         </div>
                     </div>

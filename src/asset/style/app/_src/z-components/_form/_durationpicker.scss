@@ -18,6 +18,10 @@
               max-height: 20px!important;
               padding: 0;
             }
+            div.invalid-feedback{
+              margin-top: 0.55rem;
+              font-size: 0.5rem;
+            }
           }
         }
         .w-3p {
@@ -28,6 +32,46 @@
       &.bg-color-disable{
         background-color: #e3e3e3!important;
       }
+    }
+  }
+}
+
+@media screen and (max-width: 1268px){
+  .app-durationpicker {
+    &.form-group {
+      .form-control {
+        &.inputs-wrapper { 
+          .w-30p {
+            .form-group{
+              div.invalid-feedback{
+                margin-top: 0.55rem;
+                font-size: 0.4rem!important;
+              }
+            }
+          }
+         }
+      }
+    }
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 872px) {
+  .app-durationpicker {
+    &.form-group {
+      margin-bottom: 20px !important;
+    }
+  }
+}
+@media screen and (min-width: 992px) and (max-width: 1102px) {
+  .app-durationpicker {
+    &.form-group {
+      margin-bottom: 20px !important;
+    }
+  }
+}
+@media screen and (max-width: 295px){
+  .app-durationpicker {
+    &.form-group {
+      margin-bottom: 20px !important;
     }
   }
 }

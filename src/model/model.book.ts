@@ -9,7 +9,7 @@ export interface IBook extends BaseModel {
     genre: BOOK_GENRE[];
     images: string[]; // image_url
     language: string;   ///
-    pub_year: string;  ///
+    pub_year: number;  ///
     rate: number;
     rate_no: number;
     title: string;  ///

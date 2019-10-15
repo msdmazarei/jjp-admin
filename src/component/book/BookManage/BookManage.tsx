@@ -115,7 +115,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           field: "creation_date", title: Localization.creation_date,
           cellTemplateFunc: (row: IBook) => {
             if (row.creation_date) {
-              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
             }
             return '';
           }
@@ -158,8 +158,57 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         { field: "pages", title: Localization.pages },
-        { field: "duration", title: Localization.duration },
-        { field: "pub_year", title: Localization.publication_date },
+        {
+          field: "duration", title: Localization.duration,
+          cellTemplateFunc: (row: IBook) => {
+            let hour;
+            let minute;
+            let second;
+            if (row.duration) {
+              let totalTime = Number(row.duration);
+              if (totalTime < 60) {
+                hour = 0;
+                minute = 0;
+                second = totalTime;
+                return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+              }
+              if (totalTime >= 60 && totalTime < 3600) {
+                let min = Math.floor(totalTime / 60);
+                let sec = totalTime - (min * 60);
+                hour = 0;
+                minute = min;
+                second = sec;
+                return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+              } else {
+                let hours = Math.floor(totalTime / 3600);
+                if ((totalTime - (hours * 3600)) < 60) {
+                  let sec = totalTime % 3600;
+                  hour = hours;
+                  minute = 0;
+                  second = sec;
+                  return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                } else {
+                  let min = Math.floor(((totalTime - (hours * 3600)) / 60));
+                  let sec = (totalTime - ((hours * 3600) + (min * 60)));
+                  hour = hours;
+                  minute = min;
+                  second = sec;
+                  return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                }
+              }
+            }
+            return '';
+          }
+        },
+        {
+          field: "pub_year", title: Localization.publication_date,
+          cellTemplateFunc: (row: IBook) => {
+            if (row.pub_year) {
+              return <div title={this._getTimestampToDate(row.pub_year)}>{this.getTimestampToDate(row.pub_year)}</div>
+            }
+            return '';
+          }
+        },
       ],
       actions: [
         {
@@ -389,7 +438,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
 
   async fetchBooks() {
-    this.setState({...this.state,tableProcessLoader:true})
+    this.setState({ ...this.state, tableProcessLoader: true })
     let res = await this._bookService.search(
       this.state.pager_limit,
       this.state.pager_offset,

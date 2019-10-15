@@ -2,33 +2,27 @@ import React from 'react';
 import { connect, MapDispatchToProps } from 'react-redux';
 import { Dispatch } from 'redux';
 import { TInternationalization } from '../../../config/setup';
-import { IToken } from '../../../model/model.token';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { redux_state } from '../../../redux/app_state';
 // import { DateTimeInput, DateTimeInputSimple, DateInput, DateInputSimple } from 'react-hichestan-datetimepicker';
 import { DateInput } from 'react-hichestan-datetimepicker';
 interface IState {
-    value: string;
+    value: any;
     timeStamp: number;
 }
 
 interface IProps {
     history?: History;
     internationalization: TInternationalization;
-    token: IToken;
-    defaultValue?: string;
-    outTimeStamp?: number | string;
+
+    outTimeStamp?: number | undefined;
     value?: string;
-    name?: string;
-    className?: string;
     placeholder?: string;
-    style?: {};
     lable?: string;
     gregorian?: boolean;
     autoOk?: boolean;
     disable?: boolean;
-    onChangeReturnNumber?: (timeStamp: number , isValid:boolean) => void
-    onChangeReturnString?: (timeStamp: string , isValid:boolean) => void
+    onChange?: (timeStamp: number, isValid: boolean) => void
 }
 
 class AppDatePickerComponent extends BaseComponent<IProps, IState> {
@@ -38,11 +32,41 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
     }
 
     componentDidMount() {
-        this.changeTimeStampOutToString()
+        this.changeTimeStampOutToString();
+    }
+
+    componentWillReceiveProps(nextProps: IProps) {
+        if (nextProps.outTimeStamp === undefined) {
+            this.setState({
+                ...this.state,
+                value: '',
+                timeStamp : 0,
+            })
+        }
+        else if(nextProps.outTimeStamp !== this.props.outTimeStamp){
+            // if (nextProps.outTimeStamp === undefined) {
+            //     this.setState({
+            //         ...this.state,
+            //         value: '',
+            //         timeStamp : 0,
+            //     })
+            // }
+            let outPropsValue = Number(nextProps.outTimeStamp);
+            let defVal = new Date((outPropsValue * 1000)).toString();
+            this.setState({
+                ...this.state,
+                value: outPropsValue === 0 ? '' : defVal ,
+                timeStamp:outPropsValue,
+            })
+        }
     }
 
     handleChange(value: any) {
+        let format = value.target.date
         if (this.props.disable) {
+            return;
+        }
+        if(format === null){
             return;
         }
         const t = value.target;
@@ -55,48 +79,46 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
         }, () => this.transferTimestamp());
     }
 
-    validationFunc(){
+    validationFunc() {
         return true;
     }
 
     transferTimestamp() {
-        let stringTimeStamp = (this.state.timeStamp).toString();
-        if (this.props.onChangeReturnNumber && this.props.onChangeReturnString) {
-            this.props.onChangeReturnNumber(this.state.timeStamp , this.validationFunc());
-            this.props.onChangeReturnString(stringTimeStamp , this.validationFunc());
-        }
-        if (this.props.onChangeReturnNumber) {
-            this.props.onChangeReturnNumber(this.state.timeStamp , this.validationFunc());
-        }
-        if (this.props.onChangeReturnString) {
-            this.props.onChangeReturnString(stringTimeStamp , this.validationFunc());
+        if (this.props.onChange) {
+            this.props.onChange(this.state.timeStamp, this.validationFunc());
         }
         return;
     }
 
     changeTimeStampOutToString() {
-        if (this.props.defaultValue) {
+        
+        if(this.props.outTimeStamp && this.props.outTimeStamp === undefined){
             this.setState({
                 ...this.state,
-                value: this.props.defaultValue
+                value: '',
+                timeStamp : 0,
             })
-        } else if (this.props.outTimeStamp) {
-            let outPropsValue = Number(this.props.outTimeStamp);
-            if (isNaN(outPropsValue)) {
+        }
+        if (this.props.outTimeStamp) {
+            if(isNaN(this.props.outTimeStamp)){
                 this.setState({
                     ...this.state,
-                    value: ''
+                    value: '',
+                    timeStamp:0,
                 })
             }
+            let outPropsValue = Number(this.props.outTimeStamp);
             let defVal = new Date((outPropsValue * 1000)).toString();
             this.setState({
                 ...this.state,
-                value: defVal
+                value: defVal,
+                timeStamp:outPropsValue,
             })
         } else {
             this.setState({
                 ...this.state,
-                value: ''
+                value: '',
+                timeStamp:0,
             })
         }
     }
@@ -104,20 +126,17 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
 
     render() {
         return (
-            <div className={this.props.disable ? "row form-group app-datepicker all-event-disable" : "row form-group app-datepicker"}   >
+            <div className={this.props.disable ? "row form-group app-datepicker px-3 all-event-disable" : "row form-group app-datepicker px-3"}   >
                 <label htmlFor="">{this.props.lable ? this.props.lable : ""}</label>
-                    <DateInput
-                        defaultValue={this.state.value}
-                        value={this.state.value}
-                        name={this.props.name}
-                        autoOk={this.props.autoOk}
-                        className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
-                        onChange={(value: any) => this.handleChange(value)}
-                        placeholder={this.props.placeholder}
-                        style={this.props.style}
-                        gregorian={this.props.gregorian}
-                    />
-                </div>
+                <DateInput
+                    value={this.state.value}
+                    autoOk={this.props.autoOk}
+                    className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
+                    onChange={(value: any) => this.handleChange(value)}
+                    placeholder={this.props.placeholder}
+                    gregorian={this.props.gregorian}
+                />
+            </div>
         )
     }
 }

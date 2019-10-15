@@ -6,7 +6,6 @@ import { IToken } from '../../../model/model.token';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { redux_state } from '../../../redux/app_state';
 import { FixNumber } from '../fix-number/FixNumber';
-import { Localization } from '../../../config/localization/localization';
 
 
 interface IProps {
@@ -15,7 +14,8 @@ interface IProps {
     token: IToken;
 
     defultValue?: number | string;
-    onChange?: (timestamp: number) => void;
+    onChangeReturnNumber?: (timestamp: number) => void;
+    onChangeReturnString?: (timestamp: string) => void;
     className?: string;
     disable?: boolean;
     cmpLable?: string;
@@ -96,8 +96,16 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
     }
 
     returnerValueToFather() {
-        if (this.props.onChange) {
-            this.props.onChange(this.state.duration);
+        let stringDuration = (this.state.duration).toString();
+        if (this.props.onChangeReturnNumber && this.props.onChangeReturnString) {
+            this.props.onChangeReturnNumber(this.state.duration);
+            this.props.onChangeReturnString(stringDuration);
+        };
+        if (this.props.onChangeReturnNumber) {
+            this.props.onChangeReturnNumber(this.state.duration);
+        };
+        if (this.props.onChangeReturnString) {
+            this.props.onChangeReturnString(stringDuration);
         };
         return;
     }
@@ -165,11 +173,12 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
         return (
             <div className="row form-group app-durationpicker">
                 <label htmlFor="">{this.props.cmpLable ? this.props.cmpLable : ""}</label>
-                <div className="form-control inputs-wrapper">
+                <div className={this.props.disable ? "form-control inputs-wrapper bg-color-disable" : "form-control inputs-wrapper"}>
                     <div className="row">
                         <div className="w-3p"></div>
                         <div className="w-30p">
                             <FixNumber
+                                disabled={this.props.disable ? true : false}
                                 placeholder={this.props.secondPlaceholder ? this.props.secondPlaceholder : ""}
                                 defaultValue={this.state.s}
                                 onChange={(value) => this.onSecondChange(value)}
@@ -180,6 +189,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                         </div>
                         <div className="w-30p">
                             <FixNumber
+                                disabled={this.props.disable ? true : false}
                                 placeholder={this.props.minutePlaceholder ? this.props.minutePlaceholder : ""}
                                 defaultValue={this.state.m}
                                 onChange={(value) => this.onMinuteChange(value)}
@@ -190,6 +200,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                         </div>
                         <div className="w-30p">
                             <FixNumber
+                                disabled={this.props.disable ? true : false}
                                 placeholder={this.props.hourPlaceholder ? this.props.hourPlaceholder : ""}
                                 defaultValue={this.state.h}
                                 onChange={(value) => this.onHourChange(value)}

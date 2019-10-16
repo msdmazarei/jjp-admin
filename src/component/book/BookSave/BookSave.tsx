@@ -650,9 +650,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         /> */}
                                         <AppDatePicker
                                             lable={Localization.publication_date}
-                                            outTimeStamp={this.state.book.pub_year.value}
+                                            value={this.state.book.pub_year.value}
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "pub_year")}
                                             placeholder={Localization.publication_date}
+                                            gregorian={this.props.internationalization.flag === 'fa' ? false : true}
                                             autoOk={true}
                                         />
                                     </div>

@@ -22,16 +22,46 @@ interface IProps {
 }
 
 class AppDatePickerComponent extends BaseComponent<IProps> {
+    
+    state = {
+        value1: '',
+        value1_formatted: '',
+    };
 
-    handleChange(value: any) {
+    componentWillReceiveProps(nextProps: IProps){
+        if(nextProps.value !== this.props.value){
+            if(nextProps.value !==undefined){
+                this.setState({
+                    ...this.state,
+                    value1: new Date(nextProps.value * 1000).toISOString(),
+                })
+            }else{
+                this.setState({
+                    ...this.state,
+                    value1:'',
+                })
+            }
+        }
+
+    }
+
+    handleChange(event: any) {
         if (this.props.disable) {
             return;
         }
-        const val = value.target.value;
+   
+        const newState :any={};
+        const t = event.target;
+        newState[t.name] = t.value;
+        newState[t.name+'_formatted'] = t.formatted ? t.formatted : '';
+        this.setState(newState);
+ 
+        const val = event.target.value;
         const ts = new Date(val).getTime() / 1000;
         if(this.props.onChange){
             this.props.onChange(ts , this.validationFunc() )
         }
+
     }
 
     validationFunc() {
@@ -43,7 +73,9 @@ class AppDatePickerComponent extends BaseComponent<IProps> {
             <div className={this.props.disable ? "row form-group app-datepicker px-3 all-event-disable" : "row form-group app-datepicker px-3"}   >
                 <label htmlFor="">{this.props.lable ? this.props.lable : ""}</label>
                 <DateInput
-                    value={this.props.value === undefined ? '' : new Date(this.props.value * 1000).toString()}
+                    // value={this.props.value === undefined ? '' : new Date(this.props.value * 1000).toString()}
+                    value={this.state.value1}
+                    name={'value1'}
                     autoOk={this.props.autoOk}
                     className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
                     onChange={(value: any) => this.handleChange(value)}

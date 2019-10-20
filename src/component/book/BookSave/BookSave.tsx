@@ -655,6 +655,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.publication_date}
                                             gregorian={this.props.internationalization.flag === 'fa' ? false : true}
                                             autoOk={true}
+                                            time
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">

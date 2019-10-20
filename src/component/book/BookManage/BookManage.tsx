@@ -165,6 +165,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             let minute;
             let second;
             if (row.duration) {
+              if(row.duration === 'NaN' ){
+                return ''
+              }
               let totalTime = Number(row.duration);
               if (totalTime < 60) {
                 hour = 0;

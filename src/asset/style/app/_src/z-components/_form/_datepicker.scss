@@ -1,11 +1,11 @@
 .app-datepicker {
   &.form-group {
     .date-input-with-dialog-main {
-      max-width: 100%!important;
-      min-width: 0!important;
+      max-width: 100% !important;
+      min-width: 0 !important;
       .form-control {
-        &.date-input-with-dialog-input{
-          pointer-events: none!important;
+        &.date-input-with-dialog-input {
+          pointer-events: none !important;
         }
         padding-top: 7px;
         &.inputs-wrapper {
@@ -43,19 +43,52 @@
       .date-input-with-dialog-empty {
         display: none !important;
       }
-      .JDatePicker{
-        box-shadow: 2px 2px 7px 4px #ddd!important;
-        button{
-          &:last-child{
+      .JDatePicker {
+        box-shadow: 2px 2px 7px 4px #ddd !important;
+        .JC-days {
+          .holder {
+            .day-items:hover {
+              background-color: #3358f4 !important;
+            }
+            .day-items.today {
+              background-color: #33c7f4 !important;
+            }
+            .day-items.selected {
+              background-color: #3358f4 !important;
+            }
+          }
+        }
+        &.day-items:hover {
+          background-color: #3358f4 !important;
+        }
+        &.day-items.selected {
+          background-color: #3358f4 !important;
+        }
+        .JC-Section.JC-Section-Year {
+          background-color: #3358f4 !important;
+        }
+        .JC-Section{
+          .MonthPicker{
+            .MonthItems.selected{
+              background-color: #3358f4 !important;
+            }
+          }
+        }
+        button {
+          border: 1px solid #3358f4 !important;
+          &:hover {
+            background-color: #3358f4 !important;
+          }
+          &:last-child {
             display: none;
           }
         }
       }
     }
-    &.all-event-disable{
+    &.all-event-disable {
       .date-input-with-dialog-main {
         .date-input-with-dialog-calendar {
-          display: none!important;
+          display: none !important;
         }
       }
     }

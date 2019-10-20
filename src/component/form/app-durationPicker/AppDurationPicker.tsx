@@ -43,7 +43,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
     }
 
     componentWillReceiveProps(nextProps: IProps) {
-        if (nextProps.defultValue === undefined) {
+        if (nextProps.defultValue === undefined || nextProps.defultValue === "NaN") {
             this.setState({
                 ...this.state,
                 duration: 0,

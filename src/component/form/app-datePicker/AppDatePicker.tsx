@@ -18,6 +18,7 @@ interface IProps {
     gregorian?: boolean;
     autoOk?: boolean;
     disable?: boolean;
+    time?: boolean
 };
 
 interface IState {
@@ -64,6 +65,7 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
             })
             return;
         }
+        if (event.target.value === "") { return }
         const newState: any = {};
         const t = event.target;
         newState[t.name] = t.value;
@@ -90,15 +92,29 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
         return (
             <div className={this.props.disable ? "row form-group app-datepicker px-3 all-event-disable" : "row form-group app-datepicker px-3"}   >
                 <label htmlFor="">{this.props.lable ? this.props.lable : ""}</label>
-                <DateInput
-                    value={this.state.value1}
-                    name={'value1'}
-                    autoOk={this.props.autoOk}
-                    className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
-                    onChange={(value: any) => this.handleChange(value)}
-                    placeholder={this.props.placeholder}
-                    gregorian={this.props.gregorian}
-                />
+                {
+                    this.props.time
+                        ?
+                        <DateTimeInput
+                            value={this.state.value1}
+                            name={'value1'}
+                            // autoOk={this.props.autoOk}
+                            className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
+                            onChange={(value: any) => this.handleChange(value)}
+                            placeholder={this.props.placeholder}
+                            gregorian={this.props.gregorian}
+                        />
+                        :
+                        <DateInput
+                            value={this.state.value1}
+                            name={'value1'}
+                            autoOk={this.props.autoOk}
+                            className={this.props.disable ? "form-control pt-3 inputs-wrapper bg-color-disable" : "form-control inputs-wrapper pt-3"}
+                            onChange={(value: any) => this.handleChange(value)}
+                            placeholder={this.props.placeholder}
+                            gregorian={this.props.gregorian}
+                        />
+                }
             </div>
         )
     }

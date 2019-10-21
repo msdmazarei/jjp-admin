@@ -16,6 +16,7 @@ import { OrderItems } from '../OrderItems/OrderItems';
 import { OrderService } from '../../../service/service.order';
 import { IBook } from '../../../model/model.book';
 import { PriceService } from '../../../service/service.price';
+import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -45,6 +46,7 @@ interface IState {
     saveBtnVisibility: boolean;
     fetchPrice_loader: boolean;
     totalPrice: number | string;
+    quickPersonModalStatus: boolean;
 }
 interface IProps {
     match: any;
@@ -77,6 +79,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         saveBtnVisibility: false,
         fetchPrice_loader: false,
         totalPrice: 0,
+        quickPersonModalStatus: false,
     }
 
     private _orderService = new OrderService();
@@ -87,6 +90,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     componentDidMount() {
         this._orderService.setToken(this.props.token);
         this._personService.setToken(this.props.token);
+        this._priceService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/order/:order_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
@@ -279,7 +283,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
         if (res) {
             let persons = res.data.result.map((ps: any) => {
-                return { label: this.getPersonFullName(ps), value: ps }
+                return { label: ps.cell_no ? (this.getPersonFullName(ps) + " - " + ps.cell_no) : this.getPersonFullName(ps), value: ps }
             });
             this.personRequstError_txt = Localization.no_item_found;
             callBack(persons);
@@ -346,6 +350,46 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     /////  end calc total price by person_id & items list /////
 
 
+    ////////   start crate quick person  //////////
+
+    quickpersonOpen() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: true,
+        })
+
+    }
+
+    quickpersonClose() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: false,
+        })
+    }
+
+    seterPerson(person : IPerson){
+        const createdPerson : 
+        { label: string, value: IPerson } = 
+        { label: person.cell_no ? (this.getPersonFullName(person) + " - " + person.cell_no) : this.getPersonFullName(person) , 
+        value: person }
+        let newperson = createdPerson;
+        let isValid = true;      // newperson = selectedPerson;
+        this.setState({
+            ...this.state, person: {
+                ...this.state.person,
+                value: newperson,
+                isValid: true,
+            },
+            isFormValid: this.checkFormValidate(isValid, 'person'),
+        }, () => {
+            this.fetchPrice();
+        });
+        
+       
+    }
+
+    ////////   end crate quick person  //////////
+
 
     // reset form /////////////
 
@@ -379,6 +423,11 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                 <div className="row">
                                     <div className="col-md-6 col-sm-12">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
+                                        <i
+                                            title={Localization.Quick_person_creation}
+                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                            onClick={() => this.quickpersonOpen()}
+                                        ></i>
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
@@ -485,6 +534,14 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
                 <ToastContainer {...this.getNotifyContainerConfig()} />
+                {
+                    <QuickPerson
+                        data = {0}
+                        onCreate={(person: IPerson, index: number) => this.seterPerson(person)}
+                        modalShow={this.state.quickPersonModalStatus}
+                        onHide={() => this.quickpersonClose()}
+                    ></QuickPerson>
+                }
             </>
         )
     }

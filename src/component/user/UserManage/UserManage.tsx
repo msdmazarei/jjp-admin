@@ -566,7 +566,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               {selectedUserForGroup.name} {selectedUserForGroup.username}
             </p>
             <div className="row">
-              <div className="col-6">
+              <div className="col-12">
                 <label >{Localization.group}{<span className="text-danger">*</span>}</label>
                 <AsyncSelect
                   isClearable={false}

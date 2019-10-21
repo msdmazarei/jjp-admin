@@ -611,7 +611,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
               {this.selectedGroupForPermission.title}
             </p>
             <div className="row">
-              <div className="col-6">
+              <div className="col-12">
                 <label >{Localization.permission}</label>
                 <AsyncSelect
                   isClearable={false}

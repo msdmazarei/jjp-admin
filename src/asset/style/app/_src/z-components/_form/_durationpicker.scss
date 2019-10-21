@@ -5,6 +5,9 @@
       &.inputs-wrapper {
         color: #000!important;
         padding-bottom: 15px!important;
+        &:focus-within{
+          border-color: #007bff;
+        }
         .w-30p {
           width: 30%;
           max-width: 30% !important;

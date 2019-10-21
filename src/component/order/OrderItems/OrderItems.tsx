@@ -42,6 +42,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         this._personService.setToken(this.props.token);
+        this._bookService.setToken(this.props.token);
     }
     componentWillReceiveProps(nextProps: IProps) {
         // return;
@@ -110,7 +111,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
         let valid = true;
         for (let i = 0; i < list.length; i++) {
             let obj = list[i];
-            if (!obj.count || !obj.book) {
+            if (!obj.count || !obj.book || typeof obj.book.value.price !== 'number') {
                 valid = false;
                 break;
             }

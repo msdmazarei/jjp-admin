@@ -101,6 +101,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         quickPersonAddBtnLoader: false,
         // index: 0,
     }
+
     componentDidMount() {
         this._quickPersonService.setToken(this.props.token);
         this._quickUploadService.setToken(this.props.token);
@@ -112,6 +113,13 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         // }
 
     }
+    
+    componentWillReceiveProps(){
+        if(this.props.modalShow === false){
+            this.resetForm();
+        }
+    }
+
 
     ////////   start crate quick person  //////////
 
@@ -222,6 +230,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                 cell_no: { value: undefined, isValid: true },
                 image: { value: [], isValid: true },
             },
+            is_legal: false,
             isFormValid: false,
         })
     }

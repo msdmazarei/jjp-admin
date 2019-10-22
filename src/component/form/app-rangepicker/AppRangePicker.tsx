@@ -35,21 +35,21 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
             this.setState({
                 ...this.state,
                 from: timestamp,
-            }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc()))
+            }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc(this.state.from,this.state.to)))
         }
         if (type === 'to') {
             this.setState({
                 ...this.state,
                 to: timestamp,
-            }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc()))
+            }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc(this.state.from,this.state.to)))
         }
     }
 
-    validationFunc() {
-        if (typeof this.state.from !== undefined || typeof this.state.to !== undefined) {
-            return true;
+    validationFunc(from:any , to: any) {
+        if (typeof from === "undefined" && typeof to === "undefined") {
+            return false;
         }
-        return false;
+        return true;
     }
 
     reseter() {
@@ -63,14 +63,14 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
         this.setState({
             from: undefined,
             to: undefined,
-        });
+        }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc(this.state.from,this.state.to)));
     }
 
     render() {
         return (
             <>
                 <label htmlFor=""> {this.props.label}</label>
-                <div className="row">
+                <div className="row range-picker">
                     {
                         this.props.time
                             ?

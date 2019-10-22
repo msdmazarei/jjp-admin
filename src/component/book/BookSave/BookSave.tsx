@@ -15,7 +15,7 @@ import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
-import { IToken } from '../../../model/model.token';
+// import { IToken } from '../../../model/model.token';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';

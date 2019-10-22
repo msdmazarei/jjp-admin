@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { PersonService } from "../../../service/service.person";
-import { IToken } from '../../../model/model.token';
+// import { IToken } from '../../../model/model.token';
 import { connect, MapDispatchToProps } from 'react-redux';
 import { redux_state } from '../../../redux/app_state';
 import { Dispatch } from 'redux';

@@ -9,7 +9,7 @@ import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
 import { BaseComponent } from "../../_base/BaseComponent";
 import { TInternationalization } from "../../../config/setup";
-import { IToken } from "../../../model/model.token";
+// import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
@@ -214,10 +214,10 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   selectedComment: IComment | undefined;
   private _commentService = new CommentService();
 
-  constructor(props: IProps) {
-    super(props);
-    // this._commentService.setToken(this.props.token)
-  }
+  // constructor(props: IProps) {
+  //   super(props);
+  //   // this._commentService.setToken(this.props.token)
+  // }
 
 
   // timestamp to date 

@@ -8,7 +8,7 @@ import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
 import { BaseComponent } from "../../_base/BaseComponent";
 import { TInternationalization } from "../../../config/setup";
-import { IToken } from "../../../model/model.token";
+// import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
@@ -171,10 +171,10 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   private _groupService = new GroupService();
   private _permissionService = new PermissionService();
 
-  constructor(props: IProps) {
-    super(props);
-    // this._groupService.setToken(this.props.token)
-  }
+  // constructor(props: IProps) {
+  //   super(props);
+  //   // this._groupService.setToken(this.props.token)
+  // }
 
   componentDidMount() {
     this.setState({

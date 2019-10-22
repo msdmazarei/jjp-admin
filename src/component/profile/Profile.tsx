@@ -6,7 +6,7 @@ import { IUser } from "../../model/model.user";
 import { TInternationalization } from "../../config/setup";
 import { BaseComponent } from "../_base/BaseComponent";
 import { History } from "history";
-import { IToken } from "../../model/model.token";
+// import { IToken } from "../../model/model.token";
 import { ToastContainer, toast } from "react-toastify";
 import { Localization } from "../../config/localization/localization";
 import { BtnLoader } from "../form/btn-loader/BtnLoader";
@@ -107,13 +107,13 @@ class ProfileComponent extends BaseComponent<IProps, IState> {
     private _personService = new PersonService();
     private _uploadService = new UploadService();
 
-    constructor(props: IProps) {
-        super(props);
+    // constructor(props: IProps) {
+    //     super(props);
 
-        // this._personService.setToken(this.props.token);
-        // this._uploadService.setToken(this.props.token);
+    //     // this._personService.setToken(this.props.token);
+    //     // this._uploadService.setToken(this.props.token);
 
-    }
+    // }
 
     componentDidMount() {
         this.fetchPerson();

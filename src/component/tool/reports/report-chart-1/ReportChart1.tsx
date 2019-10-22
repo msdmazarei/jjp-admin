@@ -5,7 +5,7 @@ import { Dispatch } from "redux";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import { TInternationalization } from "../../../../config/setup";
-import { IToken } from "../../../../model/model.token";
+// import { IToken } from "../../../../model/model.token";
 import { BaseComponent } from "../../../_base/BaseComponent";
 import { redux_state } from "../../../../redux/app_state";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';

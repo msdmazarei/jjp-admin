@@ -8,7 +8,7 @@ import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
 import { BaseComponent } from "../../_base/BaseComponent";
 import { TInternationalization } from "../../../config/setup";
-import { IToken } from "../../../model/model.token";
+// import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { Input } from "../../form/input/Input";
@@ -123,10 +123,10 @@ class PermissionManageComponent extends BaseComponent<IProps, IState>{
 
   private _permissionService = new PermissionService();
 
-  constructor(props: IProps) {
-    super(props);
-    // this._permissionService.setToken(this.props.token)
-  }
+  // constructor(props: IProps) {
+  //   super(props);
+  //   // this._permissionService.setToken(this.props.token)
+  // }
 
   componentDidMount() {
     this.setState({

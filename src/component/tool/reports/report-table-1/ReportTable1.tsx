@@ -7,7 +7,7 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { TInternationalization } from "../../../../config/setup";
-import { IToken } from "../../../../model/model.token";
+// import { IToken } from "../../../../model/model.token";
 import { IProps_table, Table } from "../../../table/table";
 import { Localization } from "../../../../config/localization/localization";
 import { IComment } from "../../../../model/model.comment";
@@ -136,10 +136,10 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
     // end list of services for request define
 
 
-    constructor(props: IProps) {
-        super(props);
-        // this._commentService.setToken(this.props.token)
-    }
+    // constructor(props: IProps) {
+    //     super(props);
+    //     // this._commentService.setToken(this.props.token)
+    // }
 
     componentDidMount() {
         if (this.props.internationalization.flag === "fa") {

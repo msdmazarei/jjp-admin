@@ -9,7 +9,7 @@ import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
 import { BaseComponent } from "../../_base/BaseComponent";
 import { TInternationalization } from "../../../config/setup";
-import { IToken } from "../../../model/model.token";
+// import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import Select from 'react-select';
@@ -194,10 +194,10 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   private _orderService = new OrderService();
 
-  constructor(props: IProps) {
-    super(props);
-    // this._orderService.setToken(this.props.token)
-  }
+  // constructor(props: IProps) {
+  //   super(props);
+  //   // this._orderService.setToken(this.props.token)
+  // }
 
   orderCheckoutAccess(row: any) {
     if (row.status === "Invoiced") {

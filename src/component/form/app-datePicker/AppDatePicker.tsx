@@ -148,7 +148,13 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
 
     return_jalali_picker() {
         return <>
-            <label htmlFor=""> {this.props.label ? this.props.label : ""} </label>
+            {
+                this.props.label
+                ?
+                <label htmlFor="">{this.props.label}</label>
+                :
+                undefined
+            }
             {
                 this.props.time
                     ?
@@ -183,7 +189,13 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
 
     return_gregorian_picker() {
         return <>
-            <label htmlFor=""> {this.props.label ? this.props.label : ""} </label>
+            {
+                this.props.label
+                ?
+                <label htmlFor="">{this.props.label}</label>
+                :
+                undefined
+            }
             {
                 this.props.time
                     ?

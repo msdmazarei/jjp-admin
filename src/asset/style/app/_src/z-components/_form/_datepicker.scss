@@ -141,6 +141,13 @@
       }
     }
   }
+  display: block;
+  position: relative;
+  .remover{
+    position: absolute;
+    left : 45px;
+    top: 40px;
+  }
 }
 body:not(.rtl){
   .app-datepicker{
@@ -160,6 +167,12 @@ body:not(.rtl){
           content: '';
         }
       }
+    }
+    .remover{
+      position: absolute;
+      top: 40px;
+      left: auto!important;
+      right: 40px!important;
     }
   }
 }

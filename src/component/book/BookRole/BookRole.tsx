@@ -38,7 +38,7 @@ interface IProps {
     errorTxt?: string;
     defaultValue?: TOuterListItem[] | null;
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
     required?: boolean;
     label?: string;
 }
@@ -64,7 +64,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     ];
     _personService = new PersonService();
     componentDidMount() {
-        this._personService.setToken(this.props.token);
+        // this._personService.setToken(this.props.token);
     }
     componentWillReceiveProps(nextProps: IProps) {
         if (
@@ -372,7 +372,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

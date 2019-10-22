@@ -13,7 +13,7 @@ import { TReport, reportListMapCmp } from "../tool/reports/ReportUtils";
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
-  token: IToken;
+  // token: IToken;
 }
 
 interface IState {
@@ -85,7 +85,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
   return {
     internationalization: state.internationalization,
-    token: state.token,
+    // token: state.token,
   };
 };
 

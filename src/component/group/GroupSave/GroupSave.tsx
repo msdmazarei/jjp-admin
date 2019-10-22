@@ -50,7 +50,7 @@ interface IProps {
     match: any;
     history: History;
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
 }
 
 class GroupSaveComponent extends BaseComponent<IProps, IState> {
@@ -85,8 +85,8 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     private group_id: string | undefined;
 
     componentDidMount() {
-        this._groupService.setToken(this.props.token);
-        this._personService.setToken(this.props.token);
+        // this._groupService.setToken(this.props.token);
+        // this._personService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/group/:group_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
@@ -401,7 +401,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

@@ -26,7 +26,7 @@ import { PermissionService } from "../../../service/service.permission";
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
-  token: IToken;
+  // token: IToken;
 }
 
 //// end define IProps ///
@@ -173,7 +173,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   constructor(props: IProps) {
     super(props);
-    this._groupService.setToken(this.props.token)
+    // this._groupService.setToken(this.props.token)
   }
 
   componentDidMount() {
@@ -924,7 +924,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
   return {
     internationalization: state.internationalization,
-    token: state.token,
+    // token: state.token,
   };
 };
 

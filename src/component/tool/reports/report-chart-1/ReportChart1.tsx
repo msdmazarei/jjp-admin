@@ -15,7 +15,7 @@ import Select from 'react-select'
 export interface IProps {
     history?: History;
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
     init_title: (cmpTitle: JSX.Element) => void;
     init_tools: (tools: JSX.Element) => void;
 }
@@ -568,7 +568,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

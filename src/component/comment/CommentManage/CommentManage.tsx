@@ -24,7 +24,7 @@ import moment_jalaali from 'moment-jalaali';
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
-  token: IToken;
+  // token: IToken;
 }
 
 interface IFilterComment {
@@ -216,7 +216,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   constructor(props: IProps) {
     super(props);
-    this._commentService.setToken(this.props.token)
+    // this._commentService.setToken(this.props.token)
   }
 
 
@@ -693,7 +693,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
   return {
     internationalization: state.internationalization,
-    token: state.token,
+    // token: state.token,
   };
 };
 

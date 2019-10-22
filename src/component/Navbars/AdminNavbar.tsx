@@ -31,6 +31,7 @@ import { action_remove_token } from "../../redux/action/token";
 import { action_remove_authentication } from "../../redux/action/authentication";
 import { Localization } from '../../config/localization/localization';
 import { BaseComponent } from "../_base/BaseComponent";
+import { BaseService } from "../../service/service.base";
 // import { IPerson } from "../../model/model.person";
 // import { any } from "prop-types";
 
@@ -62,6 +63,7 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
   log_out() {
     this.props.do_logout && this.props.do_logout();
     this.props.remove_token && this.props.remove_token();
+    BaseService.removeToken();
     this.props.remove_authentication && this.props.remove_authentication();
     this.props.history.push('/login');
   }

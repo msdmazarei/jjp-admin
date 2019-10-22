@@ -24,7 +24,7 @@ interface IProps {
     logged_in_user: IUser | null;
     internationalization: TInternationalization;
     history: History;
-    token: IToken;
+    // token: IToken;
     network_status: NETWORK_STATUS;
     onUserLoggedIn: (user: IUser) => void;
 }
@@ -110,8 +110,8 @@ class ProfileComponent extends BaseComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        this._personService.setToken(this.props.token);
-        this._uploadService.setToken(this.props.token);
+        // this._personService.setToken(this.props.token);
+        // this._uploadService.setToken(this.props.token);
 
     }
 
@@ -522,7 +522,7 @@ const state2props = (state: redux_state) => {
     return {
         logged_in_user: state.logged_in_user,
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
         network_status: state.network_status,
     };
 };

@@ -4,9 +4,9 @@ import { IToken } from '../model/model.token';
 import { Store2 } from '../redux/store';
 import { action_set_token } from '../redux/action/token';
 import { Utility } from '../asset/script/utility';
-// import { NETWORK_STATUS } from '../enum/NetworkStatus';
-// import { action_set_network_status } from '../redux/action/netwok-status';
 // import { appLocalStorage } from './appLocalStorage';
+import { NETWORK_STATUS } from '../enum/NetworkStatus';
+import { action_set_network_status } from '../redux/action/netwok-status';
 
 
 export interface IAPI_ResponseList<T> {
@@ -18,13 +18,13 @@ export interface IAPI_Response<T> {
 
 export abstract class BaseService {
     baseURL = Setup.endpoint;
-    token: IToken | null | undefined;
+    private static token: IToken | null | undefined;
 
     axiosInstance: AxiosInstance = axios.create({
         baseURL: this.baseURL,
         headers: { 'Content-Type': 'application/json' }
     });
-    static _isAppOffline: any;
+    
 
     // _axiosTokenInstance: AxiosInstance | undefined;
 
@@ -36,10 +36,19 @@ export abstract class BaseService {
     get axiosTokenInstance(): AxiosInstance {
         // if (this._axiosTokenInstance) { return this._axiosTokenInstance; }
         let newAX_instance: AxiosInstance;
-        if (this.token && this.token.id) {
+        // const token = Store2.getState().token;
+        // console.log('const token = Store2.getState().token;', token);
+        // if (this.token && this.token.id) {
+        // if (token && token.id) {
+        let token = BaseService.token;
+        if (!BaseService.token || !BaseService.token.id) {
+            token = Store2.getState().token;
+            if (token) BaseService.setToken(token);
+        }
+        if (token && token.id) {
             newAX_instance = axios.create({
                 baseURL: this.baseURL,
-                headers: { 'Content-Type': 'application/json', 'authorization': 'Bearer ' + this.token.id }
+                headers: { 'Content-Type': 'application/json', 'authorization': 'Bearer ' + token.id }
             });
         } else {
             newAX_instance = this.axiosInstance;
@@ -50,8 +59,12 @@ export abstract class BaseService {
         // return this._axiosTokenInstance;
     }
 
-    setToken(t: IToken) {
-        this.token = t;
+    private static setToken(t: IToken) {
+        BaseService.token = t;
+    }
+
+    static removeToken() {
+        BaseService.token = undefined;
     }
 
     set_401_interceptors(ax_instance: AxiosInstance) {
@@ -66,23 +79,13 @@ export abstract class BaseService {
                 });
             }
 
-            // Logout user if token refresh didn't work or user is disabled
-            /* if (error.config.url == '/api/token/refresh' || error.response.message == 'Account is disabled.') {
-              
-              TokenStorage.clear();
-              router.push({ name: 'root' });
-        
-              return new Promise((resolve, reject) => {
-                reject(error);
-              });
-            } */
 
             let authObj = Utility.get_decode_auth(Store2.getState().authentication)
-            // Try request again with new token
+            
             return this.getTokenfromServer(authObj)
                 .then((token) => {
                     Store2.dispatch(action_set_token(token.data));
-                    this.setToken(token.data);
+                    BaseService.setToken(token.data);
 
                     // New request with new token
                     const config = error.config;
@@ -99,6 +102,9 @@ export abstract class BaseService {
 
                 })
                 .catch((error) => {
+                    if (error.response.data.msg === "invalid_username") {
+                        error.response.data['msg_ui'] = 'login_again';
+                    }
                     return new Promise((resolve, reject) => {
                         reject(error);
                     });
@@ -138,7 +144,12 @@ export abstract class BaseService {
     //     });
     // }
 
-    isAppOffline(): boolean {
+    static isAppOffline(): boolean {
+        BaseService.check_network_status();
+        return BaseService._isAppOffline();
+    }
+
+    private static _isAppOffline(): boolean {
         if (navigator && !navigator.onLine) {
             return true;
         }
@@ -146,16 +157,16 @@ export abstract class BaseService {
     }
 
     static check_network_status() {
-        // if (Store2.getState().network_status === NETWORK_STATUS.ONLINE) {
-        //     if (BaseService._isAppOffline()) {
-        //         Store2.dispatch(action_set_network_status(NETWORK_STATUS.OFFLINE));
-        //     }
+        if (Store2.getState().network_status === NETWORK_STATUS.ONLINE) {
+            if (BaseService._isAppOffline()) {
+                Store2.dispatch(action_set_network_status(NETWORK_STATUS.OFFLINE));
+            }
 
-        // } else if (Store2.getState().network_status === NETWORK_STATUS.OFFLINE) {
-        //     if (!BaseService._isAppOffline()) {
-        //         Store2.dispatch(action_set_network_status(NETWORK_STATUS.ONLINE));
-        //     }
-        // }
+        } else if (Store2.getState().network_status === NETWORK_STATUS.OFFLINE) {
+            if (!BaseService._isAppOffline()) {
+                Store2.dispatch(action_set_network_status(NETWORK_STATUS.ONLINE));
+            }
+        }
     }
 
 

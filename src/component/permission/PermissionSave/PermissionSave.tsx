@@ -38,7 +38,7 @@ interface IProps {
     match: any;
     history: History;
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
 }
 
 class PermissionSaveComponent extends BaseComponent<IProps, IState> {
@@ -63,7 +63,7 @@ class PermissionSaveComponent extends BaseComponent<IProps, IState> {
     private permission_id: string | undefined;
 
     componentDidMount() {
-        this._permissionService.setToken(this.props.token);
+        // this._permissionService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/permission/:permission_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
@@ -274,7 +274,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

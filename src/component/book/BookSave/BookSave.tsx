@@ -104,7 +104,7 @@ interface IProps {
     match: any;
     history: History;
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
 }
 
 class BookSaveComponent extends BaseComponent<IProps, IState> {
@@ -208,8 +208,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     private book_id: string | undefined;
 
     componentDidMount() {
-        this._bookService.setToken(this.props.token);
-        this._uploadService.setToken(this.props.token);
+        // this._bookService.setToken(this.props.token);
+        // this._uploadService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/book/:book_id/edit')) {
             // this.saveMode = "edit";
@@ -892,7 +892,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

@@ -56,7 +56,7 @@ interface IState {
 
 interface IProps {
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
     modalShow: boolean;
     onHide: () => void;
     data?: any;
@@ -102,17 +102,17 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         // index: 0,
     }
 
-    componentDidMount() {
-        this._quickPersonService.setToken(this.props.token);
-        this._quickUploadService.setToken(this.props.token);
-        // if (this.props.index) {
-        //     this.setState({
-        //         ...this.state,
-        //         index: this.props.index
-        //     })
-        // }
+    // componentDidMount() {
+    //     // this._quickPersonService.setToken(this.props.token);
+    //     // this._quickUploadService.setToken(this.props.token);
+    //     // if (this.props.index) {
+    //     //     this.setState({
+    //     //         ...this.state,
+    //     //         index: this.props.index
+    //     //     })
+    //     // }
 
-    }
+    // }
     
     componentWillReceiveProps(){
         if(this.props.modalShow === false){
@@ -499,7 +499,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

@@ -25,7 +25,7 @@ import moment_jalaali from 'moment-jalaali';
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
-  token: IToken;
+  // token: IToken;
 }
 
 interface IFilterOrder {
@@ -196,7 +196,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   constructor(props: IProps) {
     super(props);
-    this._orderService.setToken(this.props.token)
+    // this._orderService.setToken(this.props.token)
   }
 
   orderCheckoutAccess(row: any) {
@@ -928,7 +928,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
   return {
     internationalization: state.internationalization,
-    token: state.token,
+    // token: state.token,
   };
 };
 

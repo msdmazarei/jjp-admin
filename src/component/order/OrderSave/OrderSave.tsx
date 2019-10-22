@@ -52,7 +52,7 @@ interface IProps {
     match: any;
     history: History;
     internationalization: TInternationalization;
-    token: IToken;
+    // token: IToken;
 }
 
 class OrderSaveComponent extends BaseComponent<IProps, IState> {
@@ -88,9 +88,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     private order_id: string | undefined;
 
     componentDidMount() {
-        this._orderService.setToken(this.props.token);
-        this._personService.setToken(this.props.token);
-        this._priceService.setToken(this.props.token);
+        // this._orderService.setToken(this.props.token);
+        // this._personService.setToken(this.props.token);
+        // this._priceService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/order/:order_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
@@ -556,7 +556,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
     return {
         internationalization: state.internationalization,
-        token: state.token,
+        // token: state.token,
     };
 };
 

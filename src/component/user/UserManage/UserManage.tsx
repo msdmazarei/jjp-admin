@@ -24,7 +24,7 @@ import { GroupService } from "../../../service/service.group";
 export interface IProps {
   history: History;
   internationalization: TInternationalization;
-  token: IToken;
+  // token: IToken;
 }
 
 interface IFilterUser {
@@ -206,8 +206,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   constructor(props: IProps) {
     super(props);
-    this._userService.setToken(this.props.token)
-    this._groupService.setToken(this.props.token)
+    // this._userService.setToken(this.props.token)
+    // this._groupService.setToken(this.props.token)
   }
 
   componentDidMount() {
@@ -849,7 +849,7 @@ const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
 const state2props = (state: redux_state) => {
   return {
     internationalization: state.internationalization,
-    token: state.token,
+    // token: state.token,
   };
 };
 

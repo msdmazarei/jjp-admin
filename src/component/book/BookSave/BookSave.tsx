@@ -438,7 +438,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         const newBook = {
             edition: this.state.book.edition.value,
             language: this.state.book.language.value,
-            pub_year: this.state.book.pub_year.value,
+            pub_year: this.state.book.pub_year.value || null,
             isben: this.state.book.isben.value,
             pages: this.state.book.pages.value,
             duration: this.state.book.duration.value,
@@ -649,7 +649,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         /> */}
                                         <AppDatePicker
-                                            lable={Localization.publication_date}
+                                            label={Localization.publication_date}
                                             value={this.state.book.pub_year.value}
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, "pub_year")}
                                             placeholder={Localization.publication_date}
@@ -724,7 +724,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             <label htmlFor="">{Localization.genre}</label>
                                             <Select
                                                 isMulti
-                                                onChange={(value: any) => this.handleSelectInputChange(value, "genre")}
+                                                onChange={(value: any) => this.handleSelectInputChange(value, "genre", false)}
                                                 options={this.genreOptions}
                                                 value={this.state.book.genre.value}
                                                 placeholder={Localization.genre}

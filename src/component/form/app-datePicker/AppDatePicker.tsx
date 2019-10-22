@@ -54,6 +54,7 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                 this.setState({
                     ...this.state,
                     value1: '',
+                    is_touch: false,
                 });
             }
         } else {
@@ -103,6 +104,9 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                 return;
             }
         } else {
+            if (this.props.disable) {
+                return;
+            }
             const ts = new Date(event).getTime() / 1000;
             this.setState({
                 ...this.state,
@@ -160,6 +164,7 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                         selected={this.state.gregorian_date}
                         onChange={(value) => this.handleChange(value)}
                         placeholderText={this.props.placeholder ? this.props.placeholder : ''}
+                        disabled={this.props.disable ? true : false}
                         dateFormat="Pp"
                         showTimeSelect
                         timeFormat="HH:mm"
@@ -171,6 +176,7 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                         selected={this.state.gregorian_date}
                         onChange={(value) => this.handleChange(value)}
                         placeholderText={this.props.placeholder ? this.props.placeholder : ''}
+                        disabled={this.props.disable ? true : false}
                         dateFormat="yyyy/MM/dd"
                     />
             }

@@ -8,14 +8,15 @@ import { redux_state } from '../../../redux/app_state';
 import { DateInput, DateTimeInput } from 'react-hichestan-datetimepicker';
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css";
+import { Localization } from '../../../config/localization/localization';
 
 interface IProps {
     history?: History;
     internationalization: TInternationalization;
 
     value: number | undefined;
-    onChange?: (timeStamp: number, isValid: boolean) => void
-    lable?: string;
+    onChange?: (timeStamp: number | undefined, isValid: boolean) => void
+    label?: string;
     placeholder?: string;
     gregorian?: boolean;
     autoOk?: boolean;
@@ -112,8 +113,6 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                 ...this.state,
                 gregorian_date: event,
             });
-            console.log(ts);
-            console.log(event)
             if (this.props.onChange) {
                 this.props.onChange(ts, this.validationFunc());
                 return;
@@ -125,9 +124,31 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
         return true;
     }
 
+    reseter() {
+        if (this.props.internationalization.flag === 'fa') {
+            this.setState({
+                value1: '',
+                value1_formatted: '',
+                is_touch: false,
+            }, () => this.return_undifine_to_parent())
+        } else {
+            this.setState({
+                ...this.state,
+                gregorian_date: null,
+            }, () => this.return_undifine_to_parent())
+        }
+    }
+
+    return_undifine_to_parent() {
+        let unDif: undefined;
+        if (this.props.onChange) {
+            this.props.onChange(unDif, this.validationFunc())
+        }
+    }
+
     return_jalali_picker() {
         return <>
-            <label htmlFor=""> {this.props.lable ? this.props.lable : ""} </label>
+            <label htmlFor=""> {this.props.label ? this.props.label : ""} </label>
             {
                 this.props.time
                     ?
@@ -151,12 +172,18 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                         gregorian={this.props.gregorian}
                     />
             }
+            <i
+                title={Localization.reset}
+                className="fa fa-times text-danger remover"
+                onClick={() => this.reseter()}
+            >
+            </i>
         </>
     };
 
     return_gregorian_picker() {
         return <>
-            <label htmlFor=""> {this.props.lable ? this.props.lable : ""} </label>
+            <label htmlFor=""> {this.props.label ? this.props.label : ""} </label>
             {
                 this.props.time
                     ?
@@ -180,6 +207,12 @@ class AppDatePickerComponent extends BaseComponent<IProps, IState> {
                         dateFormat="yyyy/MM/dd"
                     />
             }
+            <i
+                title={Localization.reset}
+                className="fa fa-times text-danger remover"
+                onClick={() => this.reseter()}
+            >
+            </i>
         </>
     };
 

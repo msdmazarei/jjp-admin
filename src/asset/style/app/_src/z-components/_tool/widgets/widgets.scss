@@ -75,6 +75,9 @@
 }
 
 body.widget-open {
+  &:not(.widget-minimize) {
+    overflow: hidden;
+  }
   // overflow: hidden;
 
   // &::-webkit-scrollbar {
@@ -88,8 +91,4 @@ body.widget-open {
   // &.widget-minimize{
   //   overflow: hidden;
   // }
-
-  &:not(.widget-minimize) {
-    overflow: hidden;
-  }
 }

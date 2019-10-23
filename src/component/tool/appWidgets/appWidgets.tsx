@@ -10,6 +10,7 @@ import { TInternationalization } from '../../../config/setup';
 
 interface IProps {
     internationalization: TInternationalization;
+    onClose?: () => void;
     // token: IToken;
 }
 
@@ -75,13 +76,29 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
             this.setState({
                 ...this.state,
                 close: true,
-            });
+            },() => this.closeWidgetParent());
             document.body.classList.remove("widget-open");
+
         } else {
             this.setState({
                 ...this.state,
                 close: true,
+            },() => this.closeWidgetParent());
+        }
+    }
+
+    closeWidgetParent(){
+        const parent = document.body.querySelectorAll('.widget-wrapper');
+        if(parent){
+            parent.forEach(element => {
+                let child = element.firstElementChild;
+                if(child && child.classList.contains('app-widget-close') && !element.classList.contains('close')){
+                    element.classList.add('d-none');
+                }
             });
+        }
+        if(this.props.onClose){
+            this.props.onClose();
         }
     }
 

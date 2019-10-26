@@ -5,7 +5,9 @@ import { fa } from './fa';
 import { en } from './en';
 import { ar } from './ar';
 import { BOOK_TYPES, BOOK_GENRE, BOOK_ROLES } from '../../enum/Book';
-import { PERMISSIONS } from '../../enum/Permission';
+import { TPERMISSIONS } from '../../enum/Permission';
+import { TReportName } from '../../component/tool/reports/ReportUtils';import { LANGUAGES } from '../../enum/Language';
+;
 
 interface ILocalization extends LocalizedStringsMethods {
     [key: string]: any; // todo
@@ -257,97 +259,89 @@ interface ILocalization extends LocalizedStringsMethods {
     duration: string;
     genre: string;
     type: string;
-    tags:string;
+    tags: string;
     roles: string;
     role: string;
     images: string;
     images_list: string;
     person: string;
-    legal_person:string;
-    real_person:string;
+    legal_person: string;
+    real_person: string;
     DRAG_AND_DROP: string;
     create_book: string;
     edit_book: string;
     book_manage: string;
     dashboard: string;
-    price:string;
-    Pricing:string;
-    Add_price:string;
-    Justـenterـtheـnumericـvalue:string;
-    email:string;
-    cell_no:string;
-    person_manage:string;
-    image:string;
+    price: string;
+    Pricing: string;
+    Add_price: string;
+    Justـenterـtheـnumericـvalue: string;
+    email: string;
+    cell_no: string;
+    person_manage: string;
+    image: string;
     create_person: string;
     person_update: string;
     edit_person: string;
-    profile:string;
-    profile_image:string;
-    full_name:string;
-    preview:string;
-    name_or_lastname:string;
-    user:string;
-    create_user:string;
-    user_update:string;
-    comment:string;
-    book_title:string;
-    number_of_likes:string;
-    number_of_reports:string;
-    book_image:string;
-    book_type:string;
-    liked_by_user:string;
-    reported_by_user:string;
-    show_comment:string;
-    order:string;
-    create_order:string;
-    order_update:string;
-    show_order:string;
-    status:string;
-    total_price:string;
-    Customer_Specifications : string;
-    count:string;
-    Total_purchase:string;
-    invoice:string;
+    profile: string;
+    profile_image: string;
+    full_name: string;
+    preview: string;
+    name_or_lastname: string;
+    user: string;
+    create_user: string;
+    user_update: string;
+    comment: string;
+    book_title: string;
+    number_of_likes: string;
+    number_of_reports: string;
+    book_image: string;
+    book_type: string;
+    liked_by_user: string;
+    reported_by_user: string;
+    show_comment: string;
+    order: string;
+    create_order: string;
+    order_update: string;
+    show_order: string;
+    status: string;
+    total_price: string;
+    Customer_Specifications: string;
+    count: string;
+    Total_purchase: string;
+    invoice: string;
     recalculate: string;
-    creation_date:string;
-    Quick_person_creation:string;
-    group:string;
-    create_group:string;
-    group_update:string;
-    permission:string;
-    create_permission:string;
-    permission_update:string;
-    creator:string;
-    modification_date:string;
-    each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher : string;
-    name_of_organization:string;
-    type_of_report:{
-        Reporting_Period : string;
-        monthly:string;
-        weekly:string;
+    creation_date: string;
+    Quick_person_creation: string;
+    group: string;
+    create_group: string;
+    group_update: string;
+    permission: string;
+    create_permission: string;
+    permission_update: string;
+    creator: string;
+    modification_date: string;
+    each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher: string;
+    name_of_organization: string;
+    type_of_report: {
+        Reporting_Period: string;
+        monthly: string;
+        weekly: string;
     };
-    type_of_report_kind:{
-        most_Selling:string;
-        lowest_selling:string;
-        both:string;
+    type_of_report_kind: {
+        most_Selling: string;
+        lowest_selling: string;
+        both: string;
     };
-    annual_Reports:{
-        spring:string;
-        summer:string;
-        fall:string;
-        winter:string;
-        last_quarter:string;
-        yearly:string;
+    annual_Reports: {
+        spring: string;
+        summer: string;
+        fall: string;
+        winter: string;
+        last_quarter: string;
+        yearly: string;
     }
-    name_of_report:{
-        ten_Recent_Comments : string;
-        The_best_selling_and_least_selling_of_recent_weeks_and_months : string;
-        fifteen_books_have_recently_been_sold_by_type : string;
-        Monthly_sale_seasonal_and_yearly : string;
-        Compare_publishers_sales_by_time_period : string;
-        User_to_customer_conversion_process_chart : string;
-    };
-    genre_type_list:{
+    genre_type_list: {
         [key in BOOK_GENRE]: string;
     };
     book_type_list: {
@@ -357,19 +351,25 @@ interface ILocalization extends LocalizedStringsMethods {
         [key in BOOK_ROLES]: string;
     };
     permissions_list: {
-        [key in PERMISSIONS]: string;
+        [key in TPERMISSIONS]: string;
     };
-    order_status:{
-        Invoiced:string;
-        Created:string;
+    name_of_report: {
+        [key in TReportName]: string;
+    }; 
+    languages_list: {
+        [key in LANGUAGES]: string;
+    };    
+    order_status: {
+        Invoiced: string;
+        Created: string;
     };
     validation_msg: {
-        Just_enter_the_phone_number : string;
-        Just_enter_the_cell_number : string;
-        Just_enter_the_email : string;
-        Just_enter_the_numeric_value : string;
-        just_one_image_person_can_have:string;
-        file_can_not_added:string;
+        Just_enter_the_phone_number: string;
+        Just_enter_the_cell_number: string;
+        Just_enter_the_email: string;
+        Just_enter_the_numeric_value: string;
+        just_one_image_person_can_have: string;
+        file_can_not_added: string;
     };
 }
 

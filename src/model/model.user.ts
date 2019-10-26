@@ -8,4 +8,6 @@ export interface IUser extends BaseModel {
     password?: string;
     // person_id: string;
     person: IPerson;
+    permission_groups: string[]; // todo: group[]
+    permissions: string[];
 }

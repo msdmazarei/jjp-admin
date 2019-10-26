@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect, MapDispatchToProps } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Modal } from "react-bootstrap";
@@ -6,8 +6,10 @@ import { TInternationalization } from '../../config/setup';
 import { BaseComponent } from '../_base/BaseComponent';
 import { redux_state } from '../../redux/app_state';
 import { Localization } from '../../config/localization/localization';
+import { TReportName } from '../tool/reports/ReportUtils';
 
 interface IState {
+    firstList: string[] | [];
 }
 
 interface IProps {
@@ -19,13 +21,13 @@ interface IProps {
 
 class DashboardReportsManageModalComponent extends BaseComponent<IProps, IState> {
     state = {
-        firstList: []
+        firstList: [],
     }
 
     componentWillReceiveProps() {
         this.setState({
             ...this.state,
-            firstList: this.props.firstList
+            firstList: this.props.firstList,
         })
     }
 
@@ -34,26 +36,83 @@ class DashboardReportsManageModalComponent extends BaseComponent<IProps, IState>
     }
 
     state_toggle_change_handle(Index: number) {
-        let newArray:string[] = this.state.firstList;
-        if (newArray.length === 0){
+        let newArray: string[] = this.state.firstList;
+        if (newArray.length === 0) {
             return;
         }
-        if (newArray.length >0 && newArray[Index] === 'true') {
-            newArray.splice(Index,1,'false');
+        if (newArray.length > 0 && newArray[Index] === 'true') {
+            newArray.splice(Index, 1, 'false');
             this.setState({
                 ...this.state,
-                firstList :newArray,
+                firstList: newArray,
             })
-        }else{
-            newArray.splice(Index,1,'true');
+        } else {
+            newArray.splice(Index, 1, 'true');
             this.setState({
                 ...this.state,
-                firstList :newArray,
+                firstList: newArray,
             })
         }
-        console.log(this.state.firstList)
     }
 
+    returner_report_title_name(i: number) {
+        if (this.props.firstList.length === 0) {
+            return;
+        }
+        const repObj = Localization.name_of_report;
+        let count: number = 0;
+        for (let key in repObj) {
+            if (count === i) {
+                return Localization.name_of_report[key as TReportName];
+            } else {
+                count++
+            }
+        }
+    }
+
+    returner_report_option() {
+        return (
+            <>
+                {
+                    this.state.firstList !== [] && this.props.firstList.map((value: any, i: number) => {
+                        return <Fragment key={i}>
+                            <div className="mx-3">
+                                <input type="checkbox" className="app-checkbox"
+                                    id={i.toString()}
+                                    onChange={() => this.state_toggle_change_handle(i)}
+                                />
+                                {
+                                    this.state.firstList[i] === 'true'
+                                        ?
+                                        <>
+                                            <i
+                                                onClick={() => this.state_toggle_change_handle(i)}
+                                                className="fa fa-check-square-o"
+                                            >
+                                            </i>
+                                            <label htmlFor={i.toString()}>
+                                                <h6 className="text-dark ml-2">{this.returner_report_title_name(i)}</h6>
+                                            </label>
+                                        </>
+                                        :
+                                        <>
+                                            <i
+                                                onClick={() => this.state_toggle_change_handle(i)}
+                                                className="fa fa-square-o"
+                                            >
+                                            </i>
+                                            <label htmlFor={i.toString()}>
+                                                <h6 className="text-dark ml-2">{this.returner_report_title_name(i)}</h6>
+                                            </label>
+                                        </>
+                                }
+                            </div>
+                        </Fragment>
+                    })
+                }
+            </>
+        )
+    }
 
     render_quick_person() {
         return (
@@ -65,102 +124,7 @@ class DashboardReportsManageModalComponent extends BaseComponent<IProps, IState>
                                 <div className="text-center text-dark">{Localization.settings + " " + Localization.report}</div>
                             </div>
                             <div className="form-group">
-                                <div className="mx-3">
-                                    <input type="checkbox" className="app-checkbox"
-                                        id={"0"}
-                                        onChange={() => this.state_toggle_change_handle(0)}
-                                    />
-                                    {
-                                        this.state.firstList[0] === 'true'
-                                            ?
-                                            <label className="check-mark"  htmlFor={"0"}></label>
-                                            :
-                                            <label  htmlFor={"0"}></label>
-                                    }
-                                    <label htmlFor={"0"}>
-                                        <h6 className="text-dark ml-2">{Localization.name_of_report.ten_Recent_Comments}</h6>
-                                    </label>
-                                </div>
-                                <div className="mx-3">
-                                    <input type="checkbox" className="app-checkbox"
-                                        id={"1"}
-                                        onChange={() => this.state_toggle_change_handle(1)}
-                                    />
-                                    {
-                                        this.state.firstList[1] === 'true'
-                                            ?
-                                            <label className="check-mark" htmlFor={"1"}></label>
-                                            :
-                                            <label htmlFor={"1"}></label>
-                                    }
-                                    <label htmlFor={"1"}>
-                                        <h6 className="text-dark ml-2">{Localization.name_of_report.The_best_selling_and_least_selling_of_recent_weeks_and_months}</h6>
-                                    </label>
-                                </div>
-                                <div className="mx-3">
-                                    <input type="checkbox" className="app-checkbox"
-                                        id={"2"}
-                                        onChange={() => this.state_toggle_change_handle(2)}
-                                    />
-                                    {
-                                        this.state.firstList[2] === 'true'
-                                            ?
-                                            <label className="check-mark" htmlFor={"2"}></label>
-                                            :
-                                            <label htmlFor={"2"}></label>
-                                    }
-                                    <label htmlFor={"2"}>
-                                        <h6 className="text-dark ml-2">{Localization.name_of_report.fifteen_books_have_recently_been_sold_by_type}</h6>
-                                    </label>
-                                </div>
-                                <div className="mx-3">
-                                    <input type="checkbox" className="app-checkbox"
-                                        id={"3"}
-                                        onChange={() => this.state_toggle_change_handle(3)}
-                                    />
-                                    {
-                                        this.state.firstList[3] === 'true'
-                                            ?
-                                            <label className="check-mark" htmlFor={"3"}></label>
-                                            :
-                                            <label htmlFor={"3"}></label>
-                                    }
-                                    <label htmlFor={"3"}>
-                                        <h6 className="text-dark ml-2">{Localization.name_of_report.Monthly_sale_seasonal_and_yearly}</h6>
-                                    </label>
-                                </div>
-                                <div className="mx-3">
-                                    <input type="checkbox" className="app-checkbox"
-                                        id={"4"}
-                                        onChange={() => this.state_toggle_change_handle(4)}
-                                    />
-                                    {
-                                        this.state.firstList[4] === 'true'
-                                            ?
-                                            <label className="check-mark" htmlFor={"4"}></label>
-                                            :
-                                            <label htmlFor={"4"}></label>
-                                    }
-                                    <label htmlFor={"4"}>
-                                        <h6 className="text-dark ml-2">{Localization.name_of_report.Compare_publishers_sales_by_time_period}</h6>
-                                    </label>
-                                </div>
-                                <div className="mx-3">
-                                    <input type="checkbox" className="app-checkbox"
-                                        id={"5"}
-                                        onChange={() => this.state_toggle_change_handle(5)}
-                                    />
-                                    {
-                                        this.state.firstList[5] === 'true'
-                                            ?
-                                            <label className="check-mark" htmlFor={"5"}></label>
-                                            :
-                                            <label htmlFor={"5"}></label>
-                                    }
-                                    <label htmlFor={"5"}>
-                                        <h6 className="text-dark ml-2">{Localization.name_of_report.User_to_customer_conversion_process_chart}</h6>
-                                    </label>
-                                </div>
+                                {this.returner_report_option()}
                             </div>
                         </div>
                     </Modal.Body>
@@ -170,7 +134,6 @@ class DashboardReportsManageModalComponent extends BaseComponent<IProps, IState>
             </>
         );
     }
-
 
     render() {
         return (

@@ -89,6 +89,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
         // this._personService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/group/:group_id/edit')) {
+            console.log('fired')
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
             this.group_id = this.props.match.params.group_id;
             this.fetchGroupById(this.props.match.params.group_id);
@@ -173,7 +174,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                 ...this.state,
                 group: {
                     ...this.state.group,
-                    groupname: { ...this.state.group.groupname, value: res.data.group, isValid: true },
+                    groupname: { ...this.state.group.groupname, value: res.data.title, isValid: true },
                 },
                 saveBtnVisibility: true
             })

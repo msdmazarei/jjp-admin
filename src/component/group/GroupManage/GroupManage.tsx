@@ -130,11 +130,11 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { this.onShowAddPermissionModal(row) },
           name: Localization.permission
         },
-        // {
-        //   text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
-        //   ac_func: (row: any) => { this.updateRow(row) },
-        //   name: Localization.update
-        // },
+        {
+          text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+          ac_func: (row: any) => { this.updateRow(row) },
+          name: Localization.update
+        },
       ]
     },
     filter: {
@@ -189,9 +189,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/group/create');
   }
 
-  // updateRow(group_id: any) {
-  //   this.props.history.push(`/groups/${group_id.id}/edit`);
-  // }
+  updateRow(group_id: any) {
+    this.props.history.push(`/group/${group_id.id}/edit`);
+  }
 
   /// end navigation function for create ant update ///
 

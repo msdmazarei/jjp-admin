@@ -21,6 +21,7 @@ import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
 import { AppDurationPicker } from '../../form/app-durationPicker/AppDurationPicker';
 import { AppDatePicker } from '../../form/app-datePicker/AppDatePicker';
+import { LANGUAGES } from '../../../enum/Language';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -40,7 +41,7 @@ interface IState {
             isValid: boolean;
         };
         language: {
-            value: string | undefined;
+            value: { value: LANGUAGES, label: string };
             isValid: boolean;
         };
         pub_year: {
@@ -99,6 +100,7 @@ interface IState {
     updateLoader: boolean;
     tags_inputValue: string;
     isBookTypeInputTouch: boolean;
+    isBookLanguageInputTouch: boolean;
 }
 interface IProps {
     match: any;
@@ -108,6 +110,42 @@ interface IProps {
 }
 
 class BookSaveComponent extends BaseComponent<IProps, IState> {
+
+    /////////// start Select's options define
+
+    genreOptions = [
+        { value: 'Comedy', label: Localization.genre_type_list.Comedy },
+        { value: 'Drama', label: Localization.genre_type_list.Drama },
+        { value: 'Romance', label: Localization.genre_type_list.Romance },
+        { value: 'Social', label: Localization.genre_type_list.Social },
+        { value: 'Religious', label: Localization.genre_type_list.Religious },
+        { value: 'Historical', label: Localization.genre_type_list.Historical },
+        { value: 'Classic', label: Localization.genre_type_list.Classic },
+        { value: 'Science', label: Localization.genre_type_list.Science }
+    ];
+    typeOptions = [
+        { value: 'DVD', label: Localization.book_type_list.DVD },
+        { value: 'Audio', label: Localization.book_type_list.Audio },
+        { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
+        { value: 'Pdf', label: Localization.book_type_list.Pdf },
+        { value: 'Epub', label: Localization.book_type_list.Epub }
+    ];
+
+    private languages_opts: { value: LANGUAGES, label: string }[] = this._languages_opts();
+    private _languages_opts(): { value: LANGUAGES, label: string }[] {
+        // if (this._languages_opts.length) return this._languages_opts;
+
+        const languageObj = Localization.languages_list
+        const languagesOptions: { value: LANGUAGES, label: string }[] = []
+        for (let key in languageObj) {
+            languagesOptions.push({ value: key as LANGUAGES, label: Localization.languages_list[key as LANGUAGES] })
+        }
+        return languagesOptions
+        // this._languages_opts = languagesOptions;
+        // return this._languages_opts;
+    }
+
+    /////////// end of Select's options define
 
     state = {
         book: {
@@ -120,7 +158,15 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 isValid: true
             },
             language: {
-                value: undefined,
+                value: this.props.internationalization.flag === 'fa'
+                    ?
+                    this.languages_opts[0]
+                    :
+                    this.props.internationalization.flag === 'ar'
+                        ?
+                        this.languages_opts[2]
+                        :
+                        this.languages_opts[1],
                 isValid: true
             },
             pub_year: {
@@ -178,29 +224,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         updateLoader: false,
         tags_inputValue: '',
         isBookTypeInputTouch: false,
+        isBookLanguageInputTouch: false,
     }
-
-    /////////// start Select's options define
-
-    genreOptions = [
-        { value: 'Comedy', label: Localization.genre_type_list.Comedy },
-        { value: 'Drama', label: Localization.genre_type_list.Drama },
-        { value: 'Romance', label: Localization.genre_type_list.Romance },
-        { value: 'Social', label: Localization.genre_type_list.Social },
-        { value: 'Religious', label: Localization.genre_type_list.Religious },
-        { value: 'Historical', label: Localization.genre_type_list.Historical },
-        { value: 'Classic', label: Localization.genre_type_list.Classic },
-        { value: 'Science', label: Localization.genre_type_list.Science }
-    ];
-    typeOptions = [
-        { value: 'DVD', label: Localization.book_type_list.DVD },
-        { value: 'Audio', label: Localization.book_type_list.Audio },
-        { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
-        { value: 'Pdf', label: Localization.book_type_list.Pdf },
-        { value: 'Epub', label: Localization.book_type_list.Epub }
-    ];
-
-    /////////// end of Select's options define
 
 
     private _bookService = new BookService();
@@ -233,6 +258,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             let genreList: any[] = [];
             let typeList: any[] = [];
             let tagList: any[] = [];
+            let Language: { value: LANGUAGES, label: string };
             if (res.data.genre && res.data.genre.length) {
                 genreList = res.data.genre.map(g => { return { label: Localization.genre_type_list[g], value: g } });
             }
@@ -244,12 +270,17 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             if (res.data.tags) {
                 tagList = res.data.tags.map(t => { return { label: t, value: t } });
             }
+            if (res.data.language) {
+                let lang: any = res.data.language;
+                let langua: LANGUAGES = lang;
+                Language = { value: langua, label: Localization.languages_list[langua] };
+            }
             this.setState({
                 ...this.state,
                 book: {
                     ...this.state.book,
                     edition: { ...this.state.book.edition, value: res.data.edition, isValid: true },
-                    language: { ...this.state.book.language, value: res.data.language, isValid: true },
+                    language: { ...this.state.book.language, value: Language!, isValid: true },
                     pub_year: { ...this.state.book.pub_year, value: res.data.pub_year, isValid: true },
                     title: { ...this.state.book.title, value: res.data.title, isValid: true },
                     isben: { ...this.state.book.isben, value: res.data.isben, isValid: true },
@@ -303,7 +334,21 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             }
             , isFormValid: this.checkFormValidate(isValid, inputType)
         })
+    }
 
+    handleSelectLanguageChange(value: { value: LANGUAGES, label: string }) {
+        this.setState({
+            ...this.state,
+            book: {
+                ...this.state.book,
+                language: {
+                    ...this.state.book.language,
+                    value: value,
+                    isValid: true,
+                }
+            }
+            , isFormValid: this.checkFormValidate(true, 'language')
+        })
     }
 
     bookRollChange(list: any[], isValid: boolean) {
@@ -394,7 +439,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
         const newBook = {
             edition: this.state.book.edition.value,
-            language: this.state.book.language.value,
+            language: this.state.book.language.value.value,
             pub_year: this.state.book.pub_year.value,
             title: this.state.book.title.value,
             isben: this.state.book.isben.value,
@@ -437,7 +482,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
         const newBook = {
             edition: this.state.book.edition.value,
-            language: this.state.book.language.value,
+            language: this.state.book.language.value.value,
             pub_year: this.state.book.pub_year.value || null,
             isben: this.state.book.isben.value,
             pages: this.state.book.pages.value,
@@ -528,7 +573,18 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             book: {
                 edition: { value: undefined, isValid: true },
-                language: { value: undefined, isValid: true },
+                language: {
+                    value: this.props.internationalization.flag === 'fa'
+                        ?
+                        this.languages_opts[0]
+                        :
+                        this.props.internationalization.flag === 'ar'
+                            ?
+                            this.languages_opts[2]
+                            :
+                            this.languages_opts[1],
+                    isValid: true
+                },
                 pub_year: { value: undefined, isValid: true },
                 title: { value: undefined, isValid: false },
                 isben: { value: undefined, isValid: true },
@@ -632,12 +688,24 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        <Input
+                                        <div className="form-group">
+                                            <label htmlFor="">{Localization.language} <span className="text-danger">*</span></label>
+                                            <Select
+                                                onChange={(value:any) => this.handleSelectLanguageChange(value)}
+                                                // onBlur={() => this.typeInputTouch_handler()}
+                                                options={this.languages_opts}
+                                                value={this.state.book.language.value}
+                                                placeholder={Localization.language}
+                                            // isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
+                                            />
+                                            {/* {this.typeInvalidFeedback()} */}
+                                        </div>
+                                        {/* <Input
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid, 'language')}
                                             label={Localization.language}
                                             placeholder={Localization.language}
                                             defaultValue={this.state.book.language.value}
-                                        />
+                                        /> */}
                                     </div>
                                     <div className="col-md-4 col-sm-6">
                                         {/* <Input
@@ -655,7 +723,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             placeholder={Localization.publication_date}
                                             gregorian={this.props.internationalization.flag === 'fa' ? false : true}
                                             autoOk={true}
-                                            // time
+                                        // time
                                         />
                                     </div>
                                     <div className="col-md-4 col-sm-6">

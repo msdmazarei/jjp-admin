@@ -63,37 +63,38 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     })
   }
 
-  render_reports_func() {
+  render_reports_func(): JSX.Element {
     return <div className="row">
       {
-        this.state.report_cmp_list.map((report: TReport, r_index:number) => {
+        this.state.report_cmp_list.map((report: TReport, r_index: number) => {
           const Cmpname = reportListMapCmp[report];
           const status: string = this.state.report_cmp_status[r_index];
-          if (status === 'true') {
-            return (
-              <Fragment key={r_index}>
-                <div className="col-12 col-xl-6 mb-3 widget-wrapper">
-                  <AppWidgets
-                    onClose={() => this.reports_status_handler(r_index)}
-                  >
-                    <Cmpname />
-                  </AppWidgets>
-                </div>
-              </Fragment>
-            )
-          } if (status === 'false') {
-            return (
-              <Fragment key={r_index}>
-                <div className="col-12 col-xl-6 mb-3 widget-wrapper d-none">
-                  <AppWidgets
-                    onClose={() => this.reports_status_handler(r_index)}
-                  >
-                    <Cmpname />
-                  </AppWidgets>
-                </div>
-              </Fragment>
-            )
-          }
+          // if (status === 'true') {
+          return (
+            <Fragment key={r_index}>
+              <div className={"col-12 col-xl-6 mb-3 widget-wrapper " + (status === 'false' ? 'd-none' : '')}>
+                <AppWidgets
+                  reShow={status ? true : false}
+                  onClose={() => this.reports_status_handler(r_index)}
+                >
+                  <Cmpname />
+                </AppWidgets>
+              </div>
+            </Fragment>
+          )
+          // } if (status === 'false') {
+          //   return (
+          //     <Fragment key={r_index}>
+          //       <div className="col-12 col-xl-6 mb-3 widget-wrapper d-none">
+          //         <AppWidgets
+          //           onClose={() => this.reports_status_handler(r_index)}
+          //         >
+          //           <Cmpname />
+          //         </AppWidgets>
+          //       </div>
+          //     </Fragment>
+          //   )
+          // }
         })
       }
     </div>
@@ -110,7 +111,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     this.setState({
       ...this.state,
       reportManagerModalShow: false,
-      report_cmp_status : newList,
+      report_cmp_status: newList,
     })
   }
 
@@ -134,8 +135,8 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
         </div>
         {this.render_reports_func()}
         <DashboardReportsManageModal
-          firstList={this.state.report_cmp_status}
           modalShow={this.state.reportManagerModalShow}
+          firstList={this.state.report_cmp_status}
           onHide={(newList) => this.reportManagerModal_seter(newList)}
         />
       </div>

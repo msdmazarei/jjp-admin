@@ -711,14 +711,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
-              <BtnLoader
-                loading={false}
-                disabled={false}
-                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoBookCreate()}
-              >
-                {Localization.new}
-              </BtnLoader>
+                  <BtnLoader
+                    loading={false}
+                    disabled={false}
+                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                    onClick={() => this.gotoBookCreate()}
+                  >
+                    {Localization.new}
+                  </BtnLoader>
             </div>
           </div>
           <div className="row">

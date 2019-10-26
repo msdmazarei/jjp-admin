@@ -196,7 +196,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     }
 
     private setTimeout_val: any;
-    debounce_300(inputValue: any, callBack: any) {
+    debounce_300(inputValue: any, callBack: any, index:number) {
         if (this.setTimeout_val) {
             clearTimeout(this.setTimeout_val);
         }
@@ -314,7 +314,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                                             cacheOptions
                                             defaultOptions
                                             value={item.person}
-                                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback,index)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
                                             onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
                                         />

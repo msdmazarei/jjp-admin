@@ -11,6 +11,7 @@ import { TInternationalization } from '../../../config/setup';
 interface IProps {
     internationalization: TInternationalization;
     onClose?: () => void;
+    reShow?:boolean;
     // token: IToken;
 }
 
@@ -29,6 +30,15 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         close: false,
         child_tools: undefined,
         child_title: undefined,
+    }
+
+    componentWillReceiveProps(){
+        if(this.props.reShow && this.props.reShow === true){
+            this.setState({
+                ...this.state,
+                close : false,
+            })
+        }
     }
 
     minimizeFunction() {
@@ -75,6 +85,8 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         if (this.state.restore === false && this.state.close === false) {
             this.setState({
                 ...this.state,
+                minimize: false,
+                restore: true,
                 close: true,
             },() => this.closeWidgetParent());
             document.body.classList.remove("widget-open");
@@ -82,6 +94,8 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
         } else {
             this.setState({
                 ...this.state,
+                minimize: false,
+                restore: true,
                 close: true,
             },() => this.closeWidgetParent());
         }

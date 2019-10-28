@@ -58,7 +58,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         { value: 'Author', label: Localization.role_type_list.Author },
         { value: 'Writer', label: Localization.role_type_list.Writer },
         { value: 'Translator', label: Localization.role_type_list.Translator },
-        { value: 'Press', label: Localization.role_type_list.Press },
+        // { value: 'Press', label: Localization.role_type_list.Press },
         { value: 'Contributer', label: Localization.role_type_list.Contributer },
         { value: 'Designer', label: Localization.role_type_list.Designer }
     ];
@@ -280,12 +280,12 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                     (this.props.label || this.props.required) ?
                         <label>
                             {this.props.label}
-                            {
+                            {/* {
                                 this.props.required
                                     ?
                                     <span className="text-danger">*</span>
                                     : ''
-                            }
+                            } */}
                         </label>
                         : ''}
                 <div className="role-img-container">
@@ -347,9 +347,9 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                             </div>
                         </div>
                     </div>
-                    <div className="text-center text-danger">
+                    {/* <div className="text-center text-danger">
                         {this.errorTxt_render()}
-                    </div>
+                    </div> */}
                 </div>
                 {
                     <QuickPerson

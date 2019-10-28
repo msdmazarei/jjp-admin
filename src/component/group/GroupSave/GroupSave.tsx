@@ -29,7 +29,7 @@ interface IState {
             isValid: boolean;
         };
         person_id: {
-            value: string | undefined | undefined;
+            value: string | undefined;
             isValid: boolean;
         };
     };
@@ -175,11 +175,40 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                 group: {
                     ...this.state.group,
                     groupname: { ...this.state.group.groupname, value: res.data.title, isValid: true },
+                    person_id : {...this.state.group.person_id , value: res.data.person_id === null ? undefined : res.data.person_id , isValid:true },
                 },
                 saveBtnVisibility: true
+            }, () => this.group_person_seter_handler(this.state.group.person_id.value))
+        }
+    }
+
+    group_person_seter_handler(person_id: string | undefined){
+        if(person_id === undefined){
+            return;
+        }else{
+            this.fetchGroupPersonById(person_id);
+        }
+    }
+
+    async fetchGroupPersonById(person_id: string) {
+
+        let res = await this._personService.byId(person_id).catch(error => {
+            this.handleError({ error: error.response });
+        });
+
+        if (res) {
+            this.setState({
+                ...this.state,
+                person:{
+                  ...this.state,
+                  value:{
+                      ...this.state,
+                      label: this.getPersonFullName(res.data),
+                      value:res.data,
+                  }
+                }
             })
         }
-
     }
 
     handleInputChange(value: any, isValid: boolean) {

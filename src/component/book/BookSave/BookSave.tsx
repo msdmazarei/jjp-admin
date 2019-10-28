@@ -3,7 +3,7 @@ import { Input } from '../../form/input/Input';
 import { BookService } from "../../../service/service.book";
 import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
-import { BOOK_GENRE, BOOK_TYPES } from '../../../enum/Book';
+import { BOOK_GENRE, BOOK_TYPES, BOOK_ROLES } from '../../../enum/Book';
 import { IPerson } from '../../../model/model.person';
 import { BookRole } from "../BookRole/BookRole";
 import Select from 'react-select';
@@ -22,6 +22,13 @@ import { FixNumber } from '../../form/fix-number/FixNumber';
 import { AppDurationPicker } from '../../form/app-durationPicker/AppDurationPicker';
 import { AppDatePicker } from '../../form/app-datePicker/AppDatePicker';
 import { LANGUAGES } from '../../../enum/Language';
+import AsyncSelect from 'react-select/async';
+import { PersonService } from '../../../service/service.person';
+
+interface ICmp_select<T> {
+    label: string;
+    value: T
+}
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -92,14 +99,15 @@ interface IState {
             value: [] | any,
             isValid: boolean
         };
-
     };
+    book_roll_press: ICmp_select<IPerson> | null;
     isFormValid: boolean;
     saveMode: SAVE_MODE;
     createLoader: boolean;
     updateLoader: boolean;
     tags_inputValue: string;
     isBookTypeInputTouch: boolean;
+    isBookPressInputTouch: boolean;
     isBookLanguageInputTouch: boolean;
 }
 interface IProps {
@@ -218,18 +226,21 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 isValid: true
             }
         },
+        book_roll_press: null,
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
         updateLoader: false,
         tags_inputValue: '',
         isBookTypeInputTouch: false,
+        isBookPressInputTouch: false,
         isBookLanguageInputTouch: false,
     }
 
 
     private _bookService = new BookService();
     private _uploadService = new UploadService();
+    private _personService = new PersonService();
     private book_id: string | undefined;
 
     componentDidMount() {
@@ -255,10 +266,13 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         });
         // await this.__waitOnMe();
         if (res) {
+            let rolesListWithOutPress: any[] = []
+            let press : { label : string , value : IPerson }[] = [];
             let genreList: any[] = [];
             let typeList: any[] = [];
             let tagList: any[] = [];
             let Language: { value: LANGUAGES, label: string };
+
             if (res.data.genre && res.data.genre.length) {
                 genreList = res.data.genre.map(g => { return { label: Localization.genre_type_list[g], value: g } });
             }
@@ -270,11 +284,31 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             if (res.data.tags) {
                 tagList = res.data.tags.map(t => { return { label: t, value: t } });
             }
-            if (res.data.language) {
+            if (res.data.language && res.data.language !== "") {
                 let lang: any = res.data.language;
                 let langua: LANGUAGES = lang;
                 Language = { value: langua, label: Localization.languages_list[langua] };
+            }else{
+                this.props.internationalization.flag === 'fa'
+                ?
+                Language = {value: this.languages_opts[0].value, label: this.languages_opts[0].label}
+                :
+                this.props.internationalization.flag === 'ar'
+                ?
+                Language = {value: this.languages_opts[2].value, label: this.languages_opts[2].label}
+                :
+                Language = {value: this.languages_opts[1].value, label: this.languages_opts[1].label}
             }
+            if (res.data.roles && res.data.roles.length){
+                for (let i = 0; i < res.data.roles.length; i++) {
+                    if(res.data.roles[i].role === 'Press'){
+                        let item = { label : this.getPersonFullName(res.data.roles[i].person) , value : res.data.roles[i].person}
+                        press.push(item);
+                    }else{
+                        rolesListWithOutPress.push(res.data.roles[i]);
+                    }
+                }
+            };
             this.setState({
                 ...this.state,
                 book: {
@@ -290,11 +324,12 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     description: { ...this.state.book.description, value: res.data.description, isValid: true },
                     price: { ...this.state.book.price, value: res.data.price, isValid: true },
                     genre: { ...this.state.book.genre, value: genreList, isValid: true },
-                    roles: { ...this.state.book.roles, value: res.data.roles, isValid: true },
+                    roles: { ...this.state.book.roles, value: rolesListWithOutPress , isValid: true },
                     type: { ...this.state.book.type, value: typeList, isValid: true },
                     images: { ...this.state.book.images, value: res.data.images, isValid: true },
                     tags: { ...this.state.book.tags, value: tagList, isValid: true },
-                }
+                },
+                book_roll_press : press[0],
             })
         }
 
@@ -356,9 +391,28 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             book: {
-                ...this.state.book, roles: { value: list, isValid: isavl }
+                ...this.state.book,
+                roles: {
+                    ...this.state.book.roles,
+                    value: list,
+                }
             }
-            , isFormValid: this.checkFormValidate(isavl, 'roles')
+            // , isFormValid: this.checkFormValidate(isavl, 'roles'),
+        })
+    }
+
+    bookPressChange(selectedPerson: { label: string, value: IPerson }) {
+        this.setState({
+            ...this.state,
+            book: {
+                ...this.state.book,
+                roles: {
+                    ...this.state.book.roles,
+                    isValid: true,
+                }
+            },
+            book_roll_press: selectedPerson,
+            isFormValid: this.checkFormValidate(true, 'roles'),
         })
     }
 
@@ -436,7 +490,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let typeList = (this.state.book.type.value || []).map((item: { label: string; value: string }) => item.value);
         let roleList = (this.state.book.roles.value || []).map((item: any) => { return { role: item.role, person: { id: item.person.id } } });
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
-
+        let roleListWithPress = roleList;
+        let press = { role: 'Press', person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
+        roleListWithPress.push(press);
         const newBook = {
             edition: this.state.book.edition.value,
             language: this.state.book.language.value.value,
@@ -450,7 +506,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             price: this.state.book.price.value,
             genre: genreList,
             types: typeList,
-            roles: roleList,
+            roles: roleListWithPress,
             images: imgUrls,
             tags: tagList
         }
@@ -479,6 +535,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let roleList = (this.state.book.roles.value || []).map((item: any) => { return { role: item.role, person: { id: item.person.id } } });
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         // let imagesList = (this.state.book.images.value || []).map((list: { label: string; value: string }) => list.value);
+        let roleListWithPress = roleList;
+        let press = { role: 'Press', person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
+        roleListWithPress.push(press);
 
         const newBook = {
             edition: this.state.book.edition.value,
@@ -491,7 +550,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             description: this.state.book.description.value,
             price: this.state.book.price.value,
             genre: genreList,
-            roles: roleList,
+            roles: roleListWithPress,
             images: imgUrls,
             tags: tagList
             // title: this.state.book.title.value,
@@ -599,6 +658,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 images: { value: undefined, isValid: true },
                 tags: { value: [], isValid: true },
             },
+            book_roll_press: null,
             isFormValid: false,
         })
     }
@@ -647,6 +707,68 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         }
     }
 
+    pressInputTouch_handler() {
+        this.setState({
+            ...this.state,
+            isBookPressInputTouch: true,
+        })
+    }
+
+    pressInvalidFeedback() {
+        if (!this.state.isBookPressInputTouch) {
+            return
+        };
+        if (this.state.isBookPressInputTouch && this.state.book.roles.isValid) {
+            return
+        }
+        if (this.state.isBookPressInputTouch && !this.state.book.roles.isValid) {
+            return <div className="select-feedback">{Localization.required_field}</div>
+        }
+    }
+
+
+    ////// request for book roll person ////////
+
+    private personRequstError_txt: string = Localization.no_item_found;
+
+    async promiseOptions2(inputValue: any, callBack: any) {
+        let filter = undefined;
+        if (inputValue) {
+            filter = { person: inputValue };
+        }
+        let res: any = await this._personService.search(10, 0, filter).catch(err => {
+            let err_msg = this.handleError({ error: err.response, notify: false });
+            this.personRequstError_txt = err_msg.body;
+        });
+
+        if (res) {
+            let persons = res.data.result.map((ps: any) => {
+                return { label: ps.cell_no ? (this.getPersonFullName(ps) + " - " + ps.cell_no) : this.getPersonFullName(ps), value: ps }
+            });
+            this.personRequstError_txt = Localization.no_item_found;
+            callBack(persons);
+        } else {
+            callBack();
+        }
+    }
+
+    private setTimeout_person_val: any;
+    debounce_300(inputValue: any, callBack: any) {
+        if (this.setTimeout_person_val) {
+            clearTimeout(this.setTimeout_person_val);
+        }
+        this.setTimeout_person_val = setTimeout(() => {
+            this.promiseOptions2(inputValue, callBack);
+        }, 1000);
+    }
+
+    select_noOptionsMessage(obj: { inputValue: string }) {
+        return this.personRequstError_txt;
+    }
+
+
+    /////////////////////////////////////
+
 
 
     /////////////////// render ////////////////////////
@@ -691,7 +813,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.language} <span className="text-danger">*</span></label>
                                             <Select
-                                                onChange={(value:any) => this.handleSelectLanguageChange(value)}
+                                                onChange={(value: any) => this.handleSelectLanguageChange(value)}
                                                 // onBlur={() => this.typeInputTouch_handler()}
                                                 options={this.languages_opts}
                                                 value={this.state.book.language.value}
@@ -787,7 +909,23 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             patternError={Localization.validation_msg.Just_enter_the_numeric_value}
                                         />
                                     </div>
-                                    <div className="col-md-6 col-sm-12">
+                                    <div className="col-md-4 col-sm-6">
+                                        <div className="form-group">
+                                            <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
+                                            <AsyncSelect
+                                                placeholder={Localization.person}
+                                                cacheOptions
+                                                defaultOptions
+                                                value={this.state.book_roll_press}
+                                                onBlur={() => this.pressInputTouch_handler()}
+                                                loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                                                noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                                                onChange={(selectedPerson: any) => this.bookPressChange(selectedPerson)}
+                                            />
+                                            {this.pressInvalidFeedback()}
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.genre}</label>
                                             <Select
@@ -799,7 +937,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-md-6 col-sm-12">
+                                    <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.tags}</label>
                                             <Select

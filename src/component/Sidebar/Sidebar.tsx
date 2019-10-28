@@ -9,6 +9,8 @@ import { NavLink, Link } from "react-router-dom";
 
 // reactstrap components
 import { Nav } from "reactstrap";
+import { Localization } from "../../config/localization/localization";
+import { AccessService } from "../../service/service.access";
 
 var ps:any;
 
@@ -111,6 +113,7 @@ class Sidebar extends React.Component<any,any> {
             {routes.map((prop:any, key:number) => {
               if (prop.redirect) return null;
               if (!prop.isitem) return null;
+              if (prop.name === Localization.create_book && AccessService.checkBookCreateIcon()=== false) return null; // for book create access
               return ( 
                 <li
                   className={

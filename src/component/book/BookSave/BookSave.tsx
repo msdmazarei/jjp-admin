@@ -24,6 +24,7 @@ import { AppDatePicker } from '../../form/app-datePicker/AppDatePicker';
 import { LANGUAGES } from '../../../enum/Language';
 import AsyncSelect from 'react-select/async';
 import { PersonService } from '../../../service/service.person';
+import { AccessService } from '../../../service/service.access';
 
 interface ICmp_select<T> {
     label: string;
@@ -243,6 +244,20 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     private _personService = new PersonService();
     private book_id: string | undefined;
 
+    checkBookAddAccess(): boolean {
+        if (AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')) {
+            return true;
+        }
+        return false
+    }
+
+    checkBookUpdateAccess(): boolean {
+        if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
+            return true;
+        }
+        return false
+    }
+
     componentDidMount() {
         // this._bookService.setToken(this.props.token);
         // this._uploadService.setToken(this.props.token);
@@ -267,7 +282,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         // await this.__waitOnMe();
         if (res) {
             let rolesListWithOutPress: any[] = []
-            let press : { label : string , value : IPerson }[] = [];
+            let press: { label: string, value: IPerson }[] = [];
             let genreList: any[] = [];
             let typeList: any[] = [];
             let tagList: any[] = [];
@@ -288,23 +303,23 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 let lang: any = res.data.language;
                 let langua: LANGUAGES = lang;
                 Language = { value: langua, label: Localization.languages_list[langua] };
-            }else{
+            } else {
                 this.props.internationalization.flag === 'fa'
-                ?
-                Language = {value: this.languages_opts[0].value, label: this.languages_opts[0].label}
-                :
-                this.props.internationalization.flag === 'ar'
-                ?
-                Language = {value: this.languages_opts[2].value, label: this.languages_opts[2].label}
-                :
-                Language = {value: this.languages_opts[1].value, label: this.languages_opts[1].label}
+                    ?
+                    Language = { value: this.languages_opts[0].value, label: this.languages_opts[0].label }
+                    :
+                    this.props.internationalization.flag === 'ar'
+                        ?
+                        Language = { value: this.languages_opts[2].value, label: this.languages_opts[2].label }
+                        :
+                        Language = { value: this.languages_opts[1].value, label: this.languages_opts[1].label }
             }
-            if (res.data.roles && res.data.roles.length){
+            if (res.data.roles && res.data.roles.length) {
                 for (let i = 0; i < res.data.roles.length; i++) {
-                    if(res.data.roles[i].role === 'Press'){
-                        let item = { label : this.getPersonFullName(res.data.roles[i].person) , value : res.data.roles[i].person}
+                    if (res.data.roles[i].role === 'Press') {
+                        let item = { label: this.getPersonFullName(res.data.roles[i].person), value: res.data.roles[i].person }
                         press.push(item);
-                    }else{
+                    } else {
                         rolesListWithOutPress.push(res.data.roles[i]);
                     }
                 }
@@ -324,12 +339,12 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     description: { ...this.state.book.description, value: res.data.description, isValid: true },
                     price: { ...this.state.book.price, value: res.data.price, isValid: true },
                     genre: { ...this.state.book.genre, value: genreList, isValid: true },
-                    roles: { ...this.state.book.roles, value: rolesListWithOutPress , isValid: true },
+                    roles: { ...this.state.book.roles, value: rolesListWithOutPress, isValid: true },
                     type: { ...this.state.book.type, value: typeList, isValid: true },
                     images: { ...this.state.book.images, value: res.data.images, isValid: true },
                     tags: { ...this.state.book.tags, value: tagList, isValid: true },
                 },
-                book_roll_press : press[0],
+                book_roll_press: press[0],
             })
         }
 
@@ -476,6 +491,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     // add book function 
 
     async create() {
+        if (this.checkBookAddAccess() === false) {
+            return;
+        };
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
         let imgUrls = await this.uploadFileReq().catch(error => {
@@ -522,6 +540,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
+        if (this.checkBookUpdateAccess() === false) {
+            return;
+        };
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 
@@ -1042,6 +1063,20 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
+                                                    {
+                                                        this.checkBookAddAccess() === false
+                                                            ?
+                                                            undefined
+                                                            :
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-success shadow-default shadow-hover"
+                                                                loading={this.state.createLoader}
+                                                                onClick={() => this.create()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.create}
+                                                            </BtnLoader>
+                                                    }
                                                     <BtnLoader
                                                         btnClassName="btn btn-success shadow-default shadow-hover"
                                                         loading={this.state.createLoader}
@@ -1060,14 +1095,22 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                     </BtnLoader>
                                                 </>
                                                 :
-                                                <BtnLoader
-                                                    btnClassName="btn btn-info shadow-default shadow-hover"
-                                                    loading={this.state.updateLoader}
-                                                    onClick={() => this.update()}
-                                                    disabled={!this.state.isFormValid}
-                                                >
-                                                    {Localization.update}
-                                                </BtnLoader>
+                                                <>
+                                                    {
+                                                        this.checkBookUpdateAccess() === false
+                                                            ?
+                                                            undefined
+                                                            :
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-info shadow-default shadow-hover"
+                                                                loading={this.state.updateLoader}
+                                                                onClick={() => this.update()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.update}
+                                                            </BtnLoader>
+                                                    }
+                                                </>
                                         }
                                     </div>
                                     <BtnLoader

@@ -3,7 +3,7 @@ import { Input } from '../../form/input/Input';
 import { BookService } from "../../../service/service.book";
 import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
-import { BOOK_GENRE, BOOK_TYPES, BOOK_ROLES } from '../../../enum/Book';
+import { BOOK_GENRE, BOOK_TYPES } from '../../../enum/Book';
 import { IPerson } from '../../../model/model.person';
 import { BookRole } from "../BookRole/BookRole";
 import Select from 'react-select';
@@ -402,7 +402,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookRollChange(list: any[], isValid: boolean) {
-        const isavl: boolean = isValid && this.pressCheckValidation(list);
+        // const isavl: boolean = isValid && this.pressCheckValidation(list);
         this.setState({
             ...this.state,
             book: {

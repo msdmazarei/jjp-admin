@@ -311,6 +311,7 @@ export const fa = {
     modification_date:"تاریخ اصلاح",
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher:"هر کتاب باید تنها دارای یک ناشر باشد و افزودن کتاب بدون ناشر امکان پذیر نمی باشد",
     name_of_organization: "نام سازمان",
+    upload : 'بارگذاری',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

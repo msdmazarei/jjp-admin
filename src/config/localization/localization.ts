@@ -323,6 +323,7 @@ interface ILocalization extends LocalizedStringsMethods {
     modification_date: string;
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher: string;
     name_of_organization: string;
+    upload : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

@@ -13,6 +13,7 @@ import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
+import { AccessService } from '../../../service/service.access';
 
 
 interface IRoleRow {
@@ -196,7 +197,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     }
 
     private setTimeout_val: any;
-    debounce_300(inputValue: any, callBack: any, index:number) {
+    debounce_300(inputValue: any, callBack: any, index: number) {
         if (this.setTimeout_val) {
             clearTimeout(this.setTimeout_val);
         }
@@ -304,17 +305,23 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                                     </div>
                                     <div className="col-md-5">
                                         <label htmlFor="">{Localization.person}</label>
-                                        <i
-                                            title={Localization.Quick_person_creation}
-                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
-                                            onClick={() => this.quickpersonOpen(index)}
-                                        ></i>
+                                        {
+                                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                ?
+                                                <i
+                                                    title={Localization.Quick_person_creation}
+                                                    className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                                    onClick={() => this.quickpersonOpen(index)}
+                                                ></i>
+                                                :
+                                                undefined
+                                        }
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
                                             defaultOptions
                                             value={item.person}
-                                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback,index)}
+                                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback, index)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
                                             onChange={(selectedPerson) => this.handlePersonChange(selectedPerson, index)}
                                         />

@@ -16,6 +16,7 @@ import Dropzone from 'react-dropzone';
 import { AppRegex } from '../../../config/regex';
 import { IPerson } from '../../../model/model.person';
 import { FixNumber } from '../../form/fix-number/FixNumber';
+import { AccessService } from '../../../service/service.access';
 
 interface IState {
     person: {
@@ -128,6 +129,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
 
 
     async quickAddPerson() {
+        if(!AccessService.checkAccess('PERSON_ADD_PREMIUM'))return;
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, quickPersonAddBtnLoader: true, });
         let imgUrls = await this.uploadFileReq().catch(error => {

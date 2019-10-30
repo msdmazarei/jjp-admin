@@ -25,6 +25,7 @@ import { LANGUAGES } from '../../../enum/Language';
 import AsyncSelect from 'react-select/async';
 import { PersonService } from '../../../service/service.person';
 import { AccessService } from '../../../service/service.access';
+import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 
 interface ICmp_select<T> {
     label: string;
@@ -110,6 +111,7 @@ interface IState {
     isBookTypeInputTouch: boolean;
     isBookPressInputTouch: boolean;
     isBookLanguageInputTouch: boolean;
+    quickPersonModalStatus: boolean;
 }
 interface IProps {
     match: any;
@@ -236,6 +238,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         isBookTypeInputTouch: false,
         isBookPressInputTouch: false,
         isBookLanguageInputTouch: false,
+        quickPersonModalStatus: false,
     }
 
 
@@ -748,6 +751,41 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
 
+    ////////   start crate quick person  //////////
+
+    quickpersonOpen() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: true,
+        })
+    }
+
+    quickpersonClose() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: false,
+        })
+    }
+
+    seterPerson(person: IPerson) {
+        const selectedPerson : { label: string, value: IPerson } = { label : this.getPersonFullName(person) , value : person }
+        this.setState({
+            ...this.state,
+            book: {
+                ...this.state.book,
+                roles: {
+                    ...this.state.book.roles,
+                    isValid: true,
+                }
+            },
+            book_roll_press: selectedPerson,
+            isBookPressInputTouch : true,
+            isFormValid: this.checkFormValidate(true, 'roles'),
+        })
+    }
+    ////////   end crate quick person  //////////
+
+
     ////// request for book roll person ////////
 
     private personRequstError_txt: string = Localization.no_item_found;
@@ -933,6 +971,17 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
+                                            {
+                                                AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                    ?
+                                                    <i
+                                                        title={Localization.Quick_person_creation}
+                                                        className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                                        onClick={() => this.quickpersonOpen()}
+                                                    ></i>
+                                                    :
+                                                    undefined
+                                            }
                                             <AsyncSelect
                                                 placeholder={Localization.person}
                                                 cacheOptions
@@ -1118,6 +1167,13 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
+                {
+                    <QuickPerson
+                        onCreate={(person: IPerson) => this.seterPerson(person)}
+                        modalShow={this.state.quickPersonModalStatus}
+                        onHide={() => this.quickpersonClose()}
+                    ></QuickPerson>
+                }
                 <ToastContainer {...this.getNotifyContainerConfig()} />
             </>
         )

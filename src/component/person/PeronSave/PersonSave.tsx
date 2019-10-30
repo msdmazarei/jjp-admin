@@ -15,6 +15,7 @@ import { Localization } from '../../../config/localization/localization';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
+import { AccessService } from '../../../service/service.access';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -223,7 +224,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         }
         const newPerson = {
             name: this.state.person.name.value,
-            last_name:this.state.is_legal === true ? '': this.state.person.last_name.value,
+            last_name: this.state.is_legal === true ? '' : this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
             image: imgUrls[0],
@@ -254,7 +255,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         }
         const newPerson = {
             name: this.state.person.name.value,
-            last_name:this.state.is_legal === true ? '':  this.state.person.last_name.value,
+            last_name: this.state.is_legal === true ? '' : this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
             image: imgUrls[0] || null, // '',
@@ -575,14 +576,20 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
-                                                    <BtnLoader
-                                                        btnClassName="btn btn-success shadow-default shadow-hover"
-                                                        loading={this.state.createLoader}
-                                                        onClick={() => this.create()}
-                                                        disabled={!this.state.isFormValid}
-                                                    >
-                                                        {Localization.create}
-                                                    </BtnLoader>
+                                                    {
+                                                        AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                            ?
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-success shadow-default shadow-hover"
+                                                                loading={this.state.createLoader}
+                                                                onClick={() => this.create()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.create}
+                                                            </BtnLoader>
+                                                            :
+                                                            undefined
+                                                    }
                                                     <BtnLoader
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
@@ -595,7 +602,8 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        this.state.saveBtnVisibility ?
+                                                        (AccessService.checkAccess('PERSON_EDIT_PREMIUM') && this.state.saveBtnVisibility)
+                                                            ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
                                                                 loading={this.state.updateLoader}
@@ -604,7 +612,8 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                             >
                                                                 {Localization.update}
                                                             </BtnLoader>
-                                                            : ''
+                                                            :
+                                                            undefined
                                                     }
                                                 </>
 

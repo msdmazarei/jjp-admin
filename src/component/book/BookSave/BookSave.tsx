@@ -1078,14 +1078,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                             </BtnLoader>
                                                     }
                                                     <BtnLoader
-                                                        btnClassName="btn btn-success shadow-default shadow-hover"
-                                                        loading={this.state.createLoader}
-                                                        onClick={() => this.create()}
-                                                        disabled={!this.state.isFormValid}
-                                                    >
-                                                        {Localization.create}
-                                                    </BtnLoader>
-                                                    <BtnLoader
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
                                                         onClick={() => this.resetForm()}

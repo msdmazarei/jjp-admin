@@ -50,6 +50,7 @@ const appRoutes = (
             <Route exact path="/group/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/group/create" render={props => <AdminLayout {...props} />} />              
             <Route exact path="/group/:group_id/edit" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/upload" render={props => <AdminLayout {...props} />} />
             <Route exact path="/permission/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/permission/create" render={props => <AdminLayout {...props} />} />              
             <Route exact path="/permission/:permission_id/edit" render={props => <AdminLayout {...props} />} />    

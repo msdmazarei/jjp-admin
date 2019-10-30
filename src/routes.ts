@@ -12,7 +12,8 @@ import { GroupManage } from "./component/group/GroupManage/GroupManage";
 import { GroupSave } from "./component/group/GroupSave/GroupSave";
 import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
 import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
-import { Profile } from './component/profile/Profile'
+import { Profile } from './component/profile/Profile';
+import { FileUpload } from './component/upload/FileUpload/FileUpload';
 import { Localization } from "./config/localization/localization";
 
 
@@ -162,6 +163,16 @@ var routes = [
     brandName: ['group', 'edit']
   },
   // group end
+  // upload start
+  {
+    path: "/upload",
+    name: Localization.upload,
+    icon: "fa fa-upload",
+    component: FileUpload,
+    layout: "/admin",
+    isitem: true
+  },
+  // upload end
   // permission start
   {
     path: "/permission/manage",

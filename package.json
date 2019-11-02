@@ -35,6 +35,7 @@
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.7",
     "react-hichestan-datetimepicker": "^2.0.5",
+    "react-json-view": "^1.19.1",
     "react-localization": "^1.0.14",
     "react-redux": "^7.1.0",
     "react-router": "^5.0.1",

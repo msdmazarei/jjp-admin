@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { History } from 'history';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
@@ -14,7 +14,8 @@ import { BookService } from '../../../service/service.book';
 import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { EpubUpload } from '../EpubUpload/EpubUpload';
-import { AudioUpload } from '../AudioUpload/AudioUpload';
+import { AppGuid } from '../../../asset/script/guid';
+// import { AudioUpload } from '../AudioUpload/AudioUpload';
 
 // enum SAVE_MODE {
 //     CREATE = 'CREATE',
@@ -72,6 +73,8 @@ interface IProps {
     internationalization: TInternationalization;
 }
 
+
+
 class FileUploadComponent extends BaseComponent<IProps, IState> {
     state = {
         selectedBook: null,
@@ -91,6 +94,8 @@ class FileUploadComponent extends BaseComponent<IProps, IState> {
     }
 
     _bookService = new BookService();
+
+
 
 
     book_title_returner() {
@@ -280,15 +285,12 @@ class FileUploadComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-6">
+                        <div className="col-12">
                             <div className="template-box mb-4">
                                 <EpubUpload
                                     onChange={(clidren: Book_children[]) => this.onchange(clidren)}
+                                    bookName={this.state.selectedBook ? (this.state.selectedBook! as { label: string, value: IBook }).value.title : ''}
                                 />
-                            </div>
-                        </div>
-                        <div className="col-6">
-                            <div className="template-box mb-4">
                             </div>
                         </div>
                     </div>

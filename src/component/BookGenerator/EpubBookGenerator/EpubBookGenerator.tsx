@@ -7,7 +7,7 @@ import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 // import { IToken } from '../../../model/model.token';
 // import { ToastContainer } from 'react-toastify';
-import { Book_children } from '../BookGenerator/BookGenerator';
+// import { Book_children } from '../BookGenerator/BookGenerator';
 // import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 // import { Localization } from '../../../config/localization/localization';
 // import { Input } from '../../form/input/Input';
@@ -16,10 +16,15 @@ import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { AppGuid } from '../../../asset/script/guid';
 // import { Localization } from '../../../config/localization/localization';
 // import Select from 'react-select';
+import SortableTree, { toggleExpandedForAll } from 'react-sortable-tree';
+import 'react-sortable-tree/style.css';
+import { Input } from '../../form/input/Input';
+import { ChapterGenerator } from '../ChapterGenerator/ChapterGenerator';
+import { Book_children } from '../BookGenerator/BookGenerator';
 
 
 interface IState {
-    book_children: Book_children[];
+    book_children: Book_children_converted[];
 }
 
 interface IProps {
@@ -27,7 +32,9 @@ interface IProps {
     // history: History;
     internationalization: TInternationalization;
     onChange?: (children: any[]) => void;
-    bookName: string;
+    // bookName: string;
+    defaultValue: Book_children[];
+    treeDataChange: (treeData : any) => void;
 }
 
 interface book_tree {
@@ -36,10 +43,17 @@ interface book_tree {
     children: book_tree[]
 }
 
+interface Book_children_converted {
+    id: string;
+    title: JSX.Element;
+    body: any[];
+    children: Book_children_converted[];
+}
+
 
 class EpubBookGeneratorComponent extends BaseComponent<IProps, IState> {
     state = {
-        book_children: [],
+        book_children: this.getConvertedData(),
     }
 
     private book_tree: book_tree = {
@@ -82,6 +96,7 @@ class EpubBookGeneratorComponent extends BaseComponent<IProps, IState> {
             </>
         )
     }
+
     private book_tree_render() {
         return <div>
             {this.tree_render(this.book_tree)}
@@ -148,102 +163,117 @@ class EpubBookGeneratorComponent extends BaseComponent<IProps, IState> {
         return this.searchTree_parent(this.book_tree, id);
     }
 
-    bookBodyTypeOptions = [
-        { value: 'text', label: 'text' },
-        { value: 'control', label: 'control' }
-    ];
-
-    child_id_generator() {
-        let id = "child_id__" + Math.floor(Math.random() * 1000000000);
-        return id;
+    addChildToBefore(id: string) {
+        debugger;
     }
 
-    body_id_generator() {
-        let id = "body_id__" + Math.floor(Math.random() * 1000000000);
-        return id;
+    addChildToAfter(id: string) {
+        debugger;
     }
 
-    addChild(ch: Book_children[], id: string) {
-        let tree = this.state.book_children;
-        let newChild = { id: this.child_id_generator(), title: '', body: [], children: [] };
-        if (tree.length === 0 || id === '') {
-            (tree as any[]).push(newChild);
-            this.setState({
-                ...this.state,
-                book_children: tree,
-            }, () => console.log(this.state.book_children))
-            return
-        } else if (tree.length > 0) {
-            for (let i = 0; i < ch.length; i++) {
-                if (ch[i].id === id) {
-                    (ch[i].children as any[]).push(newChild);
-                    this.setState({
-                        ...this.state,
-                        book_children: tree,
-                    }, () => console.log(this.state.book_children))
-                    return
-                }
-                if (ch[i].children!.length > 0) {
-                    let i = 0;
-                    for (i = 0; i < ch[i].children!.length; i++) {
-                        this.addChild(ch[i].children!, id);
-                    }
-                }
+    chapterTitleChanged(value: any, isValid: boolean, id: string) {
+        if(isValid === false) return;
+        let data = this._convertedData;
+        data.forEach(element => {
+            if(element.id === id){
+                return element.title === value;
+            }else{
+                return element.title === element.title;
             }
+        });
+        this._convertedData = data;
+    }
+
+    convert_bookChildren_to_Parent_type(list : Book_children_converted[]){
+        for (let i = 0; i < list.length; i++) {
+            let book = list[i];
+            book.title = <>
+                <ChapterGenerator
+                    id={book.id}
+                    addChildAfter={(id) => this.addChildToAfter(id)}
+                    addChildBefore={(id) => this.addChildToBefore(id)}
+                    onTitleChange={(value, isValid, id) => this.chapterTitleChanged(value, isValid, id)}
+                    body={book.body}
+                    treeDataChange={(treeData : any) => this.updateTree(treeData)}
+                />
+            </>;
+            this.convert_bookChildren_to_Parent_type(book.children);
         }
-        console.log(this.state.book_children)
+    }
+    _convertedDataToParentType : Book_children[]=[]
+    getConvertToParentType(array : Book_children_converted[]) {
+        let val: any = array
+        this.convert_bookChildren_to_Parent_type(val)
+        this._convertedDataToParentType = [...val];
+        if(this.props.onChange){
+            this.props.onChange(this._convertedDataToParentType);
+            return;
+        }
     }
 
-
-    addChildToBefore() {
-
+    updateTree(treeData : any){
+        this._convertedData = treeData;
+        this.getConvertToParentType(this._convertedData)
     }
 
-    addChildToAfter() {
+    convert_bookChildren(list: any[]): void {
+        for (let i = 0; i < list.length; i++) {
+            let book = list[i];
+            book.title = <>
+                <ChapterGenerator
+                    id={book.id}
+                    title={book.title}
+                    addChildAfter={(id) => this.addChildToAfter(id)}
+                    addChildBefore={(id) => this.addChildToBefore(id)}
+                    onTitleChange={(value, isValid, id) => this.chapterTitleChanged(value, isValid, id)}
+                    body={book.body}
+                    treeDataChange={(treeData : any) => this.updateTree(treeData)}
+                />
+            </>;
+            book.expanded = true; // todo _DELETE_ME
+            this.convert_bookChildren(book.children);
+        }
+    }
+    _convertedData: Book_children_converted[] = []
+    getConvertedData() {
+        let val: any = [...this.props.defaultValue];
+        this.convert_bookChildren(val)
+        return this._convertedData = [...val];
+    }
 
+    onChangeTree(treeData : Book_children_converted[]){
+        this.setState({
+            ...this.state,
+            book_children : treeData
+        })
     }
 
     render() {
         return (
-            <div>
-                {
-                    this.state.book_children.length === 0
-                        ?
-                        <BtnLoader
-                            onClick={() => this.addChild(this.state.book_children, '')}
-                            loading={false}
-                            btnClassName='btn btn-success'
-                        >create a new chapter</BtnLoader>
-                        :
-                        <>
-                            {this.state.book_children.map((item: { id: string, title: string, body: any[], children: [] }, i: number) => {
-                                return <Fragment key={item.id}>
-                                    rthyujkilhjghgfd
-                                <div>
-                                        <BtnLoader
-                                            onClick={() => this.addChild(this.state.book_children, item.id)}
-                                            loading={false}
-                                            btnClassName='btn btn-success pull-left my-2'
-                                            disabled={false}
-                                        >add chapter</BtnLoader>
-                                    </div>
-                                </Fragment>
-                            })}
-                            <BtnLoader
-                                onClick={() => this.addChild(this.state.book_children, '')}
-                                loading={false}
-                                btnClassName='btn btn-success'
-                            >create a new chapter</BtnLoader>
-                                                <div className="row">
-                        <div className="col-12">
-                            <br />
-                            {this.book_tree_render()}
-                            <br />
-                        </div>
+            <>
+                <div className='row'>
+                    <div className="col-12">
+                        <SortableTree
+                            treeData={this.state.book_children}
+                            onChange={(treeData : any) =>this.onChangeTree(treeData)}
+                            rowDirection='rtl'
+                            onMoveNode={(node: any, treeIndex: any, path: any) =>
+                                global.console.debug(
+                                    'node:',
+                                    node,
+                                    'treeIndex:',
+                                    treeIndex,
+                                    'path:',
+                                    path
+                                )
+                            }
+                            canDrag={(node: any) => !node.noDragging}
+                            canDrop={(nextParent: any) => !nextParent || !nextParent.noChildren}
+                            isVirtualized={true}
+                        />
                     </div>
-                        </>
-                }
-            </div>
+                </div>
+            </>
         )
     }
 }

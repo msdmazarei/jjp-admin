@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { History } from 'history';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
@@ -14,6 +14,7 @@ import { BookService } from '../../../service/service.book';
 import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { EpubBookGenerator } from '../EpubBookGenerator/EpubBookGenerator';
+import { AppGuid } from '../../../asset/script/guid';
 // import { AudioBookGenerator } from '../AudioBookGenerator/AudioBookGenerator';
 
 
@@ -23,26 +24,26 @@ interface ICmp_select<T> {
     value: T
 }
 
-interface Book_body_base {
+export interface Book_body_base {
     id: string;
-    type: string;
+    type: 'text' | 'control';
 }
 
-interface Book_body_text extends Book_body_base {
+export interface Book_body_text extends Book_body_base {
     text: string;
 }
 
-interface book_body_control extends Book_body_base {
-    control: string;
+export interface book_body_control extends Book_body_base {
+    control: 'new_page' | 'new_line';
 }
 
-type Book_body = book_body_control | Book_body_text;
+export type Book_body = book_body_control | Book_body_text;
 
 export interface Book_children {
     id: string;
     title?: string;
-    body?: Book_body[];
-    children?: Book_children[];
+    body: Book_body[];
+    children: Book_children[];
 }
 
 interface IState {
@@ -88,6 +89,32 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     _bookService = new BookService();
+
+    treeData: Book_children[] = [
+        {
+            id: AppGuid.generate(),
+            title: 'chapter1',
+            body: [],
+            children: [
+                {
+                    id: AppGuid.generate(),
+                    title: 'chapter11',
+                    body: [],
+                    children: [],
+                },
+                {
+                    id: AppGuid.generate(),
+                    title: 'chapter12',
+                    body: [],
+                    children: [],
+                },
+            ],
+        },
+    ];
+
+    updateTree(treeData : Book_children[]){
+        this.treeData= treeData
+    }
 
     book_title_returner() {
         if (this.state.selectedBook !== null) {
@@ -210,6 +237,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     //// start onChange function define  ///////
 
     onchange(children: Book_children[]) {
+        debugger;
         if (this.state.selectedBookType === undefined) {
             return
         }
@@ -234,6 +262,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     //// end onChange function define  ///////
+    save() {
+        debugger;
+        let gvdf = this.state;
+    }
 
     render() {
         return (
@@ -280,9 +312,16 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                             <div className="template-box mb-4">
                                 <EpubBookGenerator
                                     onChange={(clidren: Book_children[]) => this.onchange(clidren)}
-                                    bookName={this.state.selectedBook ? (this.state.selectedBook! as { label: string, value: IBook }).value.title : ''}
+                                    defaultValue={this.treeData}
+                                    treeDataChange={(treeData : any) => this.updateTree(treeData)}
+                                    // bookName={this.state.selectedBook ? (this.state.selectedBook! as { label: string, value: IBook }).value.title : ''}
                                 />
                             </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-12">
+                            <div className="btn btn-success" onClick={() => this.save()}>save</div>
                         </div>
                     </div>
                 </div>

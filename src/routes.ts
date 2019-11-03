@@ -13,7 +13,7 @@ import { GroupSave } from "./component/group/GroupSave/GroupSave";
 import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
 import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
 import { Profile } from './component/profile/Profile';
-import { FileUpload } from './component/upload/FileUpload/FileUpload';
+import { BookGenerator } from './component/BookGenerator/BookGenerator/BookGenerator';
 import { Localization } from "./config/localization/localization";
 
 
@@ -168,7 +168,7 @@ var routes = [
     path: "/upload",
     name: Localization.upload,
     icon: "fa fa-upload",
-    component: FileUpload,
+    component: BookGenerator,
     layout: "/admin",
     isitem: true
   },

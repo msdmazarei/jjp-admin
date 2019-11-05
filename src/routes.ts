@@ -170,7 +170,7 @@ var routes = [
     icon: "fa fa-upload",
     component: BookGenerator,
     layout: "/admin",
-    isitem: true
+    isitem: false
   },
   // upload end
   // permission start

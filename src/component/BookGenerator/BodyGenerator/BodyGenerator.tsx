@@ -35,13 +35,20 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         body: [],
     }
 
+    id: string | undefined = undefined;
+    title: string | undefined = undefined;
+    body: Book_body[] = [];
+
     componentDidMount() {
         this.setState({
             ...this.state,
             id: this.props.id,
             title: this.props.title,
             body: this.props.body.length === 0 ? [] : this.props.body,
-        })
+        });
+        this.id = this.props.id;
+        this.title = this.props.title;
+        this.body = this.props.body.length === 0 ? [] : this.props.body;
     }
 
     componentWillReceiveProps(nextProps: IProps) {
@@ -51,12 +58,21 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
             id: nextProps.id,
             title: nextProps.title,
             body: nextProps.body.length === 0 ? [] : nextProps.body,
-        })
+        });
+    }
+
+    searchTree(body :Book_body[] , id : string): Book_body | null{
+        for (let i = 0; i < body.length; i++) {
+            if(body[i].id === id){
+                return body[i]
+            }
+        }
+        return null
     }
 
     passBodyArray_titleToProps() {
         if (this.props.id === '') return;
-        this.props.onBodyChange(this.state.body, this.state.title === undefined ? '' : this.state.title!, this.props.id)
+        this.props.onBodyChange(this.state.body, this.state.title === undefined ? '' : this.state.title!, this.props.id);
     }
 
     addSubChapter() {
@@ -65,49 +81,58 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     onChapterTitleChange(value: any, isValid: boolean) {
+        this.title = value;
         this.setState({
             ...this.state,
-            title: value,
+            title: this.title,
         }, () => this.passBodyArray_titleToProps());
     }
 
     addContent() {
-        let newBody: Book_body[] = this.state.body.length === 0 ? [] : this.state.body;
         const newId: string = AppGuid.generate();
         let newContent: { type: string, text: string, id: string } = { type: 'text', text: '', id: newId };
-        newBody.push(newContent);
+        this.body.push(newContent);
         this.setState({
             ...this.state,
-            body: newBody,
+            body: this.body,
         }, () => this.passBodyArray_titleToProps());
     }
 
     addContentBefore(id: string) {
-        let newBody: Book_body[] = this.state.body;
-        let Obj: Book_body | undefined = newBody.find(newBody => newBody.id === id);
-        if (Obj === undefined) return;
-        let index: number = newBody.indexOf(Obj);
+        let Obj = this.searchTree(this.body , id);
+        if(Obj === null) return;
+        let index : number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
         let newContent: { type: string, text: string, id: string } = { type: 'text', text: '', id: newId };
-        newBody.splice(index, 0, newContent);
+        this.body.splice(index, 0, newContent);
         this.setState({
             ...this.state,
-            body: newBody,
-        }, () => this.passBodyArray_titleToProps())
+            body: this.body,
+        }, () => this.passBodyArray_titleToProps());
     }
 
     addContentAfter(id: string) {
-        let newBody: Book_body[] = this.state.body;
-        let Obj: Book_body | undefined = newBody.find(newBody => newBody.id === id);
-        if (Obj === undefined) return;
-        let index: number = newBody.indexOf(Obj);
+        let Obj = this.searchTree(this.body , id);
+        if(Obj === null) return;
+        let index : number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
         let newContent: { type: string, text: string, id: string } = { type: 'text', text: '', id: newId };
-        newBody.splice((index + 1), 0, newContent);
+        this.body.splice((index + 1), 0, newContent);
         this.setState({
             ...this.state,
-            body: newBody,
-        }, () => this.passBodyArray_titleToProps())
+            body: this.body,
+        }, () => this.passBodyArray_titleToProps());
+    }
+
+    onContentChange(value: Book_body, isValid: boolean, id: string){
+        let Obj = this.searchTree(this.body , id);
+        if(Obj === null) return;
+        let index : number = this.body.indexOf(Obj)
+        this.body[index] = value;
+        this.setState({
+            ...this.state,
+            body: this.body,
+        }, () => this.passBodyArray_titleToProps());
     }
 
     body_contents_render() {
@@ -122,7 +147,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     id={item.id}
                                     type={item.type}
                                     text={(item as Book_body_text).text}
-                                    onContentChange={(value: Book_body, isValid: boolean, id: string) => console.log(value, isValid, id)}
+                                    onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                     addContentBefore={(id: string) => this.addContentBefore(id)}
                                     addContentAfter={(id: string) => this.addContentAfter(id)}
                                 />
@@ -131,7 +156,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     id={item.id}
                                     type={item.type}
                                     control={(item as book_body_control).control}
-                                    onContentChange={(value: Book_body, isValid: boolean, id: string) => console.log(value, isValid, id)}
+                                    onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                     addContentBefore={(id: string) => this.addContentBefore(id)}
                                     addContentAfter={(id: string) => this.addContentAfter(id)}
                                 />
@@ -155,10 +180,14 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                             />
                         </div>
                         <div className="col-3">
-                            <i className="fa fa-pencil" onClick={() => this.addContent()}></i>
+                            <div className="btn btn-success" onClick={() => this.addContent()}>
+                                افزودن محتوا
+                            </div>
                         </div>
                         <div className="col-3">
-                            <i className="fa fa-indent" onClick={() => this.addSubChapter()}></i>
+                            <div className="btn btn-info" onClick={() => this.addSubChapter()}>
+                                ایجاد زیر فصل
+                            </div>
                         </div>
                     </div>
                     <div className='row'>

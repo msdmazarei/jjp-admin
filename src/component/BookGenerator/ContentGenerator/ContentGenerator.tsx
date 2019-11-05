@@ -50,13 +50,22 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
         control: this.controlsOption[0],
     }
 
+    type : { value: string, label: string } | null = null;
+    id : string | undefined = undefined;
+    text : string | undefined = undefined;
+    control : { value: string, label: string } = this.controlsOption[0];
+
     componentDidMount() {
         this.setState({
             type: { value: this.props.type, label: this.props.type },
             id: this.props.id,
             text: this.props.text ? this.props.text : undefined,
             control: this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0],
-        })
+        });
+        this.type= { value: this.props.type, label: this.props.type };
+        this.id= this.props.id;
+        this.text= this.props.text ? this.props.text : undefined;
+        this.control= this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0];
     }
 
     componentWillReceiveProps(nextProps: IProps) {
@@ -72,54 +81,67 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
     passBodyObjToProps() {
         if (this.state.type === null) return
         if ((this.state.type! as { value: string, label: string }).value === 'text') {
-            let Obj: { type: string, text: string, id: string } = { type: (this.state.type! as { value: string, label: string }).value, text: this.state.text === undefined ? '' : this.state.text!, id: this.props.id };
+            let Obj: { type: string, text: string, id: string } = 
+            { type: (this.state.type! as { value: string, label: string }).value, 
+            text: this.state.text === undefined ? '' : this.state.text!, 
+            id: this.props.id };
             this.props.onContentChange(Obj, true, this.props.id)
         }
         if ((this.state.type! as { value: string, label: string }).value === 'control') {
-            let Obj: { type: string, control: string, id: string } = { type: (this.state.type! as { value: string, label: string }).value, control: this.state.control.value, id: this.props.id };
+            let Obj: { type: string, control: string, id: string } = 
+            { type: (this.state.type! as { value: string, label: string }).value, 
+            control: this.state.control === null ? this.controlsOption[0].value : this.state.control.value, 
+            id: this.props.id };
             this.props.onContentChange(Obj, true, this.props.id)
         }
     }
 
     handleTypeChange(value: any) {
         if ((value as { value: string, label: string }).value === 'text') {
+            this.type = value;
             this.setState({
                 ...this.state,
-                type: value,
-                control: this.controlsOption[0],
+                type: this.type,
+                control: this.control,
             }, () => this.passBodyObjToProps())
         }
         if ((value as { value: string, label: string }).value === 'control') {
+            this.type = value;
+            this.text = undefined;
             this.setState({
                 ...this.state,
-                type: value,
-                text: undefined
-            })
+                type: this.type,
+                text: this.text
+            }, () => this.passBodyObjToProps())
         }
     }
 
     handleControlChange(value: any) {
+        this.control = value;
+        this.text = undefined;
         this.setState({
             ...this.state,
-            control: value,
-            text: undefined,
+            control: this.control,
+            text: this.text,
         }, () => this.passBodyObjToProps())
     }
 
     onTextChange(value: any, isValid: boolean) {
+        this.text = value;
+        this.control = this.controlsOption[0];
         this.setState({
             ...this.state,
-            text: value,
-            control: this.controlsOption[0],
+            text: this.text,
+            control: this.control,
         }, () => this.passBodyObjToProps())
     }
 
     render() {
         return (
             <>
-                <div className="col-11">
-                    <div className="row">
-                        <div className="col-5">
+                <div className="col-12 my-2">
+                    <div className="row px-2">
+                        <div className="col-4">
                             <div className="form-group">
                                 <label htmlFor="">{Localization.type}</label>
                                 <Select
@@ -130,13 +152,12 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                 />
                             </div>
                         </div>
-                        <div className="col-1"></div>
-                        {
-                            this.state.type !== null
-                                ?
-                                (this.state.type! as { value: string, label: string }).value === 'control'
+                        <div className="col-4">
+                            {
+                                this.state.type !== null
                                     ?
-                                    <div className="col-5">
+                                    (this.state.type! as { value: string, label: string }).value === 'control'
+                                        ?
                                         <div className="form-group">
                                             <label htmlFor="">control</label>
                                             <Select
@@ -146,12 +167,22 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 placeholder={'control'}
                                             />
                                         </div>
-                                    </div>
+                                        :
+                                        undefined
                                     :
                                     undefined
-                                :
-                                undefined
-                        }
+                            }
+                        </div>
+                        <div className="col-2 pt-2">
+                            <div className="btn btn-success btn-sm mt-4" onClick={() => this.props.addContentBefore(this.props.id)}>
+                                افزودن محتوا به قبل
+                            </div>
+                        </div>
+                        <div className="col-2 pt-2">
+                            <div className="btn btn-success btn-sm mt-4" onClick={() => this.props.addContentAfter(this.props.id)}>
+                                افزودن محتوا به بعد
+                            </div>
+                        </div>
                         {
                             this.state.type !== null
                                 ?
@@ -169,14 +200,6 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                 :
                                 undefined
                         }
-                    </div>
-                </div>
-                <div className="col-1">
-                    <div className="d-block">
-                        <i className="fa fa-plus fa-2x" onClick={() => this.props.addContentBefore(this.props.id)}></i>
-                    </div>
-                    <div className="d-block">
-                        <i className="fa fa-plus fa-2x" onClick={() => this.props.addContentAfter(this.props.id)}></i>
                     </div>
                 </div>
             </>

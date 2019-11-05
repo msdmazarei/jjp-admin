@@ -226,15 +226,15 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         },
     }
 
-    componentDidMount(){
-        this.setState({
-            ...this.state,
-            Epub_book : {
-                ...this.state.Epub_book,
-                children : this.book
-            }
-        })
-    }
+    // componentDidMount(){
+    //     this.setState({
+    //         ...this.state,
+    //         Epub_book : {
+    //             ...this.state.Epub_book,
+    //             children : this.book
+    //         }
+    //     })
+    // }
 
     _bookService = new BookService();
 
@@ -395,7 +395,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     ...this.state.Epub_book,
                     children: children,
                 }
-            }, () => console.log(this.state.Epub_book.children))
+            })
         }
         if (this.state.selectedBookType === "Audio") {
             this.setState({

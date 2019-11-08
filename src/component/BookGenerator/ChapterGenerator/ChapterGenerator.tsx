@@ -50,6 +50,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     passNewBookContentToProps() {
+        console.log(this.state.bookContent);
         this.props.onChangeBook(this.state.bookContent);
     }
 
@@ -71,14 +72,21 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     searchTree_parent_childs(tree: Book_children[], id: string): Book_children | null {
-        for (let i = 0; i < tree.length; i++) {
+        let i;
+        let temp;
+        for ( i = 0; i < tree.length; i++) {
             if (tree[i].children.length) {
                 for (let j = 0; j < tree[i].children.length; j++) {
                     if (tree[i].children[j].id === id) {
                         return tree[i];
                     }
                 }
-                return this.searchTree_parent_childs(tree[i].children, id)
+                if(tree[i].children.length&&tree[i].children.length>0){
+                    temp = this.searchTree_parent_childs(tree[i].children , id);
+                    if(temp){
+                        return temp;
+                    }
+                }
             }
         }
         return null
@@ -88,13 +96,18 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start search node in tree
 
-    searchTree(tree: Book_children[], id: string): Book_children | null {
-        for (let i = 0; i < tree.length; i++) {
-            if (tree[i].id === id) {
+    searchTree(tree: Book_children[], current_id: string): Book_children | null {
+        let i;
+        let temp;
+        for (i = 0; i < tree.length; i++) {
+            if (tree[i].id === current_id) {
                 return tree[i];
             }
-            if(tree[i].children.length){
-                return this.searchTree(tree[i].children , id);
+            if (tree[i].children.length>0) {
+                temp = this.searchTree(tree[i].children, current_id);
+                if(temp){
+                    return temp;
+                }
             }
         }
         return null;
@@ -133,11 +146,11 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start add chapter before coming id if id is main child
 
-    addChapterBefore_inMain(id: string) {
+    addChapterBefore_inMain(current_id: string) {
         const newId: string = AppGuid.generate();
         let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
         if (!this.book.length) return
-        let obj = this.searchTree(this.book, id);
+        let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
         let index: number = this.book.indexOf(obj);
         this.book.splice(index, 0, newChild);
@@ -151,11 +164,11 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start add chapter after coming id if id is main child
 
-    addChapterAfter_inMain(id: string) {
+    addChapterAfter_inMain(current_id: string) {
         const newId: string = AppGuid.generate();
         let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
         if (!this.book.length) return
-        let obj = this.searchTree(this.book, id);
+        let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
         let index: number = this.book.indexOf(obj);
         this.book.splice((index + 1), 0, newChild);
@@ -169,17 +182,17 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start add chapter before coming id
 
-    addChapterBefore(id: string) {
-        if (this.id_is_main_child(id)) {
-            this.addChapterBefore_inMain(id);
+    addChapterBefore(current_id: string) {
+        if (this.id_is_main_child(current_id)) {
+            this.addChapterBefore_inMain(current_id);
             return;
         }
         const newId: string = AppGuid.generate();
         let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
-        let result = this.searchTree_parent(id);
+        let result = this.searchTree_parent(current_id);
         if (result === null) return;
         let array: Book_children[] = result!.children;
-        let obj = this.searchTree(result!.children, id);
+        let obj = this.searchTree(result!.children, current_id);
         if (obj === null) return;
         let index: number = array.indexOf(obj);
         result.children.splice(index, 0, newChild);
@@ -193,17 +206,17 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start add chapter after coming id
 
-    addChapterAfter(id: string) {
-        if (this.id_is_main_child(id)) {
-            this.addChapterAfter_inMain(id);
+    addChapterAfter(current_id: string) {
+        if (this.id_is_main_child(current_id)) {
+            this.addChapterAfter_inMain(current_id);
             return;
         }
         const newId: string = AppGuid.generate();
         let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
-        let result = this.searchTree_parent(id);
+        let result = this.searchTree_parent(current_id);
         if (result === null) return;
         let array: Book_children[] = result!.children;
-        let obj = this.searchTree(result!.children, id);
+        let obj = this.searchTree(result!.children, current_id);
         if (obj === null) return;
         let index: number = array.indexOf(obj);
         result.children.splice((index + 1), 0, newChild);
@@ -217,12 +230,12 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start add subchapter to sibling coming id
 
-    addNewSubChapterFromBodyGeneratorComponent(id: string) {
+    addNewSubChapterFromBodyGeneratorComponent(current_id: string) {
         const newId: string = AppGuid.generate();
         let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
-        let result = this.searchTree(this.book , id);
-        if(result === null) return;
-        result.children.push(newChild);
+        let result = this.searchTree(this.book, current_id);
+        if (result === null) return;
+        result!.children.push(newChild);
         this.setState({
             ...this.state,
             bookContent: this.book,
@@ -231,9 +244,9 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // end add subchapter to sibling coming id
 
-    updateChapterBody(newbody: Book_body[], title: string, id: string) {
-        let result =this.searchTree(this.book , id);
-        if(result === null) return;
+    updateChapterBody(newbody: Book_body[], title: string, current_id: string) {
+        let result = this.searchTree(this.book, current_id);
+        if (result === null) return;
         result.title = title;
         result.body = newbody;
         this.setState({
@@ -251,7 +264,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                             <div className="border">
                                 <div className="btn btn-info" onClick={() => this.addChapterBefore(item.id)}>
                                     افزودن فصل به قبل
-                            </div>
+                                </div>
                                 <BodyGenerator
                                     id={item.id}
                                     title={item.title ? item.title : ''}
@@ -276,7 +289,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                 }
                                 <div className="btn btn-info" onClick={() => this.addChapterAfter(item.id)}>
                                     افزودن فصل به بعد
-                            </div>
+                                </div>
                             </div>
                         </div>
                     </Fragment>

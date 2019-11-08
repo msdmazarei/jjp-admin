@@ -7,6 +7,7 @@ import { redux_state } from '../../../redux/app_state';
 import { Book_body, Book_children } from '../BookGenerator/BookGenerator';
 import { AppGuid } from '../../../asset/script/guid';
 import { BodyGenerator } from '../BodyGenerator/BodyGenerator';
+import { Dropdown } from 'react-bootstrap';
 
 
 interface IProps {
@@ -74,16 +75,16 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
     searchTree_parent_childs(tree: Book_children[], id: string): Book_children | null {
         let i;
         let temp;
-        for ( i = 0; i < tree.length; i++) {
+        for (i = 0; i < tree.length; i++) {
             if (tree[i].children.length) {
                 for (let j = 0; j < tree[i].children.length; j++) {
                     if (tree[i].children[j].id === id) {
                         return tree[i];
                     }
                 }
-                if(tree[i].children.length&&tree[i].children.length>0){
-                    temp = this.searchTree_parent_childs(tree[i].children , id);
-                    if(temp){
+                if (tree[i].children.length && tree[i].children.length > 0) {
+                    temp = this.searchTree_parent_childs(tree[i].children, id);
+                    if (temp) {
                         return temp;
                     }
                 }
@@ -103,9 +104,9 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             if (tree[i].id === current_id) {
                 return tree[i];
             }
-            if (tree[i].children.length>0) {
+            if (tree[i].children.length > 0) {
                 temp = this.searchTree(tree[i].children, current_id);
-                if(temp){
+                if (temp) {
                     return temp;
                 }
             }
@@ -298,6 +299,47 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         </>
     }
 
+    dropDown_tree_render(array: Book_children[], toggleTitle: string) {
+        return <>
+            <Dropdown>
+                <Dropdown.Toggle
+                    split
+                    variant="light"
+                    className="px-3 bg-light btn"
+                    id={AppGuid.generate()}
+                >
+                    <i className="fa fa-ellipsis-v dropdown-icon mx=1"></i> <small>{toggleTitle}</small>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                    {
+                        array.map((item: Book_children, i: number) => (
+                            <Fragment key={i}>
+                                <Dropdown.Item>
+                                    <>
+                                        {
+                                            item.children && item.children.length > 0
+                                                ?
+                                                this.dropDown_tree_render(item.children, item.title ? item.title : '')
+                                                :
+                                                <div className="text-center action-text-wrapper">
+                                                    {item.title}
+                                                </div>
+                                        }
+                                    </>
+                                </Dropdown.Item>
+                            </Fragment>
+                        ))
+                    }
+                </Dropdown.Menu>
+            </Dropdown>
+        </>
+    }
+
+
+
+
+
+
     render() {
         return (
             <div>
@@ -314,13 +356,24 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
                 <div className="row">
-                    {
-                        this.state.bookContent.length === 0
-                            ?
-                            undefined
-                            :
-                            this.chapters_render(this.state.bookContent)
-                    }
+                    <div className="col-11">
+                        {
+                            this.state.bookContent.length === 0
+                                ?
+                                undefined
+                                :
+                                this.chapters_render(this.state.bookContent)
+                        }
+                    </div>
+                    <div className="col-1">
+                        {
+                            this.state.bookContent.length === 0
+                                ?
+                                undefined
+                                :
+                                this.dropDown_tree_render(this.state.bookContent , this.state.bookTitle)
+                        }
+                    </div>
                 </div>
             </div>
         )

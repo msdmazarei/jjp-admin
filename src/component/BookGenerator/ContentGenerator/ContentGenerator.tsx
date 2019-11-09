@@ -9,6 +9,8 @@ import { Input } from '../../form/input/Input';
 import { Localization } from '../../../config/localization/localization';
 import { Book_body } from '../BookGenerator/BookGenerator';
 import Select from 'react-select';
+import { Dropdown } from 'react-bootstrap';
+import { AppGuid } from '../../../asset/script/guid';
 
 
 interface IProps {
@@ -141,7 +143,7 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
             <>
                 <div className="col-12 my-2">
                     <div className="row px-2">
-                        <div className="col-4">
+                        <div className="col-5">
                             <div className="form-group">
                                 <label htmlFor="">{Localization.type}</label>
                                 <Select
@@ -152,7 +154,7 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                 />
                             </div>
                         </div>
-                        <div className="col-4">
+                        <div className="col-5">
                             {
                                 this.state.type !== null
                                     ?
@@ -173,15 +175,36 @@ class ContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                     undefined
                             }
                         </div>
-                        <div className="col-2 pt-2">
-                            <div className="btn btn-success btn-sm mt-4" onClick={() => this.props.addContentBefore(this.props.id)}>
-                                افزودن محتوا به قبل
-                            </div>
-                        </div>
-                        <div className="col-2 pt-2">
-                            <div className="btn btn-success btn-sm mt-4" onClick={() => this.props.addContentAfter(this.props.id)}>
-                                افزودن محتوا به بعد
-                            </div>
+                        <div className="col-2 mt-4">
+                        <Dropdown>
+                            <Dropdown.Toggle
+                                title={Localization.more}
+                                split
+                                variant="light"
+                                className="px-3 bg-light btn"
+                                id={AppGuid.generate()}
+                            >
+                                <i title={Localization.more} className="fa fa-pencil text-dark dropdown-icon"></i>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className="dropdown-menu-right action-dropdown-menu">
+                                <Dropdown.Item className="text-center" onClick={() => this.props.addContentBefore(this.props.id)}>
+                                    <span className="action-name">
+                                        <i className="fa fa-pencil text-info mx-1" onClick={() => this.props.addContentBefore(this.props.id)}></i>
+                                    </span>
+                                    <span className="action-name">
+                                        {Localization.book_generator.addContentBefore}
+                                    </span>
+                                </Dropdown.Item>
+                                <Dropdown.Item className="text-center" onClick={() => this.props.addContentAfter(this.props.id)}>
+                                    <span className="action-name">
+                                        <i className="fa fa-pencil text-info mx-1" onClick={() => this.props.addContentAfter(this.props.id)}></i>
+                                    </span>
+                                    <span className="action-name">
+                                        {Localization.book_generator.addContentAfter}
+                                    </span>
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                         </div>
                         {
                             this.state.type !== null

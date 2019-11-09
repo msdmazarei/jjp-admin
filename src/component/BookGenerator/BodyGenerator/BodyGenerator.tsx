@@ -9,6 +9,8 @@ import { Input } from '../../form/input/Input';
 import { Book_body, Book_body_text, book_body_control } from '../BookGenerator/BookGenerator';
 import { AppGuid } from '../../../asset/script/guid';
 import { ContentGenerator } from '../ContentGenerator/ContentGenerator';
+import { Dropdown } from 'react-bootstrap';
+import { Localization } from '../../../config/localization/localization';
 
 interface IProps {
     match?: any;
@@ -61,9 +63,9 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         });
     }
 
-    searchTree(body :Book_body[] , id : string): Book_body | null{
+    searchTree(body: Book_body[], id: string): Book_body | null {
         for (let i = 0; i < body.length; i++) {
-            if(body[i].id === id){
+            if (body[i].id === id) {
                 return body[i]
             }
         }
@@ -99,9 +101,9 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     addContentBefore(id: string) {
-        let Obj = this.searchTree(this.body , id);
-        if(Obj === null) return;
-        let index : number = this.body.indexOf(Obj)
+        let Obj = this.searchTree(this.body, id);
+        if (Obj === null) return;
+        let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
         let newContent: { type: string, text: string, id: string } = { type: 'text', text: '', id: newId };
         this.body.splice(index, 0, newContent);
@@ -112,9 +114,9 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     addContentAfter(id: string) {
-        let Obj = this.searchTree(this.body , id);
-        if(Obj === null) return;
-        let index : number = this.body.indexOf(Obj)
+        let Obj = this.searchTree(this.body, id);
+        if (Obj === null) return;
+        let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
         let newContent: { type: string, text: string, id: string } = { type: 'text', text: '', id: newId };
         this.body.splice((index + 1), 0, newContent);
@@ -124,10 +126,10 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         }, () => this.passBodyArray_titleToProps());
     }
 
-    onContentChange(value: Book_body, isValid: boolean, id: string){
-        let Obj = this.searchTree(this.body , id);
-        if(Obj === null) return;
-        let index : number = this.body.indexOf(Obj)
+    onContentChange(value: Book_body, isValid: boolean, id: string) {
+        let Obj = this.searchTree(this.body, id);
+        if (Obj === null) return;
+        let index: number = this.body.indexOf(Obj)
         this.body[index] = value;
         this.setState({
             ...this.state,
@@ -136,7 +138,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     body_contents_render() {
-        return<>
+        return <>
             {
                 (this.state.body).map((item: Book_body, i: number) => (
                     <Fragment key={i}>
@@ -171,32 +173,51 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         return (
             <>
                 <div className="row">
-                    <div className="row">
-                        <div className="col-6">
-                            <Input
-                                label={'chapter'}
-                                defaultValue={this.state.title ? this.state.title : ''}
-                                onChange={(value: any, isValid: boolean) => this.onChapterTitleChange(value, isValid)}
-                            />
-                        </div>
-                        <div className="col-3">
-                            <div className="btn btn-success" onClick={() => this.addContent()}>
-                                افزودن محتوا
-                            </div>
-                        </div>
-                        <div className="col-3">
-                            <div className="btn btn-info" onClick={() => this.addSubChapter()}>
-                                ایجاد زیر فصل
-                            </div>
-                        </div>
+                    <div className="col-10">
+                        <Input
+                            label={'chapter'}
+                            defaultValue={this.state.title ? this.state.title : ''}
+                            onChange={(value: any, isValid: boolean) => this.onChapterTitleChange(value, isValid)}
+                        />
                     </div>
-                    <div className='row'>
+                    <div className="col-2 mt-4">
+                        <Dropdown>
+                            <Dropdown.Toggle
+                                title={Localization.more}
+                                split
+                                variant="light"
+                                className="px-3 bg-light btn"
+                                id={AppGuid.generate()}
+                            >
+                                <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className="dropdown-menu-right action-dropdown-menu">
+                                <Dropdown.Item className="text-center" onClick={() => this.addContent()}>
+                                    <span className="action-name">
+                                        <i className="fa fa-pencil text-dark mx-1" onClick={() => this.addContent()}></i>
+                                    </span>
+                                    <span className="action-name">
+                                        {Localization.book_generator.addContent}
+                                    </span>
+                                </Dropdown.Item>
+                                <Dropdown.Item className="text-center" onClick={() => this.addSubChapter()}>
+                                    <span className="action-name">
+                                        <i className="fa fa-arrow-circle-left text-primary mx-1" onClick={() => this.addSubChapter()}></i>
+                                    </span>
+                                    <span className="action-name">
+                                        {Localization.book_generator.addSubChapter}
+                                    </span>
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
+                    <div className="col-12">
                         {
                             this.state.body.length === 0
-                            ?
-                            undefined
-                            :
-                            this.body_contents_render()
+                                ?
+                                undefined
+                                :
+                                this.body_contents_render()
                         }
                     </div>
                 </div>

@@ -13,10 +13,9 @@ import { IBook } from '../../../model/model.book';
 import { BookService } from '../../../service/service.book';
 import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
-import { EpubBookGenerator } from '../EpubBookGenerator/EpubBookGenerator';
 import { AppGuid } from '../../../asset/script/guid';
+import { ChapterGenerator } from '../ChapterGenerator/ChapterGenerator';
 // import { AudioBookGenerator } from '../AudioBookGenerator/AudioBookGenerator';
-
 
 interface ICmp_select<T> {
     label: string;
@@ -24,7 +23,7 @@ interface ICmp_select<T> {
 }
 
 export interface Book_body_base {
-    id: string;
+    front_id: string;
     type: string;
 }
 
@@ -36,10 +35,14 @@ export interface book_body_control extends Book_body_base {
     control: string;
 }
 
-export type Book_body = book_body_control | Book_body_text;
+export interface book_body_voice extends Book_body_base {
+    voice: any;
+}
+
+export type Book_body = book_body_control | Book_body_text | book_body_voice;
 
 export interface Book_children {
-    id: string;
+    front_id: string;
     title?: string;
     body: Book_body[];
     children: Book_children[];
@@ -67,9 +70,6 @@ interface IProps {
     history: History;
     internationalization: TInternationalization;
 }
-
-
-
 
 class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     book: any[] = [
@@ -240,18 +240,18 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     treeData: Book_children[] = [
         {
-            id: AppGuid.generate(),
+            front_id: AppGuid.generate(),
             title: 'chapter1',
             body: [],
             children: [
                 {
-                    id: AppGuid.generate(),
+                    front_id: AppGuid.generate(),
                     title: 'chapter11',
                     body: [],
                     children: [],
                 },
                 {
-                    id: AppGuid.generate(),
+                    front_id: AppGuid.generate(),
                     title: 'chapter12',
                     body: [],
                     children: [],
@@ -416,15 +416,23 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         }
         if (this.state.selectedBookType === "Epub") {
             return <>
-                <EpubBookGenerator
+                <ChapterGenerator
+                    bookType={'Epub'}
                     booktitle={(this.state.selectedBook! as ICmp_select<IBook>).value.title}
                     bookContent={this.state.Epub_book.children}
-                    onChange={(bookContent: Book_children[]) => this.onchange(bookContent)}
+                    onChangeBook={(bookContent: Book_children[]) => this.onchange(bookContent)}
                 />
             </>
         }
         if (this.state.selectedBookType === "Audio") {
-            return <></>
+            return <>
+                <ChapterGenerator
+                    bookType={'Audio'}
+                    booktitle={(this.state.selectedBook! as ICmp_select<IBook>).value.title}
+                    bookContent={this.state.Audio_book.children}
+                    onChangeBook={(bookContent: Book_children[]) => this.onchange(bookContent)}
+                />
+            </>
         }
     }
 

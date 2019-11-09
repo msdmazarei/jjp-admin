@@ -13,6 +13,7 @@ interface IProps {
     match?: any;
     history?: History;
     internationalization: TInternationalization;
+    bookType:string;
     booktitle: string;
     bookContent: Book_children[];
     onChangeBook: (bookContent: Book_children[]) => void;
@@ -52,7 +53,6 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     passNewBookContentToProps() {
-        console.log(this.state.bookContent);
         this.props.onChangeBook(this.state.bookContent);
     }
 
@@ -62,7 +62,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let inMainTree: boolean = false;
         if (!this.book.length) return null;
         for (let i = 0; i < this.book.length; i++) {
-            if (this.book[i].id === id) {
+            if (this.book[i].front_id === id) {
                 inMainTree = true;
                 return this.book[i];
             }
@@ -79,7 +79,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         for (i = 0; i < tree.length; i++) {
             if (tree[i].children.length) {
                 for (let j = 0; j < tree[i].children.length; j++) {
-                    if (tree[i].children[j].id === id) {
+                    if (tree[i].children[j].front_id === id) {
                         return tree[i];
                     }
                 }
@@ -102,7 +102,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let i;
         let temp;
         for (i = 0; i < tree.length; i++) {
-            if (tree[i].id === current_id) {
+            if (tree[i].front_id === current_id) {
                 return tree[i];
             }
             if (tree[i].children.length > 0) {
@@ -123,7 +123,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let inMainTree: boolean = false;
         if (!this.book.length) return inMainTree;
         for (let i = 0; i < this.book.length; i++) {
-            if (this.book[i].id === id) {
+            if (this.book[i].front_id === id) {
                 inMainTree = true;
             }
         }
@@ -136,7 +136,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addChapter() {
         const newId: string = AppGuid.generate();
-        let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
+        let newChild: Book_children = { front_id: newId, title: '', body: [], children: [] };
         this.book.push(newChild);
         this.setState({
             ...this.state,
@@ -150,7 +150,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addChapterBefore_inMain(current_id: string) {
         const newId: string = AppGuid.generate();
-        let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
+        let newChild: Book_children = { front_id: newId, title: '', body: [], children: [] };
         if (!this.book.length) return
         let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
@@ -168,7 +168,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addChapterAfter_inMain(current_id: string) {
         const newId: string = AppGuid.generate();
-        let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
+        let newChild: Book_children = { front_id: newId, title: '', body: [], children: [] };
         if (!this.book.length) return
         let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
@@ -190,7 +190,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             return;
         }
         const newId: string = AppGuid.generate();
-        let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
+        let newChild: Book_children = { front_id: newId, title: '', body: [], children: [] };
         let result = this.searchTree_parent(current_id);
         if (result === null) return;
         let array: Book_children[] = result!.children;
@@ -214,7 +214,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             return;
         }
         const newId: string = AppGuid.generate();
-        let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
+        let newChild: Book_children = { front_id: newId, title: '', body: [], children: [] };
         let result = this.searchTree_parent(current_id);
         if (result === null) return;
         let array: Book_children[] = result!.children;
@@ -234,7 +234,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addNewSubChapterFromBodyGeneratorComponent(current_id: string) {
         const newId: string = AppGuid.generate();
-        let newChild: Book_children = { id: newId, title: '', body: [], children: [] };
+        let newChild: Book_children = { front_id: newId, title: '', body: [], children: [] };
         let result = this.searchTree(this.book, current_id);
         if (result === null) return;
         result!.children.push(newChild);
@@ -284,7 +284,8 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         if (result === null) return;
         return <>
             <BodyGenerator
-                id={result.id}
+                bookType={this.props.bookType}
+                id={result.front_id}
                 title={result.title ? result.title : ''}
                 body={(result.body === undefined || result.body.length === 0) ? [] : result.body}
                 onBodyChange={(newbody: Book_body[], title: string, id: string) => this.updateChapterBody(newbody, title, id)}
@@ -293,7 +294,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         </>
     }
 
-    dropDown_tree_render(array: Book_children[]) {
+    book_tree_render(array: Book_children[]) {
         return <>
             <ol>
                 {
@@ -301,15 +302,23 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                         <Fragment key={i}>
                             <li>
                                 <div>
-                                    {
-                                        item.id === this.state.current_id
-                                            ?
-                                            <i className="fa fa-check text-success"></i>
-                                            :
-                                            undefined
-                                    }
-                                    <i className="fa fa-folder text-warning mx-1"></i>
-                                    {item.title}
+                                    <div className="d-inline cursor-pointer" onClick={() => this.itemIdSetter(item.front_id)}>
+                                        {
+                                            item.front_id === this.state.current_id
+                                                ?
+                                                <i className="fa fa-check text-success cursor-pointer" onClick={() => this.itemIdSetter(item.front_id)}></i>
+                                                :
+                                                undefined
+                                        }
+                                        {
+                                            item.front_id === this.state.current_id
+                                                ?
+                                                <i className="fa fa-folder text-success mx-1 cursor-pointer" onClick={() => this.itemIdSetter(item.front_id)}></i>
+                                                :
+                                                <i className="fa fa-folder text-warning mx-1 cursor-pointer" onClick={() => this.itemIdSetter(item.front_id)}></i>
+                                        }
+                                        {item.title}
+                                    </div>
                                     <Dropdown>
                                         <Dropdown.Toggle
                                             title={Localization.more}
@@ -321,33 +330,25 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                             <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu className="dropdown-menu-right action-dropdown-menu">
-                                            <Dropdown.Item className="text-center" onClick={() => this.addChapterBefore(item.id)}>
+                                            <Dropdown.Item className="text-center" onClick={() => this.addChapterBefore(item.front_id)}>
                                                 <span className="action-name">
-                                                    <i className="fa fa-arrow-circle-o-up text-info mx-1" onClick={() => this.addChapterBefore(item.id)}></i>
+                                                    <i className="fa fa-arrow-circle-o-up text-info mx-1" onClick={() => this.addChapterBefore(item.front_id)}></i>
                                                 </span>
                                                 <span className="action-name">
                                                     {Localization.book_generator.addChapterBefore}
                                                 </span>
                                             </Dropdown.Item>
-                                            <Dropdown.Item className="text-center" onClick={() => this.addChapterAfter(item.id)}>
+                                            <Dropdown.Item className="text-center" onClick={() => this.addChapterAfter(item.front_id)}>
                                                 <span className="action-name">
-                                                    <i className="fa fa-arrow-circle-o-down text-info mx-1" onClick={() => this.addChapterAfter(item.id)}></i>
+                                                    <i className="fa fa-arrow-circle-o-down text-info mx-1" onClick={() => this.addChapterAfter(item.front_id)}></i>
                                                 </span>
                                                 <span className="action-name">
                                                     {Localization.book_generator.addChapterAfter}
                                                 </span>
                                             </Dropdown.Item>
-                                            <Dropdown.Item className="text-center" onClick={() => this.itemIdSetter(item.id)}>
+                                            <Dropdown.Item className="text-center" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.front_id)}>
                                                 <span className="action-name">
-                                                    <i className="fa fa-pencil text-dark" onClick={() => this.itemIdSetter(item.id)}></i>
-                                                </span>
-                                                <span className="action-name">
-                                                    {Localization.book_generator.addTitleAndContentToChapter}
-                                                </span>
-                                            </Dropdown.Item>
-                                            <Dropdown.Item className="text-center" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.id)}>
-                                                <span className="action-name">
-                                                    <i className="fa fa-arrow-circle-left text-primary mx-1" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.id)}></i>
+                                                    <i className="fa fa-arrow-circle-left text-primary mx-1" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.front_id)}></i>
                                                 </span>
                                                 <span className="action-name">
                                                     {Localization.book_generator.addSubChapter}
@@ -358,7 +359,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                 </div>
                                 {item.children && item.children.length > 0
                                     ?
-                                    this.dropDown_tree_render(item.children)
+                                    this.book_tree_render(item.children)
                                     :
                                     undefined
                                 }
@@ -369,11 +370,6 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             </ol>
         </>
     }
-
-
-
-
-
 
     render() {
         return (
@@ -393,7 +389,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                 ?
                                 undefined
                                 :
-                                this.dropDown_tree_render(this.state.bookContent)
+                                this.book_tree_render(this.state.bookContent)
                         }
                     </div>
                     <div className="col-9">

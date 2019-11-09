@@ -8,8 +8,7 @@ import { Book_body, Book_children } from '../BookGenerator/BookGenerator';
 import { AppGuid } from '../../../asset/script/guid';
 import { BodyGenerator } from '../BodyGenerator/BodyGenerator';
 import { Dropdown } from 'react-bootstrap';
-
-
+import { Localization } from '../../../config/localization/localization';
 interface IProps {
     match?: any;
     history?: History;
@@ -22,12 +21,14 @@ interface IProps {
 interface IState {
     bookTitle: string;
     bookContent: Book_children[];
+    current_id: string;
 }
 
 class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
     state = {
         bookTitle: '',
         bookContent: [],
+        current_id: '',
     }
 
     book: Book_children[] = [];
@@ -256,82 +257,116 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         }, () => this.passNewBookContentToProps());
     }
 
-    chapters_render(array: Book_children[]) {
+    itemIdSetter(id: string) {
+        if (this.state.current_id !== id) {
+            this.setState({
+                ...this.state,
+                current_id: '',
+            }, () => this.setNewId(id))
+        }
+        if (this.state.current_id === id) {
+            this.setState({
+                ...this.state,
+                current_id: '',
+            })
+        }
+    }
+
+    setNewId(id: string) {
+        this.setState({
+            ...this.state,
+            current_id: id,
+        })
+    }
+
+    chapters_render(id: string) {
+        let result = this.searchTree(this.book, id);
+        if (result === null) return;
         return <>
-            {
-                array.map((item: Book_children, i: number) => (
-                    <Fragment key={i}>
-                        <div className="col-12 my-3">
-                            <div className="border">
-                                <div className="btn btn-info" onClick={() => this.addChapterBefore(item.id)}>
-                                    افزودن فصل به قبل
-                                </div>
-                                <BodyGenerator
-                                    id={item.id}
-                                    title={item.title ? item.title : ''}
-                                    body={(item.body === undefined || item.body.length === 0) ? [] : item.body}
-                                    onBodyChange={(newbody: Book_body[], title: string, id: string) => this.updateChapterBody(newbody, title, id)}
-                                    addSubChapter={(id: string) => this.addNewSubChapterFromBodyGeneratorComponent(id)}
-                                />
-                                {
-                                    item.children
-                                        ?
-                                        item.children.length > 0
-                                            ?
-                                            <div>
-                                                {
-                                                    this.chapters_render(item.children)
-                                                }
-                                            </div>
-                                            :
-                                            undefined
-                                        :
-                                        undefined
-                                }
-                                <div className="btn btn-info" onClick={() => this.addChapterAfter(item.id)}>
-                                    افزودن فصل به بعد
-                                </div>
-                            </div>
-                        </div>
-                    </Fragment>
-                ))
-            }
+            <BodyGenerator
+                id={result.id}
+                title={result.title ? result.title : ''}
+                body={(result.body === undefined || result.body.length === 0) ? [] : result.body}
+                onBodyChange={(newbody: Book_body[], title: string, id: string) => this.updateChapterBody(newbody, title, id)}
+                addSubChapter={(id: string) => this.addNewSubChapterFromBodyGeneratorComponent(id)}
+            />
         </>
     }
 
-    dropDown_tree_render(array: Book_children[], toggleTitle: string) {
+    dropDown_tree_render(array: Book_children[]) {
         return <>
-            <Dropdown>
-                <Dropdown.Toggle
-                    split
-                    variant="light"
-                    className="px-3 bg-light btn"
-                    id={AppGuid.generate()}
-                >
-                    <i className="fa fa-ellipsis-v dropdown-icon mx=1"></i> <small>{toggleTitle}</small>
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                    {
-                        array.map((item: Book_children, i: number) => (
-                            <Fragment key={i}>
-                                <Dropdown.Item>
-                                    <>
-                                        {
-                                            item.children && item.children.length > 0
-                                                ?
-                                                this.dropDown_tree_render(item.children, item.title ? item.title : '')
-                                                :
-                                                <div className="text-center action-text-wrapper">
-                                                    {item.title}
-                                                </div>
-                                        }
-                                    </>
-                                </Dropdown.Item>
-                            </Fragment>
-                        ))
-                    }
-                </Dropdown.Menu>
-            </Dropdown>
+            <ol>
+                {
+                    array.map((item: Book_children, i: number) => (
+                        <Fragment key={i}>
+                            <li>
+                                <div>
+                                    {
+                                        item.id === this.state.current_id
+                                            ?
+                                            <i className="fa fa-check text-success"></i>
+                                            :
+                                            undefined
+                                    }
+                                    <i className="fa fa-folder text-warning mx-1"></i>
+                                    {item.title}
+                                    <Dropdown>
+                                        <Dropdown.Toggle
+                                            title={Localization.more}
+                                            split
+                                            variant="light"
+                                            className="px-3 bg-light btn"
+                                            id={AppGuid.generate()}
+                                        >
+                                            <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu className="dropdown-menu-right action-dropdown-menu">
+                                            <Dropdown.Item className="text-center" onClick={() => this.addChapterBefore(item.id)}>
+                                                <span className="action-name">
+                                                    <i className="fa fa-arrow-circle-o-up text-info mx-1" onClick={() => this.addChapterBefore(item.id)}></i>
+                                                </span>
+                                                <span className="action-name">
+                                                    {Localization.book_generator.addChapterBefore}
+                                                </span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className="text-center" onClick={() => this.addChapterAfter(item.id)}>
+                                                <span className="action-name">
+                                                    <i className="fa fa-arrow-circle-o-down text-info mx-1" onClick={() => this.addChapterAfter(item.id)}></i>
+                                                </span>
+                                                <span className="action-name">
+                                                    {Localization.book_generator.addChapterAfter}
+                                                </span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className="text-center" onClick={() => this.itemIdSetter(item.id)}>
+                                                <span className="action-name">
+                                                    <i className="fa fa-pencil text-dark" onClick={() => this.itemIdSetter(item.id)}></i>
+                                                </span>
+                                                <span className="action-name">
+                                                    {Localization.book_generator.addTitleAndContentToChapter}
+                                                </span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className="text-center" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.id)}>
+                                                <span className="action-name">
+                                                    <i className="fa fa-arrow-circle-left text-primary mx-1" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.id)}></i>
+                                                </span>
+                                                <span className="action-name">
+                                                    {Localization.book_generator.addSubChapter}
+                                                </span>
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </div>
+                                {item.children && item.children.length > 0
+                                    ?
+                                    this.dropDown_tree_render(item.children)
+                                    :
+                                    undefined
+                                }
+                            </li>
+                        </Fragment>
+                    ))
+                }
+            </ol>
         </>
     }
 
@@ -348,30 +383,26 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                         <div className="text-center">
                             {this.state.bookTitle}
                         </div>
-                        <div className="mb-2">
-                            <div className="btn btn-primary" onClick={() => this.addChapter()}>
-                                ایجاد فصل اصلی
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-11">
+                    <div className="col-3">
+                        <i className="fa fa-plus text-success" onClick={() => this.addChapter()}></i>
                         {
                             this.state.bookContent.length === 0
                                 ?
                                 undefined
                                 :
-                                this.chapters_render(this.state.bookContent)
+                                this.dropDown_tree_render(this.state.bookContent)
                         }
                     </div>
-                    <div className="col-1">
+                    <div className="col-9">
                         {
-                            this.state.bookContent.length === 0
+                            (this.state.bookContent.length === 0 || this.state.current_id === '')
                                 ?
                                 undefined
                                 :
-                                this.dropDown_tree_render(this.state.bookContent , this.state.bookTitle)
+                                this.chapters_render(this.state.current_id)
                         }
                     </div>
                 </div>

@@ -11,7 +11,7 @@ import { AppGuid } from '../../../asset/script/guid';
 import { EpubContentGenerator } from '../EpubContentGenerator/EpubContentGenerator';
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../config/localization/localization';
-import { AudioContentGenerator } from '../AudioContentGenerator copy/AudioContentGenerator';
+import { AudioContentGenerator } from '../AudioContentGenerator/AudioContentGenerator';
 
 interface IProps {
     match?: any;

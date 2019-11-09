@@ -341,7 +341,16 @@ interface ILocalization extends LocalizedStringsMethods {
         winter: string;
         last_quarter: string;
         yearly: string;
-    }
+    };
+    book_generator : {
+        addSubChapter : string;
+        addChapterBefore: string;
+        addChapterAfter: string;
+        addTitleAndContentToChapter: string;
+        addContent: string;
+        addContentBefore: string;
+        addContentAfter: string;
+    };
     genre_type_list: {
         [key in BOOK_GENRE]: string;
     };

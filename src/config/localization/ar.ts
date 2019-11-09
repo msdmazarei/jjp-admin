@@ -327,6 +327,15 @@ export const ar = {
         last_quarter:"سه ماهه اخیر",
         yearly:"سالانه",
     },
+    book_generator : {
+        addSubChapter : 'افزودن زیر فصل',
+        addChapterBefore: 'افزودن فصل به قبل',
+        addChapterAfter: 'افزودن فصل به بعد',
+        addTitleAndContentToChapter: 'افزودن عنوان و محتوا',
+        addContent: 'افزودن محتوا',
+        addContentBefore: 'افزودن محتوا به قبل',
+        addContentAfter: 'افزودن محتوا به بعد',
+    },
     name_of_report:{
         ten_Recent_Comments : "10 کامنت اخیر",
         The_best_selling_and_least_selling_of_recent_weeks_and_months : "پرفروش ترین و کم فروش ترین یک هفته - ماه اخیر",

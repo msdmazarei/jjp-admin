@@ -327,6 +327,15 @@ export const en = {
         last_quarter: "last_quarter",
         yearly: "yearly",
     },
+    book_generator : {
+        addSubChapter : 'add subchapter',
+        addChapterBefore: 'add subchapter to before',
+        addChapterAfter: 'add subchapter to after',
+        addTitleAndContentToChapter: 'add title & content',
+        addContent: 'add content',
+        addContentBefore: 'add content to before',
+        addContentAfter: 'add content to after',
+    },
     name_of_report: {
         ten_Recent_Comments: "10 Recent Comments",
         The_best_selling_and_least_selling_of_recent_weeks_and_months: "The best selling and least selling of recent weeks and months",

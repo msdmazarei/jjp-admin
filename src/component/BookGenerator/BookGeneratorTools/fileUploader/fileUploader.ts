@@ -1,5 +1,5 @@
-import { Book_children, Book_body, book_body_voice } from "../BookGenerator/BookGenerator";
-import { UploadService } from "../../../service/service.upload";
+import { Book_children, Book_body, book_body_voice } from "../../BookGenerator/BookGenerator";
+import { UploadService } from "../../../../service/service.upload";
 
 
 export abstract class BGUtility {

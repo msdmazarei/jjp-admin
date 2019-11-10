@@ -1,16 +1,16 @@
 import React, { Fragment } from 'react';
 import { History } from 'history';
-import { BaseComponent } from '../../_base/BaseComponent';
-import { TInternationalization } from '../../../config/setup';
+import { BaseComponent } from '../../../_base/BaseComponent';
+import { TInternationalization } from '../../../../config/setup';
 import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { redux_state } from '../../../redux/app_state';
-import { Input } from '../../form/input/Input';
-import { Book_body, Book_body_text, book_body_control, book_body_voice } from '../BookGenerator/BookGenerator';
-import { AppGuid } from '../../../asset/script/guid';
+import { redux_state } from '../../../../redux/app_state';
+import { Input } from '../../../form/input/Input';
+import { Book_body, Book_body_text, book_body_control, book_body_voice } from '../../BookGenerator/BookGenerator';
+import { AppGuid } from '../../../../asset/script/guid';
 import { EpubContentGenerator } from '../EpubContentGenerator/EpubContentGenerator';
 import { Dropdown } from 'react-bootstrap';
-import { Localization } from '../../../config/localization/localization';
+import { Localization } from '../../../../config/localization/localization';
 import { AudioContentGenerator } from '../AudioContentGenerator/AudioContentGenerator';
 interface IProps {
     match?: any;

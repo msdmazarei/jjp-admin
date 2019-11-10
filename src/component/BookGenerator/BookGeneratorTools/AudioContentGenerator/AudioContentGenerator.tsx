@@ -1,16 +1,16 @@
 import React, { Fragment } from 'react';
 import { History } from 'history';
-import { BaseComponent } from '../../_base/BaseComponent';
-import { TInternationalization } from '../../../config/setup';
+import { BaseComponent } from '../../../_base/BaseComponent';
+import { TInternationalization } from '../../../../config/setup';
 import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { redux_state } from '../../../redux/app_state';
-import { Input } from '../../form/input/Input';
-import { Localization } from '../../../config/localization/localization';
-import { Book_body } from '../BookGenerator/BookGenerator';
+import { redux_state } from '../../../../redux/app_state';
+import { Input } from '../../../form/input/Input';
+import { Localization } from '../../../../config/localization/localization';
+import { Book_body } from '../../BookGenerator/BookGenerator';
 import Select from 'react-select';
 import { Dropdown } from 'react-bootstrap';
-import { AppGuid } from '../../../asset/script/guid';
+import { AppGuid } from '../../../../asset/script/guid';
 import Dropzone from "react-dropzone";
 import { toast } from 'react-toastify';
 

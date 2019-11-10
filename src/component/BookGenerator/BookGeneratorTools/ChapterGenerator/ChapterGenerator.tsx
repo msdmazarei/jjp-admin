@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
-import { BaseComponent } from '../../_base/BaseComponent';
-import { TInternationalization } from '../../../config/setup';
+import { BaseComponent } from '../../../_base/BaseComponent';
+import { TInternationalization } from '../../../../config/setup';
 import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { redux_state } from '../../../redux/app_state';
-import { Book_body, Book_children } from '../BookGenerator/BookGenerator';
-import { AppGuid } from '../../../asset/script/guid';
+import { redux_state } from '../../../../redux/app_state';
+import { Book_body, Book_children } from '../../BookGenerator/BookGenerator';
+import { AppGuid } from '../../../../asset/script/guid';
 import { BodyGenerator } from '../BodyGenerator/BodyGenerator';
 import { Dropdown } from 'react-bootstrap';
-import { Localization } from '../../../config/localization/localization';
+import { Localization } from '../../../../config/localization/localization';
 
 interface IProps {
     match?: any;

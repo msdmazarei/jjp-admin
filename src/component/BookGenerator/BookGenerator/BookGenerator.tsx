@@ -8,6 +8,7 @@ import { redux_state } from '../../../redux/app_state';
 // import { IToken } from '../../../model/model.token';
 // import { ToastContainer } from 'react-toastify';
 import { Localization } from '../../../config/localization/localization';
+import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { IBook } from '../../../model/model.book';
 import { BookService } from '../../../service/service.book';
@@ -15,8 +16,6 @@ import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { AppGuid } from '../../../asset/script/guid';
 import { ChapterGenerator } from '../ChapterGenerator/ChapterGenerator';
-// import { AudioBookGenerator } from '../AudioBookGenerator/AudioBookGenerator';
-
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -48,8 +47,18 @@ export interface Book_children {
     children: Book_children[];
 }
 
+enum SAVE_MODE {
+    CREATE = 'CREATE',
+    EDIT = 'EDIT',
+    DELETE = "DELETE"
+}
+
 interface IState {
+    saveMode: SAVE_MODE;
     selectedBook: ICmp_select<IBook> | null;
+    isBookInputTouch: boolean;
+    contentType: ICmp_select<string> | null;
+    isContentTypeInputTouch: boolean;
     selectedBookType: string | undefined;
     Epub_book: {
         BookType: number;
@@ -72,145 +81,13 @@ interface IProps {
 }
 
 class BookGeneratorComponent extends BaseComponent<IProps, IState> {
-    book: any[] = [
-        {
-            "title": "اولین فصل کتاب Book1",
-            "body": [
-                {
-                    "type": "text",
-                    "text": "حسین فریدون لحظاتی قبل از معرفی خود به اوین گفت: «اجرای حکم اینجانب نشان داد که \"برادر رییس جمهور بودن\" نه تنها هیچ مزیتی برای من نبود که می تواند خودش یک اتهام باشد! و من خوشحالم که حتی در این مقام برای انقلاب و نظامی که آن را دوست داشته و تلاش کرده ام قربانی می شوم."
-                },
-                {
-                    "type": "text",
-                    "text": "اولا. در این پرونده یک ریال از بیت المال حیف و میل نشده است و اصولا پای بیت المال درکار نبوده است. در واقع کل پولی که از آن حرف زده می شود پول شخصی یک نفر است که به فرد دیگری قرض داده شده و هیچ یک از آن دو نفر من نبوده ام و من فقط بر این قرض شاهد و ضامن بوده ام و یک ریال آن به جیب بنده یا خانواده بنده واریز نشده است ... که اگر خلافش بود اعلام کنید."
-                },
-                {
-                    "type": "text",
-                    "text": "ثانیا. من برخلاف کیفرخواست و دادنامه و حکم صادره سفارش هیچ کسی را به هیچ مقامی نکرده ام و هیچ مقامی تعیین و جابجا نشده است ... که اگر خلافش بود اعلام کنید."
-                },
-                {
-                    "type": "text",
-                    "text": "ثالثا. تمام پرونده تشکیل شده مستند به شنود غیر قانونی از جمله شنود از دفتر رییس جمهور است که هم غیر قانونی، هم غیر شرعی و هم غیر اخلاقی است و باید از سوی دولت و قوه قضاییه پی گیری شود ... و البته وقتی ضابط و شاکی و قاضی و رسانه هم یکی می شوند بهتر از این نمی شود ..."
-                },
-                {
-                    "type": "control",
-                    "control": "NEW_LINE"
-                },
-                {
-                    "type": "text",
-                    "text": "بر این اساس من آماده ام متن کامل حکم، دادنامه، کیفرخواست و مستندات در فضای عمومی برای اطلاع مردم منتشر شود تا سیه روی شود هر که در او غش باشد. وکیل من آماده پاسخگویی حقوقی به همه پرسشهای خبرنگاران است و به قوه قضاییه هم عرض می\u200Cکنم نگران من نباشد چون از روزی که این پرونده مطرح شده است، رسانه ها از ذکر نام بنده حتی در مرحله اتهام پرهیز نکردند و سخنگوی سابق قوه قضاییه که ظاهرا می\u200Cخواست قانون را رعایت کند و به صورت صوری از ذکر نام حسین فریدون پرهیز داشت از صفت \"برادر رییس جمهور\" برای بنده استفاده می کرد که کنایه ای صریح تر از اصل بود ... . در دادگاه علنی نیز تنها خبرنگاران رسانه های خاصی که با ضابط پرونده همراهی و همکاری داشتند می\u200Cتوانستند در دادگاه حاضر شوند. همین رسانه\u200Cها آن قدر حاشیه سازی کردند که قاضی ناگزیر از محکومیت متهمی بود که آنها پیشاپیش حکم محکومیتش را صادر کرده بودند."
-                },
-                {
-                    "type": "control",
-                    "control": "NEW_LINE"
-                },
-                {
-                    "type": "text",
-                    "text": "حال در این شرایط اگر مبنا بر شفافیت است من پیشنهاد میکنم شفافیت حداکثری پیشه کنند و چیزی از مردم پنهان ندارند تا روشن شود من به ملت و دولت و رییس جمهور و بیت المال هیچ خیانتی نکردم و امروز برای خدماتی که برای کشور کرده ام از حبس در ساواک تا جنگ با تجزیه طلبان و نیز مبارزه برای لغو تحریم ها هیچ شرمنده نیستم و هزینه همه آنها را پرداخت می کنم ... من این حبس را در ادامه زندان برای انقلاب، در تداوم گروگان گیری تجزیه طلبان، در کنار تلاش برای صلح و هزینه پیروزی برای دولت اعتدال می دانم و با همه دشواری این بار را تنها بر دوش می کشم اما مردم را به شهادت و قضاوت نهایی می طلبم که بر اساس جوسازی و کلی بافی قضاوت نکنند که قاضی نهایی خداوند حکیم و علیم و آنگاه مردم هستند."
-                }
-            ],
-            "children": [
-                {
-                    "title": "Sub1",
-                    "body": [
-                        {
-                            "type": "control",
-                            "control": "NEW_LINE"
-                        },
-                        {
-                            "type": "text",
-                            "text": "زیر فصل اول "
-                        }
-                    ],
-                    "children": [
-                        {
-                            "title": "Sub11",
-                            "body": [
-                                {
-                                    "type": "control",
-                                    "control": "NEW_LINE"
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "زیر زیر فصل اول "
-                                }
-                            ],
-                            "children": [
-                                {}
-                            ]
-                        },
-                        {
-                            "title": "Sub12",
-                            "body": [
-                                {
-                                    "type": "control",
-                                    "control": "NEW_LINE"
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "زیر دوم زیر فصل اول "
-                                }
-                            ],
-                            "children": [
 
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "title": "Second.Chapter",
-            "body": [
-                {
-                    "type": "control",
-                    "control": "NEW_LINE"
-                },
-                {
-                    "type": "text",
-                    "text": "فصل دوم"
-                }
-            ],
-            "children": [
-                {
-                    "title": "SUB21",
-                    "body": [
-                        {
-                            "type": "text",
-                            "text": "سلام من دارم میام"
-                        }
-                    ],
-                    "children": [
-                        {
-                            "title": "SUB2.11",
-                            "body": [
-                                {
-                                    "type": "text",
-                                    "text": "helo"
-                                }
-                            ]
-                        },
-                        {
-                            "title": "SUB212",
-                            "body": [
-                                {
-                                    "type": "text",
-                                    "text": "helo"
-                                }
-                            ]
-                        }
-
-                    ]
-                },
-                {
-                    "title": "SUB22",
-                    "body": []
-                }
-            ]
-        }
-    ]
     state = {
+        saveMode: SAVE_MODE.CREATE,
         selectedBook: null,
+        isBookInputTouch: false,
+        contentType: null,
+        isContentTypeInputTouch: false,
         selectedBookType: undefined,
         Epub_book: {
             BookType: 0,
@@ -226,42 +103,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         },
     }
 
-    // componentDidMount(){
-    //     this.setState({
-    //         ...this.state,
-    //         Epub_book : {
-    //             ...this.state.Epub_book,
-    //             children : this.book
-    //         }
-    //     })
-    // }
-
-    _bookService = new BookService();
-
-    treeData: Book_children[] = [
-        {
-            front_id: AppGuid.generate(),
-            title: 'chapter1',
-            body: [],
-            children: [
-                {
-                    front_id: AppGuid.generate(),
-                    title: 'chapter11',
-                    body: [],
-                    children: [],
-                },
-                {
-                    front_id: AppGuid.generate(),
-                    title: 'chapter12',
-                    body: [],
-                    children: [],
-                },
-            ],
-        },
-    ];
-
-    updateTree(treeData: Book_children[]) {
-        this.treeData = treeData
+    componentDidMount() {
+        if (this.props.match.path.includes('api.......................')) {
+            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+        }
     }
 
     book_title_returner() {
@@ -326,17 +171,12 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     ////////////   start book selection func ////////////////////
 
+    _bookService = new BookService();
+
     handleBookChange(selectedBook: any) {
         this.setState({
             ...this.state,
             selectedBook: selectedBook,
-        }, () => this.setFileTitleAndType())
-    }
-
-    Reset() {
-        this.setState({
-            ...this.state,
-            selectedBook: null,
         }, () => this.setFileTitleAndType())
     }
 
@@ -380,7 +220,100 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         return this.personRequstError_txt;
     }
 
+    bookInputTouch_handler() {
+        this.setState({
+            ...this.state,
+            isBookInputTouch: true,
+        })
+    }
+
+    bookInvalidFeedback() {
+        if (!this.state.isBookInputTouch) {
+            return
+        };
+        if (this.state.isBookInputTouch && this.state.selectedBook !== null) {
+            return
+        }
+        if (this.state.isBookInputTouch && this.state.selectedBook === null) {
+            return <div className="select-feedback">{Localization.required_field}</div>
+        }
+    }
+
     ////////////   end book selection func ////////////////////
+
+
+    ////////////   start book content type selection func //////////////////
+
+    contentOptions = [
+        { value: 'origin', label: 'origin' },
+        { value: 'brief', label: 'brief' },
+    ];
+
+    handleBookContentTypeChange(contentType: any) {
+        this.setState({
+            ...this.state,
+            contentType: contentType,
+        }, () => this.setFileTitleAndType())
+    }
+
+    typeInputTouch_handler() {
+        this.setState({
+            ...this.state,
+            isContentTypeInputTouch: true,
+        })
+    }
+
+    typeInvalidFeedback() {
+        if (!this.state.isContentTypeInputTouch) {
+            return
+        };
+        if (this.state.isContentTypeInputTouch && this.state.contentType !== null) {
+            return
+        }
+        if (this.state.isContentTypeInputTouch && this.state.contentType === null) {
+            return <div className="select-feedback">{Localization.required_field}</div>
+        }
+    }
+
+    ////////////   end book content type selection func ////////////////////
+
+
+    ////////////   start reset page func ////////////////////
+
+    Reset() {
+        this.setState({
+            ...this.state,
+            selectedBook: null,
+            isBookInputTouch: false,
+            contentType: null,
+            isContentTypeInputTouch: false,
+        }, () => this.setFileTitleAndType())
+    }
+
+    ////////////   end reset page func ////////////////////
+
+
+    ////////////   start create btn function ////////////////////
+
+    create(){
+        if(this.state.selectedBook === null || this.state.contentType === null){
+            return
+        }
+    }
+
+    ////////////   end create btn function ////////////////////
+
+
+    ////////////   start update btn function ////////////////////
+
+    update(){
+        if(this.state.selectedBook === null || this.state.contentType === null){
+            return
+        }
+    }
+
+    ////////////   end update btn function ////////////////////
+
 
     //// start onChange function define  ///////
 
@@ -408,10 +341,13 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    //// start onChange function define  ///////
+    //// end onChange function define  ///////
+
+
+    //// start returner by book type function /////
 
     returnerGenerator_by_book_type() {
-        if (this.state.selectedBookType === undefined || this.state.selectedBook === null) {
+        if (this.state.selectedBookType === undefined || this.state.selectedBook === null || this.state.contentType === null) {
             return <></>
         }
         if (this.state.selectedBookType === "Epub") {
@@ -436,6 +372,11 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         }
     }
 
+    //// end returner by book type function /////
+
+
+    // start render cmp
+
     render() {
         return (
             <>
@@ -444,9 +385,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                         <div className="col-12">
                             <div className="template-box mb-4">
                                 <div className="row">
-                                    <div className="col-sm-6 col-xl-4">
+                                    <div className="col-3">
                                         <label htmlFor="">{Localization.book}</label>
                                         <AsyncSelect
+                                            onBlur={() => this.bookInputTouch_handler()}
                                             placeholder={Localization.book}
                                             cacheOptions
                                             defaultOptions
@@ -454,23 +396,58 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
                                             onChange={(selectedBook) => this.handleBookChange(selectedBook)}
+                                            isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
                                         />
+                                        {this.bookInvalidFeedback()}
                                     </div>
-                                    <div className="col-sm-2 col-xl-2 mt-3 pt-4">
+                                    <div className="col-3">
+                                        <label htmlFor="">{Localization.type + " " + Localization.content}</label>
+                                        <Select
+                                            onChange={(value: any) => this.handleBookContentTypeChange(value)}
+                                            options={this.contentOptions}
+                                            onBlur={() => this.typeInputTouch_handler()}
+                                            placeholder={Localization.type + " " + Localization.content}
+                                            value={this.state.contentType}
+                                            isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
+                                        />
+                                        {this.typeInvalidFeedback()}
+                                    </div>
+                                    <div className="col-2 mt-3 pt-4">
                                         {Localization.title} : {this.book_title_returner()}
                                     </div>
-                                    <div className="col-sm-2 col-xl-2 mt-3 pt-4">
+                                    <div className="col-2 mt-3 pt-4">
                                         {Localization.type} : {this.book_type_returner()}
                                     </div>
-                                    <div className="col-sm-2 col-xl-4 mt-3 pt-3" >
-                                        <BtnLoader
-                                            loading={false}
-                                            btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                                            onClick={() => this.Reset()}
-                                        >
-                                            {Localization.reset}
-                                        </BtnLoader>
-                                    </div>
+                                    {
+                                        this.state.saveMode === SAVE_MODE.CREATE
+                                            ?
+                                            <div className="col-2 mt-3 pt-3" >
+                                                <BtnLoader
+                                                    loading={false}
+                                                    btnClassName="btn btn-warning shadow-default shadow-hover"
+                                                    onClick={() => this.Reset()}
+                                                >
+                                                    {Localization.reset}
+                                                </BtnLoader>
+                                                <BtnLoader
+                                                    loading={false}
+                                                    btnClassName="btn btn-success shadow-default shadow-hover pull-right"
+                                                    onClick={() => this.create()}
+                                                >
+                                                    {Localization.create}
+                                                </BtnLoader>
+                                            </div>
+                                            :
+                                            <div className="col-2 mt-3 pt-3" >
+                                                <BtnLoader
+                                                    loading={false}
+                                                    btnClassName="btn btn-success shadow-default shadow-hover pull-right"
+                                                    onClick={() => this.update()}
+                                                >
+                                                    {Localization.update}
+                                                </BtnLoader>
+                                            </div>
+                                    }
                                 </div>
                             </div>
                         </div>

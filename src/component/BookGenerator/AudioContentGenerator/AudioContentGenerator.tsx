@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { History } from 'history';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
@@ -11,7 +11,8 @@ import { Book_body } from '../BookGenerator/BookGenerator';
 import Select from 'react-select';
 import { Dropdown } from 'react-bootstrap';
 import { AppGuid } from '../../../asset/script/guid';
-
+import Dropzone from "react-dropzone";
+import { toast } from 'react-toastify';
 
 interface IProps {
     match?: any;
@@ -20,7 +21,8 @@ interface IProps {
     id: string;
     type: string;
     text?: string;
-    control?: string
+    control?: string;
+    voice?: any;
     onContentChange: (value: Book_body, isValid: boolean, id: string) => void;
     addContentBefore: (id: string) => void;
     addContentAfter: (id: string) => void;
@@ -52,13 +54,14 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
         id: undefined,
         text: undefined,
         control: this.controlsOption[0],
-        voice: undefined,
+        voice: [],
     }
 
     type: { value: string, label: string } | null = null;
     id: string | undefined = undefined;
     text: string | undefined = undefined;
     control: { value: string, label: string } = this.controlsOption[0];
+    voice: any = [];
 
     componentDidMount() {
         this.setState({
@@ -66,11 +69,13 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             id: this.props.id,
             text: this.props.text ? this.props.text : undefined,
             control: this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0],
+            voice: (this.props.voice && this.props.voice !== '') ? this.props.voice : [],
         });
         this.type = { value: this.props.type, label: this.props.type };
         this.id = this.props.id;
         this.text = this.props.text ? this.props.text : undefined;
         this.control = this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0];
+        this.voice = (this.props.voice && this.props.voice !== '') ? this.props.voice : [];
     }
 
     componentWillReceiveProps(nextProps: IProps) {
@@ -80,11 +85,12 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             id: nextProps.id,
             text: nextProps.text ? nextProps.text : undefined,
             control: nextProps.control ? { value: nextProps.control, label: nextProps.control } : null,
+            voice: (nextProps.voice && nextProps.voice !== '') ? nextProps.voice : [],
         })
     }
 
     passBodyObjToProps() {
-        if (this.state.type === null) return
+        if (this.state.type === null) return;
         if ((this.state.type! as { value: string, label: string }).value === 'text') {
             let Obj: { type: string, text: string, front_id: string } =
             {
@@ -103,33 +109,49 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             };
             this.props.onContentChange(Obj, true, this.props.id)
         }
+        if ((this.state.type! as { value: string, label: string }).value === 'voice') {
+            let Obj: { type: string, voice: any, front_id: string } =
+            {
+                type: (this.state.type! as { value: string, label: string }).value,
+                voice: this.state.voice === [] ? '' : this.state.voice,
+                front_id: this.props.id
+            };
+            this.props.onContentChange(Obj, true, this.props.id)
+        }
     }
 
     handleTypeChange(value: any) {
         if ((value as { value: string, label: string }).value === 'text') {
             this.type = value;
+            this.control = this.controlsOption[0];
+            this.voice = [];
             this.setState({
                 ...this.state,
                 type: this.type,
                 control: this.control,
+                voice: this.voice,
             }, () => this.passBodyObjToProps())
         }
         if ((value as { value: string, label: string }).value === 'control') {
             this.type = value;
             this.text = undefined;
+            this.voice = [];
             this.setState({
                 ...this.state,
                 type: this.type,
-                text: this.text
+                text: this.text,
+                voice: this.voice,
             }, () => this.passBodyObjToProps())
         }
-        if ((value as { value: string, label: string }).value === 'voice'){  // to do modify
+        if ((value as { value: string, label: string }).value === 'voice') {  // to do modify
             this.type = value;
             this.text = undefined;
+            this.control = this.controlsOption[0];
             this.setState({
                 ...this.state,
                 type: this.type,
-                text: this.text
+                text: this.text,
+                control: this.control,
             }, () => this.passBodyObjToProps())
         }
     }
@@ -141,7 +163,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             control: this.control,
             text: this.text,
-            voice : value
+            voice: value
         }, () => this.passBodyObjToProps())
     }
 
@@ -163,6 +185,100 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             text: this.text,
             control: this.control,
         }, () => this.passBodyObjToProps())
+    }
+
+    removePreviousImgNotify() {
+        toast.warn(Localization.validation_msg.just_one_image_person_can_have, this.getNotifyConfig());
+    }
+
+    onDropRejected(files: any[], event: any) {
+        this.onDropRejectedNotify(files);
+    }
+
+    onDropRejectedNotify(files: any[]) {
+        toast.warn(Localization.validation_msg.file_can_not_added, this.getNotifyConfig());
+    }
+
+    tmpUrl_list: string[] = [];
+    getTmpUrl(file: any): string {
+        const tmUrl = URL.createObjectURL(file);
+        this.tmpUrl_list.push(tmUrl);
+        return tmUrl;
+    }
+
+    removeItemFromDZ(index: number/* , url: string */) {
+        this.voice = [];
+        this.setState({
+            ...this.state,
+            voice: this.voice,
+        }, () => this.passBodyObjToProps())
+    }
+
+    onDropVoice(file: any[]) {
+        if (!file || !file.length) return;
+        if (this.state.voice && this.state.voice!.length) {
+            this.removePreviousImgNotify();
+            return;
+        }
+        this.voice = file;
+        this.setState({
+            ...this.state,
+            voice: this.voice,
+        }, () => this.passBodyObjToProps())
+    }
+
+    returner_voice_by_value_of_voice() {
+        if(typeof this.state.voice === 'string'){
+            return  // to do create link with remove btn
+        }
+        return <div className="role-img-container">
+            <Dropzone
+                multiple={false}
+                onDrop={(files) => this.onDropVoice(files)}
+                maxSize={5000000}
+                // accept="mp3/*"
+                onDropRejected={(files, event) => this.onDropRejected(files, event)}
+            >
+                {
+                    (({ getRootProps, getInputProps }) => (
+                        <section className="container">
+                            <div {...getRootProps({ className: 'dropzone' })}>
+                                <input {...getInputProps()} />
+                                <p className="img-container text-center text-muted p-3">{Localization.DRAG_AND_DROP}</p>
+                            </div>
+                            <aside>
+                                <h5 className="m-2">{Localization.preview}:</h5>
+                                <div className="image-wrapper mb-2">{
+                                    (this.state.voice || []).map((file: any, index) => {
+                                        let tmUrl = '';
+                                        let fileName = '';
+                                        let fileSize = '';
+                                        if (typeof file === "string") {
+                                            // fileName = file;
+                                            tmUrl = '/api/serve-files/' + file;
+                                        } else {
+                                            fileName = file.name;
+                                            fileSize = '- ' + parseFloat((file.size / 1024).toFixed(2)) + ' KB';
+                                            tmUrl = this.getTmpUrl(file);
+                                        }
+                                        return <Fragment key={index}>
+                                            <div className="img-item m-2">
+                                                {
+                                                    (this.state.voice) ? <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} /> : <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
+                                                }
+                                                {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
+                                                <span className="mx-2 text-dark">{fileName} {fileSize}</span>
+                                                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
+                                            </div>
+                                        </Fragment>
+                                    })
+                                }</div>
+                            </aside>
+                        </section>
+                    ))
+                }
+            </Dropzone>
+        </div >
     }
 
     render() {
@@ -255,7 +371,11 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                 ?
                                 (this.state.type! as { value: string, label: string }).value === 'voice'
                                     ?
-                                    "yjugjhgrtykuythghyygkhlgjgfghjk"
+                                    <div className="col-12">
+                                        {
+                                            this.returner_voice_by_value_of_voice()
+                                        }
+                                    </div>
                                     :
                                     undefined
                                 :

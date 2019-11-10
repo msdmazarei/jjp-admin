@@ -6,18 +6,17 @@ import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Input } from '../../form/input/Input';
-import { Book_body, Book_body_text, book_body_control } from '../BookGenerator/BookGenerator';
+import { Book_body, Book_body_text, book_body_control, book_body_voice } from '../BookGenerator/BookGenerator';
 import { AppGuid } from '../../../asset/script/guid';
 import { EpubContentGenerator } from '../EpubContentGenerator/EpubContentGenerator';
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../config/localization/localization';
 import { AudioContentGenerator } from '../AudioContentGenerator/AudioContentGenerator';
-
 interface IProps {
     match?: any;
     history?: History;
     internationalization: TInternationalization;
-    bookType:string;
+    bookType: string;
     id: string;
     title: string;
     body: Book_body[];
@@ -188,14 +187,25 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     addContentAfter={(id: string) => this.addContentAfter(id)}
                                 />
                                 :
-                                <AudioContentGenerator
-                                    id={item.front_id}
-                                    type={item.type}
-                                    control={(item as book_body_control).control}
-                                    onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
-                                    addContentBefore={(id: string) => this.addContentBefore(id)}
-                                    addContentAfter={(id: string) => this.addContentAfter(id)}
-                                />
+                                item.type === 'control'
+                                    ?
+                                    <AudioContentGenerator
+                                        id={item.front_id}
+                                        type={item.type}
+                                        control={(item as book_body_control).control}
+                                        onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
+                                        addContentBefore={(id: string) => this.addContentBefore(id)}
+                                        addContentAfter={(id: string) => this.addContentAfter(id)}
+                                    />
+                                    :
+                                    <AudioContentGenerator
+                                        id={item.front_id}
+                                        type={item.type}
+                                        voice={(item as book_body_voice).voice}
+                                        onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
+                                        addContentBefore={(id: string) => this.addContentBefore(id)}
+                                        addContentAfter={(id: string) => this.addContentAfter(id)}
+                                    />
                         }
                     </Fragment>
                 ))
@@ -203,11 +213,11 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         </>
     }
 
-    returner_body_by_book_type(){
-        if(this.props.bookType === 'Epub'){
+    returner_body_by_book_type() {
+        if (this.props.bookType === 'Epub') {
             return this.epub_body_contents_render()
         }
-        if(this.props.bookType === 'Audio'){
+        if (this.props.bookType === 'Audio') {
             return this.audio_body_contents_render()
         }
     }

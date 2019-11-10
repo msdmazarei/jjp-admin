@@ -9,6 +9,7 @@ import { AppGuid } from '../../../asset/script/guid';
 import { BodyGenerator } from '../BodyGenerator/BodyGenerator';
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../config/localization/localization';
+
 interface IProps {
     match?: any;
     history?: History;

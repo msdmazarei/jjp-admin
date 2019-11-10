@@ -14,7 +14,7 @@ import { IBook } from '../../../model/model.book';
 import { BookService } from '../../../service/service.book';
 import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
-import { ChapterGenerator } from '../ChapterGenerator/ChapterGenerator';
+import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/ChapterGenerator';
 interface ICmp_select<T> {
     label: string;
     value: T

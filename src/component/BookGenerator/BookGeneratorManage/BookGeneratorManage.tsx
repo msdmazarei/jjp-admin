@@ -65,7 +65,7 @@ interface IState {
 
 // define class of Book 
 
-class BookManageComponent extends BaseComponent<IProps, IState>{
+class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   state = {
     book_table: {
       list: [],
@@ -872,7 +872,7 @@ const state2props = (state: redux_state) => {
   };
 };
 
-export const BookManage = connect(
+export const BookGeneratorManage = connect(
   state2props,
   dispatch2props
-)(BookManageComponent);
+)(BookGeneratorManageComponent);

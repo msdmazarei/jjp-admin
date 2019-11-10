@@ -264,7 +264,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                         return <Fragment key={index}>
                                             <div className="img-item m-2">
                                                 {
-                                                    (this.state.voice) ? <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} /> : <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
+                                                    (this.state.voice) ? <img className="w-50px h-50px profile-img-rounded" alt="" src={this.audioLogo} /> : <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
                                                 }
                                                 {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
                                                 <span className="mx-2 text-dark">{fileName} {fileSize}</span>

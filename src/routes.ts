@@ -167,15 +167,15 @@ var routes = [
   // generator start
   {
     path: "/book_generator/manage",
-    name: Localization.book,
-    icon: "fa fa-book",
+    name: Localization.upload,
+    icon: "fa fa-upload",
     component: BookGeneratorManage,
     layout: "/admin",
     isitem: true
   },
   {
     path: "/book_generator/create",
-    name: Localization.create_book,
+    name: Localization.create,
     icon: "fa fa-plus",
     component: BookGenerator,
     layout: "/admin",
@@ -183,7 +183,7 @@ var routes = [
   },
   {
     path: "/book_generator/:book_generator_id/edit",
-    name: Localization.book_update,
+    name: Localization.update,
     component: BookGenerator,
     layout: "/admin",
     isitem: false,

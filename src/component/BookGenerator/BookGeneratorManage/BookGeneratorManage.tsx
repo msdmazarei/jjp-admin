@@ -630,7 +630,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     if(AccessService.checkAccess('BOOK_ADD_PREMIUM')===false && AccessService.checkAccess('BOOK_ADD_PRESS')===false){
       return;
     };
-    this.props.history.push('/book/create'); // /admin
+    this.props.history.push('/book_generator/create'); // /admin
   }
 
 

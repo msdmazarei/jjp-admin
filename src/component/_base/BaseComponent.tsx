@@ -29,6 +29,7 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
     image_pre_url = '/api/serve-files';
     defaultBookImagePath = "/static/media/img/icon/default-book.png";
     defaultPersonImagePath = "/static/media/img/icon/avatar.png";
+    audioLogo = "/static/media/img/icon/audio.png"; 
 
     /* async  */
     handleError(handleErrorObj: IHandleError): IHandleErrorResolve { // Promise<IHandleErrorResolve>

@@ -13,6 +13,7 @@ import { GroupSave } from "./component/group/GroupSave/GroupSave";
 import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
 import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
 import { Profile } from './component/profile/Profile';
+import {BookGeneratorManage} from './component/BookGenerator/BookGeneratorManage/BookGeneratorManage';
 import { BookGenerator } from './component/BookGenerator/BookGenerator/BookGenerator';
 import { Localization } from "./config/localization/localization";
 
@@ -163,16 +164,32 @@ var routes = [
     brandName: ['group', 'edit']
   },
   // group end
-  // upload start
+  // generator start
   {
-    path: "/upload",
-    name: Localization.upload,
-    icon: "fa fa-upload",
-    component: BookGenerator,
+    path: "/book_generator/manage",
+    name: Localization.book,
+    icon: "fa fa-book",
+    component: BookGeneratorManage,
     layout: "/admin",
     isitem: true
   },
-  // upload end
+  {
+    path: "/book_generator/create",
+    name: Localization.create_book,
+    icon: "fa fa-plus",
+    component: BookGenerator,
+    layout: "/admin",
+    isitem: false,
+  },
+  {
+    path: "/book_generator/:book_generator_id/edit",
+    name: Localization.book_update,
+    component: BookGenerator,
+    layout: "/admin",
+    isitem: false,
+    brandName: ['book', 'edit']
+  },
+  // generator end
   // permission start
   {
     path: "/permission/manage",

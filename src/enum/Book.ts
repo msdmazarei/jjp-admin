@@ -5,6 +5,7 @@ export enum BOOK_ROLES {
     Press = 'Press',
     Contributer = 'Contributer',
     Designer = 'Designer',
+    Narrator = 'Narrator'
 }
 
 export enum BOOK_TYPES {

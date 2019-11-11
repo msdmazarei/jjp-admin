@@ -169,6 +169,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               if (row.duration === 'NaN') {
                 return ''
               }
+              if (row.type !== 'Audio'){
+                return ''
+              }
               let totalTime = Number(row.duration);
               if (totalTime < 60) {
                 hour = 0;

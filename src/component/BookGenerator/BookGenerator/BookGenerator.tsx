@@ -16,7 +16,7 @@ import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/ChapterGenerator';
 import { BookGeneratorService } from '../../../service/service.bookGenerator';
-import {BGUtility} from '../BookGeneratorTools/fileUploader/fileUploader';
+import { BGUtility } from '../BookGeneratorTools/fileUploader/fileUploader';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -144,10 +144,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     contentType: come_contentType,
                     Epub_book: {
                         ...this.state.Epub_book,
-                        BookType : res.data.content.BookType ? res.data.content.BookType : 0,
-                        PackagingVersion : res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
-                        title : res.data.content.title ? res.data.content.title : "",
-                        children : (res.data.content.children&&res.data.content.children.length) ? res.data.content.children : [],
+                        BookType: res.data.content.BookType ? res.data.content.BookType : 0,
+                        PackagingVersion: res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
+                        title: res.data.content.title ? res.data.content.title : "",
+                        children: (res.data.content.children && res.data.content.children.length) ? res.data.content.children : [],
                     },
                 });
             }
@@ -157,12 +157,12 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     selectedBook: come_selectedBook,
                     selectedBookType: book_type,
                     contentType: come_contentType,
-                    Audio_book : {
+                    Audio_book: {
                         ...this.state.Audio_book,
-                        BookType : res.data.content.BookType ? res.data.content.BookType : 2,
-                        PackagingVersion : res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
-                        title : res.data.content.title ? res.data.content.title : "",
-                        children : (res.data.content.children&&res.data.content.children.length) ? res.data.content.children : [],
+                        BookType: res.data.content.BookType ? res.data.content.BookType : 2,
+                        PackagingVersion: res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
+                        title: res.data.content.title ? res.data.content.title : "",
+                        children: (res.data.content.children && res.data.content.children.length) ? res.data.content.children : [],
                     },
                 });
             }
@@ -377,15 +377,16 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             }
         }
         if (this.state.selectedBookType === 'Audio') {
-            const allBody : Book_body[] = BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children , 'voice');
-            const bodyShouldUpload : Book_body[] = BGUtility.book_body_array_filter_by_file_type(allBody);
-            let uploadedAndThatsId : book_body_voice[] = await BGUtility.upload_file_and_save_id(bodyShouldUpload);
-            const convertedChildren : Book_children[] = BGUtility.replace_id_instead_of_file(this.state.Audio_book.children,uploadedAndThatsId)
-            let converted_content : Object = 
-            { BookType : this.state.Audio_book.BookType, 
-              PackagingVersion : this.state.Audio_book.PackagingVersion,
-              title : this.state.Audio_book.title,
-              children : convertedChildren,
+            const allBody: Book_body[] = await BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children, 'voice');
+            const bodyShouldUpload: Book_body[] = await BGUtility.book_body_array_filter_by_file_type(allBody);
+            let uploadedAndThatsId: book_body_voice[] = await BGUtility.upload_file_and_save_id(bodyShouldUpload);
+            if (bodyShouldUpload.length !== uploadedAndThatsId.length) return;
+            const convertedChildren: Book_children[] = await BGUtility.replace_id_instead_of_file(this.state.Audio_book.children, uploadedAndThatsId);
+            let converted_content: Object = {
+                BookType: this.state.Audio_book.BookType,
+                PackagingVersion: this.state.Audio_book.PackagingVersion,
+                title: this.state.Audio_book.title,
+                children: convertedChildren,
             }
             let res = await this._bookContentService.create(
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
@@ -430,7 +431,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     selectedBook: null,
                     contentType: null,
                     selectedBookType: undefined,
-                },() => this.backTO());
+                }, () => this.backTO());
             }
         }
     }

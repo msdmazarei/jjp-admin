@@ -55,7 +55,7 @@ export abstract class BGUtility {
 
     private static Book_body_array: Book_body[] = [];
     private static Book_body_file_type_array: Book_body[] = [];
-    private static Uploaded_id_obj_array: Book_body[] = [];
+    private static Uploaded_id_obj_array: book_body_voice[] = [];
     private static book_json: Book_children[] = [];
     private static uploaded_id : string[] = [];
 
@@ -105,7 +105,7 @@ export abstract class BGUtility {
         return is_exist
     }
 
-    static async upload_file_and_save_id(array: Book_body[]): Promise<Book_body[] | []> {
+    static async upload_file_and_save_id(array: Book_body[]): Promise<book_body_voice[] | []> {
         let rejected = false;
         for (let i = 0; i < array.length; i++) {
             let current_id : string = array[i].front_id;

@@ -1,5 +1,4 @@
 // import Axios from "axios";
-import { IBook } from "../model/model.book";
 import { IAPI_Response, IAPI_ResponseList, BaseService } from "./service.base";
 
 export class BookGeneratorService extends BaseService {
@@ -8,24 +7,24 @@ export class BookGeneratorService extends BaseService {
     //     headers: { 'authorization': 'Bearer 0be2e4cb-88b3-44a6-aeff-4eeb96e411c6' }
     // });
 
-    create(book: any) {
-        return this.axiosTokenInstance.post('/books', book);
+
+    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<any>> {
+        return this.axiosTokenInstance.post(`/book-contents/_search`, { limit, skip, filter });
     }
 
-    search(limit: number, offset: number, filter?: Object): Promise<IAPI_ResponseList<IBook>> {
-        return this.axiosTokenInstance.post(`/books/_search`, { limit, offset, filter });
+    create( book_id : string, type : string, content : object ) {
+        return this.axiosTokenInstance.post('/book-contents', { book_id , type , content });
     }
 
-    remove(bookId: string) {
-        return this.axiosTokenInstance.delete(`/books/${bookId}`);
+    byId(contentId: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.get(`/book-contents/${contentId}`);
     }
 
-    byId(book_id: string): Promise<IAPI_Response<IBook>> {
-        return this.axiosTokenInstance.get(`/books/${book_id}`);
+    update(contentId: string , book_id : string, type : string, content : object ) {
+        return this.axiosTokenInstance.put(`/book-contents/${contentId}`, { book_id , type , content } );
     }
 
-    update(book: any, id: string) {
-        return this.axiosTokenInstance.put(`/books/${id}`, book);
+    remove(contentId: string) {
+        return this.axiosTokenInstance.delete(`/book-contents/${contentId}`);
     }
-
 }

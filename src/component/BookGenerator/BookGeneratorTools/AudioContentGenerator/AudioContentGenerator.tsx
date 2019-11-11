@@ -26,6 +26,7 @@ interface IProps {
     onContentChange: (value: Book_body, isValid: boolean, id: string) => void;
     addContentBefore: (id: string) => void;
     addContentAfter: (id: string) => void;
+    removeComingIdContent: (id: string) => void;
 }
 
 interface IState {
@@ -228,7 +229,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     returner_voice_by_value_of_voice() {
-        if(typeof this.state.voice === 'string'){
+        if (typeof this.state.voice === 'string') {
             return  // to do create link with remove btn
         }
         return <div className="role-img-container">
@@ -344,6 +345,14 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                         </span>
                                         <span className="action-name">
                                             {Localization.book_generator.addContentAfter}
+                                        </span>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item className="text-center" onClick={() => this.props.removeComingIdContent(this.props.id)}>
+                                        <span className="action-name">
+                                            <i className="fa fa-trash text-danger mx-1" onClick={() => this.props.removeComingIdContent(this.props.id)}></i>
+                                        </span>
+                                        <span className="action-name">
+                                            {Localization.remove}
                                         </span>
                                     </Dropdown.Item>
                                 </Dropdown.Menu>

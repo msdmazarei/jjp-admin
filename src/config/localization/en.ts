@@ -377,6 +377,7 @@ export const en = {
         Press: 'Press',
         Contributer: 'Contributer',
         Designer: 'Designer',
+        Narrator : 'Narrator',
     },
     permissions_list: {
         IS_OWNER : 'IS_OWNER',

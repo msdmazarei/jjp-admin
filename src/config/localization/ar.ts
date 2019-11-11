@@ -377,6 +377,7 @@ export const ar = {
         Press : 'ناشر',
         Contributer : 'مشارکت کننده',
         Designer : 'طراح',
+        Narrator : 'گوینده',
     },
     permissions_list: {
         IS_OWNER : 'IS_OWNER',

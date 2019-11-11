@@ -61,7 +61,8 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         { value: 'Translator', label: Localization.role_type_list.Translator },
         // { value: 'Press', label: Localization.role_type_list.Press },
         { value: 'Contributer', label: Localization.role_type_list.Contributer },
-        { value: 'Designer', label: Localization.role_type_list.Designer }
+        { value: 'Designer', label: Localization.role_type_list.Designer },
+        { value: 'Narrator', label: Localization.role_type_list.Narrator },
     ];
     _personService = new PersonService();
     componentDidMount() {

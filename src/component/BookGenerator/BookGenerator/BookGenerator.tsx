@@ -15,6 +15,7 @@ import { BookService } from '../../../service/service.book';
 import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/ChapterGenerator';
+import { BookGeneratorService } from '../../../service/service.bookGenerator';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -101,6 +102,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             children: [],
         },
     }
+
+    private _bookContentService = new BookGeneratorService();
 
     componentDidMount() {
         if (this.props.match.path.includes('api.......................')) {
@@ -244,8 +247,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start book content type selection func //////////////////
 
     contentOptions = [
-        { value: 'origin', label: 'origin' },
-        { value: 'brief', label: 'brief' },
+        { value: 'Original', label: 'Original' },
+        { value: 'Brief', label: 'Brief' },
     ];
 
     handleBookContentTypeChange(contentType: any) {
@@ -294,9 +297,26 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     ////////////   start create btn function ////////////////////
 
-    create(){
-        if(this.state.selectedBook === null || this.state.contentType === null){
+    async create() {
+        if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
             return
+        }
+        if (this.state.selectedBookType === 'Epub') {
+            let res = await this._bookContentService.create(
+                (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                (this.state.contentType! as { label: string , value: string }).value,
+                this.state.Epub_book
+            ).catch(error => {
+                this.handleError({ error: error.response });
+            });
+            if (res) {
+                this.setState({
+                    ...this.state,
+                    selectedBook: null,
+                    contentType: null,
+                    selectedBookType: undefined,
+                });
+            }
         }
     }
 
@@ -305,8 +325,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     ////////////   start update btn function ////////////////////
 
-    update(){
-        if(this.state.selectedBook === null || this.state.contentType === null){
+    update() {
+        if (this.state.selectedBook === null || this.state.contentType === null) {
             return
         }
     }

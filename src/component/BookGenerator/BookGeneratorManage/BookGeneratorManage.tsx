@@ -1,7 +1,6 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
-import { BookService } from "../../../service/service.book";
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
 import { IBook } from "../../../model/model.book";
@@ -15,15 +14,14 @@ import { TInternationalization } from "../../../config/setup";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
-import { AppRegex } from "../../../config/regex";
 import { PriceService } from "../../../service/service.price";
 import Select from 'react-select';
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { FixNumber } from "../../form/fix-number/FixNumber";
 import { AccessService } from "../../../service/service.access"
+import { BookGeneratorService } from "../../../service/service.bookGenerator";
 
 /// define props & state ///////
 export interface IProps {
@@ -122,44 +120,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "price", title: Localization.price,
-          cellTemplateFunc: (row: IBook) => {
-            // row.price = 3436465;
-            if (row.price) {
-              return <span className="text-info">
-                {row.price.toLocaleString()}
-              </span>
-            }
-            else {
-              return <div className="text-muted text-center">-</div>;
-            }
-          }
-        },
-        {
-          field: "description", title: Localization.description,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.description) {
-              return <div title={row.description} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px">
-                {row.description}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "rate",
-          title: Localization.vote_s,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.rate) {
-              return <span>
-                {row.rate} {Localization.from} 5 <small>({row.rate_no})</small>
-              </span>
-            }
-            return '';
-          }
-        },
-        { field: "pages", title: Localization.pages },
-        {
           field: "duration", title: Localization.duration,
           cellTemplateFunc: (row: IBook) => {
             let hour;
@@ -167,6 +127,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             let second;
             if (row.duration) {
               if (row.duration === 'NaN') {
+                return ''
+              }
+              if (row.type !== 'Audio'){
                 return ''
               }
               let totalTime = Number(row.duration);
@@ -204,17 +167,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             return '';
           }
         },
-        {
-          field: "pub_year", title: Localization.publication_date,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.pub_year) {
-              return <div title={this._getTimestampToDate(row.pub_year)}>{this.getTimestampToDate(row.pub_year)}</div>
-            }
-            return '';
-          }
-        },
       ],
-
       actions: this.checkAllAccess() ? [
         {
           access : (row : any) => {return this.checkDeleteToolAccess()},
@@ -227,12 +180,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
-        },
-        {
-          access : (row : any) => {return this.checkPriceAddToolAccess()},
-          text: <i title={Localization.Pricing} className="fa fa-money text-success"></i>,
-          ac_func: (row: any) => { this.onShowPriceModal(row) },
-          name: Localization.Pricing
         },
       ]
       :
@@ -267,7 +214,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   selectedBook: IBook | undefined;
-  private _bookService = new BookService();
+  private _bookContentService = new BookGeneratorService();
   private _priceService = new PriceService();
 
   checkAllAccess():boolean{
@@ -358,20 +305,20 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveBook(book_id: string) {
-    if(this.checkDeleteToolAccess() === false ){
-      return;
-    };
-    this.setState({ ...this.state, setRemoveLoader: true });
-    let res = await this._bookService.remove(book_id).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({ ...this.state, setRemoveLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setRemoveLoader: false });
-      this.apiSuccessNotify();
-      this.fetchBooks();
-      this.onHideRemoveModal();
-    }
+    // if(this.checkDeleteToolAccess() === false ){
+    //   return;
+    // };
+    // this.setState({ ...this.state, setRemoveLoader: true });
+    // let res = await this._bookService.remove(book_id).catch(error => {
+    //   this.handleError({ error: error.response });
+    //   this.setState({ ...this.state, setRemoveLoader: false });
+    // });
+    // if (res) {
+    //   this.setState({ ...this.state, setRemoveLoader: false });
+    //   this.apiSuccessNotify();
+    //   this.fetchBooks();
+    //   this.onHideRemoveModal();
+    // }
   }
 
   render_delete_modal(selectedBook: any) {
@@ -403,98 +350,11 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  onShowPriceModal(book: IBook) {
-    if(this.checkPriceAddToolAccess() === false){
-      return;
-    }
-    this.selectedBook = book;
-    this.setState({
-      ...this.state, priceModalShow: true, price: {
-        isValid: (book.price || book.price === 0) ? true : false,
-        value: book.price
-      }
-    });
-  }
-  onHidePriceModal() {
-    this.selectedBook = undefined;
-    this.setState({ ...this.state, priceModalShow: false });
-  }
-  async onPriceBook(book_id: string) {
-    if(this.checkPriceAddToolAccess() === false){
-      return;
-    };
-    if (!this.state.price.isValid) return;
-    this.setState({ ...this.state, setPriceLoader: true });
-    let res = await this._priceService.price(book_id, this.state.price.value!).catch(error => {
-      this.handleError({ error: error.response });
-      this.setState({ ...this.state, setPriceLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setPriceLoader: false });
-      this.apiSuccessNotify();
-      this.fetchBooks(); // todo update selected book & do not request
-      this.onHidePriceModal();
-    }
-  }
-
-
-  handlePriceInputChange(value: number, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      price: {
-        value,
-        isValid,
-      }
-    })
-  }
-
-  render_price_modal(selectedBook: any) {
-    if (!this.selectedBook || !this.selectedBook.id) return;
-    return (
-      <>
-        <Modal show={this.state.priceModalShow} onHide={() => this.onHidePriceModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.title}:
-              </span>
-              {this.selectedBook.title}
-            </p>
-            <FixNumber
-              onChange={(value, isValid) => this.handlePriceInputChange(value, isValid)}
-              label={Localization.Pricing}
-              placeholder={Localization.price}
-              defaultValue={this.state.price.value}
-              pattern={AppRegex.number}
-              patternError={Localization.Justـenterـtheـnumericـvalue}
-              required
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHidePriceModal()}>{Localization.close}</button>
-            <BtnLoader
-              loading={this.state.setPriceLoader}
-              btnClassName="btn btn-system shadow-default shadow-hover"
-              onClick={() => this.onPriceBook(selectedBook.id)}
-              disabled={!this.state.price.isValid}
-            >
-              {Localization.Add_price}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
-
   // define axios for give data
-
-
-
 
   async fetchBooks() {
     this.setState({ ...this.state, tableProcessLoader: true })
-    let res = await this._bookService.search(
+    let res = await this._bookContentService.search(
       this.state.pager_limit,
       this.state.pager_offset,
       this.getFilter()
@@ -679,10 +539,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
   }
 
-
-
-
-
   /////  onChange & search & reset function for search box ///////////
 
   handleFilterInputChange(value: string, isValid: boolean) {
@@ -853,7 +709,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedBook)}
-        {this.render_price_modal(this.selectedBook)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

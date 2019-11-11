@@ -233,6 +233,7 @@ class EpubContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-12">
                                         <Input
                                             is_textarea
+                                            textarea_rows={10}
                                             defaultValue={this.state.text ? this.state.text : ''}
                                             onChange={(value: any, isValid: boolean) => this.onTextChange(value, isValid)}
                                         />

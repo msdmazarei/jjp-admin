@@ -14,7 +14,7 @@ interface IProps {
     match?: any;
     history?: History;
     internationalization: TInternationalization;
-    bookType:string;
+    bookType: string;
     booktitle: string;
     bookContent: Book_children[];
     onChangeBook: (bookContent: Book_children[]) => void;
@@ -247,6 +247,40 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // end add subchapter to sibling coming id
 
+    // start add chapter after coming id
+
+    removeComingIdChapter_inMain(current_id: string) {
+        if (!this.book.length) return
+        let obj = this.searchTree(this.book, current_id);
+        if (obj === null) return;
+        let index: number = this.book.indexOf(obj);
+        this.book.splice(index , 1);
+        this.setState({
+            ...this.state,
+            bookContent: this.book,
+        }, () => this.passNewBookContentToProps());
+    }
+
+    removeComingIdChapter(current_id: string) {
+        if (this.id_is_main_child(current_id)) {
+            this.removeComingIdChapter_inMain(current_id)
+            return;
+        }
+        let result = this.searchTree_parent(current_id);
+        if (result === null) return;
+        let array: Book_children[] = result!.children;
+        let obj = this.searchTree(result!.children, current_id);
+        if (obj === null) return;
+        let index: number = array.indexOf(obj);
+        result.children.splice(index , 1);
+        this.setState({
+            ...this.state,
+            bookContent: this.book,
+        }, () => this.passNewBookContentToProps());
+    }
+
+    // end add chapter after coming id
+
     updateChapterBody(newbody: Book_body[], title: string, current_id: string) {
         let result = this.searchTree(this.book, current_id);
         if (result === null) return;
@@ -353,6 +387,14 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 </span>
                                                 <span className="action-name">
                                                     {Localization.book_generator.addSubChapter}
+                                                </span>
+                                            </Dropdown.Item>
+                                            <Dropdown.Item className="text-center" onClick={() => this.removeComingIdChapter(item.front_id)}>
+                                                <span className="action-name">
+                                                    <i className="fa fa-trash text-danger mx-1" onClick={() => this.removeComingIdChapter(item.front_id)}></i>
+                                                </span>
+                                                <span className="action-name">
+                                                    {Localization.remove}
                                                 </span>
                                             </Dropdown.Item>
                                         </Dropdown.Menu>

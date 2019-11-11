@@ -325,6 +325,8 @@ interface ILocalization extends LocalizedStringsMethods {
     name_of_organization: string;
     upload : string;
     content : string;
+    Original: string;
+    Brief : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

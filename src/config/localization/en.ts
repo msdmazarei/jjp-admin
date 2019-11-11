@@ -310,6 +310,8 @@ export const en = {
     name_of_organization: "name of organization",
     upload : 'upload',
     content : 'content',
+    Original: 'original',
+    Brief : 'brief',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

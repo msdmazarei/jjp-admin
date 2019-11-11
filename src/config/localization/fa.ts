@@ -313,6 +313,8 @@ export const fa = {
     name_of_organization: "نام سازمان",
     upload : 'بارگذاری',
     content : 'محتوا',
+    Original: 'فایل اصلی',
+    Brief : 'خلاصه',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

@@ -60,22 +60,23 @@ export abstract class BGUtility {
     private static uploaded_id : string[] = [];
 
     static book_children_array_filter_by_body_type(array: Book_children[], body_type: string): Book_body[] | [] {
-
-        for (let i = 0; i < array.length; i++) {
+        let i;
+        for ( i = 0; i < array.length; i++) {
             if (array[i].body.length) {
                 for (let j = 0; j < array[i].body.length; j++) {
                     if (array[i].body[j].type === body_type) {
-                        BGUtility.Book_body_array.push(array[i].body[j])
+                        BGUtility.Book_body_array.push(array[i].body[j]);
                     }
                 }
-                if (array[i].children.length) {
-                    this.book_children_array_filter_by_body_type(array[i].children, body_type)
-                }
+            }
+            if (array[i].children.length) {
+                this.book_children_array_filter_by_body_type(array[i].children, body_type);
             }
         }
 
         const rtnArray: Book_body[] = BGUtility.Book_body_array;
         BGUtility.Book_body_array = [];
+        console.log(rtnArray);
         return rtnArray;
     }
 
@@ -129,6 +130,7 @@ export abstract class BGUtility {
         const rtnArray = BGUtility.Uploaded_id_obj_array;
         BGUtility.Uploaded_id_obj_array = [];
         BGUtility.uploaded_id = [];
+        console.log(rtnArray);
         return rtnArray;
     }
 

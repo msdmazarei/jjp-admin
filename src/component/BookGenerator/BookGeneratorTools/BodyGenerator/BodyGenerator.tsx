@@ -127,6 +127,17 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         }, () => this.passBodyArray_titleToProps());
     }
 
+    removeComingIdContent(id: string) {
+        let Obj = this.searchTree(this.body, id);
+        if (Obj === null) return;
+        let index: number = this.body.indexOf(Obj);
+        this.body.splice(index , 1);
+        this.setState({
+            ...this.state,
+            body: this.body,
+        }, () => this.passBodyArray_titleToProps());
+    }
+
     onContentChange(value: Book_body, isValid: boolean, id: string) {
         let Obj = this.searchTree(this.body, id);
         if (Obj === null) return;
@@ -153,6 +164,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                     addContentBefore={(id: string) => this.addContentBefore(id)}
                                     addContentAfter={(id: string) => this.addContentAfter(id)}
+                                    removeComingIdContent={(id: string) => this.removeComingIdContent(id)}
                                 />
                                 :
                                 <EpubContentGenerator
@@ -162,6 +174,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                     addContentBefore={(id: string) => this.addContentBefore(id)}
                                     addContentAfter={(id: string) => this.addContentAfter(id)}
+                                    removeComingIdContent={(id: string) => this.removeComingIdContent(id)}
                                 />
                         }
                     </Fragment>
@@ -185,6 +198,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                     addContentBefore={(id: string) => this.addContentBefore(id)}
                                     addContentAfter={(id: string) => this.addContentAfter(id)}
+                                    removeComingIdContent={(id: string) => this.removeComingIdContent(id)}
                                 />
                                 :
                                 item.type === 'control'
@@ -196,6 +210,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                         onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                         addContentBefore={(id: string) => this.addContentBefore(id)}
                                         addContentAfter={(id: string) => this.addContentAfter(id)}
+                                        removeComingIdContent={(id: string) => this.removeComingIdContent(id)}
                                     />
                                     :
                                     <AudioContentGenerator
@@ -205,6 +220,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                         onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                         addContentBefore={(id: string) => this.addContentBefore(id)}
                                         addContentAfter={(id: string) => this.addContentAfter(id)}
+                                        removeComingIdContent={(id: string) => this.removeComingIdContent(id)}
                                     />
                         }
                     </Fragment>

@@ -14,7 +14,6 @@ import { TInternationalization } from "../../../config/setup";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { BOOK_TYPES } from "../../../enum/Book";
-import { PriceService } from "../../../service/service.price";
 import Select from 'react-select';
 import 'moment/locale/fa';
 import 'moment/locale/ar';
@@ -29,8 +28,7 @@ export interface IProps {
   internationalization: TInternationalization;
   // token: IToken;
 }
-
-interface IFilterBook {
+interface IFilterCntent {
   title: {
     value: string | undefined;
     isValid: boolean;
@@ -41,8 +39,8 @@ interface IFilterBook {
   };
 }
 interface IState {
-  book_table: IProps_table;
-  BookError: string | undefined;
+  content_table: IProps_table;
+  contentError: string | undefined;
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
@@ -50,29 +48,23 @@ interface IState {
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  priceModalShow: boolean;
-  price: {
-    value: number | undefined;
-    isValid: boolean;
-  },
-  filter: IFilterBook,
+  filter: IFilterCntent,
   setRemoveLoader: boolean;
-  setPriceLoader: boolean;
   tags_inputValue: string;
 }
 
-// define class of Book 
+// define class of content 
 
 class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   state = {
-    book_table: {
+    content_table: {
       list: [],
       colHeaders: [
         {
-          field: "title", title: Localization.title, cellTemplateFunc: (row: IBook) => {
-            if (row.title) {
+          field: "bookTitle", title: Localization.title, cellTemplateFunc: (row: any) => {
+            if (row.book) {
               return <div title={row.title} className="text-nowrap-ellipsis max-w-200px d-inline-block">
-                {row.title}
+                {(row.book as IBook).title}
               </div>
             }
             return '';
@@ -82,11 +74,11 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           field: "images", title: Localization.images, templateFunc: () => {
             return <b>{Localization.images}</b>
           },
-          cellTemplateFunc: (row: IBook) => {
-            if (row.images && row.images.length) {
+          cellTemplateFunc: (row: any) => {
+            if (row.book && row.book.images && row.book.images.length) {
               return <div className="text-center" >
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
+                  <img className="max-w-50px max-h-50px" src={"/api/serve-files/" + row.book.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
                 </div>
               </div>
             }
@@ -100,10 +92,10 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "type", title: Localization.type,
-          cellTemplateFunc: (row: IBook) => {
-            if (row.type) {
-              const b_type: any = row.type;
+          field: "type", title: Localization.type + " " + Localization.book,
+          cellTemplateFunc: (row: any) => {
+            if (row.book.type) {
+              const b_type: any = row.book.type;
               const b_t: BOOK_TYPES = b_type;
               return Localization.book_type_list[b_t];
             }
@@ -111,7 +103,16 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "creation_date", title: Localization.creation_date,
+          field: "contentType", title: Localization.type + " " + Localization.content,
+          cellTemplateFunc: (row: any) => {
+            if (row.type) {
+              return Localization[row.type];
+            }
+            return '';
+          }
+        },
+        {
+          field: "creation_date", title: Localization.creation_date + " " + Localization.content,
           cellTemplateFunc: (row: IBook) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -121,23 +122,23 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "duration", title: Localization.duration,
-          cellTemplateFunc: (row: IBook) => {
+          cellTemplateFunc: (row: any) => {
             let hour;
             let minute;
             let second;
-            if (row.duration) {
-              if (row.duration === 'NaN') {
+            if (row.book.duration) {
+              if (row.book.duration === 'NaN') {
                 return ''
               }
-              if (row.type !== 'Audio'){
+              if (row.book.type !== 'Audio') {
                 return ''
               }
-              let totalTime = Number(row.duration);
+              let totalTime = Number(row.book.duration);
               if (totalTime < 60) {
                 hour = 0;
                 minute = 0;
                 second = totalTime;
-                return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                return <div title={row.book.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
               }
               if (totalTime >= 60 && totalTime < 3600) {
                 let min = Math.floor(totalTime / 60);
@@ -145,7 +146,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
                 hour = 0;
                 minute = min;
                 second = sec;
-                return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                return <div title={row.book.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
               } else {
                 let hours = Math.floor(totalTime / 3600);
                 if ((totalTime - (hours * 3600)) < 60) {
@@ -153,14 +154,14 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
                   hour = hours;
                   minute = 0;
                   second = sec;
-                  return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                  return <div title={row.book.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
                 } else {
                   let min = Math.floor(((totalTime - (hours * 3600)) / 60));
                   let sec = (totalTime - ((hours * 3600) + (min * 60)));
                   hour = hours;
                   minute = min;
                   second = sec;
-                  return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                  return <div title={row.book.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
                 }
               }
             }
@@ -170,22 +171,28 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       ],
       actions: this.checkAllAccess() ? [
         {
-          access : (row : any) => {return this.checkDeleteToolAccess()},
+          access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access : (row : any) => {return this.checkUpdateToolAccess()},
+          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
+        {
+          access: (row: any) => { return this.checkUpdateToolAccess() },
+          text: <i title={Localization.create} className="fa fa-wrench text-dark"></i>,
+          ac_func: (row: any) => { this.getGenerateRow(row) },
+          name: Localization.create
+        },
       ]
-      :
-      undefined
+        :
+        undefined
     },
-    BookError: undefined,
+    contentError: undefined,
     pager_offset: 0,
     pager_limit: 10,
     prevBtnLoader: false,
@@ -193,11 +200,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
     removeModalShow: false,
-    priceModalShow: false,
-    price: {
-      value: undefined,
-      isValid: false,
-    },
     filter: {
       title: {
         value: undefined,
@@ -209,39 +211,37 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       }
     },
     setRemoveLoader: false,
-    setPriceLoader: false,
     tags_inputValue: '',
   }
 
-  selectedBook: IBook | undefined;
+  selectedContent: any | undefined;
   private _bookContentService = new BookGeneratorService();
-  private _priceService = new PriceService();
 
-  checkAllAccess():boolean{
-    if(AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM','BOOK_EDIT_PREMIUM','PRICE_ADD_PREMIUM'])
-    || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS','BOOK_EDIT_PRESS','PRICE_ADD_PRESS'])
-    ){
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_ADD_PREMIUM'])
+      || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS', 'BOOK_EDIT_PRESS', 'PRICE_ADD_PRESS'])
+    ) {
       return true;
     }
     return false;
   }
 
-  checkDeleteToolAccess():boolean{
-    if(AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')){
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')) {
       return true;
     }
     return false
   }
 
-  checkUpdateToolAccess():boolean{
-    if(AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')){
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
       return true;
     }
     return false
   }
 
-  checkPriceAddToolAccess():boolean{
-    if(AccessService.checkAccess('PRICE_ADD_PREMIUM') || AccessService.checkAccess('PRICE_ADD_PRESS')){
+  checkPriceAddToolAccess(): boolean {
+    if (AccessService.checkAccess('PRICE_ADD_PREMIUM') || AccessService.checkAccess('PRICE_ADD_PRESS')) {
       return true;
     }
     return false
@@ -259,14 +259,18 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       ...this.state,
       tableProcessLoader: true
     })
-    this.fetchBooks();
+    this.fetchBooksContent();
   }
 
-  updateRow(book_id: any) {
-    if(this.checkUpdateToolAccess() === false){
+  updateRow(book_generator_id: any) {
+    if (this.checkUpdateToolAccess() === false) {
       return;
     }
-    this.props.history.push(`/book/${book_id.id}/edit`);
+    this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
+  }
+
+  getGenerateRow(book_generator_id: any) {
+
   }
 
   // timestamp to date 
@@ -291,47 +295,62 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
   // delete modal function define
 
-  onShowRemoveModal(book: IBook) {
-    if(this.checkDeleteToolAccess() === false ){
+  onShowRemoveModal(content: any) {
+    if (this.checkDeleteToolAccess() === false) {
       return;
     }
-    this.selectedBook = book;
+    this.selectedContent = content;
     this.setState({ ...this.state, removeModalShow: true });
   }
 
   onHideRemoveModal() {
-    this.selectedBook = undefined;
+    this.selectedContent = undefined;
     this.setState({ ...this.state, removeModalShow: false });
   }
 
-  async onRemoveBook(book_id: string) {
-    // if(this.checkDeleteToolAccess() === false ){
-    //   return;
-    // };
-    // this.setState({ ...this.state, setRemoveLoader: true });
-    // let res = await this._bookService.remove(book_id).catch(error => {
-    //   this.handleError({ error: error.response });
-    //   this.setState({ ...this.state, setRemoveLoader: false });
-    // });
-    // if (res) {
-    //   this.setState({ ...this.state, setRemoveLoader: false });
-    //   this.apiSuccessNotify();
-    //   this.fetchBooks();
-    //   this.onHideRemoveModal();
-    // }
+  async onRemoveContent(content_id: string) {
+    if (this.checkDeleteToolAccess() === false) {
+      return;
+    };
+    this.setState({ ...this.state, setRemoveLoader: true });
+    let res = await this._bookContentService.remove(content_id).catch(error => {
+      this.handleError({ error: error.response });
+      this.setState({ ...this.state, setRemoveLoader: false });
+    });
+    if (res) {
+      this.setState({ ...this.state, setRemoveLoader: false });
+      this.apiSuccessNotify();
+      this.fetchBooksContent();
+      this.onHideRemoveModal();
+    }
   }
 
-  render_delete_modal(selectedBook: any) {
-    if (!this.selectedBook || !this.selectedBook.id) return;
+  render_delete_modal(selectedContent: any) {
+    if (!this.selectedContent || !this.selectedContent.id) return;
     return (
       <>
         <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
           <Modal.Body>
+            <p className="delete-modal-content text-center text-danger">
+              {Localization.remove + " " + Localization.content}
+            </p>
             <p className="delete-modal-content">
               <span className="text-muted">
                 {Localization.title}:&nbsp;
             </span>
-              {this.selectedBook.title}
+              {(this.selectedContent.book as IBook).title}
+            </p>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.type + " " + Localization.book}:&nbsp;
+            </span>
+              {Localization.book_type_list[((this.selectedContent.book as IBook).type as BOOK_TYPES)]}
+            </p>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.type + " " + Localization.content}:&nbsp;
+            </span>
+              {Localization[this.selectedContent.type]}
             </p>
             <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
           </Modal.Body>
@@ -339,7 +358,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
             <BtnLoader
               btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveBook(selectedBook.id)}
+              onClick={() => this.onRemoveContent(selectedContent.id)}
               loading={this.state.setRemoveLoader}
             >
               {Localization.remove}
@@ -352,7 +371,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
   // define axios for give data
 
-  async fetchBooks() {
+  async fetchBooksContent() {
     this.setState({ ...this.state, tableProcessLoader: true })
     let res = await this._bookContentService.search(
       this.state.pager_limit,
@@ -370,8 +389,8 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     });
     if (res) {
       this.setState({
-        ...this.state, book_table: {
-          ...this.state.book_table,
+        ...this.state, content_table: {
+          ...this.state.content_table,
           list: res.data.result
         },
         prevBtnLoader: false,
@@ -385,7 +404,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // previous button create
 
   pager_previous_btn_render() {
-    if (this.state.book_table.list && (this.state.book_table.list! || []).length) {
+    if (this.state.content_table.list && (this.state.content_table.list! || []).length) {
       return (
         <>
           {
@@ -401,7 +420,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-    } else if (this.state.book_table.list && !(this.state.book_table.list! || []).length) {
+    } else if (this.state.content_table.list && !(this.state.content_table.list! || []).length) {
       return (
         <>
           {
@@ -418,7 +437,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         </>
       );
 
-    } else if (this.state.BookError) {
+    } else if (this.state.contentError) {
       return;
     } else {
       return;
@@ -428,11 +447,11 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // next button create
 
   pager_next_btn_render() {
-    if (this.state.book_table.list && (this.state.book_table.list! || []).length) {
+    if (this.state.content_table.list && (this.state.content_table.list! || []).length) {
       return (
         <>
           {
-            !(this.state.pager_limit > (this.state.book_table.list! || []).length) &&
+            !(this.state.pager_limit > (this.state.content_table.list! || []).length) &&
             <BtnLoader
               disabled={this.state.tableProcessLoader}
               loading={this.state.nextBtnLoader}
@@ -444,9 +463,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-    } else if (this.state.book_table.list && !(this.state.book_table.list! || []).length) {
+    } else if (this.state.content_table.list && !(this.state.content_table.list! || []).length) {
       return;
-    } else if (this.state.book_table.list) {
+    } else if (this.state.content_table.list) {
       return;
     } else {
       return;
@@ -465,7 +484,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
     }, () => {
       this.gotoTop();
-      this.fetchBooks()
+      this.fetchBooksContent()
     });
   }
 
@@ -479,15 +498,15 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       tableProcessLoader: true,
     }, () => {
       this.gotoTop();
-      this.fetchBooks()
+      this.fetchBooksContent()
     });
   }
 
 
   ///// navigation function //////
 
-  gotoBookCreate() {
-    if(AccessService.checkAccess('BOOK_ADD_PREMIUM')===false && AccessService.checkAccess('BOOK_ADD_PRESS')===false){
+  gotoBookContentCreate() {
+    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_ADD_PRESS') === false) {
       return;
     };
     this.props.history.push('/book_generator/create'); // /admin
@@ -576,11 +595,11 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       // this.gotoTop();
       this.setFilter();
-      this.fetchBooks()
+      this.fetchBooksContent()
     });
   }
 
-  private _filter: IFilterBook = {
+  private _filter: IFilterCntent = {
     title: { value: undefined, isValid: true },
     tags: { value: [], isValid: true },
   };
@@ -624,12 +643,12 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
               ?
               <div className="row">
                 <div className="col-12">
-                  <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
+                  <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
                   <BtnLoader
                     loading={false}
                     disabled={false}
                     btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                    onClick={() => this.gotoBookCreate()}
+                    onClick={() => this.gotoBookContentCreate()}
                   >
                     {Localization.new}
                   </BtnLoader>
@@ -700,7 +719,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           </div>
           <div className="row">
             <div className="col-12">
-              <Table loading={this.state.tableProcessLoader} list={this.state.book_table.list} colHeaders={this.state.book_table.colHeaders} actions={this.state.book_table.actions}></Table>
+              <Table loading={this.state.tableProcessLoader} list={this.state.content_table.list} colHeaders={this.state.content_table.colHeaders} actions={this.state.content_table.actions}></Table>
               <div>
                 {this.pager_previous_btn_render()}
                 {this.pager_next_btn_render()}
@@ -708,7 +727,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
         </div>
-        {this.render_delete_modal(this.selectedBook)}
+        {this.render_delete_modal(this.selectedContent)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

@@ -16,6 +16,7 @@ import { BOOK_TYPES } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/ChapterGenerator';
 import { BookGeneratorService } from '../../../service/service.bookGenerator';
+import {BGUtility} from '../BookGeneratorTools/fileUploader/fileUploader';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -59,7 +60,7 @@ interface IState {
     isBookInputTouch: boolean;
     contentType: ICmp_select<string> | null;
     isContentTypeInputTouch: boolean;
-    selectedBookType: string | undefined;
+    selectedBookType: any | undefined;
     Epub_book: {
         BookType: number;
         PackagingVersion: number;
@@ -103,11 +104,68 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         },
     }
 
+    //// start navigation for back to BookGeneratorManage /////
+
+    backTO() {
+        this.gotoBookGeneratorManage();
+    }
+
+    gotoBookGeneratorManage() {
+        this.props.history.push('/book_generator/manage'); // /admin
+    }
+
+    //// end navigation for back to BookGeneratorManage /////
+
     private _bookContentService = new BookGeneratorService();
+    private book_generator_id: string | undefined;
 
     componentDidMount() {
-        if (this.props.match.path.includes('api.......................')) {
+        if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+            this.book_generator_id = this.props.match.params.book_generator_id;
+            this.fetchContentById(this.props.match.params.book_generator_id);
+        }
+    }
+
+    async fetchContentById(book_generator_id: string) {
+        let res = await this._bookContentService.byId(book_generator_id).catch(error => {
+            this.handleError({ error: error.response });
+        });
+        // await this.__waitOnMe();
+        if (res) {
+            let come_selectedBook: { label: string, value: IBook } = { label: (res.data.book as IBook).title, value: (res.data.book as IBook) };
+            let come_contentType: { label: string, value: string } = { label: Localization[res.data.type], value: res.data.type };
+            let book_type: any = (res.data.book as IBook).type;
+            if (book_type === 'Epub') {
+                this.setState({
+                    ...this.state,
+                    selectedBook: come_selectedBook,
+                    selectedBookType: book_type,
+                    contentType: come_contentType,
+                    Epub_book: {
+                        ...this.state.Epub_book,
+                        BookType : res.data.content.BookType ? res.data.content.BookType : 0,
+                        PackagingVersion : res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
+                        title : res.data.content.title ? res.data.content.title : "",
+                        children : (res.data.content.children&&res.data.content.children.length) ? res.data.content.children : [],
+                    },
+                });
+            }
+            if (book_type === 'Audio') {
+                this.setState({
+                    ...this.state,
+                    selectedBook: come_selectedBook,
+                    selectedBookType: book_type,
+                    contentType: come_contentType,
+                    Audio_book : {
+                        ...this.state.Audio_book,
+                        BookType : res.data.content.BookType ? res.data.content.BookType : 2,
+                        PackagingVersion : res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
+                        title : res.data.content.title ? res.data.content.title : "",
+                        children : (res.data.content.children&&res.data.content.children.length) ? res.data.content.children : [],
+                    },
+                });
+            }
         }
     }
 
@@ -247,8 +305,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start book content type selection func //////////////////
 
     contentOptions = [
-        { value: 'Original', label: 'Original' },
-        { value: 'Brief', label: 'Brief' },
+        { value: 'Original', label: Localization.Original },
+        { value: 'Brief', label: Localization.Brief },
     ];
 
     handleBookContentTypeChange(contentType: any) {
@@ -304,8 +362,35 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBookType === 'Epub') {
             let res = await this._bookContentService.create(
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
-                (this.state.contentType! as { label: string , value: string }).value,
+                (this.state.contentType! as { label: string, value: string }).value,
                 this.state.Epub_book
+            ).catch(error => {
+                this.handleError({ error: error.response });
+            });
+            if (res) {
+                this.setState({
+                    ...this.state,
+                    selectedBook: null,
+                    contentType: null,
+                    selectedBookType: undefined,
+                });
+            }
+        }
+        if (this.state.selectedBookType === 'Audio') {
+            const allBody : Book_body[] = BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children , 'voice');
+            const bodyShouldUpload : Book_body[] = BGUtility.book_body_array_filter_by_file_type(allBody);
+            let uploadedAndThatsId : book_body_voice[] = await BGUtility.upload_file_and_save_id(bodyShouldUpload);
+            const convertedChildren : Book_children[] = BGUtility.replace_id_instead_of_file(this.state.Audio_book.children,uploadedAndThatsId)
+            let converted_content : Object = 
+            { BookType : this.state.Audio_book.BookType, 
+              PackagingVersion : this.state.Audio_book.PackagingVersion,
+              title : this.state.Audio_book.title,
+              children : convertedChildren,
+            }
+            let res = await this._bookContentService.create(
+                (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                (this.state.contentType! as { label: string, value: string }).value,
+                converted_content
             ).catch(error => {
                 this.handleError({ error: error.response });
             });
@@ -325,9 +410,28 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     ////////////   start update btn function ////////////////////
 
-    update() {
+    async update() {
         if (this.state.selectedBook === null || this.state.contentType === null) {
             return
+        }
+        if (this.state.selectedBookType === 'Epub') {
+            let res = await this._bookContentService.update(
+                this.book_generator_id!,
+                (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                (this.state.contentType! as { label: string, value: string }).value,
+                this.state.Epub_book
+            ).catch(error => {
+                this.handleError({ error: error.response });
+            });
+            if (res) {
+                this.book_generator_id = undefined;
+                this.setState({
+                    ...this.state,
+                    selectedBook: null,
+                    contentType: null,
+                    selectedBookType: undefined,
+                },() => this.backTO());
+            }
         }
     }
 
@@ -394,6 +498,24 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     //// end returner by book type function /////
 
 
+    ///// start calculate create and update btns ///////
+
+    btn_disable_status(): boolean {
+        if (this.state.selectedBook !== null && this.state.contentType !== null) {
+            if (this.state.selectedBookType === 'Epub' && this.state.Epub_book.children.length > 0) {
+                return false;
+            }
+            if (this.state.selectedBookType === 'Audio' && this.state.Audio_book.children.length > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    ///// start calculate create and update btns ///////
+
+
     // start render cmp
 
     render() {
@@ -404,7 +526,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                         <div className="col-12">
                             <div className="template-box mb-4">
                                 <div className="row">
-                                    <div className="col-3">
+                                    <div className="col-4">
                                         <label htmlFor="">{Localization.book}</label>
                                         <AsyncSelect
                                             onBlur={() => this.bookInputTouch_handler()}
@@ -415,11 +537,11 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
                                             onChange={(selectedBook) => this.handleBookChange(selectedBook)}
-                                            isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
+                                        // isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
                                         />
                                         {this.bookInvalidFeedback()}
                                     </div>
-                                    <div className="col-3">
+                                    <div className="col-4">
                                         <label htmlFor="">{Localization.type + " " + Localization.content}</label>
                                         <Select
                                             onChange={(value: any) => this.handleBookContentTypeChange(value)}
@@ -427,7 +549,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                             onBlur={() => this.typeInputTouch_handler()}
                                             placeholder={Localization.type + " " + Localization.content}
                                             value={this.state.contentType}
-                                            isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
+                                        // isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
                                         />
                                         {this.typeInvalidFeedback()}
                                     </div>
@@ -437,36 +559,50 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-2 mt-3 pt-4">
                                         {Localization.type} : {this.book_type_returner()}
                                     </div>
-                                    {
-                                        this.state.saveMode === SAVE_MODE.CREATE
-                                            ?
-                                            <div className="col-2 mt-3 pt-3" >
-                                                <BtnLoader
-                                                    loading={false}
-                                                    btnClassName="btn btn-warning shadow-default shadow-hover"
-                                                    onClick={() => this.Reset()}
-                                                >
-                                                    {Localization.reset}
-                                                </BtnLoader>
-                                                <BtnLoader
-                                                    loading={false}
-                                                    btnClassName="btn btn-success shadow-default shadow-hover pull-right"
-                                                    onClick={() => this.create()}
-                                                >
-                                                    {Localization.create}
-                                                </BtnLoader>
-                                            </div>
-                                            :
-                                            <div className="col-2 mt-3 pt-3" >
-                                                <BtnLoader
-                                                    loading={false}
-                                                    btnClassName="btn btn-success shadow-default shadow-hover pull-right"
-                                                    onClick={() => this.update()}
-                                                >
-                                                    {Localization.update}
-                                                </BtnLoader>
-                                            </div>
-                                    }
+                                </div>
+                                <div className="d-flex justify-content-between mt-4">
+                                    <div className="mr-0 pr-0">
+                                        {
+                                            this.state.saveMode === SAVE_MODE.CREATE
+                                                ?
+                                                <>
+                                                    <BtnLoader
+                                                        loading={false}
+                                                        btnClassName="btn btn-success shadow-default shadow-hover"
+                                                        onClick={() => this.create()}
+                                                        disabled={this.btn_disable_status()}
+                                                    >
+                                                        {Localization.create}
+                                                    </BtnLoader>
+                                                    <BtnLoader
+                                                        loading={false}
+                                                        btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
+                                                        onClick={() => this.Reset()}
+                                                    >
+                                                        {Localization.reset}
+                                                    </BtnLoader>
+                                                </>
+                                                :
+                                                <>
+                                                    <BtnLoader
+                                                        loading={false}
+                                                        btnClassName="btn btn-info shadow-default shadow-hover"
+                                                        onClick={() => this.update()}
+                                                        disabled={this.btn_disable_status()}
+                                                    >
+                                                        {Localization.update}
+                                                    </BtnLoader>
+                                                </>
+                                        }
+                                    </div>
+                                    <BtnLoader
+                                        btnClassName="btn btn-primary shadow-default shadow-hover"
+                                        loading={false}
+                                        onClick={() => this.backTO()}
+                                        disabled={false}
+                                    >
+                                        {Localization.back}
+                                    </BtnLoader>
                                 </div>
                             </div>
                         </div>

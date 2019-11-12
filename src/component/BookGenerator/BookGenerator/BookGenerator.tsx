@@ -17,6 +17,7 @@ import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/ChapterGenerator';
 import { BookGeneratorService } from '../../../service/service.bookGenerator';
 import { BGUtility } from '../BookGeneratorTools/fileUploader/fileUploader';
+import { Modal } from 'react-bootstrap';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -37,7 +38,7 @@ export interface book_body_control extends Book_body_base {
 
 export interface book_body_voice extends Book_body_base {
     voice: any;
-    name : string;
+    name: string;
 }
 
 export type Book_body = book_body_control | Book_body_text | book_body_voice;
@@ -74,6 +75,7 @@ interface IState {
         title: string | undefined;
         children?: Book_children[];
     }
+    upload_modal_show: boolean;
 }
 
 interface IProps {
@@ -103,6 +105,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             title: undefined,
             children: [],
         },
+        upload_modal_show: false,
     }
 
     //// start navigation for back to BookGeneratorManage /////
@@ -186,7 +189,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         return ''
     };
 
-    type_uploadable() {
+    type_uploadable(): boolean {
         if (this.state.selectedBook === null) {
             return false;
         } else {
@@ -199,36 +202,6 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    setFileTitleAndType() {
-        if (this.type_uploadable() === false) {
-            this.setState({
-                ...this.state,
-                selectedBookType: undefined,
-                Epub_book: {
-                    ...this.state.Epub_book,
-                    title: undefined,
-                },
-                Audio_book: {
-                    ...this.state.Audio_book,
-                    title: undefined,
-                }
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                selectedBookType: (this.state.selectedBook! as ICmp_select<IBook>).value.type as BOOK_TYPES,
-                Epub_book: {
-                    ...this.state.Epub_book,
-                    title: (this.state.selectedBook! as ICmp_select<IBook>).value.title,
-                },
-                Audio_book: {
-                    ...this.state.Audio_book,
-                    title: (this.state.selectedBook! as ICmp_select<IBook>).value.title,
-                }
-            })
-        }
-
-    }
 
     ////////////   start book selection func ////////////////////
 
@@ -238,7 +211,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             selectedBook: selectedBook,
-        }, () => this.setFileTitleAndType())
+            selectedBookType: selectedBook !== null ? (selectedBook as ICmp_select<IBook>).value.type : undefined,
+        });
     }
 
     personRequstError_txt: string = Localization.no_item_found;
@@ -314,7 +288,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             contentType: contentType,
-        }, () => this.setFileTitleAndType())
+        })
     }
 
     typeInputTouch_handler() {
@@ -348,7 +322,18 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             isBookInputTouch: false,
             contentType: null,
             isContentTypeInputTouch: false,
-        }, () => this.setFileTitleAndType())
+            selectedBookType: undefined,
+            Epub_book: {
+                ...this.state.Epub_book,
+                title: undefined,
+                children: [],
+            },
+            Audio_book: {
+                ...this.state.Audio_book,
+                title: undefined,
+                children: [],
+            },
+        });
     }
 
     ////////////   end reset page func ////////////////////
@@ -469,6 +454,30 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   end update btn function ////////////////////
 
 
+    ///// start upload modal ///////////
+
+    render_update_proccess_modal() {
+        // if (this.state.selectedBook === null) return;
+        return (
+            <>
+                <Modal show={this.state.upload_modal_show}>
+                    <Modal.Header className="row d-flex justify-content-center">
+                        <div className="font-weight-bold">{Localization.upload}</div>
+                    </Modal.Header>
+                    <Modal.Body className="row d-flex justify-content-center">
+                        <div className="rounded-circle border border-top-0 border-bottom-0 border-primary spin-upload w-100px h-100px text-center pt-3"></div>
+                    </Modal.Body>
+                    <Modal.Footer className="row d-flex justify-content-center">
+                        <div>50%</div>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    }
+
+    ///// end upload modal ///////////
+
+
     //// start onChange function define  ///////
 
     onchange(children: Book_children[]) {
@@ -500,11 +509,11 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     //// start returner by book type function /////
 
-    returnerGenerator_by_book_type() {
-        if (this.state.selectedBookType === undefined || this.state.selectedBook === null || this.state.contentType === null) {
+    returnerGenerator_by_book_type(type: string | undefined) {
+        if (type === undefined || this.state.selectedBook === null || this.state.contentType === null) {
             return <></>
         }
-        if (this.state.selectedBookType === "Epub") {
+        if (type === "Epub") {
             return <>
                 <ChapterGenerator
                     bookType={'Epub'}
@@ -514,7 +523,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 />
             </>
         }
-        if (this.state.selectedBookType === "Audio") {
+        if (type === "Audio") {
             return <>
                 <ChapterGenerator
                     bookType={'Audio'}
@@ -635,8 +644,6 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                         {Localization.back}
                                     </BtnLoader>
                                 </div>
-                                <div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -644,12 +651,15 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                         <div className="col-12">
                             <div className="template-box mb-4">
                                 {
-                                    this.returnerGenerator_by_book_type()
+                                    this.returnerGenerator_by_book_type(this.state.selectedBookType)
                                 }
                             </div>
                         </div>
                     </div>
                 </div>
+                {
+                    this.render_update_proccess_modal()
+                }
             </>
         )
     }

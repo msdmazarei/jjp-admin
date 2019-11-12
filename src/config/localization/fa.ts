@@ -315,6 +315,13 @@ export const fa = {
     content : 'محتوا',
     Original: 'فایل اصلی',
     Brief : 'خلاصه',
+    NEW_PAGE : 'صفحه جدید',
+    NEW_LINE : 'خط جدید',
+    chapter : 'فصل',
+    first_Chapter : 'اولین فصل',
+    text : 'متن',
+    control : 'کنترل',
+    voice: 'فایل صوتی',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

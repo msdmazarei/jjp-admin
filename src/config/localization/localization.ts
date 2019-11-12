@@ -327,6 +327,13 @@ interface ILocalization extends LocalizedStringsMethods {
     content : string;
     Original: string;
     Brief : string;
+    NEW_PAGE : string;
+    NEW_LINE : string;
+    chapter : string;
+    first_Chapter : string;
+    text : string;
+    control :string;
+    voice: string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

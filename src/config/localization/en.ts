@@ -312,6 +312,13 @@ export const en = {
     content : 'content',
     Original: 'original',
     Brief : 'brief',
+    NEW_PAGE : 'new page',
+    NEW_LINE : 'new line',
+    chapter : 'chapter',
+    first_Chapter : 'first chapter',
+    text : 'text',
+    control : 'control',
+    voice : 'voice file',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

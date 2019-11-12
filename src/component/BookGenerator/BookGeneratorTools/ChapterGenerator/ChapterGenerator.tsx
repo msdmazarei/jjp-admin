@@ -9,6 +9,7 @@ import { AppGuid } from '../../../../asset/script/guid';
 import { BodyGenerator } from '../BodyGenerator/BodyGenerator';
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../../config/localization/localization';
+import { BtnLoader } from '../../../form/btn-loader/BtnLoader';
 
 interface IProps {
     match?: any;
@@ -51,6 +52,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             bookTitle: nextProps.booktitle,
             bookContent: nextProps.bookContent,
         });
+        this.book = nextProps.bookContent;
     }
 
     passNewBookContentToProps() {
@@ -254,7 +256,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
         let index: number = this.book.indexOf(obj);
-        this.book.splice(index , 1);
+        this.book.splice(index, 1);
         this.setState({
             ...this.state,
             bookContent: this.book,
@@ -272,7 +274,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let obj = this.searchTree(result!.children, current_id);
         if (obj === null) return;
         let index: number = array.indexOf(obj);
-        result.children.splice(index , 1);
+        result.children.splice(index, 1);
         this.setState({
             ...this.state,
             bookContent: this.book,
@@ -426,11 +428,28 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                 </div>
                 <div className="row">
                     <div className="col-3">
-                        <i className="fa fa-plus text-success" onClick={() => this.addChapter()}></i>
+                        {
+                            this.book.length === 0
+                                ?
+                                <BtnLoader
+                                    loading={false}
+                                    btnClassName="btn btn-success shadow-default shadow-hover mb-1"
+                                    onClick={() => this.addChapter()}
+                                >
+                                    {
+                                        <>
+                                            {Localization.create + " " + Localization.first_Chapter}
+                                            <i className="fa fa-plus text-white mx-2 mt-2" onClick={() => this.addChapter()}></i>
+                                        </>
+                                    }
+                                </BtnLoader>
+                                :
+                                undefined
+                        }
                         {
                             this.state.bookContent.length === 0
                                 ?
-                                undefined
+                                undefined 
                                 :
                                 this.book_tree_render(this.state.bookContent)
                         }

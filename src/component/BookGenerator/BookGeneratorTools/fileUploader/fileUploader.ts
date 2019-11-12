@@ -59,6 +59,7 @@ export abstract class BGUtility {
     private static book_json: Book_children[] = [];
     private static uploaded_id : string[] = [];
 
+
     static book_children_array_filter_by_body_type(array: Book_children[], body_type: string): Book_body[] | [] {
         let i;
         for ( i = 0; i < array.length; i++) {
@@ -74,10 +75,10 @@ export abstract class BGUtility {
             }
         }
 
-        const rtnArray: Book_body[] = BGUtility.Book_body_array;
-        BGUtility.Book_body_array = [];
-        console.log(rtnArray);
-        return rtnArray;
+        // const rtnArray: Book_body[] = BGUtility.Book_body_array;
+        // BGUtility.Book_body_array = [];
+        // return rtnArray;
+        return BGUtility.Book_body_array;
     }
 
     static book_body_array_filter_by_file_type(array: Book_body[]): Book_body[] | [] {
@@ -90,6 +91,7 @@ export abstract class BGUtility {
 
         const rtnArray = BGUtility.Book_body_file_type_array;
         BGUtility.Book_body_file_type_array = [];
+        BGUtility.Book_body_array = [];
         return rtnArray;
     }
 
@@ -118,7 +120,7 @@ export abstract class BGUtility {
                     break;
                 };
                 if (res && res.length) {
-                    let newBody : book_body_voice = { front_id : current_id , type : 'voice' , voice : res[0] }
+                    let newBody : book_body_voice = { front_id : current_id , type : 'voice' , name :( array[i] as book_body_voice).name , voice : res[0] }
                     BGUtility.Uploaded_id_obj_array.push(newBody);
                     BGUtility.uploaded_id.push(current_id);
                 };
@@ -130,7 +132,6 @@ export abstract class BGUtility {
         const rtnArray = BGUtility.Uploaded_id_obj_array;
         BGUtility.Uploaded_id_obj_array = [];
         BGUtility.uploaded_id = [];
-        console.log(rtnArray);
         return rtnArray;
     }
 

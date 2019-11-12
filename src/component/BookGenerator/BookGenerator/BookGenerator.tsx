@@ -37,6 +37,7 @@ export interface book_body_control extends Book_body_base {
 
 export interface book_body_voice extends Book_body_base {
     voice: any;
+    name : string;
 }
 
 export type Book_body = book_body_control | Book_body_text | book_body_voice;
@@ -434,6 +435,35 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }, () => this.backTO());
             }
         }
+        if (this.state.selectedBookType === 'Audio') {
+            const allBody: Book_body[] = await BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children, 'voice');
+            const bodyShouldUpload: Book_body[] = await BGUtility.book_body_array_filter_by_file_type(allBody);
+            let uploadedAndThatsId: book_body_voice[] = await BGUtility.upload_file_and_save_id(bodyShouldUpload);
+            if (bodyShouldUpload.length !== uploadedAndThatsId.length) return;
+            const convertedChildren: Book_children[] = await BGUtility.replace_id_instead_of_file(this.state.Audio_book.children, uploadedAndThatsId);
+            let converted_content: Object = {
+                BookType: this.state.Audio_book.BookType,
+                PackagingVersion: this.state.Audio_book.PackagingVersion,
+                title: this.state.Audio_book.title,
+                children: convertedChildren,
+            }
+            let res = await this._bookContentService.update(
+                this.book_generator_id!,
+                (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                (this.state.contentType! as { label: string, value: string }).value,
+                converted_content
+            ).catch(error => {
+                this.handleError({ error: error.response });
+            });
+            if (res) {
+                this.setState({
+                    ...this.state,
+                    selectedBook: null,
+                    contentType: null,
+                    selectedBookType: undefined,
+                });
+            }
+        }
     }
 
     ////////////   end update btn function ////////////////////
@@ -604,6 +634,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                     >
                                         {Localization.back}
                                     </BtnLoader>
+                                </div>
+                                <div>
                                 </div>
                             </div>
                         </div>

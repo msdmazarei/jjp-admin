@@ -37,13 +37,13 @@ interface IState {
 class EpubContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     typesOption = [
-        { value: 'text', label: 'text' },
-        { value: 'control', label: 'control' }
+        { value: 'text', label: Localization.text },
+        { value: 'control', label: Localization.control }
     ];
 
     controlsOption = [
-        { value: 'new_line', label: 'new_line' },
-        { value: 'new_page', label: 'new_page' }
+        { value: 'NEW_LINE', label: Localization.NEW_LINE },
+        { value: 'NEW_PAGE', label: Localization.NEW_PAGE }
     ];
 
     state = {
@@ -60,24 +60,24 @@ class EpubContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         this.setState({
-            type: { value: this.props.type, label: this.props.type },
+            type: { value: this.props.type, label: Localization[this.props.type] },
             id: this.props.id,
             text: this.props.text ? this.props.text : undefined,
-            control: this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0],
+            control: this.props.control ? { value: this.props.control, label: Localization[this.props.control] } : this.controlsOption[0],
         });
-        this.type= { value: this.props.type, label: this.props.type };
+        this.type= { value: this.props.type, label: Localization[this.props.type] };
         this.id= this.props.id;
         this.text= this.props.text ? this.props.text : undefined;
-        this.control= this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0];
+        this.control= this.props.control ? { value: this.props.control, label: Localization[this.props.control] } : this.controlsOption[0];
     }
 
     componentWillReceiveProps(nextProps: IProps) {
         if (nextProps === this.props) return;
         this.setState({
-            type: { value: nextProps.type, label: nextProps.type },
+            type: { value: nextProps.type, label: Localization[nextProps.type] },
             id: nextProps.id,
             text: nextProps.text ? nextProps.text : undefined,
-            control: nextProps.control ? { value: nextProps.control, label: nextProps.control } : null,
+            control: nextProps.control ? { value: nextProps.control, label: Localization[nextProps.control] } : null,
         })
     }
 

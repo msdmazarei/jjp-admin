@@ -245,7 +245,8 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                 <div className="row">
                     <div className="col-10">
                         <Input
-                            label={'chapter'}
+                            placeholder = {Localization.title + " " + Localization.chapter}
+                            label={Localization.title + " " + Localization.chapter}
                             defaultValue={this.state.title ? this.state.title : ''}
                             onChange={(value: any, isValid: boolean) => this.onChapterTitleChange(value, isValid)}
                         />

@@ -217,6 +217,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                         id={item.front_id}
                                         type={item.type}
                                         voice={(item as book_body_voice).voice}
+                                        name={(item as book_body_voice).name}
                                         onContentChange={(value: Book_body, isValid: boolean, id: string) => this.onContentChange(value, isValid, id)}
                                         addContentBefore={(id: string) => this.addContentBefore(id)}
                                         addContentAfter={(id: string) => this.addContentAfter(id)}

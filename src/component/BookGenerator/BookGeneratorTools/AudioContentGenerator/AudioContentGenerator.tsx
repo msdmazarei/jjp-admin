@@ -42,14 +42,14 @@ interface IState {
 class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     typesOption = [
-        { value: 'text', label: 'text' },
-        { value: 'control', label: 'control' },
-        { value: 'voice', label: 'voice' },
+        { value: 'text', label: Localization.text },
+        { value: 'control', label: Localization.control },
+        { value: 'voice', label: Localization.voice },
     ];
 
     controlsOption = [
-        { value: 'new_line', label: 'new_line' },
-        { value: 'new_page', label: 'new_page' }
+        { value: 'NEW_LINE', label: Localization.NEW_LINE },
+        { value: 'NEW_PAGE', label: Localization.NEW_PAGE }
     ];
 
     state = {
@@ -70,17 +70,17 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         this.setState({
-            type: { value: this.props.type, label: this.props.type },
+            type: { value: this.props.type, label: Localization[this.props.type] },
             id: this.props.id,
             text: this.props.text ? this.props.text : undefined,
-            control: this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0],
+            control: this.props.control ? { value: this.props.control, label: Localization[this.props.control] } : this.controlsOption[0],
             voice: (this.props.voice && this.props.voice !== '') ? this.props.voice : [],
             name: (this.props.name && typeof this.props.name === 'string') ? this.props.name : '',
         });
-        this.type = { value: this.props.type, label: this.props.type };
+        this.type = { value: this.props.type, label: Localization[this.props.type] };
         this.id = this.props.id;
         this.text = this.props.text ? this.props.text : undefined;
-        this.control = this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0];
+        this.control = this.props.control ? { value: this.props.control, label: Localization[this.props.control] } : this.controlsOption[0];
         this.voice = (this.props.voice && this.props.voice !== '') ? this.props.voice : [];
         this.name = (this.props.name && typeof this.props.name === 'string') ? this.props.name : '';
     }
@@ -88,10 +88,10 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
     componentWillReceiveProps(nextProps: IProps) {
         if (nextProps === this.props) return;
         this.setState({
-            type: { value: nextProps.type, label: nextProps.type },
+            type: { value: nextProps.type, label: Localization[nextProps.type] },
             id: nextProps.id,
             text: nextProps.text ? nextProps.text : undefined,
-            control: nextProps.control ? { value: nextProps.control, label: nextProps.control } : null,
+            control: nextProps.control ? { value: nextProps.control, label: Localization[nextProps.control] } : null,
             voice: (nextProps.voice && nextProps.voice !== '') ? nextProps.voice : [],
             name: (nextProps.name && typeof nextProps.name === 'string') ? nextProps.name : '',
         })
@@ -245,11 +245,11 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
     returner_voice_by_value_of_voice() {
         if (typeof this.state.voice === 'string') {
             return <div className="img-item m-2">
-                <a target='_blank' href={"/api/serve-files/" + this.state.voice}>
+                <a rel="noopener noreferrer" target='_blank' href={"/api/serve-files/" + this.state.voice}>
                     <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
-                    {this.state.name}
+                    <span className="text-info mx-3">{this.state.name}</span>
                     </a>
-                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ()}>&times;</button>
+                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-2" onClick={() => this.removeItemFromDZ()}>&times;</button>
             </div>
         }
         return <div className="role-img-container">

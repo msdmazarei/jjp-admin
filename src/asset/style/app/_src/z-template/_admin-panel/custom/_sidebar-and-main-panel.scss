@@ -499,6 +499,37 @@
   }
 }
 
+.spin-upload {
+  animation: spin-uploads 2s infinite;
+  // roll animation define in this page 16 line bottom from this line
+  transform: rotate(30deg);
+  color: #3358f4;
+}
+
+@keyframes spin-uploads {
+  0% {
+    transform: rotate(0);
+    background-color: black;
+  }
+  25% {
+    transform: rotate(90deg);
+    background-color: blue;
+  }
+  50% {
+    transform: rotate(180deg);
+    background-color: red;
+  }
+  75% {
+    transform: rotate(270deg);
+    background-color: yellow;
+  }
+  100% {
+    transform: rotate(360deg);
+    background-color: black;
+  }
+}
+
+
 .perfect-scrollbar-on {
   .main-panel {
     height: 100%;

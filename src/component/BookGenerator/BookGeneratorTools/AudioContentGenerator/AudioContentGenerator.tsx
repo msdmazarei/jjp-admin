@@ -23,6 +23,7 @@ interface IProps {
     text?: string;
     control?: string;
     voice?: any;
+    name?: string;
     onContentChange: (value: Book_body, isValid: boolean, id: string) => void;
     addContentBefore: (id: string) => void;
     addContentAfter: (id: string) => void;
@@ -35,6 +36,7 @@ interface IState {
     text?: string | undefined;
     control?: { value: string, label: string } | null;
     voice?: any;
+    name?: string;
 }
 
 class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
@@ -56,6 +58,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
         text: undefined,
         control: this.controlsOption[0],
         voice: [],
+        name: '',
     }
 
     type: { value: string, label: string } | null = null;
@@ -63,6 +66,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
     text: string | undefined = undefined;
     control: { value: string, label: string } = this.controlsOption[0];
     voice: any = [];
+    name: string = '';
 
     componentDidMount() {
         this.setState({
@@ -71,12 +75,14 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             text: this.props.text ? this.props.text : undefined,
             control: this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0],
             voice: (this.props.voice && this.props.voice !== '') ? this.props.voice : [],
+            name: (this.props.name && typeof this.props.name === 'string') ? this.props.name : '',
         });
         this.type = { value: this.props.type, label: this.props.type };
         this.id = this.props.id;
         this.text = this.props.text ? this.props.text : undefined;
         this.control = this.props.control ? { value: this.props.control, label: this.props.control } : this.controlsOption[0];
         this.voice = (this.props.voice && this.props.voice !== '') ? this.props.voice : [];
+        this.name = (this.props.name && typeof this.props.name === 'string') ? this.props.name : '';
     }
 
     componentWillReceiveProps(nextProps: IProps) {
@@ -87,6 +93,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             text: nextProps.text ? nextProps.text : undefined,
             control: nextProps.control ? { value: nextProps.control, label: nextProps.control } : null,
             voice: (nextProps.voice && nextProps.voice !== '') ? nextProps.voice : [],
+            name: (nextProps.name && typeof nextProps.name === 'string') ? nextProps.name : '',
         })
     }
 
@@ -111,10 +118,11 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             this.props.onContentChange(Obj, true, this.props.id)
         }
         if ((this.state.type! as { value: string, label: string }).value === 'voice') {
-            let Obj: { type: string, voice: any, front_id: string } =
+            let Obj: { type: string, voice: any, name: string, front_id: string } =
             {
                 type: (this.state.type! as { value: string, label: string }).value,
                 voice: this.state.voice === [] ? '' : this.state.voice,
+                name: this.state.name,
                 front_id: this.props.id
             };
             this.props.onContentChange(Obj, true, this.props.id)
@@ -126,22 +134,26 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             this.type = value;
             this.control = this.controlsOption[0];
             this.voice = [];
+            this.name = '';
             this.setState({
                 ...this.state,
                 type: this.type,
                 control: this.control,
                 voice: this.voice,
+                name: this.name,
             }, () => this.passBodyObjToProps())
         }
         if ((value as { value: string, label: string }).value === 'control') {
             this.type = value;
             this.text = undefined;
             this.voice = [];
+            this.name = '';
             this.setState({
                 ...this.state,
                 type: this.type,
                 text: this.text,
                 voice: this.voice,
+                name: this.name,
             }, () => this.passBodyObjToProps())
         }
         if ((value as { value: string, label: string }).value === 'voice') {  // to do modify
@@ -207,7 +219,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
         return tmUrl;
     }
 
-    removeItemFromDZ(index: number/* , url: string */) {
+    removeItemFromDZ() {
         this.voice = [];
         this.setState({
             ...this.state,
@@ -222,15 +234,23 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             return;
         }
         this.voice = file;
+        this.name = this.voice[0].name ? this.voice[0].name : '';
         this.setState({
             ...this.state,
             voice: this.voice,
+            name: this.name,
         }, () => this.passBodyObjToProps())
     }
 
     returner_voice_by_value_of_voice() {
         if (typeof this.state.voice === 'string') {
-            return  // to do create link with remove btn
+            return <div className="img-item m-2">
+                <a target='_blank' href={"/api/serve-files/" + this.state.voice}>
+                    <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
+                    {this.state.name}
+                    </a>
+                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ()}>&times;</button>
+            </div>
         }
         return <div className="role-img-container">
             <Dropzone
@@ -269,7 +289,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 }
                                                 {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
                                                 <span className="mx-2 text-dark">{fileName} {fileSize}</span>
-                                                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index/* , tmUrl */)}>&times;</button>
+                                                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ()}>&times;</button>
                                             </div>
                                         </Fragment>
                                     })

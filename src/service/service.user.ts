@@ -8,12 +8,12 @@ export class UserService extends BaseService {
         return this.axiosTokenInstance.post('/users',user);
     }
     
-    search(limit: number, offset: number, filter?: Object): Promise<IAPI_ResponseList<IUser>> {
-        return this.axiosTokenInstance.post(`/users/_search`, { limit, offset, filter });
-        // return this.instance.post(`http://book.mazarei.id.ir/persons/_search`, { limit, offset, filter});
+    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<IUser>> {
+        return this.axiosTokenInstance.post(`/users/_search`, { limit, skip, filter });
+        // return this.instance.post(`http://book.mazarei.id.ir/persons/_search`, { limit, skip, filter});
     }
-    // search(limit: number, offset: number): Promise<IAPI_ResponseList<IUser>> {
-    //     return this.axiosTokenInstance.post(`/books/_search`, { limit, offset });
+    // search(limit: number, skip: number): Promise<IAPI_ResponseList<IUser>> {
+    //     return this.axiosTokenInstance.post(`/books/_search`, { limit, skip });
     // }
 
     remove(userId: string) {

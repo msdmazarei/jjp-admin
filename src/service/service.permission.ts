@@ -2,9 +2,9 @@ import { BaseService, IAPI_Response } from "./service.base";
 
 export class PermissionService extends BaseService {
 
-    search(limit: number, offset: number, filter?: Object){
-        // return this.axiosTokenInstance.post(`/permissions/_search`,{ limit, offset, filter });
-        return this.axiosTokenInstance.post(`/permissions/_search`,{limit,offset,filter});
+    search(limit: number, skip: number, filter?: Object){
+        // return this.axiosTokenInstance.post(`/permissions/_search`,{ limit, skip, filter });
+        return this.axiosTokenInstance.post(`/permissions/_search`,{limit,skip,filter});
     }
 
 

@@ -5,8 +5,9 @@ import { IComment } from '../model/model.comment';
 
 export class CommentService extends BaseService {
 
-    search(limit: number, offset: number, filter?: Object): Promise<IAPI_ResponseList<IComment>> {
-        return this.axiosTokenInstance.post(`/comments/_search`, { limit, offset, filter });
+    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<IComment>> {
+        // return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip, filter });
+        return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip });
     }
 
     like(comment_id: string): Promise<any> {
@@ -29,7 +30,7 @@ export class CommentService extends BaseService {
     //     return this.axiosTokenInstance.get(`/comments/book/${book_id}`);
     // }
 
-    search__(book_id: string, data: { limit: number, offset: number, filter?: Object }): Promise<IAPI_ResponseList<IComment>> {
+    search__(book_id: string, data: { limit: number, skip: number, filter?: Object }): Promise<IAPI_ResponseList<IComment>> {
         // if (this.isAppOffline()) {
         //     let lcl_comment_list: IComment[] | null = appLocalStorage.search_by_query_comment(book_id, data);
         //     if (lcl_comment_list /* && lcl_comment_list.length */) {

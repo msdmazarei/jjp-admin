@@ -10,6 +10,7 @@ import { Localization } from "../../config/localization/localization";
 import { AppWidgets } from "../tool/appWidgets/appWidgets";
 import { TReport, reportListMapCmp } from "../tool/reports/ReportUtils";
 import { DashboardReportsManageModal } from "./DashboardReportsManage"
+import { ToastContainer } from "react-toastify";
 
 export interface IProps {
   history: History;
@@ -139,6 +140,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
           firstList={this.state.report_cmp_status}
           onHide={(newList) => this.reportManagerModal_seter(newList)}
         />
+        <ToastContainer {...this.getNotifyContainerConfig()} />
       </div>
     );
   }

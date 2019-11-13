@@ -142,7 +142,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "address", title: Localization.address, cellTemplateFunc: (row: IUser) => {
             if (row.person.address) {
-              return <div title={row.person.address} className="text-nowrap-ellipsis max-w-150px d-inline-block">
+              return <div title={row.person.address} className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.person.address}
               </div>
             }

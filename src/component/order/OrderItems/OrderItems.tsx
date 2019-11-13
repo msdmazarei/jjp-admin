@@ -143,7 +143,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
             filter = { title: inputValue };
         }
         let res: any = await this._bookService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2OrderBookItem_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 

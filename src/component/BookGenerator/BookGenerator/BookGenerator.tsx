@@ -133,7 +133,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     async fetchContentById(book_generator_id: string) {
         let res = await this._bookContentService.byId(book_generator_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchContentById_error' } });
         });
         // await this.__waitOnMe();
         if (res) {
@@ -223,7 +223,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             filter = { title: inputValue };
         }
         let res: any = await this._bookService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2content_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 
@@ -351,7 +351,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 (this.state.contentType! as { label: string, value: string }).value,
                 this.state.Epub_book
             ).catch(error => {
-                this.handleError({ error: error.response });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
             });
             if (res) {
                 this.setState({
@@ -379,7 +379,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 (this.state.contentType! as { label: string, value: string }).value,
                 converted_content
             ).catch(error => {
-                this.handleError({ error: error.response });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
             });
             if (res) {
                 this.setState({
@@ -408,7 +408,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 (this.state.contentType! as { label: string, value: string }).value,
                 this.state.Epub_book
             ).catch(error => {
-                this.handleError({ error: error.response });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'updateEpub_error' } });
             });
             if (res) {
                 this.book_generator_id = undefined;
@@ -438,7 +438,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 (this.state.contentType! as { label: string, value: string }).value,
                 converted_content
             ).catch(error => {
-                this.handleError({ error: error.response });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'updateAudio_error' } });
             });
             if (res) {
                 this.setState({

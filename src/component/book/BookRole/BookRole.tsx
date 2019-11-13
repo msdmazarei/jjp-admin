@@ -182,7 +182,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
             filter = { person: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookRolls_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 

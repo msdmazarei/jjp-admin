@@ -113,7 +113,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     async fetchUserById(user_id: string) {
         let res = await this._userService.byId(user_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUserById_error' } });
         });
         // await this.__waitOnMe();
         if (res) {
@@ -225,7 +225,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         }
 
         let res = await this._userService.create(newUser).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'createUser_error' } });
         });
         this.setState({ ...this.state, createLoader: false });
 
@@ -244,7 +244,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         }
 
         let res = await this._userService.update(newUser, this.user_id!).catch(e => {
-            this.handleError({ error: e.response });
+            this.handleError({ error: e.response, toastOptions: { toastId: 'updateUser_error' } });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {
@@ -274,7 +274,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             filter = { person: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2User_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 

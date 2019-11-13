@@ -123,7 +123,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
 
         let res = await this._groupService.create(groupobj).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'groupCreate_error' } });
         });
 
         this.setState({ ...this.state, createLoader: false });
@@ -152,7 +152,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
             }
 
         let res = await this._groupService.update(groupobj, this.group_id!).catch(e => {
-            this.handleError({ error: e.response });
+            this.handleError({ error: e.response, toastOptions: { toastId: 'groupUpdate_error' } });
         });
 
         this.setState({ ...this.state, updateLoader: false });
@@ -166,7 +166,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     async fetchGroupById(group_id: string) {
 
         let res = await this._groupService.byId(group_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroupByIdSaveAndEDIT_error' } });
         });
 
         if (res) {
@@ -193,7 +193,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     async fetchGroupPersonById(person_id: string) {
 
         let res = await this._personService.byId(person_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response , toastOptions: { toastId: 'fetchGroupPersonById_error' }});
         });
 
         if (res) {
@@ -287,7 +287,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
             filter = { person: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false , toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' }});
             this.personRequstError_txt = err_msg.body;
         });
 

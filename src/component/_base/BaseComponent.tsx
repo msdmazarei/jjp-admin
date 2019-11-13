@@ -4,11 +4,12 @@ import { Localization } from '../../config/localization/localization';
 import { toast, ToastOptions, ToastContainerProps } from 'react-toastify';
 //
 import moment from 'moment';
-// import moment_jalaali from "moment-jalaali";
+import moment_jalaali from "moment-jalaali";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import { Utility } from '../../asset/script/utility';
 import { IPerson } from '../../model/model.person';
+import { CmpUtility } from './CmpUtility';
 
 interface IHandleError {
     error?: any;
@@ -16,6 +17,7 @@ interface IHandleError {
     type?: 'ui' | 'back';
     body?: string;
     timeout?: number;
+    toastOptions?: ToastOptions;
 }
 export interface IHandleErrorResolve {
     body: string;
@@ -26,11 +28,10 @@ interface IBaseProps {
 }
 
 export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> extends React.Component<p, S, SS> {
-    image_pre_url = '/api/serve-files';
-    defaultBookImagePath = "/static/media/img/icon/default-book.png";
+    image_pre_url = CmpUtility.image_pre_url; // '/api/serve-files';
+    defaultBookImagePath = CmpUtility.defaultBookImagePath; // "/static/media/img/icon/default-book.png";
     defaultPersonImagePath = "/static/media/img/icon/avatar.png";
-    audioLogo = "/static/media/img/icon/audio.png"; 
-
+    audioLogo = "/static/media/img/icon/audio.png";
     /* async  */
     handleError(handleErrorObj: IHandleError): IHandleErrorResolve { // Promise<IHandleErrorResolve>
         // return new Promise<IHandleErrorResolve>(resolve => {
@@ -89,7 +90,12 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
 
         if (obj.notify) {
             // toast.configure(this.getNotifyContainerConfig());
-            toast.error(obj.body, this.getNotifyConfig({ autoClose: obj.timeout }));
+            const toastOptions = Object.assign((obj.toastOptions || {}), { autoClose: obj.timeout, render: obj.body });
+            if (toastOptions.toastId && toast.isActive(toastOptions.toastId)) {
+                toast.update(toastOptions.toastId, this.getNotifyConfig(toastOptions));
+            } else {
+                toast.error(obj.body, this.getNotifyConfig(toastOptions));
+            }
         }
         // resolve({ body: obj.body! });
         return { body: obj.body! };
@@ -97,7 +103,10 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
     }
 
     translateErrorMsg(errorData: { [key: string]: any, msg: any }) {
-        if (errorData.msg === 'already_has_valid_key') {
+        if (errorData.msg_ui) {
+            return Localization.msg.ui[errorData.msg_ui];
+        }
+        if (errorData.msg === 'msg4') {
             return Localization.formatString(Localization.msg.back.already_has_valid_key, errorData.time);
         } else {
             return Localization.msg.back[errorData.msg];
@@ -147,7 +156,7 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         return this.image_pre_url + '/' + imageId;
     }
 
-    getFromNowDate(timestamp: number): string {
+    protected getFromNowDate(timestamp: number): string {
         moment.locale(this.props.internationalization.flag);
         return moment.unix(timestamp).fromNow();
     }
@@ -157,6 +166,30 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         let date = moment_jalaali(jDate, 'jYYYY/jM/jD');
         return +date.format('x');
     } */
+
+    protected timestamp_to_fullFormat(timestamp: number): string {
+        if (this.props.internationalization.flag === 'fa') {
+            // moment_jalaali.locale('en');
+            moment_jalaali.loadPersian({ usePersianDigits: false });
+            return moment_jalaali(timestamp).format('jYYYY/jM/jD h:m A');
+
+        } else {
+            // moment_jalaali.locale('en');
+            // moment_jalaali.loadPersian({ usePersianDigits: false });
+            moment.locale('en');
+            return moment(timestamp).format('YYYY/M/D h:m A');
+        }
+    }
+
+    protected timestamp_to_date(timestamp: number) {
+        try {
+            if (this.props.internationalization.flag === "fa") {
+                return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+            } else {
+                return moment(timestamp * 1000).locale("en").format('YYYY/MM/DD');
+            }
+        } catch (e) { console.error('baseCMP method timestamp_to_date:', e) }
+    }
 
     isDeviceMobileOrTablet(): boolean {
         return Utility.mobileAndTabletcheck();
@@ -171,7 +204,18 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         }
     }
 
-    
+    bookImageOnError(e: any) {
+        return this.imageOnError(e, "/static/media/img/icon/broken-book.png");
+    }
+
+    personImageOnError(e: any) {
+        return this.imageOnError(e, "/static/media/img/icon/broken-avatar.png");
+    }
+
+    userImageOnError(e: any) {
+        return this.imageOnError(e, "/static/media/img/icon/broken-avatar.png");
+    }
+
     getPersonFullName(person: IPerson): string {
         let name = person.name || '';
         let last_name = person.last_name || '';
@@ -184,18 +228,6 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         let last_name = person.last_name || '';
         name = name ? name + ' ' : '';
         return (name + last_name).trim();
-    }
-    
-    bookImageOnError(e: any) {
-        return this.imageOnError(e, "/static/media/img/icon/broken-book.png");
-    }
-    
-    personImageOnError(e: any) {
-        return this.imageOnError(e, "/static/media/img/icon/broken-avatar.png");
-    }
-
-    userImageOnError(e: any) {
-        return this.imageOnError(e, "/static/media/img/icon/broken-avatar.png");
     }
 
 }

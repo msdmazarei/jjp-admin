@@ -184,7 +184,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     async fetchLastSellWithType() {
         this.setState({ ...this.state, lastSellWithTypeTableLoader: true });
         let res = await this._bookService.search(200, 0).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchLastSellWithTypeDashboard_error' } });
             this.setState({
                 ...this.state,
                 lastSellWithTypeTableLoader: false,

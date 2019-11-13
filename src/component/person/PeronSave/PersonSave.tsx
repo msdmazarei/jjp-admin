@@ -127,7 +127,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
 
     async fetchPersonById(person_id: string) {
         let res = await this._personService.byId(person_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPersonById_error' } });
         });
         // await this.__waitOnMe();
         if (res) {
@@ -197,6 +197,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         if (fileImg && (fileImg || []).length) {
             return new Promise(async (res, rej) => {
                 let urls = await this._uploadService.upload(fileImg).catch(e => {
+                    this.handleError({ error: e.response, toastOptions: { toastId: 'personImgUpload_error' } });
                     rej(e);
                 });
                 if (urls) {
@@ -216,7 +217,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
         let imgUrls = await this.uploadFileReq().catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'createPerson_error' } });
         });
         if (!imgUrls/*  || !imgUrls.length */) {
             this.setState({ ...this.state, createLoader: false });
@@ -248,7 +249,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, updateLoader: true });
 
         let imgUrls = await this.uploadFileReq().catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'personUpdate_error' } });
         });
         if (!imgUrls) {
             return

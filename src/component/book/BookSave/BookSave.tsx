@@ -280,7 +280,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
     async fetchBookById(book_id: string) {
         let res = await this._bookService.byId(book_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBookById_error' } });
         });
         // await this.__waitOnMe();
         if (res) {
@@ -478,6 +478,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (fileImg && (fileImg || []).length) {
             return new Promise(async (res, rej) => {
                 let urls = await this._uploadService.upload(fileImg).catch(e => {
+                    this.handleError({ error: e.response, toastOptions: { toastId: 'BooksImgUpload_error' } });
                     rej(e);
                 });
                 if (urls) {
@@ -500,7 +501,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
         let imgUrls = await this.uploadFileReq().catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'createBook_error' } });
         });
         if (!imgUrls) {
             this.setState({ ...this.state, createLoader: false });
@@ -550,7 +551,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, updateLoader: true });
 
         let imgUrls = await this.uploadFileReq().catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'updateBook_error' } });
         });
         if (!imgUrls) {
             return
@@ -796,7 +797,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             filter = { person: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookPress_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 

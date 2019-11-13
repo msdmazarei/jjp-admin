@@ -340,7 +340,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   async onRemoveComment(comment_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._commentService.remove(comment_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveComment_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -397,7 +397,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchComments_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,

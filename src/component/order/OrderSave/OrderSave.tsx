@@ -101,7 +101,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
     async fetchOrderById(order_id: string) {
         let res = await this._orderService.getOrder_items(order_id).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderByIdEdit_error' } });
         });
         if (res) {
             let list = res.data.result;
@@ -217,7 +217,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         }
 
         let res = await this._orderService.create(newOrder).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'createOrder_error' } });
         });
         this.setState({ ...this.state, createLoader: false });
 
@@ -247,7 +247,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         }
 
         let res = await this._orderService.update(newOrder, this.order_id!).catch(e => {
-            this.handleError({ error: e.response });
+            this.handleError({ error: e.response, toastOptions: { toastId: 'updateOrder_error' } });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {
@@ -277,7 +277,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
             filter = { person: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false });
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2OrderSaveAndEdit_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 
@@ -326,7 +326,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         const person_id: string = person!.value.id;
 
         let res_fetchPrice = await this._priceService.calcPrice(order_items, person_id).catch(error => {
-            let msgObj = this.handleError({ error: error.response, notify: toastError });
+            let msgObj = this.handleError({ error: error.response, notify: toastError, toastOptions: { toastId: 'fetchTotalPrice_error' } });
             this.setState({ ...this.state, fetchPrice_loader: false, totalPrice: msgObj.body });
         });
 

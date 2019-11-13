@@ -150,7 +150,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
             is_legal: this.state.is_legal,
         }
         let res = await this._quickPersonService.create(newPerson).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'addQuickPerson_error' } });
         });
 
         this.setState({
@@ -174,6 +174,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         if (fileImg && (fileImg || []).length) {
             return new Promise(async (res, rej) => {
                 let urls = await this._quickUploadService.upload(fileImg).catch(e => {
+                    this.handleError({ error: e.response, toastOptions: { toastId: 'addQuickPersonImgUpload_error' } });
                     rej(e);
                 });
                 if (urls) {

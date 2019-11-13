@@ -204,7 +204,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroup_error' }  });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
@@ -231,7 +231,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   async onRemoveGroup(group_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._groupService.remove(group_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveGroup_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -306,7 +306,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       groups: [group_id],
     };
     let res = await this._groupService.fetchGroupPermissions(groupData).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroupPermissions_error' } });
     });
 
     if (res) {
@@ -353,7 +353,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       filter = { permission: inputValue };
     }
     let res: any = await this._permissionService.search(10, 0, filter).catch(err => {
-      let err_msg = this.handleError({ error: err.response, notify: false });
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2fetchGroupPermissions_error' } });
       this.permissionRequstError_txt = err_msg.body;
     });
 
@@ -422,7 +422,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     };
 
     let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemovePermissionFromGroup_error' } });
       this.fetchGroupPermissions(group_id);
     });
 
@@ -446,7 +446,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     };
 
     let res = await this._groupService.addPermissionToGroup(addedPermission).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onAddPermissionToGroup_error' } });
       this.fetchGroupPermissions(group_id);
     });
 

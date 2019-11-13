@@ -314,7 +314,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     };
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._bookContentService.remove(content_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveContent_error' }});
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -378,7 +378,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBooksContent_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,

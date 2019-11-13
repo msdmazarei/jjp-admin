@@ -275,7 +275,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     };
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._personService.remove(person_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemovePerson_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -334,7 +334,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPersons_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,

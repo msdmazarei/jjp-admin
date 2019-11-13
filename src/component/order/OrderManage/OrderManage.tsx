@@ -243,7 +243,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response , toastOptions: { toastId: 'fetchOrders_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
@@ -293,7 +293,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   async onRemoveOrder(order_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._orderService.remove(order_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveOrder_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -352,7 +352,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   async fetchOrderById(order_id: string) {
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_error' } });
     });
 
     if (res) {
@@ -480,7 +480,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   async fetchOrderById_GetInvoice(order_id: string) {
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_GetInvoice_error' } });
     });
 
     if (res) {
@@ -521,7 +521,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   async getInvoice(order_id: string, person_id: string) {
     this.setState({ ...this.state, setGetInvoiceLoader: true });
     let res = await this._orderService.checkout(order_id, person_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'getInvoice_error' } });
       this.setState({ ...this.state, setGetInvoiceLoader: false });
     });
     if (res) {

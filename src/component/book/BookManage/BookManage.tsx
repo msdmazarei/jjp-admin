@@ -366,7 +366,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     };
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._bookService.remove(book_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveBook_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -429,7 +429,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     if (!this.state.price.isValid) return;
     this.setState({ ...this.state, setPriceLoader: true });
     let res = await this._priceService.price(book_id, this.state.price.value!).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onPriceBook_error' } });
       this.setState({ ...this.state, setPriceLoader: false });
     });
     if (res) {
@@ -489,11 +489,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-
   // define axios for give data
-
-
-
 
   async fetchBooks() {
     this.setState({ ...this.state, tableProcessLoader: true })
@@ -502,7 +498,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBooks_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,

@@ -235,7 +235,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUsers_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
@@ -301,7 +301,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   async onRemoveUser(user_id: string) {
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._userService.remove(user_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveUser_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -356,7 +356,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   async fetchUserGroups(user_id: string) {
     let res = await this._groupService.fetchUserGroups(user_id).catch(error => {
-      this.handleError({ error: error.response });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUserGroups_error' } });
     });
 
     if (res) {
@@ -401,7 +401,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       filter = { title: inputValue };
     }
     let res: any = await this._groupService.search(10, 0, filter).catch(err => {
-      let err_msg = this.handleError({ error: err.response, notify: false });
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2fetchUserGroups_error' } });
       this.groupRequstError_txt = err_msg.body;
     });
 
@@ -458,7 +458,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       };
 
       let res = await this._groupService.addUserToGroup(newGroup).catch(error => {
-        this.handleError({ error: error.response });
+        this.handleError({ error: error.response, toastOptions: { toastId: 'onAddGroupToUser_error' } });
       });
 
       if (res) {
@@ -509,7 +509,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       };
 
       let res = await this._groupService.removeUserFromGroup(removedGroup).catch(error => {
-        this.handleError({ error: error.response });
+        this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveGroupFromUser_error' } });
       });
 
       if (res) {

@@ -53,16 +53,28 @@ export abstract class BGUtility {
 
     // end file upload function
 
+    private static Stop: boolean = false;
     private static Book_body_array: Book_body[] = [];
     private static Book_body_file_type_array: Book_body[] = [];
     private static Uploaded_id_obj_array: book_body_voice[] = [];
     private static book_json: Book_children[] = [];
-    private static uploaded_id : string[] = [];
+    private static uploaded_id: string[] = [];
 
+
+    static stop_Upload() {
+        BGUtility.Stop = true;
+    }
+
+    static number_of_file_uploaded(){
+        if(!BGUtility.uploaded_id.length){
+            return 0;
+        }
+        return BGUtility.uploaded_id.length;
+    }
 
     static book_children_array_filter_by_body_type(array: Book_children[], body_type: string): Book_body[] | [] {
         let i;
-        for ( i = 0; i < array.length; i++) {
+        for (i = 0; i < array.length; i++) {
             if (array[i].body.length) {
                 for (let j = 0; j < array[i].body.length; j++) {
                     if (array[i].body[j].type === body_type) {
@@ -75,10 +87,10 @@ export abstract class BGUtility {
             }
         }
 
-        // const rtnArray: Book_body[] = BGUtility.Book_body_array;
-        // BGUtility.Book_body_array = [];
-        // return rtnArray;
-        return BGUtility.Book_body_array;
+        const rtnArray: Book_body[] = BGUtility.Book_body_array;
+        BGUtility.Book_body_array = [];
+        return rtnArray;
+        // return BGUtility.Book_body_array;
     }
 
     static book_body_array_filter_by_file_type(array: Book_body[]): Book_body[] | [] {
@@ -95,13 +107,13 @@ export abstract class BGUtility {
         return rtnArray;
     }
 
-    static id_exist_checker(comming_id : string):boolean{
-        let is_exist : boolean = false;
-        if(BGUtility.uploaded_id.length === 0){
+    static id_exist_checker(comming_id: string): boolean {
+        let is_exist: boolean = false;
+        if (BGUtility.uploaded_id.length === 0) {
             return is_exist;
         }
         for (let i = 0; i < BGUtility.uploaded_id.length; i++) {
-            if(BGUtility.uploaded_id[i] === comming_id){
+            if (BGUtility.uploaded_id[i] === comming_id) {
                 is_exist = true;
             }
         }
@@ -111,16 +123,21 @@ export abstract class BGUtility {
     static async upload_file_and_save_id(array: Book_body[]): Promise<book_body_voice[] | []> {
         let rejected = false;
         for (let i = 0; i < array.length; i++) {
-            let current_id : string = array[i].front_id;
-            if(!BGUtility.id_exist_checker(current_id)){
+            let current_id: string = array[i].front_id;
+            // if(!BGUtility.id_exist_checker(current_id)){   to do add condition for don't upload file if uploaded before
+            if (true) {
                 let res = await BGUtility.uploadFileReq((array[i] as book_body_voice).voice).catch(e => {
                     rejected = true;
                 });
+                if (BGUtility.Stop) {
+                    BGUtility.Stop = false;
+                    rejected = true;
+                };
                 if (rejected) {
                     break;
                 };
                 if (res && res.length) {
-                    let newBody : book_body_voice = { front_id : current_id , type : 'voice' , name :( array[i] as book_body_voice).name , voice : res[0] }
+                    let newBody: book_body_voice = { front_id: current_id, type: 'voice', name: (array[i] as book_body_voice).name, voice: res[0] }
                     BGUtility.Uploaded_id_obj_array.push(newBody);
                     BGUtility.uploaded_id.push(current_id);
                 };

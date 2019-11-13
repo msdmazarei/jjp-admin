@@ -18,6 +18,7 @@ import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/Chapter
 import { BookGeneratorService } from '../../../service/service.bookGenerator';
 import { BGUtility } from '../BookGeneratorTools/fileUploader/fileUploader';
 import { Modal } from 'react-bootstrap';
+import { ToastContainer } from 'react-toastify';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -122,6 +123,23 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     private _bookContentService = new BookGeneratorService();
     private book_generator_id: string | undefined;
+
+    // // private _uploadFileState = 0;
+
+    // private _getUploadFileState_timer:any;;
+    // getUploadFileState() {
+    //     this._getUploadFileState_timer = setTimeout(() => {
+
+    //         const newS = BGUtility.number_of_file_uploaded();
+    //         if(this.state.uploadFileState !==newS){
+    //             this.setState({...this.state,uploadFileState:newS });
+    //         }
+
+    //         if(newS !==main__.length || !cancel || !rej){
+    //             this.getUploadFileState();
+    //         }
+    //     }, 3000);
+    // }
 
     componentDidMount() {
         if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
@@ -354,12 +372,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
             });
             if (res) {
-                this.setState({
-                    ...this.state,
-                    selectedBook: null,
-                    contentType: null,
-                    selectedBookType: undefined,
-                });
+                this.Reset();
+                this.apiSuccessNotify();
             }
         }
         if (this.state.selectedBookType === 'Audio') {
@@ -382,12 +396,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
             });
             if (res) {
-                this.setState({
-                    ...this.state,
-                    selectedBook: null,
-                    contentType: null,
-                    selectedBookType: undefined,
-                });
+                this.Reset();
+                this.apiSuccessNotify();
             }
         }
     }
@@ -412,12 +422,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             });
             if (res) {
                 this.book_generator_id = undefined;
-                this.setState({
-                    ...this.state,
-                    selectedBook: null,
-                    contentType: null,
-                    selectedBookType: undefined,
-                }, () => this.backTO());
+                this.Reset();
+                this.backTO();
+                this.apiSuccessNotify();
             }
         }
         if (this.state.selectedBookType === 'Audio') {
@@ -441,12 +448,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'updateAudio_error' } });
             });
             if (res) {
-                this.setState({
-                    ...this.state,
-                    selectedBook: null,
-                    contentType: null,
-                    selectedBookType: undefined,
-                });
+                this.book_generator_id = undefined;
+                this.Reset();
+                this.backTO();
+                this.apiSuccessNotify();
             }
         }
     }
@@ -660,6 +665,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 {
                     this.render_update_proccess_modal()
                 }
+                <ToastContainer {...this.getNotifyContainerConfig()} />
             </>
         )
     }

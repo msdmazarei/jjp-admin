@@ -533,7 +533,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             tags: tagList
         }
         let res = await this._bookService.create(newBook).catch(error => {
-            this.handleError({ error: error.response });
+            this.handleError({ error: error.response , toastOptions: { toastId: 'bookCreate_error' }});
         });
         this.setState({ ...this.state, createLoader: false });
 
@@ -582,7 +582,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             // type: typeList[0], // this.state.book.type.value,
         }
         let res = await this._bookService.update(newBook, this.book_id!).catch(e => {
-            this.handleError({ error: e.response });
+            this.handleError({ error: e.response, toastOptions: { toastId: 'bookEdit_error' } });
         });
         this.setState({ ...this.state, updateLoader: false });
         if (res) {

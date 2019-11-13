@@ -256,7 +256,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
             <Dropzone
                 multiple={false}
                 onDrop={(files) => this.onDropVoice(files)}
-                maxSize={5000000}
+                // maxSize={5000000}
                 // accept="mp3/*"
                 onDropRejected={(files, event) => this.onDropRejected(files, event)}
             >

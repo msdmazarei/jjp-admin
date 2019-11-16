@@ -20,6 +20,7 @@ interface ILocalization extends LocalizedStringsMethods {
     brand_name: string;
     sign_in_bookstore_account: string;
     forgot_password: string;
+    stop : string;
     msg: {
         ui: {
             [key: string]: any; // todo

@@ -8,6 +8,7 @@ export const en = {
     brand_name: 'bookstore',
     sign_in_bookstore_account: 'sign in with your bookstore account',
     forgot_password: 'forgot password?',
+    stop : 'stop',
     msg: {
         ui: {
             msg1: 'action succeeded',

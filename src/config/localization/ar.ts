@@ -8,6 +8,7 @@ export const ar = {
     brand_name: 'فروشگاه کتاب',
     sign_in_bookstore_account: 'با حساب فروشگاه کتاب خود داخل شوید',
     forgot_password: 'رمز عبورتان را فراموش کردید؟',
+    stop : 'توقف',
     msg: {
         ui: {
             msg1: 'عملیات با موفقیت انجام شد.',

@@ -65,8 +65,8 @@ export abstract class BGUtility {
         BGUtility.Stop = true;
     }
 
-    static number_of_file_uploaded(){
-        if(!BGUtility.uploaded_id.length){
+    static number_of_file_uploaded() {
+        if (!BGUtility.uploaded_id.length) {
             return 0;
         }
         return BGUtility.uploaded_id.length;
@@ -121,19 +121,27 @@ export abstract class BGUtility {
     }
 
     static async upload_file_and_save_id(array: Book_body[]): Promise<book_body_voice[] | []> {
-        let rejected = false;
+        let rejected: boolean = false;
+        let stop: boolean = false;
         for (let i = 0; i < array.length; i++) {
             let current_id: string = array[i].front_id;
             // if(!BGUtility.id_exist_checker(current_id)){   to do add condition for don't upload file if uploaded before
             if (true) {
+                if (BGUtility.Stop) {
+                    BGUtility.Stop = false;
+                    stop = true;
+                };
+                if (rejected || stop) {
+                    break;
+                };
                 let res = await BGUtility.uploadFileReq((array[i] as book_body_voice).voice).catch(e => {
                     rejected = true;
                 });
                 if (BGUtility.Stop) {
                     BGUtility.Stop = false;
-                    rejected = true;
+                    stop = true;
                 };
-                if (rejected) {
+                if (rejected || stop) {
                     break;
                 };
                 if (res && res.length) {
@@ -144,7 +152,10 @@ export abstract class BGUtility {
             }
         }
         if (rejected) {
-            return [];
+            return [{ front_id: 'rejected', type: 'voice', name: 'rejected', voice: 'rejected' }];
+        };
+        if (stop) {
+            return [{ front_id: 'stop', type: 'voice', name: 'stop', voice: 'stop' }];
         };
         const rtnArray = BGUtility.Uploaded_id_obj_array;
         BGUtility.Uploaded_id_obj_array = [];

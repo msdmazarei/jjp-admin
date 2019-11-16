@@ -75,8 +75,15 @@ interface IState {
         PackagingVersion: number;
         title: string | undefined;
         children?: Book_children[];
-    }
-    upload_modal_show: boolean;
+    };
+    create_update_loading: boolean;
+    number_of_file_should_upload: number;
+    number_of_uploaded: number;
+    uploadStop: boolean;
+    uploadRej: boolean;
+    upload_modal: boolean;
+    error_upload_modal: boolean;
+    error_upload_modal_state: number;
 }
 
 interface IProps {
@@ -106,7 +113,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             title: undefined,
             children: [],
         },
-        upload_modal_show: false,
+        create_update_loading: false,
+        number_of_file_should_upload: 0,
+        number_of_uploaded: 0,
+        uploadStop: false,
+        uploadRej: false,
+        upload_modal: false,
+        error_upload_modal: false,
+        error_upload_modal_state: 0,
     }
 
     //// start navigation for back to BookGeneratorManage /////
@@ -124,23 +138,139 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     private _bookContentService = new BookGeneratorService();
     private book_generator_id: string | undefined;
 
-    // // private _uploadFileState = 0;
 
-    // private _getUploadFileState_timer:any;;
-    // getUploadFileState() {
-    //     this._getUploadFileState_timer = setTimeout(() => {
+    private _getUploadFileState_timer: any;;
+    getUploadFileState() {
+        this._getUploadFileState_timer = setTimeout(() => {
 
-    //         const newS = BGUtility.number_of_file_uploaded();
-    //         if(this.state.uploadFileState !==newS){
-    //             this.setState({...this.state,uploadFileState:newS });
-    //         }
+            const new_number = BGUtility.number_of_file_uploaded();
+            if (this.state.number_of_uploaded !== new_number) {
+                this.setState({ ...this.state, number_of_uploaded: new_number });
+            }
 
-    //         if(newS !==main__.length || !cancel || !rej){
-    //             this.getUploadFileState();
-    //         }
-    //     }, 3000);
-    // }
+            if (new_number !== this.state.number_of_file_should_upload || !this.state.uploadStop || !this.state.uploadRej) {
+                this.getUploadFileState();
+            }
+        }, 1000);
+    }
 
+    upload_stop_function() {
+        BGUtility.stop_Upload();
+    };
+
+    content_modification() {
+        this.setState({
+            ...this.state,
+            create_update_loading: false,
+            number_of_file_should_upload: 0,
+            number_of_uploaded: 0,
+            uploadStop: false,
+            uploadRej: false,
+            upload_modal: false,
+            error_upload_modal: false,
+            error_upload_modal_state: 0,
+        });
+    };
+
+    render_upload_modal() {
+        if (this.state.number_of_file_should_upload === 0) return;
+        return (
+            <>
+                <Modal show={this.state.upload_modal}>
+                    <Modal.Header className="row d-flex justify-content-center">
+                        <div className="rounded-circle border border-primary spin-upload w-100px h-100px text-center pt-3"></div>
+                    </Modal.Header>
+                    <Modal.Body className="text-center">
+                        <div className="my-1 text-dark">
+                            {this.state.number_of_uploaded + " " + Localization.from + " " + this.state.number_of_file_should_upload}
+                        </div>
+                        <div className="my-1 text-dark">
+                            {"%" + " " + ((this.state.number_of_uploaded * 100) / this.state.number_of_file_should_upload)}
+                        </div>
+                        <div className="my-1 text-dark">
+                            {Localization.loading_with_dots}
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer className="row d-flex justify-content-center">
+                        <BtnLoader
+                            loading={false}
+                            btnClassName="btn btn-danger shadow-default shadow-hover"
+                            onClick={() => this.upload_stop_function()}
+                        >
+                            {Localization.stop}
+                        </BtnLoader>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    }
+
+    render_error_upload_modal() {
+        // if (this.state.error_upload_modal_state === 0) return;
+        return (
+            <>
+                <Modal show={this.state.error_upload_modal}>
+                    {/* <Modal show={true}> */}
+                    <Modal.Header className="row d-flex justify-content-center">
+                        {
+                            this.state.error_upload_modal_state === 1
+                                ?
+                                'شما عملیات بارگذاری را متوقف کردید'
+                                :
+                                this.state.error_upload_modal_state === 2
+                                    ?
+                                    'عملیات بارگذاری با خطا مواجه شد'
+                                    :
+                                    undefined
+                        }
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className={"row d-flex justify-content-between"}>
+                            {
+                                this.state.saveMode === SAVE_MODE.CREATE
+                                    ?
+                                    <>
+                                        <BtnLoader
+                                            loading={false}
+                                            btnClassName="btn btn-danger shadow-default shadow-hover mx-2"
+                                            onClick={() => this.content_modification()}
+                                        >
+                                            {'cancel'}
+                                        </BtnLoader>
+                                        <BtnLoader
+                                            loading={false}
+                                            btnClassName="btn btn-success shadow-default shadow-hover mx-2"
+                                            onClick={() => this.create()}
+                                        >
+                                            {Localization.retry}
+                                        </BtnLoader>
+                                    </>
+                                    :
+                                    <>
+                                        <BtnLoader
+                                            loading={false}
+                                            btnClassName="btn btn-danger shadow-default shadow-hover mx-2"
+                                            onClick={() => this.content_modification()}
+                                        >
+                                            {'cancel'}
+                                        </BtnLoader>
+                                        <BtnLoader
+                                            loading={false}
+                                            btnClassName="btn btn-info shadow-default shadow-hover mx-2"
+                                            onClick={() => this.update()}
+                                        >
+                                            {Localization.retry}
+                                        </BtnLoader>
+                                    </>
+                            }
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    }
     componentDidMount() {
         if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
@@ -351,6 +481,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 title: undefined,
                 children: [],
             },
+            create_update_loading: false,
+            number_of_file_should_upload: 0,
+            number_of_uploaded: 0,
+            uploadStop: false,
+            uploadRej: false,
+            upload_modal: false,
+            error_upload_modal: false,
+            error_upload_modal_state: 0,
         });
     }
 
@@ -363,12 +501,24 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
             return
         }
+        this.setState({
+            ...this.state,
+            create_update_loading: true,
+            number_of_file_should_upload: 0,
+            number_of_uploaded: 0,
+            uploadStop: false,
+            uploadRej: false,
+            upload_modal: false,
+            error_upload_modal: false,
+            error_upload_modal_state: 0,
+        });
         if (this.state.selectedBookType === 'Epub') {
             let res = await this._bookContentService.create(
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
                 (this.state.contentType! as { label: string, value: string }).value,
                 this.state.Epub_book
             ).catch(error => {
+                this.setState({ ...this.state, create_update_loading: false });
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
             });
             if (res) {
@@ -379,25 +529,70 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBookType === 'Audio') {
             const allBody: Book_body[] = await BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children, 'voice');
             const bodyShouldUpload: Book_body[] = await BGUtility.book_body_array_filter_by_file_type(allBody);
-            let uploadedAndThatsId: book_body_voice[] = await BGUtility.upload_file_and_save_id(bodyShouldUpload);
-            if (bodyShouldUpload.length !== uploadedAndThatsId.length) return;
-            const convertedChildren: Book_children[] = await BGUtility.replace_id_instead_of_file(this.state.Audio_book.children, uploadedAndThatsId);
-            let converted_content: Object = {
-                BookType: this.state.Audio_book.BookType,
-                PackagingVersion: this.state.Audio_book.PackagingVersion,
-                title: this.state.Audio_book.title,
-                children: convertedChildren,
-            }
-            let res = await this._bookContentService.create(
-                (this.state.selectedBook! as { label: string, value: IBook }).value.id,
-                (this.state.contentType! as { label: string, value: string }).value,
-                converted_content
-            ).catch(error => {
-                this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
-            });
-            if (res) {
-                this.Reset();
-                this.apiSuccessNotify();
+            if (bodyShouldUpload.length === 0) {
+                let res = await this._bookContentService.create(
+                    (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                    (this.state.contentType! as { label: string, value: string }).value,
+                    this.state.Audio_book
+                ).catch(error => {
+                    this.setState({ ...this.state, create_update_loading: false });
+                    this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
+                });
+                if (res) {
+                    this.Reset();
+                    this.apiSuccessNotify();
+                }
+            } else {
+                this.getUploadFileState();
+                this.setState({ ...this.state, number_of_file_should_upload: bodyShouldUpload.length, upload_modal: true });
+                let uploadedAndThatsId: book_body_voice[] = await BGUtility.upload_file_and_save_id(bodyShouldUpload);
+                if (uploadedAndThatsId.length === 1 && uploadedAndThatsId[0].front_id === 'rejected') {
+                    this.setState({
+                        ...this.state,
+                        create_update_loading: false,
+                        number_of_file_should_upload: 0,
+                        number_of_uploaded: 0,
+                        uploadStop: false,
+                        uploadRej: true,
+                        upload_modal: false,
+                        error_upload_modal: true,
+                        error_upload_modal_state: 2,
+                    });
+                    return;
+                }
+                if (uploadedAndThatsId.length === 1 && uploadedAndThatsId[0].front_id === 'stop') {
+                    this.setState({
+                        ...this.state,
+                        create_update_loading: false,
+                        number_of_file_should_upload: 0,
+                        number_of_uploaded: 0,
+                        uploadStop: true,
+                        uploadRej: false,
+                        upload_modal: false,
+                        error_upload_modal: true,
+                        error_upload_modal_state: 1,
+                    });
+                    return;
+                }
+                const convertedChildren: Book_children[] = await BGUtility.replace_id_instead_of_file(this.state.Audio_book.children, uploadedAndThatsId);
+                let converted_content: Object = {
+                    BookType: this.state.Audio_book.BookType,
+                    PackagingVersion: this.state.Audio_book.PackagingVersion,
+                    title: this.state.Audio_book.title,
+                    children: convertedChildren,
+                }
+                let res = await this._bookContentService.create(
+                    (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                    (this.state.contentType! as { label: string, value: string }).value,
+                    converted_content,
+                ).catch(error => {
+                    this.content_modification();
+                    this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
+                });
+                if (res) {
+                    this.Reset();
+                    this.apiSuccessNotify();
+                }
             }
         }
     }
@@ -457,30 +652,6 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     ////////////   end update btn function ////////////////////
-
-
-    ///// start upload modal ///////////
-
-    render_update_proccess_modal() {
-        // if (this.state.selectedBook === null) return;
-        return (
-            <>
-                <Modal show={this.state.upload_modal_show}>
-                    <Modal.Header className="row d-flex justify-content-center">
-                        <div className="font-weight-bold">{Localization.upload}</div>
-                    </Modal.Header>
-                    <Modal.Body className="row d-flex justify-content-center">
-                        <div className="rounded-circle border border-top-0 border-bottom-0 border-primary spin-upload w-100px h-100px text-center pt-3"></div>
-                    </Modal.Body>
-                    <Modal.Footer className="row d-flex justify-content-center">
-                        <div>50%</div>
-                    </Modal.Footer>
-                </Modal>
-            </>
-        );
-    }
-
-    ///// end upload modal ///////////
 
 
     //// start onChange function define  ///////
@@ -612,7 +783,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     <BtnLoader
-                                                        loading={false}
+                                                        loading={this.state.create_update_loading}
                                                         btnClassName="btn btn-success shadow-default shadow-hover"
                                                         onClick={() => this.create()}
                                                         disabled={this.btn_disable_status()}
@@ -630,7 +801,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     <BtnLoader
-                                                        loading={false}
+                                                        loading={this.state.create_update_loading}
                                                         btnClassName="btn btn-info shadow-default shadow-hover"
                                                         onClick={() => this.update()}
                                                         disabled={this.btn_disable_status()}
@@ -662,9 +833,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
-                {
-                    this.render_update_proccess_modal()
-                }
+                {this.render_upload_modal()}
+                {this.render_error_upload_modal()}
                 <ToastContainer {...this.getNotifyContainerConfig()} />
             </>
         )

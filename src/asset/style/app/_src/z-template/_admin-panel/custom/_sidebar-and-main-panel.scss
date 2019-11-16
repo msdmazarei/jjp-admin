@@ -500,7 +500,7 @@
 }
 
 .spin-upload {
-  animation: spin-uploads 2s infinite;
+  animation: spin-uploads 1s infinite;
   // roll animation define in this page 16 line bottom from this line
   transform: rotate(30deg);
   color: #3358f4;
@@ -508,24 +508,34 @@
 
 @keyframes spin-uploads {
   0% {
+    border : 3px solid red;
+    border-top : none;
+    border-bottom: none;
     transform: rotate(0);
-    background-color: black;
   }
   25% {
+    border : 3px solid blue;
+    border-top : none;
+    border-bottom: none;
     transform: rotate(90deg);
-    background-color: blue;
   }
   50% {
+    border : 3px solid red;
+    border-top : none;
+    border-bottom: none;
     transform: rotate(180deg);
-    background-color: red;
   }
   75% {
+    border : 3px solid blue;
+    border-top : none;
+    border-bottom: none;
     transform: rotate(270deg);
-    background-color: yellow;
   }
   100% {
+    border : 3px solid red;
+    border-top : none;
+    border-bottom: none;
     transform: rotate(360deg);
-    background-color: black;
   }
 }
 

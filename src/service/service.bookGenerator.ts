@@ -27,4 +27,8 @@ export class BookGeneratorService extends BaseService {
     remove(contentId: string) {
         return this.axiosTokenInstance.delete(`/book-contents/${contentId}`);
     }
+
+    bookBuild(contentId : string){
+        return this.axiosTokenInstance.post(`/generate-book`,{contentId});
+    }
 }

@@ -1,4 +1,4 @@
-import { Book_children, Book_body, book_body_voice } from "../../BookGenerator/BookGenerator";
+import { Book_children, Book_body, book_body_voice, book_body_pdf } from "../../BookGenerator/BookGenerator";
 import { UploadService } from "../../../../service/service.upload";
 
 
@@ -57,8 +57,10 @@ export abstract class BGUtility {
     private static Book_body_array: Book_body[] = [];
     private static Book_body_file_type_array: Book_body[] = [];
     private static Uploaded_id_obj_array: book_body_voice[] = [];
-    private static book_json: Book_children[] = [];
     private static uploaded_id: string[] = [];
+    private static PdfUploaded_id_obj_array: book_body_pdf[] = [];
+    private static Pdfuploaded_id: string[] = [];
+    private static book_json: Book_children[] = [];
 
 
     static stop_Upload() {
@@ -70,6 +72,13 @@ export abstract class BGUtility {
             return 0;
         }
         return BGUtility.uploaded_id.length;
+    }
+
+    static number_of_pdf_file_uploaded() {
+        if (!BGUtility.Pdfuploaded_id.length) {
+            return 0;
+        }
+        return BGUtility.Pdfuploaded_id.length;
     }
 
     static book_children_array_filter_by_body_type(array: Book_children[], body_type: string): Book_body[] | [] {
@@ -88,7 +97,6 @@ export abstract class BGUtility {
         }
 
         const rtnArray: Book_body[] = BGUtility.Book_body_array;
-        BGUtility.Book_body_array = [];
         return rtnArray;
         // return BGUtility.Book_body_array;
     }
@@ -130,16 +138,22 @@ export abstract class BGUtility {
                 if (BGUtility.Stop) {
                     BGUtility.Stop = false;
                     stop = true;
+                    BGUtility.Uploaded_id_obj_array = [];
+                    BGUtility.uploaded_id = [];
                 };
-                if (rejected || stop) {
+                if (stop) {
                     break;
                 };
                 let res = await BGUtility.uploadFileReq((array[i] as book_body_voice).voice).catch(e => {
+                    BGUtility.Uploaded_id_obj_array = [];
+                    BGUtility.uploaded_id = [];
                     rejected = true;
                 });
                 if (BGUtility.Stop) {
                     BGUtility.Stop = false;
                     stop = true;
+                    BGUtility.Uploaded_id_obj_array = [];
+                    BGUtility.uploaded_id = [];
                 };
                 if (rejected || stop) {
                     break;
@@ -160,6 +174,55 @@ export abstract class BGUtility {
         const rtnArray = BGUtility.Uploaded_id_obj_array;
         BGUtility.Uploaded_id_obj_array = [];
         BGUtility.uploaded_id = [];
+        return rtnArray;
+    }
+
+    static async upload_pdf_file_and_save_id(array: Book_body[]): Promise<book_body_pdf[] | []> {
+        let rejected: boolean = false;
+        let stop: boolean = false;
+        for (let i = 0; i < array.length; i++) {
+            let current_id: string = array[i].front_id;
+            // if(!BGUtility.id_exist_checker(current_id)){   to do add condition for don't upload file if uploaded before
+            if (true) {
+                if (BGUtility.Stop) {
+                    BGUtility.Stop = false;
+                    stop = true;
+                    BGUtility.PdfUploaded_id_obj_array = [];
+                    BGUtility.Pdfuploaded_id = [];
+                };
+                if (stop) {
+                    break;
+                };
+                let res = await BGUtility.uploadFileReq((array[i] as book_body_pdf).pdf).catch(e => {
+                    BGUtility.PdfUploaded_id_obj_array = [];
+                    BGUtility.Pdfuploaded_id = [];
+                    rejected = true;
+                });
+                if (BGUtility.Stop) {
+                    BGUtility.Stop = false;
+                    stop = true;
+                    BGUtility.PdfUploaded_id_obj_array = [];
+                    BGUtility.Pdfuploaded_id = [];
+                };
+                if (rejected || stop) {
+                    break;
+                };
+                if (res && res.length) {
+                    let newBody: book_body_pdf = { front_id: current_id, type: 'Pdf', name: (array[i] as book_body_pdf).name, pdf: res[0] }
+                    BGUtility.PdfUploaded_id_obj_array.push(newBody);
+                    BGUtility.Pdfuploaded_id.push(current_id);
+                };
+            }
+        }
+        if (rejected) {
+            return [{ front_id: 'rejected', type: 'Pdf', name: 'rejected', pdf: 'rejected' }];
+        };
+        if (stop) {
+            return [{ front_id: 'stop', type: 'Pdf', name: 'stop', pdf: 'stop' }];
+        };
+        const rtnArray = BGUtility.PdfUploaded_id_obj_array;
+        BGUtility.PdfUploaded_id_obj_array = [];
+        BGUtility.Pdfuploaded_id = [];
         return rtnArray;
     }
 

@@ -9,6 +9,8 @@ export const en = {
     sign_in_bookstore_account: 'sign in with your bookstore account',
     forgot_password: 'forgot password?',
     stop : 'stop',
+    cancel : 'cancel',
+    build : 'build',
     msg: {
         ui: {
             msg1: 'action succeeded',
@@ -21,6 +23,9 @@ export const en = {
             no_network_connection: 'error occurred, please check your network connection and try again',
             new_vesion_available_update: 'new vesion of app is available, you can update it.',
             item_will_be_removed_continue: 'item will be removed continue?',
+            you_stop_uploading_process : 'you stoped the upload process',
+            upload_process_error_msg : 'there is error in upload process',
+            do_you_want_create_this_book_content : 'do you want build this book content ?',
         },
         back: {
             user_already_exists: 'user already exists',

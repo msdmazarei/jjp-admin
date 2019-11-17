@@ -21,6 +21,8 @@ interface ILocalization extends LocalizedStringsMethods {
     sign_in_bookstore_account: string;
     forgot_password: string;
     stop : string;
+    cancel : string;
+    build : string;
     msg: {
         ui: {
             [key: string]: any; // todo
@@ -34,6 +36,9 @@ interface ILocalization extends LocalizedStringsMethods {
             no_network_connection: string;
             new_vesion_available_update: string;
             item_will_be_removed_continue: string;
+            you_stop_uploading_process : string;
+            upload_process_error_msg : string;
+            do_you_want_create_this_book_content : string;
         },
         back: {
             [key: string]: any; // todo

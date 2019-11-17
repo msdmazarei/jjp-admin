@@ -9,6 +9,8 @@ export const fa = {
     sign_in_bookstore_account: 'با حساب فروشگاه کتاب خود داخل شوید',
     forgot_password: 'رمز عبورتان را فراموش کردید؟',
     stop : 'توقف',
+    cancel : 'انصراف',
+    build : 'ساختن',
     msg: {
         ui: {
             msg1: 'عملیات با موفقیت انجام شد.',
@@ -21,6 +23,9 @@ export const fa = {
             no_network_connection: 'خطا رخ داد، لطفا دسترسی اینترنت خود را بررسی کرده و مجددا تلاش کنید.',
             new_vesion_available_update: 'نسخه جدیدی از برنامه موجود است، می توانید آن را بروز کنید.',
             item_will_be_removed_continue: 'رکورد مورد نظر حذف خواهد شد، تایید می کنید؟',
+            you_stop_uploading_process : 'شما عملیات بارگذاری را متوقف کرده اید!',
+            upload_process_error_msg : 'عملیات بارگذاری با خطا مواجه گردید',
+            do_you_want_create_this_book_content : 'آیا می خواهید محتوای این کتاب ساخته شود؟',
         },
         back: {
             user_already_exists: 'کاربر از قبل وجود دارد.',

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { History } from 'history';
 import { BaseComponent } from '../../../_base/BaseComponent';
 import { TInternationalization } from '../../../../config/setup';
@@ -180,16 +180,6 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
         }, () => this.passBodyObjToProps())
     }
 
-    // private setTimeout_person_val: any;
-    // debounce_300(inputValue: any , isValid: boolean) {
-    //     if (this.setTimeout_person_val) {
-    //         clearTimeout(this.setTimeout_person_val);
-    //     };
-    //     this.setTimeout_person_val = setTimeout(() => {
-    //         this.onTextChange(inputValue, isValid);
-    //     }, 300);
-    // }
-
     onTextChange(value: any, isValid: boolean) {
         this.text = value;
         this.control = this.controlsOption[0];
@@ -210,13 +200,6 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     onDropRejectedNotify(files: any[]) {
         toast.warn(Localization.validation_msg.file_can_not_added, this.getNotifyConfig());
-    }
-
-    tmpUrl_list: string[] = [];
-    getTmpUrl(file: any): string {
-        const tmUrl = URL.createObjectURL(file);
-        this.tmpUrl_list.push(tmUrl);
-        return tmUrl;
     }
 
     removeItemFromDZ() {
@@ -248,7 +231,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                 <a rel="noopener noreferrer" target='_blank' href={"/api/serve-files/" + this.state.voice}>
                     <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
                     <span className="text-info mx-3">{this.state.name}</span>
-                    </a>
+                </a>
                 <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-2" onClick={() => this.removeItemFromDZ()}>&times;</button>
             </div>
         }
@@ -268,32 +251,30 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                 <p className="img-container text-center text-muted p-3">{Localization.DRAG_AND_DROP}</p>
                             </div>
                             <aside>
-                                <h5 className="m-2">{Localization.preview}:</h5>
-                                <div className="image-wrapper mb-2">{
-                                    (this.state.voice || []).map((file: any, index) => {
-                                        let tmUrl = '';
-                                        let fileName = '';
-                                        let fileSize = '';
-                                        if (typeof file === "string") {
-                                            // fileName = file;
-                                            tmUrl = '/api/serve-files/' + file;
-                                        } else {
-                                            fileName = file.name;
-                                            fileSize = '- ' + parseFloat((file.size / 1024).toFixed(2)) + ' KB';
-                                            tmUrl = this.getTmpUrl(file);
-                                        }
-                                        return <Fragment key={index}>
-                                            <div className="img-item m-2">
-                                                {
-                                                    (this.state.voice) ? <img className="w-50px h-50px profile-img-rounded" alt="" src={this.audioLogo} /> : <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
-                                                }
-                                                {/* <img className="w-50px h-50px profile-img-rounded" src={tmUrl} alt=""/> */}
-                                                <span className="mx-2 text-dark">{fileName} {fileSize}</span>
-                                                <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ()}>&times;</button>
+                                {
+                                    this.state.voice.length === 0
+                                        ?
+                                        undefined
+                                        :
+                                        <>
+                                            <h5 className="m-2">{Localization.preview}:</h5>
+                                            <div className="image-wrapper mb-2">
+                                                <div className="img-item m-2">
+                                                    {
+                                                        (this.state.voice) ? <img className="w-50px h-50px profile-img-rounded" alt="" src={this.audioLogo} /> : <img className="w-50px h-50px profile-img-rounded" src={this.audioLogo} alt="" />
+                                                    }
+                                                    {
+                                                        this.state.voice.length === 0
+                                                            ?
+                                                            undefined
+                                                            :
+                                                            <span className="mx-2 text-dark">{this.state.name ? this.state.name : ""} {(this.voice[0].size && typeof this.voice[0].size === "number") ? '- ' + parseFloat((this.voice[0].size / 1024).toFixed(2)) + ' KB' : 'Unknown size'}</span>
+                                                    }
+                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ()}>&times;</button>
+                                                </div>
                                             </div>
-                                        </Fragment>
-                                    })
-                                }</div>
+                                        </>
+                                }
                             </aside>
                         </section>
                     ))

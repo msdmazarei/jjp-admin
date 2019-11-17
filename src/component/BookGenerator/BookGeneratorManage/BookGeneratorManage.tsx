@@ -44,12 +44,14 @@ interface IState {
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
+  generateModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   filter: IFilterCntent,
   setRemoveLoader: boolean;
+  setGenerateLoader: boolean;
   tags_inputValue: string;
 }
 
@@ -200,6 +202,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
     removeModalShow: false,
+    generateModalShow: false,
     filter: {
       title: {
         value: undefined,
@@ -211,10 +214,12 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       }
     },
     setRemoveLoader: false,
+    setGenerateLoader: false,
     tags_inputValue: '',
   }
 
   selectedContent: any | undefined;
+  selectedContentGenerate: any | undefined;
   private _bookContentService = new BookGeneratorService();
 
   checkAllAccess(): boolean {
@@ -269,10 +274,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
   }
 
-  getGenerateRow(book_generator_id: any) {
-
-  }
-
   // timestamp to date 
 
   getTimestampToDate(timestamp: number) {
@@ -314,7 +315,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     };
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._bookContentService.remove(content_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveContent_error' }});
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveContent_error' } });
       this.setState({ ...this.state, setRemoveLoader: false });
     });
     if (res) {
@@ -362,6 +363,79 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
               loading={this.state.setRemoveLoader}
             >
               {Localization.remove}
+            </BtnLoader>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+  // generate modal function define
+
+  getGenerateRow(content: any) {
+    if (this.checkDeleteToolAccess() === false) {
+      return;
+    }
+    this.selectedContentGenerate = content;
+    this.setState({ ...this.state, generateModalShow: true });
+  }
+
+  onHideGenerateModal() {
+    this.selectedContentGenerate = undefined;
+    this.setState({ ...this.state, generateModalShow: false });
+  }
+
+  async onGenerateContent(content_id: string) {
+    this.setState({ ...this.state, setGenerateLoader: true });
+    let res = await this._bookContentService.bookBuild(content_id).catch(error => {
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onGenerateContent_error' } });
+      this.setState({ ...this.state, setGenerateLoader: false });
+    });
+    if (res) {
+      this.setState({ ...this.state, setGenerateLoader: false });
+      this.apiSuccessNotify();
+      this.fetchBooksContent();
+      this.onHideGenerateModal();
+    }
+  }
+
+  render_generate_modal(selectedContentGenerate: any) {
+    if (!this.selectedContentGenerate || !this.selectedContentGenerate.id) return;
+    return (
+      <>
+        <Modal show={this.state.generateModalShow} onHide={() => this.onHideGenerateModal()}>
+          <Modal.Body>
+            <p className="delete-modal-content text-center text-success">
+              {Localization.create + " " + Localization.content}
+            </p>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.title}:&nbsp;
+              </span>
+              {(this.selectedContentGenerate.book as IBook).title}
+            </p>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.type + " " + Localization.book}:&nbsp;
+              </span>
+              {Localization.book_type_list[((this.selectedContentGenerate.book as IBook).type as BOOK_TYPES)]}
+            </p>
+            <p className="delete-modal-content">
+              <span className="text-muted">
+                {Localization.type + " " + Localization.content}:&nbsp;
+              </span>
+              {Localization[this.selectedContentGenerate.type]}
+            </p>
+            <p className="text-success">{Localization.msg.ui.do_you_want_create_this_book_content}</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideGenerateModal()}>{Localization.close}</button>
+            <BtnLoader
+              btnClassName="btn btn-success shadow-default shadow-hover"
+              onClick={() => this.onGenerateContent(selectedContentGenerate.id)}
+              loading={this.state.setGenerateLoader}
+            >
+              {Localization.build}
             </BtnLoader>
           </Modal.Footer>
         </Modal>
@@ -728,6 +802,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedContent)}
+        {this.render_generate_modal(this.selectedContentGenerate)}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

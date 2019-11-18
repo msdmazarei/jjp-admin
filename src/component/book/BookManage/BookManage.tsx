@@ -126,11 +126,10 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           cellTemplateFunc: (row: IBook) => {
             // row.price = 3436465;
             if (row.price) {
-              return <span className="text-info">
-                {row.price.toLocaleString()}
-              </span>
-            }
-            else {
+              return <div className="text-info text-center">{row.price.toLocaleString()}</div>
+            }else if (row.price === 0){
+              return <div className="text-muted text-center">0</div>;
+            }else {
               return <div className="text-muted text-center">-</div>;
             }
           }

@@ -128,9 +128,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>
             }else if (row.price === 0){
-              return <div className="text-muted text-center">0</div>;
+              return <div className="text-info text-center">0</div>;
             }else {
-              return <div className="text-muted text-center">-</div>;
+              return <div className="text-danger text-center">---</div>;
             }
           }
         },

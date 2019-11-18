@@ -410,25 +410,25 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               <p>
                 {this.selectedOrderList !== undefined
                   ?
-                  <>
-                    <table className="table table-dark table-hover table-borderless">
-                      <thead>
-                        <tr>
-                          <th scope="col">{Localization.title}</th>
-                          <th scope="col">{Localization.count}</th>
-                          <th scope="col">{Localization.price}</th>
-                          <th scope="col">{Localization.total_price}</th>
+                  <div className="white-content">
+                    <table className="table table-hover table-sm table-bordered bg-white text-dark">
+                      <thead className="thead-light">
+                        <tr className="table-light">
+                          <th className="font-weight-bold" scope="col">{Localization.title}</th>
+                          <th className="font-weight-bold" scope="col">{Localization.count}</th>
+                          <th className="font-weight-bold" scope="col">{Localization.price}</th>
+                          <th className="font-weight-bold" scope="col">{Localization.total_price}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {this.selectedOrderList.items.map((item, index) => (
                           <Fragment key={index}>
                             {
-                              <tr className="table-dark">
-                                <td className="table-dark text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
-                                <td className="table-dark">{item.count}</td>
-                                <td className="table-dark">{item.book.price}</td>
-                                <td className="table-dark">{item.book.price! * item.count}</td>
+                              <tr>
+                                <td className="text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
+                                <td className="">{item.count}</td>
+                                <td className="">{item.book.price}</td>
+                                <td className="">{item.book.price! * item.count}</td>
                               </tr>
                             }
                           </Fragment>
@@ -439,7 +439,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                       {Localization.Total_purchase}:&nbsp;
                       <span>{this.selectedOrderList.total_price}</span>
                     </p>
-                  </>
+                  </div>
                   :
                   ""
                 }
@@ -553,25 +553,25 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               <p>
                 {this.selectedOrderList !== undefined
                   ?
-                  <>
-                    <table className="table table-dark table-hover table-borderless">
-                      <thead>
-                        <tr>
-                          <th scope="col">{Localization.title}</th>
-                          <th scope="col">{Localization.count}</th>
-                          <th scope="col">{Localization.price}</th>
-                          <th scope="col">{Localization.total_price}</th>
+                  <div className="white-content">
+                    <table className="table table-hover table-sm table-bordered bg-white text-dark">
+                      <thead className="thead-light">
+                        <tr className="thead-light">
+                          <th className="font-weight-bold" scope="col">{Localization.title}</th>
+                          <th className="font-weight-bold" scope="col">{Localization.count}</th>
+                          <th className="font-weight-bold" scope="col">{Localization.price}</th>
+                          <th className="font-weight-bold" scope="col">{Localization.total_price}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {this.selectedOrderList.items.map((item, index) => (
                           <Fragment key={index}>
                             {
-                              <tr className="table-dark">
-                                <td className="table-dark text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
-                                <td className="table-dark">{item.count}</td>
-                                <td className="table-dark">{item.book.price}</td>
-                                <td className="table-dark">{item.book.price! * item.count}</td>
+                              <tr>
+                                <td className="text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
+                                <td className="">{item.count}</td>
+                                <td className="">{item.book.price}</td>
+                                <td className="">{item.book.price! * item.count}</td>
                               </tr>
                             }
                           </Fragment>
@@ -582,7 +582,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                       {Localization.Total_purchase}:&nbsp;
                       <span>{this.selectedOrderList.total_price}</span>
                     </p>
-                  </>
+                  </div>
                   :
                   ""
                 }

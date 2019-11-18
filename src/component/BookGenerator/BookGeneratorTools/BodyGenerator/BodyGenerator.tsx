@@ -93,7 +93,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addContent() {
         const newId: string = AppGuid.generate();
-        let newContent: { type: string, text: string, front_id: string } = { type: 'text', text: '', front_id: newId };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Epub' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.push(newContent);
         this.setState({
             ...this.state,
@@ -106,7 +106,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         if (Obj === null) return;
         let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
-        let newContent: { type: string, text: string, front_id: string } = { type: 'text', text: '', front_id: newId };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Epub' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.splice(index, 0, newContent);
         this.setState({
             ...this.state,
@@ -119,7 +119,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         if (Obj === null) return;
         let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
-        let newContent: { type: string, text: string, front_id: string } = { type: 'text', text: '', front_id: newId };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Epub' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.splice((index + 1), 0, newContent);
         this.setState({
             ...this.state,

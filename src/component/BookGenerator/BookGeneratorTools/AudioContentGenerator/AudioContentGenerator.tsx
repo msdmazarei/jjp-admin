@@ -42,8 +42,8 @@ interface IState {
 class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     typesOption = [
-        { value: 'text', label: Localization.text },
-        { value: 'control', label: Localization.control },
+        // { value: 'text', label: Localization.text },
+        // { value: 'control', label: Localization.control },
         { value: 'voice', label: Localization.voice },
     ];
 
@@ -240,7 +240,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                 multiple={false}
                 onDrop={(files) => this.onDropVoice(files)}
                 // maxSize={5000000}
-                // accept="mp3/*"
+                accept="audio/mp3"
                 onDropRejected={(files, event) => this.onDropRejected(files, event)}
             >
                 {

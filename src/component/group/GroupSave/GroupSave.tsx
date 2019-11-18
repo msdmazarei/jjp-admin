@@ -14,6 +14,7 @@ import { GroupService } from '../../../service/service.group';
 import { IPerson } from '../../../model/model.person';
 import { PersonService } from '../../../service/service.person';
 import AsyncSelect from 'react-select/async';
+import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -44,6 +45,7 @@ interface IState {
     createLoader: boolean;
     updateLoader: boolean;
     saveBtnVisibility: boolean;
+    quickPersonModalStatus: boolean;
 }
 
 interface IProps {
@@ -77,6 +79,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
         createLoader: false,
         updateLoader: false,
         saveBtnVisibility: false,
+        quickPersonModalStatus: false,
     }
 
     private _groupService = new GroupService();
@@ -110,7 +113,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
         let groupobj: {};
 
-        this.state.person.value === undefined
+        this.state.group.person_id.value === undefined
             ?
             groupobj = {
                 title: this.state.group.groupname.value,
@@ -175,17 +178,17 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                 group: {
                     ...this.state.group,
                     groupname: { ...this.state.group.groupname, value: res.data.title, isValid: true },
-                    person_id : {...this.state.group.person_id , value: res.data.person_id === null ? undefined : res.data.person_id , isValid:true },
+                    person_id: { ...this.state.group.person_id, value: res.data.person_id === null ? undefined : res.data.person_id, isValid: true },
                 },
                 saveBtnVisibility: true
             }, () => this.group_person_seter_handler(this.state.group.person_id.value))
         }
     }
 
-    group_person_seter_handler(person_id: string | undefined){
-        if(person_id === undefined){
+    group_person_seter_handler(person_id: string | undefined) {
+        if (person_id === undefined) {
             return;
-        }else{
+        } else {
             this.fetchGroupPersonById(person_id);
         }
     }
@@ -193,19 +196,19 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     async fetchGroupPersonById(person_id: string) {
 
         let res = await this._personService.byId(person_id).catch(error => {
-            this.handleError({ error: error.response , toastOptions: { toastId: 'fetchGroupPersonById_error' }});
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroupPersonById_error' } });
         });
 
         if (res) {
             this.setState({
                 ...this.state,
-                person:{
-                  ...this.state,
-                  value:{
-                      ...this.state,
-                      label: this.getPersonFullName(res.data),
-                      value:res.data,
-                  }
+                person: {
+                    ...this.state,
+                    value: {
+                        ...this.state,
+                        label: this.getPersonFullName(res.data),
+                        value: res.data,
+                    }
                 }
             })
         }
@@ -216,13 +219,13 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             group: {
                 ...this.state.group,
-                groupname:{
-                    value:value,
-                    isValid:isValid,
+                groupname: {
+                    value: value,
+                    isValid: isValid,
                 },
-                person_id:{
+                person_id: {
                     ...this.state.group.person_id,
-                    isValid:true,
+                    isValid: true,
                 }
             }
             , isFormValid: this.checkFormValidate(isValid, "groupname")
@@ -235,7 +238,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state, group: {
                 ...this.state.group, person_id: {
-                    value: newperson.value.id,
+                    value: selectedPerson.value.id,
                     isValid: isValid,
                 }
             },
@@ -287,7 +290,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
             filter = { person: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false , toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' }});
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
             this.personRequstError_txt = err_msg.body;
         });
 
@@ -319,6 +322,52 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
     /////////////////////////////////////
 
+
+    ////////   start crate quick person  //////////
+
+    quickpersonOpen() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: true,
+        })
+
+    }
+
+    quickpersonClose() {
+        this.setState({
+            ...this.state,
+            quickPersonModalStatus: false,
+        })
+    }
+
+    seterPerson(person: IPerson) {
+        const createdPerson:
+            { label: string, value: IPerson } =
+        {
+            label: person.cell_no ? (this.getPersonFullName(person) + " - " + person.cell_no) : this.getPersonFullName(person),
+            value: person
+        }
+        let newperson = createdPerson;
+        let isValid = true;      // newperson = selectedPerson;
+        this.setState({
+            ...this.state, group: {
+                ...this.state.group, person_id: {
+                    value: person.id,
+                    isValid: isValid,
+                }
+            },
+            person: {
+                ...this.state.person,
+                value: newperson,
+                // isValid:true,
+            },
+            isFormValid: this.checkFormValidate(isValid, 'person_id')
+        })
+    }
+
+    ////////   end crate quick person  //////////
+
+
     ////// render ////////
     render() {
         return (
@@ -348,8 +397,12 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                         />
                                     </div>
                                     <div className="col-md-3 col-sm-6">
-                                        {/* <label >{Localization.person}{<span className="text-danger">*</span>}</label> */}
                                         <label >{Localization.person}</label>
+                                        <i
+                                            title={Localization.Quick_person_creation}
+                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                            onClick={() => this.quickpersonOpen()}
+                                        ></i>
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
@@ -417,6 +470,14 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
                 <ToastContainer {...this.getNotifyContainerConfig()} />
+                {
+                    <QuickPerson
+                        data = {0}
+                        onCreate={(person: IPerson, index: number) => this.seterPerson(person)}
+                        modalShow={this.state.quickPersonModalStatus}
+                        onHide={() => this.quickpersonClose()}
+                    ></QuickPerson>
+                }
             </>
         )
     }

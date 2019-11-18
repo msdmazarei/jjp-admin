@@ -44,7 +44,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                         </div>
                     </div>
 
-                    <table className="table table-striped table-bordered table-hover table-sm table-bordered bg-white mb-0">
+                    <table className="table table-striped table-hover table-sm table-bordered bg-white mb-0">
                         <thead className="thead-light">
                             <tr className="table-light">
                                 {(this.props.colHeaders).map((h, index) => (

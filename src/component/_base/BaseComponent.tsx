@@ -10,6 +10,7 @@ import 'moment/locale/ar';
 import { Utility } from '../../asset/script/utility';
 import { IPerson } from '../../model/model.person';
 import { CmpUtility } from './CmpUtility';
+import { History } from 'history';
 
 interface IHandleError {
     error?: any;
@@ -229,5 +230,17 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         name = name ? name + ' ' : '';
         return (name + last_name).trim();
     }
+
+    noAccessRedirect(history: History, redirectUrl: string = '/dashboard', notify: boolean = true) {
+        if (notify) {
+            setTimeout(() => { this.noAccessNotify(); }, 100);
+        }
+        history.push(redirectUrl); // replace
+    }
+
+    noAccessNotify() {
+        toast.warn('Localization.msg.ui.msg', this.getNotifyConfig({ autoClose: Setup.notify.timeout.warning }));
+    }
+
 
 }

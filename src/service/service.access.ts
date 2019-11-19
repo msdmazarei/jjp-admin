@@ -1,6 +1,7 @@
 import { BaseService } from './service.base';
 import { Store2 } from '../redux/store';
 
+
 export class AccessService extends BaseService {
 
     static checkAccess(ac: string): boolean {

@@ -127,9 +127,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             // row.price = 3436465;
             if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>
-            }else if (row.price === 0){
+            } else if (row.price === 0) {
               return <div className="text-info text-center">0</div>;
-            }else {
+            } else {
               return <div className="text-danger text-center">---</div>;
             }
           }
@@ -168,11 +168,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               if (row.duration === 'NaN') {
                 return ''
               }
-              if (row.type !== 'Audio'){
+              if (row.type !== 'Audio') {
                 return ''
               }
               let totalTime = Number(row.duration);
-              if(totalTime === 0){
+              if (totalTime === 0) {
                 return ''
               }
               if (totalTime < 60) {
@@ -222,26 +222,26 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
       actions: this.checkAllAccess() ? [
         {
-          access : (row : any) => {return this.checkDeleteToolAccess()},
+          access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access : (row : any) => {return this.checkUpdateToolAccess()},
+          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access : (row : any) => {return this.checkPriceAddToolAccess()},
+          access: (row: any) => { return this.checkPriceAddToolAccess() },
           text: <i title={Localization.Pricing} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.onShowPriceModal(row) },
           name: Localization.Pricing
         },
       ]
-      :
-      undefined
+        :
+        undefined
     },
     BookError: undefined,
     pager_offset: 0,
@@ -275,31 +275,32 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   private _bookService = new BookService();
   private _priceService = new PriceService();
 
-  checkAllAccess():boolean{
-    if(AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM','BOOK_EDIT_PREMIUM','PRICE_ADD_PREMIUM'])
-    || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS','BOOK_EDIT_PRESS','PRICE_ADD_PRESS'])
-    ){
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_ADD_PREMIUM'])
+      || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS', 'BOOK_EDIT_PRESS', 'PRICE_ADD_PRESS'])
+    ) {
       return true;
     }
     return false;
   }
 
-  checkDeleteToolAccess():boolean{
-    if(AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')){
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')) {
       return true;
     }
     return false
   }
 
-  checkUpdateToolAccess():boolean{
-    if(AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')){
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
       return true;
     }
     return false
   }
 
-  checkPriceAddToolAccess():boolean{
-    if(AccessService.checkAccess('PRICE_ADD_PREMIUM') || AccessService.checkAccess('PRICE_ADD_PRESS')){
+  checkPriceAddToolAccess(): boolean {
+    if (AccessService.checkAccess('PRICE_ADD_PREMIUM') || AccessService.checkAccess('PRICE_ADD_PRESS')) {
       return true;
     }
     return false
@@ -321,7 +322,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(book_id: any) {
-    if(this.checkUpdateToolAccess() === false){
+    if (this.checkUpdateToolAccess() === false) {
       return;
     }
     this.props.history.push(`/book/${book_id.id}/edit`);
@@ -350,7 +351,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(book: IBook) {
-    if(this.checkDeleteToolAccess() === false ){
+    if (this.checkDeleteToolAccess() === false) {
       return;
     }
     this.selectedBook = book;
@@ -363,7 +364,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveBook(book_id: string) {
-    if(this.checkDeleteToolAccess() === false ){
+    if (this.checkDeleteToolAccess() === false) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -409,7 +410,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   onShowPriceModal(book: IBook) {
-    if(this.checkPriceAddToolAccess() === false){
+    if (this.checkPriceAddToolAccess() === false) {
       return;
     }
     this.selectedBook = book;
@@ -425,7 +426,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.setState({ ...this.state, priceModalShow: false });
   }
   async onPriceBook(book_id: string) {
-    if(this.checkPriceAddToolAccess() === false){
+    if (this.checkPriceAddToolAccess() === false) {
       return;
     };
     if (!this.state.price.isValid) return;
@@ -628,7 +629,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookCreate() {
-    if(AccessService.checkAccess('BOOK_ADD_PREMIUM')===false && AccessService.checkAccess('BOOK_ADD_PRESS')===false){
+    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_ADD_PRESS') === false) {
       return;
     };
     this.props.history.push('/book/create'); // /admin
@@ -764,12 +765,12 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          {
-            AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')
-              ?
-              <div className="row">
-                <div className="col-12">
-                  <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
+          <div className="row">
+            <div className="col-12">
+              <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
+              {
+                AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM','BOOK_ADD_PRESS'])
+                  ?
                   <BtnLoader
                     loading={false}
                     disabled={false}
@@ -778,11 +779,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                   >
                     {Localization.new}
                   </BtnLoader>
-                </div>
-              </div>
-              :
-              undefined
-          }
+                  :
+                  undefined
+              }
+            </div>
+          </div>
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">

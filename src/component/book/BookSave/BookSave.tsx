@@ -247,6 +247,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     private _personService = new PersonService();
     private book_id: string | undefined;
 
+
     checkBookAddAccess(): boolean {
         if (AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')) {
             return true;
@@ -261,17 +262,25 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         return false
     }
 
+
     componentDidMount() {
         // this._bookService.setToken(this.props.token);
         // this._uploadService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/book/:book_id/edit')) {
-            // this.saveMode = "edit";
-            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.book_id = this.props.match.params.book_id;
-            this.fetchBookById(this.props.match.params.book_id);
+            if(this.checkBookUpdateAccess()){
+                // this.saveMode = "edit";
+                this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+                this.book_id = this.props.match.params.book_id;
+                this.fetchBookById(this.props.match.params.book_id);
+            }else{
+                this.noAccessRedirect(this.props.history);
+            }
+        }else{
+            if(!this.checkBookAddAccess()){
+                this.noAccessRedirect(this.props.history);
+            }
         }
-
 
         // setTimeout(() => {
         //     this.setState({ book: { ...this.state.book, pub_year: { value: 1571134116617, isValid: true } } })

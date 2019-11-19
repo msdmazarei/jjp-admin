@@ -28,11 +28,11 @@ export class BookGeneratorService extends BaseService {
         return this.axiosTokenInstance.delete(`/book-contents/${contentId}`);
     }
 
-    bookBuild(contentId : string){
+    bookBuild(contentId : string): Promise<IAPI_Response<{inquiry_id : string}>>{
         return this.axiosTokenInstance.post(`/generate-book`,{contentId});
     }
 
-    getbookBuildStatus(inquiry_id : string){
+    getbookBuildStatus(inquiry_id : string): Promise<IAPI_Response<{inquiry_result : string}>>{
         return this.axiosTokenInstance.get(`/generate-book/${inquiry_id}`);
     }
 

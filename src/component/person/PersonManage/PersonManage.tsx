@@ -152,22 +152,22 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ?  [
+      actions: this.checkAllAccess() ? [
         {
-          access : (row : any) => {return this.checkDeleteToolAccess()},
+          access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access : (row : any) => {return this.checkUpdateToolAccess()},
+          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
       ]
-      :
-      undefined
+        :
+        undefined
     },
     filter: {
       person: {
@@ -194,22 +194,41 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
   }
 
-  checkAllAccess():boolean{
-    if(AccessService.checkOneOFAllAccess(['PERSON_DELETE_PREMIUM','PERSON_EDIT_PREMIUM'])){
+  componentDidMount() {
+    if(this.checkTableAccess() === true){
+      this.setState({
+        ...this.state,
+        tableProcessLoader: true
+      })
+      this.fetchPersons();
+    }else{
+      this.noAccessRedirect(this.props.history);
+    }
+  }
+  
+  checkTableAccess(): boolean {
+    if (AccessService.checkAccess('PERSON_GET_PREMIUM')) {
       return true;
     }
     return false;
   }
 
-  checkDeleteToolAccess():boolean{
-    if(AccessService.checkAccess('PERSON_DELETE_PREMIUM')){
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['PERSON_DELETE_PREMIUM', 'PERSON_EDIT_PREMIUM'])) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('PERSON_DELETE_PREMIUM')) {
       return true;
     }
     return false
   }
 
-  checkUpdateToolAccess():boolean{
-    if(AccessService.checkAccess('PERSON_EDIT_PREMIUM')){
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('PERSON_EDIT_PREMIUM')) {
       return true;
     }
     return false
@@ -225,7 +244,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   updateRow(person_id: any) {
-    if(!AccessService.checkAccess('PERSON_EDIT_PREMIUM')){
+    if (!AccessService.checkAccess('PERSON_EDIT_PREMIUM')) {
       return;
     }
     this.props.history.push(`/person/${person_id.id}/edit`);
@@ -256,7 +275,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   /////// delete modal function define ////////
 
   onShowRemoveModal(person: IPerson) {
-    if(!AccessService.checkAccess('PERSON_DELETE_PREMIUM')){
+    if (!AccessService.checkAccess('PERSON_DELETE_PREMIUM')) {
       return;
     };
     this.selectedPerson = person;
@@ -270,7 +289,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemovePerson(person_id: string) {
-    if(!AccessService.checkAccess('PERSON_DELETE_PREMIUM')){
+    if (!AccessService.checkAccess('PERSON_DELETE_PREMIUM')) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -318,14 +337,6 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
 
   // define axios for give data
-
-  componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    this.fetchPersons();
-  }
 
   async fetchPersons() {
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -466,7 +477,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   //// navigation function //////
 
   gotoPersonCreate() {
-    if(!AccessService.checkAccess('PERSON_ADD_PREMIUM')){
+    if (!AccessService.checkAccess('PERSON_ADD_PREMIUM')) {
       return;
     };
     this.props.history.push('/person/create');
@@ -545,12 +556,12 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          {
-            AccessService.checkAccess('PERSON_ADD_PREMIUM')
-              ?
-              <div className="row">
-                <div className="col-12">
-                  <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
+          <div className="row">
+            <div className="col-12">
+              <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
+              {
+                AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                  ?
                   <BtnLoader
                     loading={false}
                     disabled={false}
@@ -559,11 +570,11 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                   >
                     {Localization.new}
                   </BtnLoader>
-                </div>
-              </div>
-              :
-              undefined
-          }
+                  :
+                  undefined
+              }
+            </div>
+          </div>
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">

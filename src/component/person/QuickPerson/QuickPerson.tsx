@@ -114,9 +114,9 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
     //     // }
 
     // }
-    
-    componentWillReceiveProps(){
-        if(this.props.modalShow === false){
+
+    componentWillReceiveProps() {
+        if (this.props.modalShow === false) {
             this.resetForm();
         }
     }
@@ -129,7 +129,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
 
 
     async quickAddPerson() {
-        if(!AccessService.checkAccess('PERSON_ADD_PREMIUM'))return;
+        if (!AccessService.checkAccess('PERSON_ADD_PREMIUM')) return;
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, quickPersonAddBtnLoader: true, });
         let imgUrls = await this.uploadFileReq().catch(error => {
@@ -141,7 +141,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         }
         const newPerson = {
             name: this.state.person.name.value,
-            last_name: this.state.is_legal === true ? '':   this.state.person.last_name.value,
+            last_name: this.state.is_legal === true ? '' : this.state.person.last_name.value,
             address: this.state.person.address.value,
             phone: this.state.person.phone.value,
             image: imgUrls[0],
@@ -155,7 +155,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
 
         this.setState({
             ...this.state,
-            quickPersonAddBtnLoader: false, 
+            quickPersonAddBtnLoader: false,
         });
 
         if (res) {
@@ -188,22 +188,22 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    is_legalChangeFalseOnHide(){
+    is_legalChangeFalseOnHide() {
         this.setState({
             ...this.state,
-            person:{
+            person: {
                 ...this.state.person,
-                last_name:{
+                last_name: {
                     ...this.state.person.last_name,
-                    isValid:false,
+                    isValid: false,
                 }
             },
-            is_legal:false,
+            is_legal: false,
         });
         this.props.onHide();
     }
 
-    is_legalChangeFalseOnHideBtn(){
+    is_legalChangeFalseOnHideBtn() {
         this.setState({
             ...this.state,
             person: {
@@ -215,7 +215,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                 cell_no: { value: undefined, isValid: true },
                 image: { value: [], isValid: true },
             },
-            is_legal:false,
+            is_legal: false,
             isFormValid: false,
         })
         this.props.onHide();
@@ -469,14 +469,20 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                     </Modal.Body>
                     <Modal.Footer>
                         <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.is_legalChangeFalseOnHideBtn()}>{Localization.close}</button>
-                        <BtnLoader
-                            loading={this.state.quickPersonAddBtnLoader}
-                            btnClassName="btn btn-system shadow-default shadow-hover"
-                            onClick={() => this.quickAddPerson()}
-                            disabled={!this.state.isFormValid}
-                        >
-                            {Localization.create}
-                        </BtnLoader>
+                        {
+                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                ?
+                                <BtnLoader
+                                    loading={this.state.quickPersonAddBtnLoader}
+                                    btnClassName="btn btn-system shadow-default shadow-hover"
+                                    onClick={() => this.quickAddPerson()}
+                                    disabled={!this.state.isFormValid}
+                                >
+                                    {Localization.create}
+                                </BtnLoader>
+                                :
+                                undefined
+                        }
                     </Modal.Footer>
                 </Modal>
             </>

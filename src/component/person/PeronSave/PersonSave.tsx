@@ -119,9 +119,17 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         // this._uploadService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/person/:person_id/edit')) {
-            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.person_id = this.props.match.params.person_id;
-            this.fetchPersonById(this.props.match.params.person_id);
+            if(AccessService.checkAccess('PERSON_EDIT_PREMIUM')){
+                this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+                this.person_id = this.props.match.params.person_id;
+                this.fetchPersonById(this.props.match.params.person_id);
+            }else{
+                this.noAccessRedirect(this.props.history);
+            }
+        }else{
+            if(!AccessService.checkAccess('PERSON_ADD_PREMIUM')){
+                this.noAccessRedirect(this.props.history);
+            }
         }
     }
 

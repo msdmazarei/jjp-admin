@@ -43,6 +43,15 @@ class Sidebar extends React.Component<any,any> {
     //   ps.destroy();
     // }
   }
+
+  checkBookAddIconAccess():boolean{
+    if(AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM','BOOK_ADD_PRESS'])
+    ){
+      return true;
+    }
+    return false;
+  }
+
   linkOnClick = () => {
     document.documentElement.classList.remove("nav-open");
   };
@@ -113,7 +122,7 @@ class Sidebar extends React.Component<any,any> {
             {routes.map((prop:any, key:number) => {
               if (prop.redirect) return null;
               if (!prop.isitem) return null;
-              if (prop.name === Localization.create_book && AccessService.checkBookCreateIcon()=== false) return null; // for book create access
+              if (prop.name === Localization.create_book && this.checkBookAddIconAccess() === false) return null; // for book create access
               return ( 
                 <li
                   className={

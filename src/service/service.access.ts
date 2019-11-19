@@ -35,13 +35,4 @@ export class AccessService extends BaseService {
         return valid;
     }
     
-    static checkBookCreateIcon():boolean{
-        const user = Store2.getState().logged_in_user;
-        if (!user) return false;
-        if (user.permissions.includes('BOOK_ADD_PREMIUM') || user.permissions.includes('BOOK_ADD_PRESS')){
-            return true;
-        }else{
-            return false;
-        }
-    }
 }

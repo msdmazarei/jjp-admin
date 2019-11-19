@@ -172,6 +172,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                 return ''
               }
               let totalTime = Number(row.duration);
+              if(totalTime === 0){
+                return ''
+              }
               if (totalTime < 60) {
                 hour = 0;
                 minute = 0;

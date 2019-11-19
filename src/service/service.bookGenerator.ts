@@ -31,4 +31,9 @@ export class BookGeneratorService extends BaseService {
     bookBuild(contentId : string){
         return this.axiosTokenInstance.post(`/generate-book`,{contentId});
     }
+
+    getbookBuildStatus(inquiry_id : string){
+        return this.axiosTokenInstance.get(`/generate-book/${inquiry_id}`);
+    }
+
 }

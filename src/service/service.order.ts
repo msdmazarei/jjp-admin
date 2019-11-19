@@ -14,8 +14,8 @@ export class OrderService extends BaseService {
         return this.axiosTokenInstance.post(`/orders/_search`, { limit, skip, filter });
     }
 
-    remove(bookId: string) {
-        return this.axiosTokenInstance.delete(`/orders/${bookId}`);
+    remove(order_id: string) {
+        return this.axiosTokenInstance.delete(`/orders/${order_id}`);
     }
 
 

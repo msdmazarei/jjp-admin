@@ -235,7 +235,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                             <FixNumber
                                 disabled={this.props.disable ? true : false}
                                 placeholder={this.props.secondPlaceholder ? this.props.secondPlaceholder : ""}
-                                defaultValue={this.state.s}
+                                defaultValue={this.state.s === 0 ? '' : this.state.s}
                                 onChange={(value) => this.onSecondChange(value)}
                                 pattern={AppRegex.number}
                                 patternError={Localization.validation_msg.Just_enter_the_numeric_value}
@@ -248,7 +248,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                             <FixNumber
                                 disabled={this.props.disable ? true : false}
                                 placeholder={this.props.minutePlaceholder ? this.props.minutePlaceholder : ""}
-                                defaultValue={this.state.m}
+                                defaultValue={this.state.m === 0 ? '' : this.state.m}
                                 onChange={(value) => this.onMinuteChange(value)}
                                 pattern={AppRegex.number}
                                 patternError={Localization.validation_msg.Just_enter_the_numeric_value}
@@ -261,7 +261,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                             <FixNumber
                                 disabled={this.props.disable ? true : false}
                                 placeholder={this.props.hourPlaceholder ? this.props.hourPlaceholder : ""}
-                                defaultValue={this.state.h}
+                                defaultValue={this.state.h === 0 ? '' : this.state.h}
                                 onChange={(value) => this.onHourChange(value)}
                                 pattern={AppRegex.number}
                                 patternError={Localization.validation_msg.Just_enter_the_numeric_value}

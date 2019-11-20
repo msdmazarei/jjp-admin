@@ -25,8 +25,9 @@ var routes = [
     icon: "fa fa-dashboard",
     component: Dashboard,
     layout: "/admin",
-    isitem: true,
-    brandName: ['dashboard']
+    sidebarIconVisibility: true,
+    brandName: ['dashboard'],
+    PERMISSIONS : []
   },
   // book start
   {
@@ -35,7 +36,8 @@ var routes = [
     icon: "fa fa-book",
     component: BookManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : []
   },
   {
     path: "/book/create",
@@ -43,15 +45,17 @@ var routes = [
     icon: "fa fa-plus",
     component: BookSave,
     layout: "/admin",
-    isitem: true,
+    sidebarIconVisibility: true,
+    PERMISSIONS : ['BOOK_ADD_PREMIUM','BOOK_ADD_PRESS']
   },
   {
     path: "/book/:book_id/edit",
     name: Localization.book_update,
     component: BookSave,
     layout: "/admin",
-    isitem: false,
-    brandName: ['book', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['book', 'edit'],
+    PERMISSIONS : []
   },
   // book end
   // person start
@@ -61,22 +65,25 @@ var routes = [
     icon: "fa fa-id-card",
     component: PersonManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : ['PERSON_ADD_PREMIUM','PERSON_GET_PREMIUM']
   },
   {
     path: "/person/create",
     name: Localization.create_person,
     component: PersonSave,
     layout: "/admin",
-    isitem: false
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/person/:person_id/edit",
     name: Localization.person_update,
     component: PersonSave,
     layout: "/admin",
-    isitem: false,
-    brandName: ['person', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['person', 'edit'],
+    PERMISSIONS : []
   },
   // person end
   // user start
@@ -86,22 +93,25 @@ var routes = [
     icon: "fa fa-user",
     component: UserManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : []
   },
   {
     path: "/user/create",
     name: Localization.create_user,
     component: UserSave,
     layout: "/admin",
-    isitem: false
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/user/:user_id/edit",
     name: Localization.user_update,
     component: UserSave,
     layout: "/admin",
-    isitem: false,
-    brandName: ['user', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['user', 'edit'],
+    PERMISSIONS : []
   },
   // user end
   // comment start
@@ -111,7 +121,8 @@ var routes = [
     icon: "fa fa-comment",
     component: CommentManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : ['COMMENT_GET_PREMIUM']
   },
   // comment end
   // order start
@@ -121,22 +132,25 @@ var routes = [
     icon: "fa fa-shopping-cart",
     component: OrderManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : ['ORDER_ADD_PREMIUM','ORDER_ADD_PRESS','ORDER_GET_PREMIUM']
   },
   {
     path: "/order/create",
     name: Localization.create_order,
     component: OrderSave,
     layout: "/admin",
-    isitem: false
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/order/:order_id/edit",
     name: Localization.order_update,
     component: OrderSave,
     layout: "/admin",
-    isitem: false,
-    brandName: ['order', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['order', 'edit'],
+    PERMISSIONS : []
   },
   // order end
   // group start
@@ -146,22 +160,25 @@ var routes = [
     icon: "fa fa-users",
     component: GroupManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : []
   },
   {
     path: "/group/create",
     name: Localization.create_group,
     component: GroupSave,
     layout: "/admin",
-    isitem: false
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/group/:group_id/edit",
     name: Localization.group_update,
     component: GroupSave,
     layout: "/admin",
-    isitem: false,
-    brandName: ['group', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['group', 'edit'],
+    PERMISSIONS : []
   },
   // group end
   // generator start
@@ -171,7 +188,8 @@ var routes = [
     icon: "fa fa-upload",
     component: BookGeneratorManage,
     layout: "/admin",
-    isitem: true
+    sidebarIconVisibility: true,
+    PERMISSIONS : []
   },
   {
     path: "/book_generator/create",
@@ -179,15 +197,17 @@ var routes = [
     icon: "fa fa-plus",
     component: BookGenerator,
     layout: "/admin",
-    isitem: false,
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/book_generator/:book_generator_id/edit",
     name: Localization.update,
     component: BookGenerator,
     layout: "/admin",
-    isitem: false,
-    brandName: ['book', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['book', 'edit'],
+    PERMISSIONS : []
   },
   // generator end
   // permission start
@@ -197,22 +217,25 @@ var routes = [
     icon: "fa fa-universal-access",
     component: PermissionManage,
     layout: "/admin",
-    isitem: false,
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/permission/create",
     name: Localization.create_permission,
     component: PermissionSave,
     layout: "/admin",
-    isitem: false
+    sidebarIconVisibility: false,
+    PERMISSIONS : []
   },
   {
     path: "/permission/:permission_id/edit",
     name: Localization.permission_update,
     component: PermissionSave,
     layout: "/admin",
-    isitem: false,
-    brandName: ['permission', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['permission', 'edit'],
+    PERMISSIONS : []
   },
   // permission end
   // profile start
@@ -221,8 +244,9 @@ var routes = [
     name: Localization.profile,
     component: Profile,
     layout: "/admin",
-    isitem: false,
-    brandName: ['profile', 'edit']
+    sidebarIconVisibility: false,
+    brandName: ['profile', 'edit'],
+    PERMISSIONS : []
   },
   // profile end
 ];

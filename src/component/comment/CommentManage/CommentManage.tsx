@@ -19,6 +19,7 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import { AccessService } from "../../../service/service.access";
 
 /// define props & state ///////
 export interface IProps {
@@ -179,14 +180,22 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: [
-        { text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+      actions: this.checkAllAccess() ? [
+        { 
+          access: (row: any) => { return this.checkDeleteToolAccess() },
+          text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
          ac_func: (row: any) => { this.onShowRemoveModal(row) },
-         name:Localization.remove },
-        { text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
+         name:Localization.remove 
+        },
+        { 
+          access: (row: any) => { return this.checkTableAccess() },
+          text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
          ac_func: (row: any) => { this.onShowCommentModal(row) } ,
-         name:Localization.show_comment},
+         name:Localization.show_comment
+        },
       ]
+      :
+      undefined
     },
     CommentError: undefined,
     pager_offset: 0,
@@ -221,6 +230,39 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
 
   // timestamp to date 
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM', 'COMMENT_DELETE_PREMIUM'])) {
+      return true;
+    }
+    return false;
+  }
+
+  checkTableAccess(): boolean {
+    if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  componentDidMount() {
+    if(this.checkTableAccess()){
+      this.setState({
+        ...this.state,
+        tableProcessLoader:true
+      })
+      this.fetchComments();
+    }else{
+      this.noAccessRedirect(this.props.history);
+    }
+  }
 
   getTimestampToDate(timestamp: number) {
     if (this.props.internationalization.flag === "fa") {
@@ -381,14 +423,6 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   // define axios for give data
-
-  componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader:true
-    })
-    this.fetchComments();
-  }
 
   async fetchComments() {
     this.setState({...this.state,tableProcessLoader: true});

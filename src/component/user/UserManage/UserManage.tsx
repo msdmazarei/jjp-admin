@@ -19,6 +19,7 @@ import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
 import { GroupService } from "../../../service/service.group";
+import { AccessService } from "../../../service/service.access";
 
 //// props & state define ////////
 export interface IProps {
@@ -150,13 +151,15 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: [
+      actions: this.checkAllAccess() ?  [
         {
+          access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
+          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
@@ -167,6 +170,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           name: Localization.group
         },
       ]
+      :
+      undefined
     },
     filter: {
       user: {
@@ -211,11 +216,43 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    this.fetchUsers();
+    if(this.checkAccessUserTable()){
+      this.setState({
+        ...this.state,
+        tableProcessLoader: true
+      })
+      this.fetchUsers();
+    }else{
+      this.noAccessRedirect(this.props.history);
+    }
+  }
+  
+  checkAccessUserTable(): boolean {
+    if (AccessService.checkAccess('USER_GET_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['USER_DELETE_PREMIUM', 'USER_EDIT_PREMIUM'])) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('USER_DELETE_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('USER_EDIT_PREMIUM')) {
+      return true;
+    }
+    return false
   }
 
   gotoUserCreate() {

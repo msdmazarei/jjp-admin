@@ -16,6 +16,7 @@ import { UserService } from '../../../service/service.user';
 import { IPerson } from '../../../model/model.person';
 import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
+import { AccessService } from '../../../service/service.access';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -44,7 +45,7 @@ interface IState {
         };
     };
     person: {
-        value: { label: string, value: IPerson } | undefined |null; // IPerson | any,
+        value: { label: string, value: IPerson } | undefined | null; // IPerson | any,
         // isValid: boolean
     };
     isFormValid: boolean;
@@ -83,9 +84,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             },
         },
         person: {
-                value: undefined,
-                // isValid: false,
-            },
+            value: undefined,
+            // isValid: false,
+        },
         isFormValid: false,
         saveMode: SAVE_MODE.CREATE,
         createLoader: false,
@@ -99,15 +100,37 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     private user_id: string | undefined;
     private _personService = new PersonService();
 
+    checkBookAddAccess(): boolean {
+        if (AccessService.checkAccess('BOOK_ADD_PREMIUM')) {
+            return true;
+        }
+        return false
+    }
+
+    checkBookUpdateAccess(): boolean {
+        if (AccessService.checkAccess('BOOK_EDIT_PREMIUM')) {
+            return true;
+        }
+        return false
+    }
+
     componentDidMount() {
         // this._userService.setToken(this.props.token);
         // this._uploadService.setToken(this.props.token);
         // this._personService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/user/:user_id/edit')) {
-            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.user_id = this.props.match.params.user_id;
-            this.fetchUserById(this.props.match.params.user_id);
+            if (this.checkBookUpdateAccess()) {
+                this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+                this.user_id = this.props.match.params.user_id;
+                this.fetchUserById(this.props.match.params.user_id);
+            } else {
+                this.noAccessRedirect(this.props.history);
+            }
+        } else {
+            if (!this.checkBookAddAccess()) {
+                this.noAccessRedirect(this.props.history);
+            }
         }
     }
 
@@ -123,15 +146,15 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                     ...this.state.user,
                     username: { ...this.state.user.username, value: res.data.username, isValid: true },
                     person_id: { ...this.state.user.person_id, value: res.data.person.id, isValid: true },
-                    password: { ...this.state.user.password,  isValid: true },
-                    confirm_pass: { ...this.state.user.confirm_pass,  isValid: true },
+                    password: { ...this.state.user.password, isValid: true },
+                    confirm_pass: { ...this.state.user.confirm_pass, isValid: true },
 
                 },
                 person: {
                     ...this.state.person, value: {
                         label: this.getPersonFullName(res.data.person),
                         value: res.data.person
-                    }, 
+                    },
                     // isValid: true
                 },
                 saveBtnVisibility: true
@@ -161,12 +184,12 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
     handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
         let newperson = { ...selectedPerson };
-        let isValid=true;      // newperson = selectedPerson;
+        let isValid = true;      // newperson = selectedPerson;
         this.setState({
             ...this.state, user: {
-                ...this.state.user, person_id:{
-                    value : newperson.value.id,
-                    isValid:isValid,
+                ...this.state.user, person_id: {
+                    value: newperson.value.id,
+                    isValid: isValid,
                 }
             },
             person: {
@@ -178,7 +201,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    
+
 
     //  check form validation for avtive button
 
@@ -208,7 +231,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         }
         return false;
     }
-    
+
     /////////////////////////////////////
 
 
@@ -219,9 +242,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, createLoader: true });
 
         const newUser = {
-            username:this.state.user.username.value,
-            password:this.state.user.password.value,
-            person_id:this.state.user.person_id.value,
+            username: this.state.user.username.value,
+            password: this.state.user.password.value,
+            person_id: this.state.user.person_id.value,
         }
 
         let res = await this._userService.create(newUser).catch(error => {
@@ -238,9 +261,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     async update() {
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
-        
+
         const newUser = {
-            person_id:this.state.user.person_id.value,
+            person_id: this.state.user.person_id.value,
         }
 
         let res = await this._userService.update(newUser, this.user_id!).catch(e => {
@@ -324,18 +347,20 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    seterPerson(person : IPerson){
-        const createdPerson : 
-        { label: string, value: IPerson } = 
-        { label: person.cell_no ? (this.getPersonFullName(person) + " - " + person.cell_no) : this.getPersonFullName(person) , 
-        value: person }
+    seterPerson(person: IPerson) {
+        const createdPerson:
+            { label: string, value: IPerson } =
+        {
+            label: person.cell_no ? (this.getPersonFullName(person) + " - " + person.cell_no) : this.getPersonFullName(person),
+            value: person
+        }
         let newperson = createdPerson;
-        let isValid=true;      // newperson = selectedPerson;
+        let isValid = true;      // newperson = selectedPerson;
         this.setState({
             ...this.state, user: {
-                ...this.state.user, person_id:{
-                    value : newperson.value.id,
-                    isValid:isValid,
+                ...this.state.user, person_id: {
+                    value: newperson.value.id,
+                    isValid: isValid,
                 }
             },
             person: {
@@ -362,7 +387,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 person_id: { value: undefined, isValid: false },
             },
             // person: { value: undefined, isValid: false },
-            person: { value: null},
+            person: { value: null },
             isFormValid: false,
         })
     }
@@ -437,11 +462,17 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                     }
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
-                                        <i
-                                            title={Localization.Quick_person_creation}
-                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
-                                            onClick={() => this.quickpersonOpen()}
-                                        ></i>
+                                        {
+                                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                ?
+                                                <i
+                                                    title={Localization.Quick_person_creation}
+                                                    className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                                    onClick={() => this.quickpersonOpen()}
+                                                ></i>
+                                                :
+                                                undefined
+                                        }
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
@@ -449,7 +480,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             value={this.state.person.value}
                                             loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                             noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                            onChange={(selectedPerson : any ) => this.handlePersonChange(selectedPerson)}
+                                            onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
                                         />
                                     </div>
                                 </div>
@@ -460,14 +491,20 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
-                                                    <BtnLoader
-                                                        btnClassName="btn btn-success shadow-default shadow-hover"
-                                                        loading={this.state.createLoader}
-                                                        onClick={() => this.create()}
-                                                        disabled={!this.state.isFormValid}
-                                                    >
-                                                        {Localization.create}
-                                                    </BtnLoader>
+                                                    {
+                                                        this.checkBookAddAccess()
+                                                            ?
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-success shadow-default shadow-hover"
+                                                                loading={this.state.createLoader}
+                                                                onClick={() => this.create()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.create}
+                                                            </BtnLoader>
+                                                            :
+                                                            undefined
+                                                    }
                                                     <BtnLoader
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
@@ -480,7 +517,8 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        this.state.saveBtnVisibility ?
+                                                        (this.checkBookUpdateAccess() && this.state.saveBtnVisibility)
+                                                            ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
                                                                 loading={this.state.updateLoader}
@@ -489,7 +527,8 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                             >
                                                                 {Localization.update}
                                                             </BtnLoader>
-                                                            : ''
+                                                            :
+                                                            ''
                                                     }
                                                 </>
 
@@ -511,7 +550,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 <ToastContainer {...this.getNotifyContainerConfig()} />
                 {
                     <QuickPerson
-                        data = {0}
+                        data={0}
                         onCreate={(person: IPerson, index: number) => this.seterPerson(person)}
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}

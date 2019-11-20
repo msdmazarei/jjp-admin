@@ -62,7 +62,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "creator", title: Localization.user , cellTemplateFunc: (row: IComment) => {
+          field: "creator", title: Localization.user, cellTemplateFunc: (row: IComment) => {
             if (row.creator) {
               return <div title={row.creator} className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.creator}
@@ -72,7 +72,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "name last_name", title: Localization.full_name , cellTemplateFunc: (row: IComment) => {
+          field: "name last_name", title: Localization.full_name, cellTemplateFunc: (row: IComment) => {
             if (row.person) {
               return <div title={this.getPersonFullName(row.person)} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {this.getPersonFullName(row.person)}
@@ -82,7 +82,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "body", title: Localization.comment , cellTemplateFunc: (row: IComment) => {
+          field: "body", title: Localization.comment, cellTemplateFunc: (row: IComment) => {
             if (row.person) {
               return <div title={row.body} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.body}
@@ -95,13 +95,13 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           field: "creation_date", title: Localization.creation_date,
           cellTemplateFunc: (row: IComment) => {
             if (row.creation_date) {
-              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div> 
+              return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
             }
             return '';
           }
         },
         {
-          field: "book title", title: Localization.book_title , cellTemplateFunc: (row: IComment) => {
+          field: "book title", title: Localization.book_title, cellTemplateFunc: (row: IComment) => {
             if (row.book && row.book.title) {
               return <div title={row.book.title} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.book.title}
@@ -111,15 +111,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "likes", title: Localization.number_of_likes , cellTemplateFunc: (row: IComment) => {
+          field: "likes", title: Localization.number_of_likes, cellTemplateFunc: (row: IComment) => {
             if (row.likes) {
               return <div title={row.likes.toLocaleString()} className="text-center">
                 {row.likes}{
                   row.liked_by_user
-                  ?   
-                  <span> - <i title={Localization.liked_by_user} className="fa fa-check text-success"></i></span>
-                  : 
-                  ""
+                    ?
+                    <span> - <i title={Localization.liked_by_user} className="fa fa-check text-success"></i></span>
+                    :
+                    ""
                 }
               </div>
             }
@@ -129,15 +129,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "reports", title: Localization.number_of_reports , cellTemplateFunc: (row: IComment) => {
+          field: "reports", title: Localization.number_of_reports, cellTemplateFunc: (row: IComment) => {
             if (row.reports) {
               return <div title={row.reports.toLocaleString()} className="text-center">
                 {row.reports}{
-                  row.reported_by_user 
-                  ? 
-                  <span> - <i title={Localization.reported_by_user} className="fa fa-check text-danger"></i></span> 
-                  : 
-                  ""
+                  row.reported_by_user
+                    ?
+                    <span> - <i title={Localization.reported_by_user} className="fa fa-check text-danger"></i></span>
+                    :
+                    ""
                 }
               </div>
             }
@@ -147,7 +147,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "book images", title: Localization.book_image , templateFunc: () => {
+          field: "book images", title: Localization.book_image, templateFunc: () => {
             return <b>{Localization.images}</b>
           },
           cellTemplateFunc: (row: IComment) => {
@@ -168,7 +168,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "book type", title: Localization.book_type , cellTemplateFunc: (row: IComment) => {
+          field: "book type", title: Localization.book_type, cellTemplateFunc: (row: IComment) => {
             if (row.book && row.book.type) {
               const b_type: any = row.book.type;
               const b_t: BOOK_TYPES = b_type;
@@ -181,21 +181,21 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         },
       ],
       actions: this.checkAllAccess() ? [
-        { 
+        {
           access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
-         ac_func: (row: any) => { this.onShowRemoveModal(row) },
-         name:Localization.remove 
+          ac_func: (row: any) => { this.onShowRemoveModal(row) },
+          name: Localization.remove
         },
-        { 
-          access: (row: any) => { return this.checkTableAccess() },
+        {
+          access: (row: any) => { return this.checkShowToolAccess() },
           text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
-         ac_func: (row: any) => { this.onShowCommentModal(row) } ,
-         name:Localization.show_comment
+          ac_func: (row: any) => { this.onShowCommentModal(row) },
+          name: Localization.show_comment
         },
       ]
-      :
-      undefined
+        :
+        undefined
     },
     CommentError: undefined,
     pager_offset: 0,
@@ -207,7 +207,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     removeModalShow: false,
     commentModalShow: false,
     filter: {
-      book:{
+      book: {
         value: "true",
         isValid: true,
       },
@@ -231,15 +231,29 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   // timestamp to date 
 
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM', 'COMMENT_DELETE_PREMIUM'])) {
+  componentDidMount() {
+    if (this.checkPageRenderAccess()) {
+      if(AccessService.checkAccess('COMMENT_GET_PREMIUM')){
+        this.setState({
+          ...this.state,
+          tableProcessLoader: true
+        })
+        this.fetchComments();
+      }
+    } else {
+      this.noAccessRedirect(this.props.history);
+    }
+  }
+
+  checkPageRenderAccess(): boolean {
+    if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
       return true;
     }
     return false;
   }
 
-  checkTableAccess(): boolean {
-    if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM', 'COMMENT_DELETE_PREMIUM'])) {
       return true;
     }
     return false;
@@ -252,17 +266,13 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     return false
   }
 
-  componentDidMount() {
-    if(this.checkTableAccess()){
-      this.setState({
-        ...this.state,
-        tableProcessLoader:true
-      })
-      this.fetchComments();
-    }else{
-      this.noAccessRedirect(this.props.history);
+  checkShowToolAccess(): boolean {
+    if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
+      return true;
     }
+    return false
   }
+
 
   getTimestampToDate(timestamp: number) {
     if (this.props.internationalization.flag === "fa") {
@@ -286,7 +296,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   onShowCommentModal(comment: IComment) {
     this.selectedComment = comment;
-    this.setState({ ...this.state, commentModalShow: true});
+    this.setState({ ...this.state, commentModalShow: true });
   }
 
   onHideCommentModal() {
@@ -313,46 +323,46 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
               </div>
               <div>
                 <span>
-                  <span className="text-muted">{Localization.book_title}:&nbsp;</span><span>{(this.selectedComment.book!||{}).title}</span>
+                  <span className="text-muted">{Localization.book_title}:&nbsp;</span><span>{(this.selectedComment.book! || {}).title}</span>
                 </span>
               </div>
               <span className="text-muted">
-                  {Localization.comment}:&nbsp;
+                {Localization.comment}:&nbsp;
               </span>
               <p className="border border-dark rounded show-modal-content p-2">
-                  {this.selectedComment.body}
+                {this.selectedComment.body}
               </p>
               <div>
                 <span>
-                <span className="text-muted">{Localization.number_of_likes}:&nbsp;</span><span className="text-success">{this.selectedComment.likes}</span>
+                  <span className="text-muted">{Localization.number_of_likes}:&nbsp;</span><span className="text-success">{this.selectedComment.likes}</span>
                 </span>
               </div>
               <div>
                 <span>
-                <span className="text-muted">{Localization.number_of_reports}:&nbsp;</span><span className="text-danger">{this.selectedComment.reports}</span>
+                  <span className="text-muted">{Localization.number_of_reports}:&nbsp;</span><span className="text-danger">{this.selectedComment.reports}</span>
                 </span>
               </div>
               <div>
                 <span>
-                <span className="text-muted">{Localization.liked_by_user}:&nbsp;</span>
+                  <span className="text-muted">{Localization.liked_by_user}:&nbsp;</span>
                   {
                     this.selectedComment.liked_by_user
-                    ?
-                    <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
-                    :
-                    ""
+                      ?
+                      <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
+                      :
+                      ""
                   }
                 </span>
               </div>
               <div>
                 <span>
-                <span className="text-muted">{Localization.reported_by_user}:&nbsp;</span>
+                  <span className="text-muted">{Localization.reported_by_user}:&nbsp;</span>
                   {
                     this.selectedComment.reported_by_user
-                    ?
-                    <i title={Localization.liked_by_user} className="fa fa-check text-danger"></i>
-                    :
-                    ""
+                      ?
+                      <i title={Localization.liked_by_user} className="fa fa-check text-danger"></i>
+                      :
+                      ""
                   }
                 </span>
               </div>
@@ -366,7 +376,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  
+
   // delete modal function define
 
   onShowRemoveModal(comment: IComment) {
@@ -425,7 +435,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchComments() {
-    this.setState({...this.state,tableProcessLoader: true});
+    this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._commentService.search(
       this.state.pager_limit,
       this.state.pager_offset,
@@ -660,56 +670,63 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
               <h2 className="text-bold text-dark pl-3">{Localization.comment}</h2>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12">
-              <div className="template-box mb-4">
+          {
+            AccessService.checkAccess('COMMENT_GET_PREMIUM')
+              ?
+              <>
                 <div className="row">
-                  <div className="col-sm-6 col-xl-4">
-                    <Input
-                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.comment}
-                      placeholder={Localization.comment}
-                      defaultValue={this.state.filter.body.value}
-                    />
+                  <div className="col-12">
+                    <div className="template-box mb-4">
+                      <div className="row">
+                        <div className="col-sm-6 col-xl-4">
+                          <Input
+                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                            label={Localization.comment}
+                            placeholder={Localization.comment}
+                            defaultValue={this.state.filter.body.value}
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <BtnLoader
+                            disabled={this.state.tableProcessLoader}
+                            loading={this.state.filterSearchBtnLoader}
+                            btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
+                            onClick={() => this.filterSearch()}
+                          >
+                            {Localization.search}
+                          </BtnLoader>
+                          <BtnLoader
+                            // disabled={this.state.tableProcessLoader}
+                            loading={false}
+                            btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
+                            onClick={() => this.filterReset()}
+                          >
+                            {Localization.reset}
+                          </BtnLoader>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-12">
-                    <BtnLoader
-                      disabled={this.state.tableProcessLoader}
-                      loading={this.state.filterSearchBtnLoader}
-                      btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
-                      onClick={() => this.filterSearch()}
-                    >
-                      {Localization.search}
-                    </BtnLoader>
-                    <BtnLoader
-                      // disabled={this.state.tableProcessLoader}
-                      loading={false}
-                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filterReset()}
-                    >
-                      {Localization.reset}
-                    </BtnLoader>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <Table loading={this.state.tableProcessLoader} list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders} actions={this.state.comment_table.actions}></Table>
-              <div>
-                {this.pager_previous_btn_render()}
-                {this.pager_next_btn_render()}
-              </div>
-            </div>
-          </div>
+                <div className="row">
+                  <div className="col-12">
+                    <Table loading={this.state.tableProcessLoader} list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders} actions={this.state.comment_table.actions}></Table>
+                    <div>
+                      {this.pager_previous_btn_render()}
+                      {this.pager_next_btn_render()}
+                    </div>
+                  </div>
+                </div>
+              </>
+              :
+              undefined
+          }
         </div>
         {this.render_delete_modal(this.selectedComment)}
         {this.render_comment_show_modal(this.selectedComment)}

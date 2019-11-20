@@ -275,6 +275,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   private _bookService = new BookService();
   private _priceService = new PriceService();
 
+  componentDidMount() {
+    moment.locale("en");
+    this.setState({
+      ...this.state,
+      tableProcessLoader: true
+    })
+    this.fetchBooks();
+  }
 
   checkAllAccess(): boolean {
     if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_ADD_PREMIUM'])
@@ -300,7 +308,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAccess('PRICE_ADD_PREMIUM') || AccessService.checkAccess('PRICE_ADD_PRESS')) {
+    if (AccessService.checkAllAccess(['PRICE_ADD_PREMIUM','PRICE_GET_PREMIUM','PRICE_EDIT_PREMIUM','PRICE_DELETE_PREMIUM'])
+     || AccessService.checkAllAccess(['PRICE_ADD_PRESS','PRICE_EDIT_PRESS','PRICE_DELETE_PRESS'])) {
       return true;
     }
     return false
@@ -311,15 +320,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   //   // this._bookService.setToken(this.props.token)
   //   // this._priceService.setToken(this.props.token)
   // }
-
-  componentDidMount() {
-    moment.locale("en");
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    this.fetchBooks();
-  }
 
   updateRow(book_id: any) {
     if (this.checkUpdateToolAccess() === false) {

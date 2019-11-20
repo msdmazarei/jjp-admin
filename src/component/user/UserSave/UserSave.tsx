@@ -100,15 +100,15 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     private user_id: string | undefined;
     private _personService = new PersonService();
 
-    checkBookAddAccess(): boolean {
-        if (AccessService.checkAccess('BOOK_ADD_PREMIUM')) {
-            return true;
-        }
-        return false
-    }
+    // checkUserAddAccess(): boolean {
+    //     if (AccessService.checkAccess('')) {
+    //         return true;
+    //     }
+    //     return false
+    // }
 
-    checkBookUpdateAccess(): boolean {
-        if (AccessService.checkAccess('BOOK_EDIT_PREMIUM')) {
+    checkUserUpdateAccess(): boolean {
+        if (AccessService.checkAccess('USER_EDIT_PREMIUM')) {
             return true;
         }
         return false
@@ -120,15 +120,11 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         // this._personService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/user/:user_id/edit')) {
-            if (this.checkBookUpdateAccess()) {
+            if (this.checkUserUpdateAccess()) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.user_id = this.props.match.params.user_id;
                 this.fetchUserById(this.props.match.params.user_id);
             } else {
-                this.noAccessRedirect(this.props.history);
-            }
-        } else {
-            if (!this.checkBookAddAccess()) {
                 this.noAccessRedirect(this.props.history);
             }
         }
@@ -491,20 +487,14 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
-                                                    {
-                                                        this.checkBookAddAccess()
-                                                            ?
-                                                            <BtnLoader
-                                                                btnClassName="btn btn-success shadow-default shadow-hover"
-                                                                loading={this.state.createLoader}
-                                                                onClick={() => this.create()}
-                                                                disabled={!this.state.isFormValid}
-                                                            >
-                                                                {Localization.create}
-                                                            </BtnLoader>
-                                                            :
-                                                            undefined
-                                                    }
+                                                    <BtnLoader
+                                                        btnClassName="btn btn-success shadow-default shadow-hover"
+                                                        loading={this.state.createLoader}
+                                                        onClick={() => this.create()}
+                                                        disabled={!this.state.isFormValid}
+                                                    >
+                                                        {Localization.create}
+                                                    </BtnLoader>
                                                     <BtnLoader
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
@@ -517,7 +507,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        (this.checkBookUpdateAccess() && this.state.saveBtnVisibility)
+                                                        (this.checkUserUpdateAccess() && this.state.saveBtnVisibility)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"

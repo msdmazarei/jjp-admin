@@ -151,7 +151,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ?  [
+      actions: this.checkAllAccess() ? [
         {
           access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
@@ -170,8 +170,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           name: Localization.group
         },
       ]
-      :
-      undefined
+        :
+        undefined
     },
     filter: {
       user: {
@@ -216,22 +216,13 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if(this.checkAccessUserTable()){
+    if(AccessService.checkAccess('USER_GET_PREMIUM')){
       this.setState({
         ...this.state,
         tableProcessLoader: true
       })
       this.fetchUsers();
-    }else{
-      this.noAccessRedirect(this.props.history);
     }
-  }
-  
-  checkAccessUserTable(): boolean {
-    if (AccessService.checkAccess('USER_GET_PREMIUM')) {
-      return true;
-    }
-    return false
   }
 
   checkAllAccess(): boolean {
@@ -824,51 +815,59 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               </BtnLoader>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12">
-              <div className="template-box mb-4">
+          {
+            AccessService.checkAccess('USER_GET_PREMIUM')
+              ?
+              <>
                 <div className="row">
-                  <div className="col-sm-6 col-xl-4">
-                    <Input
-                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.username}
-                      placeholder={Localization.username}
-                      defaultValue={this.state.filter.user.value}
-                    />
+                  <div className="col-12">
+                    <div className="template-box mb-4">
+                      <div className="row">
+                        <div className="col-sm-6 col-xl-4">
+                          <Input
+                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                            label={Localization.username}
+                            placeholder={Localization.username}
+                            defaultValue={this.state.filter.user.value}
+                          />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <BtnLoader
+                            disabled={this.state.tableProcessLoader}
+                            loading={this.state.filterSearchBtnLoader}
+                            btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
+                            onClick={() => this.filterSearch()}
+                          >
+                            {Localization.search}
+                          </BtnLoader>
+                          <BtnLoader
+                            // disabled={this.state.tableProcessLoader}
+                            loading={false}
+                            btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
+                            onClick={() => this.filterReset()}
+                          >
+                            {Localization.reset}
+                          </BtnLoader>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-12">
-                    <BtnLoader
-                      disabled={this.state.tableProcessLoader}
-                      loading={this.state.filterSearchBtnLoader}
-                      btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
-                      onClick={() => this.filterSearch()}
-                    >
-                      {Localization.search}
-                    </BtnLoader>
-                    <BtnLoader
-                      // disabled={this.state.tableProcessLoader}
-                      loading={false}
-                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filterReset()}
-                    >
-                      {Localization.reset}
-                    </BtnLoader>
+                    <Table loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
+                    <div>
+                      {this.pager_previous_btn_render()}
+                      {this.pager_next_btn_render()}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <Table loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
-              <div>
-                {this.pager_previous_btn_render()}
-                {this.pager_next_btn_render()}
-              </div>
-            </div>
-          </div>
+              </>
+              :
+              undefined
+          }
         </div>
         {this.render_delete_modal(this.selectedUser)}
         {this.render_AddGroupToUser_modal(this.selectedUserForGroup)}

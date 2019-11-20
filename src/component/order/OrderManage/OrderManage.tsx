@@ -204,19 +204,21 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (this.checkTableAccess()) {
-      this.setState({
-        ...this.state,
-        tableProcessLoader: true
-      })
-      this.fetchOrders();
+    if (this.checkPageRenderAccess()) {
+      if (AccessService.checkAccess('ORDER_GET_PREMIUM')) {
+        this.setState({
+          ...this.state,
+          tableProcessLoader: true
+        })
+        this.fetchOrders();
+      }
     } else {
       this.noAccessRedirect(this.props.history);
     }
   }
 
-  checkTableAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_GET_PREMIUM')) {
+  checkPageRenderAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM'])) {
       return true;
     }
     return false
@@ -773,11 +775,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/order/create'); // /admin
   }
 
-
-
-
-
-
   handleSelectInputChange(value: any[], inputType: any) {
     // let isValid;
     // if (!value || !value.length) {
@@ -898,74 +895,81 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               }
             </div>
           </div>
-          <div className="row">
-            <div className="col-12">
-              <div className="template-box mb-4">
+          {
+            AccessService.checkAccess('ORDER_GET_PREMIUM')
+              ?
+              <>
                 <div className="row">
-                  <div className="col-sm-6 col-xl-4">
-                    <Input
-                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.order}
-                      placeholder={Localization.order}
-                      defaultValue={this.state.filter.title.value}
-                    />
-                  </div>
-                  <div className="col-8 d-none">
-                    <div className="form-group">
-                      <label htmlFor="">{Localization.tags}</label>
-                      <Select
-                        isMulti
-                        onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
-                        value={this.state.filter.tags.value}
-                        placeholder={Localization.tags}
-                        inputValue={this.state.tags_inputValue}
-                        menuIsOpen={false}
-                        components={{
-                          DropdownIndicator: null,
-                        }}
-                        isClearable
-                        onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
-                      />
+                  <div className="col-12">
+                    <div className="template-box mb-4">
+                      <div className="row">
+                        <div className="col-sm-6 col-xl-4">
+                          <Input
+                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                            label={Localization.order}
+                            placeholder={Localization.order}
+                            defaultValue={this.state.filter.title.value}
+                          />
+                        </div>
+                        <div className="col-8 d-none">
+                          <div className="form-group">
+                            <label htmlFor="">{Localization.tags}</label>
+                            <Select
+                              isMulti
+                              onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
+                              value={this.state.filter.tags.value}
+                              placeholder={Localization.tags}
+                              inputValue={this.state.tags_inputValue}
+                              menuIsOpen={false}
+                              components={{
+                                DropdownIndicator: null,
+                              }}
+                              isClearable
+                              onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <BtnLoader
+                            disabled={this.state.tableProcessLoader}
+                            loading={this.state.filterSearchBtnLoader}
+                            btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
+                            onClick={() => this.filterSearch()}
+                          >
+                            {Localization.search}
+                          </BtnLoader>
+                          <BtnLoader
+                            // disabled={this.state.tableProcessLoader}
+                            loading={false}
+                            btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
+                            onClick={() => this.filterReset()}
+                          >
+                            {Localization.reset}
+                          </BtnLoader>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col-12">
-                    <BtnLoader
-                      disabled={this.state.tableProcessLoader}
-                      loading={this.state.filterSearchBtnLoader}
-                      btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
-                      onClick={() => this.filterSearch()}
-                    >
-                      {Localization.search}
-                    </BtnLoader>
-                    <BtnLoader
-                      // disabled={this.state.tableProcessLoader}
-                      loading={false}
-                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filterReset()}
-                    >
-                      {Localization.reset}
-                    </BtnLoader>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-12">
-              <Table loading={this.state.tableProcessLoader} list={this.state.order_table.list} colHeaders={this.state.order_table.colHeaders} actions={this.state.order_table.actions}></Table>
-              <div>
-                {this.pager_previous_btn_render()}
-                {this.pager_next_btn_render()}
-              </div>
-            </div>
-          </div>
+                <div className="row">
+                  <div className="col-12">
+                    <Table loading={this.state.tableProcessLoader} list={this.state.order_table.list} colHeaders={this.state.order_table.colHeaders} actions={this.state.order_table.actions}></Table>
+                    <div>
+                      {this.pager_previous_btn_render()}
+                      {this.pager_next_btn_render()}
+                    </div>
+                  </div>
+                </div>
+              </>
+              :
+              undefined
+          }
         </div>
         {this.render_delete_modal(this.selectedOrder)}
         {this.render_order_details_modal()}

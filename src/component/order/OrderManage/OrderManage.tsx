@@ -20,6 +20,7 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import { AccessService } from "../../../service/service.access";
 
 /// define props & state ///////
 export interface IProps {
@@ -106,7 +107,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "status", title: Localization.status, cellTemplateFunc: (row: any) => {
             if (row.status) {
-              const o_status: string = (row.status === 'Created') ? Localization.order_status.Created : Localization.order_status.Invoiced ;
+              const o_status: string = (row.status === 'Created') ? Localization.order_status.Created : Localization.order_status.Invoiced;
               return <div title={row.status} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {o_status}
               </div>
@@ -125,31 +126,34 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: [
+      actions: this.checkAllAccess() ? [
         {
+          access: (row: any) => { return (this.orderCheckoutAccess(row) && this.checkDeleteToolAccess()) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
-          access: (row: any) => { return this.orderCheckoutAccess(row) },
           name: Localization.remove
         },
         {
+          access: (row: any) => { return (this.orderCheckoutAccess(row) && this.checkUpdateToolAccess()) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>
           , ac_func: (row: any) => { this.updateRow(row) },
-          access: (row: any) => { return this.orderCheckoutAccess(row) },
           name: Localization.update
         },
         {
+          access: (row: any) => { return this.checkShowToolAccess() }, ///
           text: <i title={Localization.show_order} className="fa fa-eye text-info"></i>,
           ac_func: (row: any) => { this.fetchOrderById(row.id) },
           name: Localization.show_order
         },
         {
+          access: (row: any) => { return (this.orderCheckoutAccess(row) && this.checkGetInvoiceToolAccess()) },
           text: <i title={Localization.invoice} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
-          access: (row: any) => { return this.orderCheckoutAccess(row) },
           name: Localization.invoice
         },
       ]
+        :
+        undefined
     },
     OrderError: undefined,
     pager_offset: 0,
@@ -199,19 +203,65 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   //   // this._orderService.setToken(this.props.token)
   // }
 
-  orderCheckoutAccess(row: any) {
+  componentDidMount() {
+    if (this.checkTableAccess()) {
+      this.setState({
+        ...this.state,
+        tableProcessLoader: true
+      })
+      this.fetchOrders();
+    } else {
+      this.noAccessRedirect(this.props.history);
+    }
+  }
+
+  checkTableAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_GET_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['ORDER_DELETE_PREMIUM', 'ORDER_EDIT_PREMIUM', 'ORDER_ITEM_GET_PREMIUM']) || this.checkGetInvoiceToolAccess()) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_EDIT_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkShowToolAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_ITEM_GET_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkGetInvoiceToolAccess(): boolean {
+    if (AccessService.checkAllAccess(['ORDER_ITEM_GET_PREMIUM', 'ORDER_CHECKOUT_PREMIUM'])) {
+      return true;
+    }
+    return false
+  }
+
+  orderCheckoutAccess(row: any): boolean {
     if (row.status === "Invoiced") {
       return false;
     }
     return true;
-  }
-
-  componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    this.fetchOrders();
   }
 
   // timestamp to date 
@@ -243,7 +293,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       this.state.pager_offset,
       this.getFilter()
     ).catch(error => {
-      this.handleError({ error: error.response , toastOptions: { toastId: 'fetchOrders_error' } });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrders_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
@@ -832,14 +882,20 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.order}</h2>
-              <BtnLoader
-                loading={false}
-                disabled={false}
-                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoOrderCreate()}
-              >
-                {Localization.new}
-              </BtnLoader>
+              {
+                AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS'])
+                  ?
+                  <BtnLoader
+                    loading={false}
+                    disabled={false}
+                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                    onClick={() => this.gotoOrderCreate()}
+                  >
+                    {Localization.new}
+                  </BtnLoader>
+                  :
+                  undefined
+              }
             </div>
           </div>
           <div className="row">

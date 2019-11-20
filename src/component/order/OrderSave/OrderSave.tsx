@@ -17,6 +17,7 @@ import { OrderService } from '../../../service/service.order';
 import { IBook } from '../../../model/model.book';
 import { PriceService } from '../../../service/service.price';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
+import { AccessService } from '../../../service/service.access';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -93,10 +94,32 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         // this._priceService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/order/:order_id/edit')) {
-            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.order_id = this.props.match.params.order_id;
-            this.fetchOrderById(this.props.match.params.order_id);
+            if (this.checkOrderUpdateAccess()) {
+                this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+                this.order_id = this.props.match.params.order_id;
+                this.fetchOrderById(this.props.match.params.order_id);
+            } else {
+                this.noAccessRedirect(this.props.history);
+            }
+        } else {
+            if (!this.checkOrderAddAccess()) {
+                this.noAccessRedirect(this.props.history);
+            }
         }
+    }
+
+    checkOrderAddAccess(): boolean {
+        if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS'])) {
+            return true;
+        }
+        return false
+    }
+
+    checkOrderUpdateAccess(): boolean {
+        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM')) {
+            return true;
+        }
+        return false
     }
 
     async fetchOrderById(order_id: string) {
@@ -367,11 +390,13 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    seterPerson(person : IPerson){
-        const createdPerson : 
-        { label: string, value: IPerson } = 
-        { label: person.cell_no ? (this.getPersonFullName(person) + " - " + person.cell_no) : this.getPersonFullName(person) , 
-        value: person }
+    seterPerson(person: IPerson) {
+        const createdPerson:
+            { label: string, value: IPerson } =
+        {
+            label: person.cell_no ? (this.getPersonFullName(person) + " - " + person.cell_no) : this.getPersonFullName(person),
+            value: person
+        }
         let newperson = createdPerson;
         let isValid = true;      // newperson = selectedPerson;
         this.setState({
@@ -384,8 +409,8 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
         }, () => {
             this.fetchPrice();
         });
-        
-       
+
+
     }
 
     ////////   end crate quick person  //////////
@@ -423,11 +448,17 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                 <div className="row">
                                     <div className="col-md-6 col-sm-12">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
-                                        <i
-                                            title={Localization.Quick_person_creation}
-                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
-                                            onClick={() => this.quickpersonOpen()}
-                                        ></i>
+                                        {
+                                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                ?
+                                                <i
+                                                    title={Localization.Quick_person_creation}
+                                                    className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                                    onClick={() => this.quickpersonOpen()}
+                                                ></i>
+                                                :
+                                                undefined
+                                        }
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
@@ -485,14 +516,20 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
-                                                    <BtnLoader
-                                                        btnClassName="btn btn-success shadow-default shadow-hover"
-                                                        loading={this.state.createLoader}
-                                                        onClick={() => this.create()}
-                                                        disabled={!this.state.isFormValid}
-                                                    >
-                                                        {Localization.create}
-                                                    </BtnLoader>
+                                                    {
+                                                        AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS'])
+                                                            ?
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-success shadow-default shadow-hover"
+                                                                loading={this.state.createLoader}
+                                                                onClick={() => this.create()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.create}
+                                                            </BtnLoader>
+                                                            :
+                                                            undefined
+                                                    }
                                                     <BtnLoader
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
@@ -505,7 +542,8 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        this.state.saveBtnVisibility ?
+                                                        (AccessService.checkAccess('ORDER_EDIT_PREMIUM') && this.state.saveBtnVisibility)
+                                                            ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
                                                                 loading={this.state.updateLoader}
@@ -514,7 +552,8 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                             >
                                                                 {Localization.update}
                                                             </BtnLoader>
-                                                            : ''
+                                                            :
+                                                            ''
                                                     }
                                                 </>
 
@@ -536,7 +575,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                 <ToastContainer {...this.getNotifyContainerConfig()} />
                 {
                     <QuickPerson
-                        data = {0}
+                        data={0}
                         onCreate={(person: IPerson, index: number) => this.seterPerson(person)}
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}

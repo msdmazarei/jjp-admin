@@ -14,7 +14,7 @@ interface IProps {
     internationalization: TInternationalization;
 
     defultValue?: number | string | undefined;
-    onChange?: (timestamp: string , isValid:boolean) => void;
+    onChange?: (timestamp: string , isValid: boolean) => void;
     disable?: boolean;
     cmpLable?: string;
     hourPlaceholder?: string;
@@ -52,7 +52,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
                 s: 0,
             }, () => this.returnerValueToFather())
         }
-        if(nextProps.defultValue !== this.props.defultValue){
+        if (nextProps.defultValue !== this.props.defultValue) {
             if (nextProps.defultValue === undefined) {
                 this.setState({
                     ...this.state,
@@ -155,9 +155,9 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
     }
 
     returnerValueToFather() {
-        let stringDuration = (this.state.duration).toString();
+        let stringDuration = this.state.duration === 0 ? '' : (this.state.duration).toString();
         if (this.props.onChange) {
-            this.props.onChange(stringDuration , this.validationFunc());
+            this.props.onChange(stringDuration, this.validationFunc());
         };
         return;
     }
@@ -220,7 +220,7 @@ class AppDurationPickerComponent extends BaseComponent<IProps, IState> {
         }, () => this.returnerValueToFather());
     }
 
-    validationFunc(){
+    validationFunc() {
         return true;
     }
 

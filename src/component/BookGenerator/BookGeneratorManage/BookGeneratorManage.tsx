@@ -136,7 +136,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
                 return ''
               }
               let totalTime = Number(row.book.duration);
-              if(totalTime === 0){
+              if (totalTime === 0) {
                 return ''
               }
               if (totalTime < 60) {
@@ -174,28 +174,23 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.create} className="fa fa-wrench text-dark"></i>,
           ac_func: (row: any) => { this.getGenerateRow(row) },
           name: Localization.create
         },
       ]
-        :
-        undefined
     },
     contentError: undefined,
     pager_offset: 0,
@@ -226,8 +221,8 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   private _bookContentService = new BookGeneratorService();
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_ADD_PREMIUM'])
-      || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS', 'BOOK_EDIT_PRESS', 'PRICE_ADD_PRESS'])
+    if (AccessService.checkOneOFAllAccess([])
+      || AccessService.checkOneOFAllAccess([])
     ) {
       return true;
     }
@@ -235,21 +230,21 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')) {
+    if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
       return true;
     }
     return false
   }
 
   checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
+    if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
       return true;
     }
     return false
   }
 
   checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAccess('PRICE_ADD_PREMIUM') || AccessService.checkAccess('PRICE_ADD_PRESS')) {
+    if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
       return true;
     }
     return false

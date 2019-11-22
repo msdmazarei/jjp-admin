@@ -578,9 +578,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookContentCreate() {
-    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_ADD_PRESS') === false) {
-      return;
-    };
+    // if (AccessService.checkAccess('') === false && AccessService.checkAccess('') === false) {
+    //   return;
+    // };
     this.props.history.push('/book_generator/create'); // /admin
   }
 
@@ -710,12 +710,12 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          {
-            AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')
-              ?
               <div className="row">
                 <div className="col-12">
                   <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
+          {/* {
+            AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')
+              ? */}
                   <BtnLoader
                     loading={false}
                     disabled={false}
@@ -724,11 +724,11 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
                   >
                     {Localization.new}
                   </BtnLoader>
-                </div>
-              </div>
-              :
+              {/* :
               undefined
-          }
+            } */}
+            </div>
+          </div>
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">

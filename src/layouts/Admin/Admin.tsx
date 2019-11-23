@@ -25,7 +25,7 @@ interface IProps {
   internationalization: TInternationalization;
   history: History;
   location: Location; // HSTR.Location;
-  onUserPermissionsUpdate: (user: IUser) => void;
+  onUserPermissionsUpdate?: (user: IUser) => void;
 }
 
 // let ps: any;
@@ -106,10 +106,10 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
       if (this.props.logged_in_user) {
         this.getUpdateUserPermissions();
       }
-    },1800000);
+    }, 1800000);
   }
 
-  stopUpdateUserPermissions(){
+  stopUpdateUserPermissions() {
     clearTimeout(this._getUploadUserPermissionsPeriodly);
   }
 
@@ -124,13 +124,13 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
     }
   }
 
-  permissionsUpdater(user: IUser){
+  permissionsUpdater(user: IUser) {
     let logged_in_user = { ...this.props.logged_in_user! };
     if (!logged_in_user || !user.person) return;
 
     logged_in_user.permission_groups = user.permission_groups;
     logged_in_user.permissions = user.permissions;
-    this.props.onUserPermissionsUpdate(logged_in_user);
+    this.props.onUserPermissionsUpdate && this.props.onUserPermissionsUpdate(logged_in_user);
   }
 
   //// end update user permissions ////

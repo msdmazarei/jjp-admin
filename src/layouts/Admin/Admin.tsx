@@ -16,6 +16,8 @@ import { History, Location } from 'history';
 import { IUser } from "../../model/model.user";
 import { TInternationalization } from "../../config/setup";
 import { Localization } from "../../config/localization/localization";
+import { LoginService } from "../../service/service.login";
+import { action_user_logged_in } from "../../redux/action/user";
 
 
 interface IProps {
@@ -23,6 +25,7 @@ interface IProps {
   internationalization: TInternationalization;
   history: History;
   location: Location; // HSTR.Location;
+  onUserPermissionsUpdate: (user: IUser) => void;
 }
 
 // let ps: any;
@@ -37,9 +40,13 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
     };
   }
 
+  private _loginService = new LoginService();
+
   componentWillMount() {
     if (!this.props.logged_in_user) {
       this.props.history.push("/login");
+    } else {
+      this.getUpdateUserPermissions();
     }
   }
 
@@ -64,13 +71,16 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
     //   }
     // }
   }
+
   componentWillUnmount() {
+    this.stopUpdateUserPermissions();
     // if (navigator.platform.indexOf("Win") > -1) {
     //   ps && ps.destroy();
     //   document.documentElement.className += " perfect-scrollbar-off";
     //   document.documentElement.classList.remove("perfect-scrollbar-on");
     // }
   }
+
   componentDidUpdate(e: any) {
     // if (e.history.action === "PUSH") {
     //   if (navigator.platform.indexOf("Win") > -1) {
@@ -85,11 +95,53 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
     //   refsss.mainPanel.scrollTop = 0;
     // }
   }
+
+  //// start update user permissions ////
+
+  private _getUploadUserPermissionsPeriodly: any;
+
+  getUpdateUserPermissions() {
+    this._getUploadUserPermissionsPeriodly = setTimeout(() => {
+      this.fetchLogedinUserPermissions();
+      if (this.props.logged_in_user) {
+        this.getUpdateUserPermissions();
+      }
+    },1800000);
+  }
+
+  stopUpdateUserPermissions(){
+    clearTimeout(this._getUploadUserPermissionsPeriodly);
+  }
+
+  async fetchLogedinUserPermissions() {
+
+    let res_user = await this._loginService.profile().catch((error) => {
+      this.fetchLogedinUserPermissions()
+    });
+
+    if (res_user) {
+      this.permissionsUpdater(res_user.data);
+    }
+  }
+
+  permissionsUpdater(user: IUser){
+    let logged_in_user = { ...this.props.logged_in_user! };
+    if (!logged_in_user || !user.person) return;
+
+    logged_in_user.permission_groups = user.permission_groups;
+    logged_in_user.permissions = user.permissions;
+    this.props.onUserPermissionsUpdate(logged_in_user);
+  }
+
+  //// end update user permissions ////
+
+
   // this function opens and closes the sidebar on small devices
   toggleSidebar = () => {
     document.documentElement.classList.toggle("nav-open");
     this.setState({ sidebarOpened: !this.state.sidebarOpened });
   };
+
   getRoutes = (routes: any) => {
     return routes.map((prop: any, key: any) => {
       if (prop.layout === "/admin") {
@@ -106,9 +158,11 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
       }
     });
   };
+
   handleBgClick = (color: any) => {
     this.setState({ backgroundColor: color });
   };
+
   getBrandText = (path: any) => {
     for (let i = 0; i < routes.length; i++) {
       if (
@@ -137,12 +191,15 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
     }
     return Localization.app_title; // "Brand";
   };
+
   render() {
+
     if (!this.props.logged_in_user) {
       return (
         <div></div>
       );
     }
+
     return (
       <>
         <div className="wrapper">
@@ -180,6 +237,7 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
 
 const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
   return {
+    onUserPermissionsUpdate: (user: IUser) => dispatch(action_user_logged_in(user)),
   };
 };
 

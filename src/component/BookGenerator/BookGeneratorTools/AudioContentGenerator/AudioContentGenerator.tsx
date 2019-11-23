@@ -268,7 +268,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                                                             ?
                                                             undefined
                                                             :
-                                                            <span className="mx-2 text-dark">{this.state.name ? this.state.name : ""} {(this.voice[0].size && typeof this.voice[0].size === "number") ? '- ' + parseFloat((this.voice[0].size / 1024).toFixed(2)) + ' KB' : 'Unknown size'}</span>
+                                                            <span className="mx-2 text-dark">{this.state.name ? this.state.name : ""} {(this.voice[0] !== undefined && this.voice[0].size && typeof this.voice[0].size === "number") ? '- ' + parseFloat((this.voice[0].size / 1024).toFixed(2)) + ' KB' : '-Unknown size'}</span>
                                                     }
                                                     <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ()}>&times;</button>
                                                 </div>

@@ -14,16 +14,17 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { BOOK_TYPES } from "../../../enum/Book";
+import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
 import { AppRegex } from "../../../config/regex";
 import { PriceService } from "../../../service/service.price";
-import Select from 'react-select';
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { FixNumber } from "../../form/fix-number/FixNumber";
 import { AccessService } from "../../../service/service.access"
+import Select from 'react-select';
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 
 /// define props & state ///////
 export interface IProps {
@@ -34,12 +35,48 @@ export interface IProps {
 
 interface IFilterBook {
   title: {
-    value: string | undefined;
-    isValid: boolean;
+    value: string | undefined,
+    isValid: boolean
+  };
+  type: {
+    value: BOOK_TYPES[] | null,
+    isValid: boolean
+  };
+  genre: {
+    value: BOOK_GENRE | null,
+    isValid: boolean
   };
   tags: {
     value: { label: string, value: string }[];
     isValid: boolean;
+  };
+  price: {
+    value: number | undefined,
+    isValid: boolean
+  };
+  cr_date_from: {
+    value: number | undefined,
+    isValid: boolean
+  };
+  cr_date_to: {
+    value: number | undefined,
+    isValid: boolean
+  };
+  mo_date_from: {
+    value: number | undefined,
+    isValid: boolean
+  };
+  mo_date_to: {
+    value: number | undefined,
+    isValid: boolean
+  };
+  pub_date_from: {
+    value: number | undefined,
+    isValid: boolean
+  };
+  pub_date_to: {
+    value: number | undefined,
+    isValid: boolean
   };
 }
 interface IState {
@@ -57,15 +94,33 @@ interface IState {
     value: number | undefined;
     isValid: boolean;
   },
-  filter: IFilterBook,
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
+  filter_state: IFilterBook;
+  final_filter: any;
   tags_inputValue: string;
 }
 
 // define class of Book 
 
 class BookManageComponent extends BaseComponent<IProps, IState>{
+  genreOptions = [
+    { value: 'Comedy', label: Localization.genre_type_list.Comedy },
+    { value: 'Drama', label: Localization.genre_type_list.Drama },
+    { value: 'Romance', label: Localization.genre_type_list.Romance },
+    { value: 'Social', label: Localization.genre_type_list.Social },
+    { value: 'Religious', label: Localization.genre_type_list.Religious },
+    { value: 'Historical', label: Localization.genre_type_list.Historical },
+    { value: 'Classic', label: Localization.genre_type_list.Classic },
+    { value: 'Science', label: Localization.genre_type_list.Science }
+  ];
+  typeOptions = [
+    { value: 'DVD', label: Localization.book_type_list.DVD },
+    { value: 'Audio', label: Localization.book_type_list.Audio },
+    { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
+    { value: 'Pdf', label: Localization.book_type_list.Pdf },
+    { value: 'Epub', label: Localization.book_type_list.Epub }
+  ];
   state = {
     book_table: {
       list: [],
@@ -256,18 +311,55 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       value: undefined,
       isValid: false,
     },
-    filter: {
+    setRemoveLoader: false,
+    setPriceLoader: false,
+    filter_state: {
       title: {
         value: undefined,
-        isValid: true,
+        isValid: false
+      },
+      type: {
+        value: null,
+        isValid: false
+      },
+      genre: {
+        value: null,
+        isValid: false
       },
       tags: {
         value: [],
-        isValid: true
-      }
+        isValid: false,
+      },
+      price: {
+        value: undefined,
+        isValid: false
+      },
+      cr_date_from: {
+        value: undefined,
+        isValid: false
+      },
+      cr_date_to: {
+        value: undefined,
+        isValid: false
+      },
+      mo_date_from: {
+        value: undefined,
+        isValid: false
+      },
+      mo_date_to: {
+        value: undefined,
+        isValid: false
+      },
+      pub_date_from: {
+        value: undefined,
+        isValid: false
+      },
+      pub_date_to: {
+        value: undefined,
+        isValid: false
+      },
     },
-    setRemoveLoader: false,
-    setPriceLoader: false,
+    final_filter: undefined,
     tags_inputValue: '',
   }
 
@@ -308,8 +400,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAllAccess(['PRICE_ADD_PREMIUM','PRICE_GET_PREMIUM','PRICE_EDIT_PREMIUM','PRICE_DELETE_PREMIUM'])
-     || AccessService.checkAllAccess(['PRICE_ADD_PRESS','PRICE_EDIT_PRESS','PRICE_DELETE_PRESS'])) {
+    if (AccessService.checkAllAccess(['PRICE_ADD_PREMIUM', 'PRICE_GET_PREMIUM', 'PRICE_EDIT_PREMIUM', 'PRICE_DELETE_PREMIUM'])
+      || AccessService.checkAllAccess(['PRICE_ADD_PRESS', 'PRICE_EDIT_PRESS', 'PRICE_DELETE_PRESS'])) {
       return true;
     }
     return false
@@ -492,6 +584,37 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
+  }
+  private set_searchFilter() {
+    const obj: any = {};
+    if (this.state.filter_state.title.isValid) {
+      // obj['title'] = `/${this.state.filter_state.title.value}/`;
+      obj['title'] = this.state.filter_state.title.value;
+    }
+
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
+  }
+
+  filterSearch() {
+    this.setState({
+      ...this.state,
+      filterSearchBtnLoader: true,
+      tableProcessLoader: true,
+      pager_offset: 0
+    }, () => {
+      // this.gotoTop();
+      // this.setFilter();
+      this.set_searchFilter();
+      this.fetchBooks()
+    });
+  }
   // define axios for give data
 
   async fetchBooks() {
@@ -499,7 +622,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._bookService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      // {$and:[{creation_date:{$gte : 0}},{creation_date:{$lte : 1654442153}}]} 
+      // {title :{$eq : 'pdf 19'}}
+      // { title: 'pdf 19' }
+      this.get_searchFilter()
+      // this.getFilter()
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBooks_error' } });
       this.setState({
@@ -635,9 +762,112 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/book/create'); // /admin
   }
 
+  /////  start onChange & search & reset function for search box ///////////
 
-
-  //////   tag filter //////////////
+  filter_state_reset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        title: {
+          value: undefined,
+          isValid: false
+        },
+        type: {
+          value: null,
+          isValid: false
+        },
+        genre: {
+          value: null,
+          isValid: false
+        },
+        tags: {
+          value: [],
+          isValid: false,
+        },
+        price: {
+          value: undefined,
+          isValid: false
+        },
+        cr_date_from: {
+          value: undefined,
+          isValid: false
+        },
+        cr_date_to: {
+          value: undefined,
+          isValid: false
+        },
+        mo_date_from: {
+          value: undefined,
+          isValid: false
+        },
+        mo_date_to: {
+          value: undefined,
+          isValid: false
+        },
+        pub_date_from: {
+          value: undefined,
+          isValid: false
+        },
+        pub_date_to: {
+          value: undefined,
+          isValid: false
+        },
+      },
+      final_filter: undefined,
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        title: {
+          value: undefined,
+          isValid: false
+        },
+        type: {
+          value: null,
+          isValid: false
+        },
+        genre: {
+          value: null,
+          isValid: false
+        },
+        tags: {
+          value: [],
+          isValid: false,
+        },
+        price: {
+          value: undefined,
+          isValid: false
+        },
+        cr_date_from: {
+          value: undefined,
+          isValid: false
+        },
+        cr_date_to: {
+          value: undefined,
+          isValid: false
+        },
+        mo_date_from: {
+          value: undefined,
+          isValid: false
+        },
+        mo_date_to: {
+          value: undefined,
+          isValid: false
+        },
+        pub_date_from: {
+          value: undefined,
+          isValid: false
+        },
+        pub_date_to: {
+          value: undefined,
+          isValid: false
+        },
+      },
+      final_filter: undefined,
+    })
+  }
 
   handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
     if (!this.state.tags_inputValue) return;
@@ -647,13 +877,12 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         const newVal = this.state.tags_inputValue;
         this.setState({
           ...this.state,
-          filter: {
-            ...this.state.filter,
+          filter_state: {
+            ...this.state.filter_state,
             tags: {
-              ...this.state.filter.tags,
-              value: [
-                ...this.state.filter.tags.value,
-                { label: newVal, value: newVal }
+              ...this.state.filter_state.tags,
+              value: [...this.state.filter_state.tags.value,
+              { label: newVal, value: newVal }
               ]
             }
           },
@@ -663,101 +892,48 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   };
 
-
-  handleSelectInputChange(value: any[], inputType: any) {
-    // let isValid;
-    // if (!value || !value.length) {
-    //   isValid = false;
-    // } else {
-    //   isValid = true;
-    // }
+  handleInputChange(value: any, inputType: any) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
+    if (inputType === 'price' && typeof value === 'string') {
+      isValid = false;
+    }
     this.setState({
       ...this.state,
-      filter: {
-        ...this.state.filter,
-        [inputType]: { value: value || [], isValid: true }
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
       }
     })
-
   }
 
-
-
-
-
-  /////  onChange & search & reset function for search box ///////////
-
-  handleFilterInputChange(value: string, isValid: boolean) {
+  handleSelectInputChange(value: any[], inputType: any) {
+    let isValid;
+    if (!value || !value.length) {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
     this.setState({
       ...this.state,
-      filter: {
-        ...this.state.filter,
-        title: {
-          value, isValid
-        }
-      },
-    });
-  }
-
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        title: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
-  }
-
-  filterSearch() {
-    this.setState({
-      ...this.state,
-      filterSearchBtnLoader: true,
-      tableProcessLoader: true,
-      pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      this.setFilter();
-      this.fetchBooks()
-    });
-  }
-
-  private _filter: IFilterBook = {
-    title: { value: undefined, isValid: true },
-    tags: { value: [], isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.title.value) {
-      return false;
-    }
-    if (this._filter.tags.value.length) {
-      return false;
-    }
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.title.isValid) {
-        obj['title'] = this._filter.title.value;
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value || [], isValid: isValid }
       }
-      if (this._filter.tags.isValid) {
-        if (this._filter.tags.value.length) {
-          obj['tags'] = this._filter.tags.value.map(t => t.value);
-        }
-        // obj['tags'] = this._filter.tags.value.length?;
-      }
-      return obj;
-    }
-    return;
+    })
   }
+
+  filter: any;
+
+
+
+
+
+
+  /////  end onChange & search & reset function for search box ///////////
+
 
   //////render call Table component //////
 
@@ -769,7 +945,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
               {
-                AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM','BOOK_ADD_PRESS'])
+                AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM', 'BOOK_ADD_PRESS'])
                   ?
                   <BtnLoader
                     loading={false}
@@ -784,39 +960,102 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               }
             </div>
           </div>
+          {/* start search box */}
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">
+                {/* start search box inputs */}
                 <div className="row">
-                  <div className="col-sm-6 col-xl-4">
+                  <div className="col-md-3 col-sm-6">
                     <Input
-                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                      onChange={(value, isValid) => this.handleInputChange(value, 'title')}
                       label={Localization.title}
                       placeholder={Localization.title}
-                      defaultValue={this.state.filter.title.value}
+                      defaultValue={this.state.filter_state.title.value}
                     />
                   </div>
-                  <div className="col-8 d-none">
+                  <div className="col-md-3 col-sm-6">
+                    <div className="form-group">
+                      <label htmlFor="">{Localization.type} <span className="text-danger"></span></label>
+                      <Select
+                        isMulti
+                        onChange={(value: any) => this.handleSelectInputChange(value, 'type')}
+                        options={this.typeOptions}
+                        value={this.state.filter_state.type.value}
+                        placeholder={Localization.type}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <div className="form-group">
+                      <label htmlFor="">{Localization.genre}</label>
+                      <Select
+                        isMulti
+                        onChange={(value: any) => this.handleSelectInputChange(value, 'genre')}
+                        options={this.genreOptions}
+                        value={this.state.filter_state.genre.value}
+                        placeholder={Localization.genre}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="">{Localization.tags}</label>
                       <Select
                         isMulti
-                        onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
-                        value={this.state.filter.tags.value}
+                        onChange={(value: any) => this.handleSelectInputChange(value, 'tags')}
+                        value={this.state.filter_state.tags.value}
                         placeholder={Localization.tags}
                         onKeyDown={(e) => this.handle_tagsKeyDown(e)}
                         inputValue={this.state.tags_inputValue}
                         menuIsOpen={false}
-                        components={{
-                          DropdownIndicator: null,
-                        }}
+                        components={{ DropdownIndicator: null, }}
                         isClearable
                         onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
                       />
                     </div>
                   </div>
+                  <div className="col-md-3 col-sm-6">
+                    <FixNumber
+                      onChange={(value, isValid) => this.handleInputChange(value, "price")}
+                      label={Localization.price}
+                      placeholder={Localization.price}
+                      defaultValue={this.state.filter_state.price.value}
+                      pattern={AppRegex.number}
+                      patternError={Localization.validation_msg.Just_enter_the_numeric_value}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      from={this.state.filter_state.pub_date_from.value}
+                      to={this.state.filter_state.pub_date_to.value}
+                      onFromChange={(value, isValid) => this.handleInputChange(value, 'pub_date_from')}
+                      onToChange={(value, isValid) => this.handleInputChange(value, 'pub_date_to')}
+                      label={Localization.publication_date}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      from={this.state.filter_state.cr_date_from.value}
+                      to={this.state.filter_state.cr_date_to.value}
+                      onFromChange={(value, isValid) => this.handleInputChange(value, 'cr_date_from')}
+                      onToChange={(value, isValid) => this.handleInputChange(value, 'cr_date_to')}
+                      label={Localization.creation_date}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      from={this.state.filter_state.mo_date_from.value}
+                      to={this.state.filter_state.mo_date_to.value}
+                      onFromChange={(value, isValid) => this.handleInputChange(value, 'mo_date_from')}
+                      onToChange={(value, isValid) => this.handleInputChange(value, 'mo_date_to')}
+                      label={Localization.modification_date}
+                    />
+                  </div>
                 </div>
-                <div className="row">
+                {/* end search box inputs */}
+                {/* start search btns box */}
+                <div className="row mt-1">
                   <div className="col-12">
                     <BtnLoader
                       disabled={this.state.tableProcessLoader}
@@ -830,20 +1069,17 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                       // disabled={this.state.tableProcessLoader}
                       loading={false}
                       btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filterReset()}
+                      onClick={() => this.filter_state_reset()}
                     >
                       {Localization.reset}
                     </BtnLoader>
                   </div>
                 </div>
+                {/* end search btns box */}
               </div>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12">
-
-            </div>
-          </div>
+          {/* end search  box */}
           <div className="row">
             <div className="col-12">
               <Table loading={this.state.tableProcessLoader} list={this.state.book_table.list} colHeaders={this.state.book_table.colHeaders} actions={this.state.book_table.actions}></Table>

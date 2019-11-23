@@ -10,7 +10,10 @@ import { Localization } from '../../../config/localization/localization';
 interface IProps {
     history?: History;
     internationalization: TInternationalization;
-    onChange: (from: number | undefined, to: number | undefined, isValid: boolean) => void;
+    from: number | undefined;
+    to: number | undefined;
+    onFromChange: (from: number | undefined, isValid: boolean) => void;
+    onToChange: (to: number | undefined, isValid: boolean) => void;
     label: string;
     time?: boolean;
 };
@@ -26,26 +29,45 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
         from: undefined,
         to: undefined,
     };
-    
+
+    componentDidMount() {
+        this.setState({
+            from: this.props.from,
+            to: this.props.to,
+        })
+    }
+
+    componentWillReceiveProps(nextProps : IProps){
+        if(nextProps === this.props){
+            return;
+        }else{
+            this.setState({
+                from : nextProps.from,
+                to : nextProps.to,
+            })
+        }
+    }
+
     handleChange(timestamp: number | undefined, isValid: boolean, type: string) {
         if (isValid === false) {
             return;
         }
+        let valid: boolean = timestamp === undefined ? false : true;
         if (type === 'from') {
             this.setState({
                 ...this.state,
                 from: timestamp,
-            }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc(this.state.from,this.state.to)))
+            }, () => this.props.onFromChange(this.state.from, valid))
         }
         if (type === 'to') {
             this.setState({
                 ...this.state,
                 to: timestamp,
-            }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc(this.state.from,this.state.to)))
+            }, () => this.props.onToChange(this.state.to, valid))
         }
     }
 
-    validationFunc(from:any , to: any) {
+    validationFunc(from: any, to: any) {
         if (typeof from === "undefined" && typeof to === "undefined") {
             return false;
         }
@@ -63,8 +85,13 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
         this.setState({
             from: undefined,
             to: undefined,
-        }, () => this.props.onChange(this.state.from, this.state.to, this.validationFunc(this.state.from,this.state.to)));
+        }, () => this.propscallerFunc());
     }
+
+    propscallerFunc() {
+        this.props.onFromChange(undefined, false);
+        this.props.onToChange(undefined, false);
+    };
 
     render() {
         return (
@@ -122,7 +149,7 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
                     }
                     <div className="col-2">
                         <i
-                            title={Localization.reset}  
+                            title={Localization.reset}
                             className="fa fa-times fa-2x text-warning"
                             onClick={() => this.reseter()}
                         >

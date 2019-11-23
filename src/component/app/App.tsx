@@ -10,20 +10,14 @@ import { Dispatch } from 'redux';
 import { BaseService } from '../../service/service.base';
 import { Modal } from 'react-bootstrap';
 import { redux_state } from '../../redux/app_state';
-
-
 import { AdminLayout } from '../../layouts/Admin/Admin';
-// import { Dashboard } from '../dashboard/Dashboard';
-// import NotFound from '../layout/main/not-found/NotFound';
 import { AppInitService } from '../../service/service.app-init';
 import { RouteLayoutAccount } from '../layout/account/Account';
+// import { Dashboard } from '../dashboard/Dashboard';
+// import NotFound from '../layout/main/not-found/NotFound';
 // import { RouteLayoutAccount } from '../layout/account/Account';
 // import { RouteLayoutMain } from '../layout/main/Main';
-
-
 // import { appLocalStorage } from '../../service/appLocalStorage';
-
-
 // import { NETWORK_STATUS } from '../../enum/NetworkStatus';
 // import { action_set_network_status } from '../../redux/action/netwok-status';
 // import { Store2 } from '../../redux/store';
@@ -64,7 +58,6 @@ const appRoutes = (
             <RouteLayoutAccount path="/register" component={Register} />
             <RouteLayoutAccount path="/forgot-password" component={ForgotPassword} />
             {/* <RouteLayoutMain component={NotFound} /> */}
-
         </Switch>
     </HashRouter>
 );

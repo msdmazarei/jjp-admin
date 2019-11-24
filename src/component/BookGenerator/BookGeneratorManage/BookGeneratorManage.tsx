@@ -19,8 +19,10 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { AccessService } from "../../../service/service.access"
 import { BookGeneratorService } from "../../../service/service.bookGenerator";
+import { GetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/GetGenerateOrStatusModal/GetGenerateOrStatusModal';
+// import { AccessService } from "../../../service/service.access"
+
 
 /// define props & state ///////
 export interface IProps {
@@ -217,7 +219,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   selectedContent: any | undefined;
-  selectedContentGenerate: any | undefined;
+  selectedContentGenerate: any;
   private _bookContentService = new BookGeneratorService();
 
   // checkAllAccess(): boolean {
@@ -383,63 +385,63 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     this.setState({ ...this.state, generateModalShow: false });
   }
 
-  async onGenerateContent(content_id: string) {
-    this.setState({ ...this.state, setGenerateLoader: true });
-    let res = await this._bookContentService.bookBuild(content_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'onGenerateContent_error' } });
-      this.setState({ ...this.state, setGenerateLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setGenerateLoader: false });
-      this.apiSuccessNotify();
-      this.fetchBooksContent();
-      this.onHideGenerateModal();
-    }
-  }
+  // async onGenerateContent(content_id: string) {
+  //   this.setState({ ...this.state, setGenerateLoader: true });
+  //   let res = await this._bookContentService.bookBuild(content_id).catch(error => {
+  //     this.handleError({ error: error.response, toastOptions: { toastId: 'onGenerateContent_error' } });
+  //     this.setState({ ...this.state, setGenerateLoader: false });
+  //   });
+  //   if (res) {
+  //     this.setState({ ...this.state, setGenerateLoader: false });
+  //     this.apiSuccessNotify();
+  //     this.fetchBooksContent();
+  //     this.onHideGenerateModal();
+  //   }
+  // }
 
-  render_generate_modal(selectedContentGenerate: any) {
-    if (!this.selectedContentGenerate || !this.selectedContentGenerate.id) return;
-    return (
-      <>
-        <Modal show={this.state.generateModalShow} onHide={() => this.onHideGenerateModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content text-center text-success">
-              {Localization.create + " " + Localization.content}
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.title}:&nbsp;
-              </span>
-              {(this.selectedContentGenerate.book as IBook).title}
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.type + " " + Localization.book}:&nbsp;
-              </span>
-              {Localization.book_type_list[((this.selectedContentGenerate.book as IBook).type as BOOK_TYPES)]}
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.type + " " + Localization.content}:&nbsp;
-              </span>
-              {Localization[this.selectedContentGenerate.type]}
-            </p>
-            <p className="text-success">{Localization.msg.ui.do_you_want_create_this_book_content}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideGenerateModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-success shadow-default shadow-hover"
-              onClick={() => this.onGenerateContent(selectedContentGenerate.id)}
-              loading={this.state.setGenerateLoader}
-            >
-              {Localization.build}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
+  // render_generate_modal(selectedContentGenerate: any) {
+  //   if (!this.selectedContentGenerate || !this.selectedContentGenerate.id) return;
+  //   return (
+  //     <>
+  //       <Modal show={this.state.generateModalShow} onHide={() => this.onHideGenerateModal()}>
+  //         <Modal.Body>
+  //           <p className="delete-modal-content text-center text-success">
+  //             {Localization.create + " " + Localization.content}
+  //           </p>
+  //           <p className="delete-modal-content">
+  //             <span className="text-muted">
+  //               {Localization.title}:&nbsp;
+  //             </span>
+  //             {(this.selectedContentGenerate.book as IBook).title}
+  //           </p>
+  //           <p className="delete-modal-content">
+  //             <span className="text-muted">
+  //               {Localization.type + " " + Localization.book}:&nbsp;
+  //             </span>
+  //             {Localization.book_type_list[((this.selectedContentGenerate.book as IBook).type as BOOK_TYPES)]}
+  //           </p>
+  //           <p className="delete-modal-content">
+  //             <span className="text-muted">
+  //               {Localization.type + " " + Localization.content}:&nbsp;
+  //             </span>
+  //             {Localization[this.selectedContentGenerate.type]}
+  //           </p>
+  //           <p className="text-success">{Localization.msg.ui.do_you_want_create_this_book_content}</p>
+  //         </Modal.Body>
+  //         <Modal.Footer>
+  //           <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideGenerateModal()}>{Localization.close}</button>
+  //           <BtnLoader
+  //             btnClassName="btn btn-success shadow-default shadow-hover"
+  //             onClick={() => this.onGenerateContent(selectedContentGenerate.id)}
+  //             loading={this.state.setGenerateLoader}
+  //           >
+  //             {Localization.build}
+  //           </BtnLoader>
+  //         </Modal.Footer>
+  //       </Modal>
+  //     </>
+  //   );
+  // }
 
   // define axios for give data
 
@@ -710,20 +712,20 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-              <div className="row">
-                <div className="col-12">
-                  <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
-          {/* {
+          <div className="row">
+            <div className="col-12">
+              <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
+              {/* {
             AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')
               ? */}
-                  <BtnLoader
-                    loading={false}
-                    disabled={false}
-                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                    onClick={() => this.gotoBookContentCreate()}
-                  >
-                    {Localization.new}
-                  </BtnLoader>
+              <BtnLoader
+                loading={false}
+                disabled={false}
+                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                onClick={() => this.gotoBookContentCreate()}
+              >
+                {Localization.new}
+              </BtnLoader>
               {/* :
               undefined
             } */}
@@ -799,8 +801,22 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
         </div>
+        {
+          this.selectedContentGenerate === undefined
+            ?
+            undefined
+            :
+            <GetBookContentGenerateOrStatusModal
+              book={this.selectedContentGenerate!.book}
+              content_type={this.selectedContentGenerate.type}
+              book_content_id={this.selectedContentGenerate.id}
+              content_inquiry_id={this.selectedContentGenerate.celery_task_id}
+              modalShow={this.state.generateModalShow}
+              onHide={() => this.onHideGenerateModal()}
+            />
+        }
         {this.render_delete_modal(this.selectedContent)}
-        {this.render_generate_modal(this.selectedContentGenerate)}
+        {/* {this.render_generate_modal(this.selectedContentGenerate)} */}
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

@@ -180,20 +180,27 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
 
     status_returner():string{
         if(this.state.new_inquiry_id === undefined){
+            if(this.props.content_inquiry_id === null && this.state.content_status_old_inquiry_id === undefined){
+                return 'این کتاب تاکنون ایجاد نشده است!!!'
+            }
             if(this.state.content_status_old_inquiry_id === 'PENDING'){
-                return 'this is creating ...'
-            }else if(this.state.content_status_old_inquiry_id === 'SUCCESS'){
-                return 'this is created'
-            }else{
-                return 'this is not created'
+                return 'با توجه به درخواست قبلی این کتاب در حال ایجاد شدن می باشد لطفا منتظر پاسخ سرور باشید ...'
+            }
+            if(this.state.content_status_old_inquiry_id === 'FAILURE'){
+                return 'در درخواست قبلی ایجاد کتاب خطا رخ داده است لطفا مجددا تلاش کنید.'
+            }
+            if(this.state.content_status_old_inquiry_id === 'SUCCESS'){
+                return 'ایجاد این کتاب قبلا با موفقیت انجام شده است'
             }
         }else{
             if(this.state.content_status_new_inquiry_id === 'PENDING'){
-                return 'this is creating ...'
-            }else if(this.state.content_status_old_inquiry_id === 'SUCCESS'){
-                return 'this is created'
-            }else{
-                return 'this is not created'
+                return 'این کتاب در حال ایجاد شدن می باشد لطفا منتظر پاسخ سرور باشید ...'
+            }
+            if(this.state.content_status_new_inquiry_id === 'FAILURE'){
+                return 'در درخواست فعلی ایجاد کتاب خطا رخ داده است لطفا مجددا تلاش کنید.'
+            }
+            if(this.state.content_status_new_inquiry_id === 'SUCCESS'){
+                return 'ایجاد کتاب با موفقیت انجام شد.'
             }
         }
         return ''

@@ -16,7 +16,7 @@ interface IProps {
     book: IBook;
     content_type: string;
     book_content_id: string;
-    content_inquiry_id: string;
+    content_inquiry_id: string | null;
     modalShow: boolean;
     onHide: () => void;
 }
@@ -25,6 +25,8 @@ interface IState {
     new_inquiry_id: string | undefined;
     content_status_old_inquiry_id: string | undefined;
     content_status_new_inquiry_id: string | undefined;
+    create_btn_loading_status : boolean;
+    create_btn_disable_status : boolean;
 }
 
 class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps, IState>{
@@ -32,14 +34,33 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
         new_inquiry_id: undefined,
         content_status_old_inquiry_id: undefined,
         content_status_new_inquiry_id: undefined,
+        create_btn_loading_status : false,
+        create_btn_disable_status : true,
     }
 
     private _getContentService = new BookGeneratorService();
 
     componentDidMount() {
-        if (typeof this.props.content_inquiry_id === 'string') {
+        if (this.props.content_inquiry_id !== null) {
             this.getFileStateBeforNewId();
+        }else if(this.props.content_inquiry_id === null){
+            this.setState({
+                ...this.state,
+                create_btn_disable_status : false,
+            })
         }
+    }
+
+    componentWillUnmount(){
+        clearTimeout(this._getFileStateBeforNewId_timer);
+        clearTimeout(this._getFileStateAfterNewId_timer);
+        this.setState({
+            new_inquiry_id: undefined,
+            content_status_old_inquiry_id: undefined,
+            content_status_new_inquiry_id: undefined,
+            create_btn_loading_status : false,
+            create_btn_disable_status : true,
+        })
     }
 
     async fetchContentStatus(inquiry_id: string) {
@@ -62,14 +83,18 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
     }
 
     async onGenerateContent(content_id: string) {
+        this.setState({...this.state , create_btn_disable_status : true , create_btn_loading_status : true});
         let res = await this._getContentService.bookBuild(content_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'onGenerateContent_error' } });
+            this.setState({...this.state , create_btn_disable_status : false , create_btn_loading_status : false});
         });
         if (res) {
             if (res) {
                 this.setState({
                     ...this.state,
                     new_inquiry_id: res.data.inquiry_id,
+                    create_btn_loading_status : false,
+                    create_btn_disable_status : true
                 }, () => this.getFileStateAfterNewId());
             }
         }
@@ -79,14 +104,34 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
     getFileStateBeforNewId() {
         this._getFileStateBeforNewId_timer = setTimeout(() => {
 
-            this.fetchContentStatus(this.props.content_inquiry_id);
+            this.fetchContentStatus(this.props.content_inquiry_id!);
 
             if (this.state.new_inquiry_id === undefined) {
-                if (this.state.content_status_old_inquiry_id !== 'SUCCESS') {
+                if (this.state.content_status_old_inquiry_id === 'SUCCESS' || this.state.content_status_old_inquiry_id === 'FAILURE') {
+                    this.clear_getFileStateBeforNewId();
+                    if(this.state.content_status_old_inquiry_id === 'FAILURE'){
+                        this.setState({
+                            ...this.state,
+                            create_btn_loading_status : false,
+                            create_btn_disable_status : false,
+                        })
+                    }
+                }else if (this.state.content_status_old_inquiry_id === 'PENDING') {
+                    this.setState({
+                        ...this.state,
+                        create_btn_loading_status : true,
+                        create_btn_disable_status : true,
+                    })
+                    this.getFileStateBeforNewId();
+                }else{
                     this.getFileStateBeforNewId();
                 }
             }
-        }, 500);
+        }, 2000);
+    }
+
+    clear_getFileStateBeforNewId(){
+        clearTimeout(this._getFileStateBeforNewId_timer);
     }
 
     private _getFileStateAfterNewId_timer: any;
@@ -95,10 +140,42 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
 
             this.fetchContentStatus(this.state.new_inquiry_id!);
 
-            if (this.state.content_status_new_inquiry_id !== 'SUCCESS') {
+            if (this.state.content_status_new_inquiry_id === 'SUCCESS' || this.state.content_status_new_inquiry_id === 'FAILURE') {
+                this.clear_getFileStateAfterNewId();
+                if(this.state.content_status_new_inquiry_id === 'SUCCESS'){
+                    this.setState({
+                        ...this.state,
+                        create_btn_loading_status : false,
+                        create_btn_disable_status : true,
+                    })
+                }
+                if(this.state.content_status_new_inquiry_id === 'FAILURE'){
+                    this.setState({
+                        ...this.state,
+                        create_btn_loading_status : false,
+                        create_btn_disable_status : false,
+                    })
+                }
+            }else if (this.state.content_status_old_inquiry_id === 'PENDING'){
+                this.setState({
+                    ...this.state,
+                    create_btn_loading_status : true,
+                    create_btn_disable_status : true,
+                })
+                this.getFileStateAfterNewId();
+            }else{
+                this.setState({
+                    ...this.state,
+                    create_btn_loading_status : true,
+                    create_btn_disable_status : true,
+                })
                 this.getFileStateAfterNewId();
             }
-        }, 500);
+        }, 2000);
+    }
+
+    clear_getFileStateAfterNewId(){
+        clearTimeout(this._getFileStateAfterNewId_timer);
     }
 
     status_returner():string{
@@ -159,8 +236,8 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                         <BtnLoader
                             btnClassName="btn btn-success shadow-default shadow-hover"
                             onClick={() => this.onGenerateContent(this.props.book_content_id)}
-                            loading={this.state.content_status_new_inquiry_id === 'PENDING' ? true : false}
-                            disabled={this.state.content_status_new_inquiry_id === 'SUCCESS' ? true : false}
+                            loading={this.state.create_btn_loading_status}
+                            disabled={this.state.create_btn_disable_status}
                         >
                             {Localization.build}
                         </BtnLoader>

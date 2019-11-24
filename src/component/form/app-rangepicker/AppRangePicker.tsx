@@ -12,8 +12,7 @@ interface IProps {
     internationalization: TInternationalization;
     from: number | undefined;
     to: number | undefined;
-    onFromChange: (from: number | undefined, isValid: boolean) => void;
-    onToChange: (to: number | undefined, isValid: boolean) => void;
+    onChange: (from: number | undefined, from_isValid: boolean , to: number | undefined, to_isValid: boolean) => void;
     label: string;
     time?: boolean;
 };
@@ -52,18 +51,21 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
         if (isValid === false) {
             return;
         }
-        let valid: boolean = timestamp === undefined ? false : true;
         if (type === 'from') {
+            let from_isValid : boolean = timestamp === undefined ? false : true;
+            let to_isValid : boolean = this.state.to === undefined ? false : true;
             this.setState({
                 ...this.state,
                 from: timestamp,
-            }, () => this.props.onFromChange(this.state.from, valid))
+            }, () => this.props.onChange(this.state.from,from_isValid,this.state.to,to_isValid))
         }
         if (type === 'to') {
+            let from_isValid : boolean = this.state.from === undefined ? false : true;
+            let to_isValid : boolean = timestamp === undefined ? false : true;
             this.setState({
                 ...this.state,
                 to: timestamp,
-            }, () => this.props.onToChange(this.state.to, valid))
+            }, () => this.props.onChange(this.state.from,from_isValid,this.state.to,to_isValid))
         }
     }
 
@@ -85,13 +87,8 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
         this.setState({
             from: undefined,
             to: undefined,
-        }, () => this.propscallerFunc());
+        }, () => this.props.onChange(undefined,false,undefined,false));
     }
-
-    propscallerFunc() {
-        this.props.onFromChange(undefined, false);
-        this.props.onToChange(undefined, false);
-    };
 
     render() {
         return (

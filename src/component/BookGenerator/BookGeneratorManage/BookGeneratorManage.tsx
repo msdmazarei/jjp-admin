@@ -220,35 +220,35 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   selectedContentGenerate: any | undefined;
   private _bookContentService = new BookGeneratorService();
 
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([])
-      || AccessService.checkOneOFAllAccess([])
-    ) {
-      return true;
-    }
-    return false;
-  }
+  // checkAllAccess(): boolean {
+  //   if (AccessService.checkOneOFAllAccess([])
+  //     || AccessService.checkOneOFAllAccess([])
+  //   ) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
-      return true;
-    }
-    return false
-  }
+  // checkDeleteToolAccess(): boolean {
+  //   if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
+  //     return true;
+  //   }
+  //   return false
+  // }
 
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
-      return true;
-    }
-    return false
-  }
+  // checkUpdateToolAccess(): boolean {
+  //   if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
+  //     return true;
+  //   }
+  //   return false
+  // }
 
-  checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
-      return true;
-    }
-    return false
-  }
+  // checkPriceAddToolAccess(): boolean {
+  //   if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
+  //     return true;
+  //   }
+  //   return false
+  // }
 
   // constructor(props: IProps) {
   //   super(props);
@@ -266,9 +266,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(book_generator_id: any) {
-    if (this.checkUpdateToolAccess() === false) {
-      return;
-    }
+    // if (this.checkUpdateToolAccess() === false) {
+    //   return;
+    // }
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
   }
 
@@ -295,9 +295,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(content: any) {
-    if (this.checkDeleteToolAccess() === false) {
-      return;
-    }
+    // if (this.checkDeleteToolAccess() === false) {
+    //   return;
+    // }
     this.selectedContent = content;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -308,9 +308,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveContent(content_id: string) {
-    if (this.checkDeleteToolAccess() === false) {
-      return;
-    };
+    // if (this.checkDeleteToolAccess() === false) {
+    //   return;
+    // };
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._bookContentService.remove(content_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveContent_error' } });
@@ -371,9 +371,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // generate modal function define
 
   getGenerateRow(content: any) {
-    if (this.checkDeleteToolAccess() === false) {
-      return;
-    }
+    // if (this.checkDeleteToolAccess() === false) {
+    //   return;
+    // }
     this.selectedContentGenerate = content;
     this.setState({ ...this.state, generateModalShow: true });
   }

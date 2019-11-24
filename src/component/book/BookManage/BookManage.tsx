@@ -54,29 +54,23 @@ interface IFilterBook {
     value: number | undefined,
     isValid: boolean
   };
-  cr_date_from: {
-    value: number | undefined,
-    isValid: boolean
+  cr_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean
   };
-  cr_date_to: {
-    value: number | undefined,
-    isValid: boolean
+  mo_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean
   };
-  mo_date_from: {
-    value: number | undefined,
-    isValid: boolean
-  };
-  mo_date_to: {
-    value: number | undefined,
-    isValid: boolean
-  };
-  pub_date_from: {
-    value: number | undefined,
-    isValid: boolean
-  };
-  pub_date_to: {
-    value: number | undefined,
-    isValid: boolean
+  pub_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean
   };
 }
 interface IState {
@@ -97,7 +91,6 @@ interface IState {
   setRemoveLoader: boolean;
   setPriceLoader: boolean;
   filter_state: IFilterBook;
-  final_filter: any;
   tags_inputValue: string;
 }
 
@@ -334,32 +327,25 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         value: undefined,
         isValid: false
       },
-      cr_date_from: {
-        value: undefined,
-        isValid: false
+      cr_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false
       },
-      cr_date_to: {
-        value: undefined,
-        isValid: false
+      mo_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false
       },
-      mo_date_from: {
-        value: undefined,
-        isValid: false
-      },
-      mo_date_to: {
-        value: undefined,
-        isValid: false
-      },
-      pub_date_from: {
-        value: undefined,
-        isValid: false
-      },
-      pub_date_to: {
-        value: undefined,
-        isValid: false
-      },
+      pub_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false
+      }
     },
-    final_filter: undefined,
     tags_inputValue: '',
   }
 
@@ -590,9 +576,62 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
   private set_searchFilter() {
     const obj: any = {};
+
     if (this.state.filter_state.title.isValid) {
-      // obj['title'] = `/${this.state.filter_state.title.value}/`;
+      // obj['title'] = { $eq: this.state.filter_state.title.value};
       obj['title'] = this.state.filter_state.title.value;
+    }
+
+    if (this.state.filter_state.type.isValid) {
+      let types: any[] = [];
+      for (let i = 0; i < (this.state.filter_state.type.value! as { value: string, label: string }[]).length; i++) {
+        types.push((this.state.filter_state.type.value! as { value: string, label: string }[])[i].value);
+      }
+      obj['type'] = { $in: types };
+    }
+
+    if (this.state.filter_state.genre.isValid) {
+      let genres: any[] = [];
+      for (let i = 0; i < (this.state.filter_state.genre.value! as { value: string, label: string }[]).length; i++) {
+        genres.push((this.state.filter_state.genre.value! as { value: string, label: string }[])[i].value);
+      }
+      obj['genre'] = { $all: genres };
+    }
+
+    if (this.state.filter_state.tags.value.length) {
+      let tags: any[] = [];
+      for (let i = 0; i < (this.state.filter_state.tags.value! as { value: string, label: string }[]).length; i++) {
+        tags.push((this.state.filter_state.tags.value! as { value: string, label: string }[])[i].value);
+      }
+      obj['tags'] = { $all: tags };
+    }
+
+    if (this.state.filter_state.price.isValid) {
+      obj['price'] = { $eq: this.state.filter_state.price.value }
+    }
+
+    if(this.state.filter_state.pub_date.from_isValid===true&&this.state.filter_state.pub_date.to_isValid===true){
+      obj['pub_year'] = {$and : [{ pub_year: { $gte : this.state.filter_state.pub_date.from } },{ pub_year: { $lte : this.state.filter_state.pub_date.to } }]}
+    }else if(this.state.filter_state.pub_date.from_isValid===true&&this.state.filter_state.pub_date.to_isValid===false){
+      obj['pub_year'] = { $gte: this.state.filter_state.pub_date.from }
+    }else if (this.state.filter_state.pub_date.from_isValid===false&&this.state.filter_state.pub_date.to_isValid===true){
+      obj['pub_year'] = { $lte: this.state.filter_state.pub_date.to }
+    }
+
+    if(this.state.filter_state.cr_date.from_isValid===true&&this.state.filter_state.cr_date.to_isValid===true){
+      obj['creation_date'] = {$and : [{ pub_year: { $gte : this.state.filter_state.cr_date.from } },{ pub_year: { $lte : this.state.filter_state.cr_date.to } }]}
+    }else if(this.state.filter_state.cr_date.from_isValid===true&&this.state.filter_state.cr_date.to_isValid===false){
+      obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
+    }else if (this.state.filter_state.cr_date.from_isValid===false&&this.state.filter_state.cr_date.to_isValid===true){
+      obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
+    }
+
+    if(this.state.filter_state.mo_date.from_isValid===true&&this.state.filter_state.mo_date.to_isValid===true){
+      obj['modification_date'] = {$and : [{ pub_year: { $gte : this.state.filter_state.mo_date.from } },{ pub_year: { $lte : this.state.filter_state.mo_date.to } }]}
+    }else if(this.state.filter_state.mo_date.from_isValid===true&&this.state.filter_state.mo_date.to_isValid===false){
+      obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from }
+    }else if (this.state.filter_state.mo_date.from_isValid===false&&this.state.filter_state.mo_date.to_isValid===true){
+      obj['modification_date'] = { $lte: this.state.filter_state.mo_date.to }
     }
 
     if (!Object.keys(obj).length) {
@@ -788,32 +827,25 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           value: undefined,
           isValid: false
         },
-        cr_date_from: {
-          value: undefined,
-          isValid: false
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false
         },
-        cr_date_to: {
-          value: undefined,
-          isValid: false
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false
         },
-        mo_date_from: {
-          value: undefined,
-          isValid: false
-        },
-        mo_date_to: {
-          value: undefined,
-          isValid: false
-        },
-        pub_date_from: {
-          value: undefined,
-          isValid: false
-        },
-        pub_date_to: {
-          value: undefined,
-          isValid: false
-        },
-      },
-      final_filter: undefined,
+        pub_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false
+        }
+      }
     }, () => this.repetReset())
   }
   repetReset() {
@@ -840,32 +872,25 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           value: undefined,
           isValid: false
         },
-        cr_date_from: {
-          value: undefined,
-          isValid: false
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false
         },
-        cr_date_to: {
-          value: undefined,
-          isValid: false
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false
         },
-        mo_date_from: {
-          value: undefined,
-          isValid: false
-        },
-        mo_date_to: {
-          value: undefined,
-          isValid: false
-        },
-        pub_date_from: {
-          value: undefined,
-          isValid: false
-        },
-        pub_date_to: {
-          value: undefined,
-          isValid: false
-        },
-      },
-      final_filter: undefined,
+        pub_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false
+        }
+      }
     })
   }
 
@@ -892,15 +917,36 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   };
 
-  handleInputChange(value: any, inputType: any) {
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid
+        }
+      }
+    })
+  }
+
+  handleInputChange(value: any, inputType: any , Validation : boolean = true) {
     let isValid;
-    if (value === undefined || value === '') {
-      isValid = false;
-    } else {
-      isValid = true;
+    if (inputType === 'title') {
+      if (value === undefined || value === '') {
+        isValid = false;
+      } else {
+        isValid = true;
+      }
     }
-    if (inputType === 'price' && typeof value === 'string') {
-      isValid = false;
+    if (inputType === 'price') {
+      if(value === undefined || Validation === false){
+        isValid = false;
+      }else{
+        isValid = true;
+      }
     }
     this.setState({
       ...this.state,
@@ -1017,7 +1063,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                   </div>
                   <div className="col-md-3 col-sm-6">
                     <FixNumber
-                      onChange={(value, isValid) => this.handleInputChange(value, "price")}
+                      onChange={(value, isValid) => this.handleInputChange(value, "price",isValid)}
                       label={Localization.price}
                       placeholder={Localization.price}
                       defaultValue={this.state.filter_state.price.value}
@@ -1027,29 +1073,26 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                   </div>
                   <div className="col-md-3 col-sm-6">
                     <AppRangePicker
-                      from={this.state.filter_state.pub_date_from.value}
-                      to={this.state.filter_state.pub_date_to.value}
-                      onFromChange={(value, isValid) => this.handleInputChange(value, 'pub_date_from')}
-                      onToChange={(value, isValid) => this.handleInputChange(value, 'pub_date_to')}
                       label={Localization.publication_date}
+                      from={this.state.filter_state.pub_date.from}
+                      to={this.state.filter_state.pub_date.to}
+                      onChange={(from, from_isValid, to, to_isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, 'pub_date')}
                     />
                   </div>
                   <div className="col-md-3 col-sm-6">
                     <AppRangePicker
-                      from={this.state.filter_state.cr_date_from.value}
-                      to={this.state.filter_state.cr_date_to.value}
-                      onFromChange={(value, isValid) => this.handleInputChange(value, 'cr_date_from')}
-                      onToChange={(value, isValid) => this.handleInputChange(value, 'cr_date_to')}
                       label={Localization.creation_date}
+                      from={this.state.filter_state.cr_date.from}
+                      to={this.state.filter_state.cr_date.to}
+                      onChange={(from, from_isValid, to, to_isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, 'cr_date')}
                     />
                   </div>
                   <div className="col-md-3 col-sm-6">
                     <AppRangePicker
-                      from={this.state.filter_state.mo_date_from.value}
-                      to={this.state.filter_state.mo_date_to.value}
-                      onFromChange={(value, isValid) => this.handleInputChange(value, 'mo_date_from')}
-                      onToChange={(value, isValid) => this.handleInputChange(value, 'mo_date_to')}
                       label={Localization.modification_date}
+                      from={this.state.filter_state.mo_date.from}
+                      to={this.state.filter_state.mo_date.to}
+                      onChange={(from, from_isValid, to, to_isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, 'mo_date')}
                     />
                   </div>
                 </div>

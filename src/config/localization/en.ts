@@ -26,6 +26,16 @@ export const en = {
             you_stop_uploading_process : 'you stoped the upload process',
             upload_process_error_msg : 'there is error in upload process',
             do_you_want_create_this_book_content : 'do you want build this book content ?',
+            admin_book_content_generate:{
+                just_one_Pdf_file_can_upload : 'You can only upload a file Please delete the previous file.',
+                book_not_created : 'This book has not been created yet.',
+                before_generate_request_result_pendding: 'Due to a previous request, the book creation process is in progress, please wait for the server response ...',
+                before_generate_request_result_fail: 'An error occurred while trying to create the previous book. Please try again.',
+                before_generate_request_result_success: 'The book creation process has already been successfully completed.',
+                after_generate_request_result_pendding: 'Book creation process in progress Please wait for server response ...',
+                after_generate_request_result_fail: 'Your current request to create the book has encountered an error. Please try again.',
+                after_generate_request_result_success: 'Book creation process completed successfully.',
+            }
         },
         back: {
             user_already_exists: 'user already exists',

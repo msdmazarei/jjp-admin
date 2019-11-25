@@ -121,6 +121,14 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
         toast.success(notifyBody, this.getNotifyConfig(config));
     }
 
+    toastNotify(notifyBody: string, config: ToastOptions, toastType: 'info' | 'success' | 'error' | 'warn') {
+        if (config.toastId && toast.isActive(config.toastId)) {
+            toast.update(config.toastId, this.getNotifyConfig(config));
+        } else {
+            toast[toastType](notifyBody, this.getNotifyConfig(config));
+        }
+    }
+
     waitOnMe(timer: number = 500): Promise<boolean> {
         return new Promise((res, rej) => {
             setTimeout(function () {

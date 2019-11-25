@@ -57,14 +57,14 @@ class PdfGeneratorComponent extends BaseComponent<IProps, IState> {
                 front_id: (this.props.body.length && this.props.body[0].front_id) ? this.props.body[0].front_id : AppGuid.generate(),
                 name: this.state.name,
                 pdf: this.state.pdf,
-                type: (this.props.body.length && this.props.body[0].type) ? this.props.body[0].type : 'Pdf',
+                type: (this.props.body.length && this.props.body[0].type) ? this.props.body[0].type : 'pdf',
             }
         ];
         this.props.onFileChange(newBody)
     }
 
-    removePreviousImgNotify() {
-        toast.warn(Localization.validation_msg.just_one_image_person_can_have, this.getNotifyConfig());
+    removePreviousPdfNotify() {
+        toast.warn(Localization.msg.ui.admin_book_content_generate.just_one_Pdf_file_can_upload, this.getNotifyConfig());
     }
 
     onDropRejected(files: any[], event: any) {
@@ -86,7 +86,7 @@ class PdfGeneratorComponent extends BaseComponent<IProps, IState> {
     onDropPdf(file: any[]) {
         if (!file || !file.length) return;
         if (this.state.pdf && this.state.pdf!.length) {
-            this.removePreviousImgNotify();
+            this.removePreviousPdfNotify();
             return;
         }
         this.pdf = file;

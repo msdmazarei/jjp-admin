@@ -810,7 +810,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
               book={this.selectedContentGenerate!.book}
               content_type={this.selectedContentGenerate.type}
               book_content_id={this.selectedContentGenerate.id}
-              content_inquiry_id={this.selectedContentGenerate.celery_task_id}
               modalShow={this.state.generateModalShow}
               onHide={() => this.onHideGenerateModal()}
             />

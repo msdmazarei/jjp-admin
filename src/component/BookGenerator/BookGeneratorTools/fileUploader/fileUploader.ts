@@ -208,17 +208,17 @@ export abstract class BGUtility {
                     break;
                 };
                 if (res && res.length) {
-                    let newBody: book_body_pdf = { front_id: current_id, type: 'Pdf', name: (array[i] as book_body_pdf).name, pdf: res[0] }
+                    let newBody: book_body_pdf = { front_id: current_id, type: 'pdf', name: (array[i] as book_body_pdf).name, pdf: res[0] }
                     BGUtility.PdfUploaded_id_obj_array.push(newBody);
                     BGUtility.Pdfuploaded_id.push(current_id);
                 };
             }
         }
         if (rejected) {
-            return [{ front_id: 'rejected', type: 'Pdf', name: 'rejected', pdf: 'rejected' }];
+            return [{ front_id: 'rejected', type: 'pdf', name: 'rejected', pdf: 'rejected' }];
         };
         if (stop) {
-            return [{ front_id: 'stop', type: 'Pdf', name: 'stop', pdf: 'stop' }];
+            return [{ front_id: 'stop', type: 'pdf', name: 'stop', pdf: 'stop' }];
         };
         const rtnArray = BGUtility.PdfUploaded_id_obj_array;
         BGUtility.PdfUploaded_id_obj_array = [];

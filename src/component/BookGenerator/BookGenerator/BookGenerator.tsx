@@ -127,8 +127,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             children: [],
         },
         Pdf_book: {
-            BookType: 3,
-            PackagingVersion: 3,
+            BookType: 1,
+            PackagingVersion: 0,
             title: undefined,
             children: [],
         },
@@ -165,8 +165,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-    async fetchContentById(book_generator_id: string) {
-        let res = await this._bookContentService.byId(book_generator_id).catch(error => {
+    async fetchContentById(book_content_id: string) {
+        let res = await this._bookContentService.byId(book_content_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchContentById_error' } });
         });
         // await this.__waitOnMe();
@@ -212,8 +212,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     contentType: come_contentType,
                     Pdf_book: {
                         ...this.state.Pdf_book,
-                        BookType: res.data.content.BookType ? res.data.content.BookType : 3,
-                        PackagingVersion: res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 3,
+                        BookType: res.data.content.BookType ? res.data.content.BookType : 1,
+                        PackagingVersion: res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
                         title: res.data.content.title ? res.data.content.title : "",
                         children: (res.data.content.children && res.data.content.children.length) ? res.data.content.children : [],
                     },
@@ -572,9 +572,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             ];
             let converted_content: Object = {
-                BookType: this.state.Audio_book.BookType,
-                PackagingVersion: this.state.Audio_book.PackagingVersion,
-                title: this.state.Audio_book.title,
+                BookType: this.state.Pdf_book.BookType,
+                PackagingVersion: this.state.Pdf_book.PackagingVersion,
+                title: this.state.Pdf_book.title,
                 children: convertedChildren,
             }
             let res = await this._bookContentService.create(
@@ -762,9 +762,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     }
                 ];
                 let converted_content: Object = {
-                    BookType: this.state.Audio_book.BookType,
-                    PackagingVersion: this.state.Audio_book.PackagingVersion,
-                    title: this.state.Audio_book.title,
+                    BookType: this.state.Pdf_book.BookType,
+                    PackagingVersion: this.state.Pdf_book.PackagingVersion,
+                    title: this.state.Pdf_book.title,
                     children: convertedChildren,
                 }
                 let res = await this._bookContentService.update(

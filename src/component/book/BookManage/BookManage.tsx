@@ -607,7 +607,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
 
     if (this.state.filter_state.price.isValid) {
-      obj['price'] = { $eq: this.state.filter_state.price.value }
+      obj['price'] =  Number(this.state.filter_state.price.value); 
     }
 
     if(this.state.filter_state.pub_date.from_isValid===true&&this.state.filter_state.pub_date.to_isValid===true){
@@ -972,11 +972,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   filter: any;
-
-
-
-
-
 
   /////  end onChange & search & reset function for search box ///////////
 

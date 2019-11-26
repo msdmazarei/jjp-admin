@@ -1125,7 +1125,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                                         onClick={() => this.create()}
                                                         disabled={this.btn_disable_status()}
                                                     >
-                                                        {Localization.create}
+                                                        {Localization.save + " " + Localization.content}
                                                     </BtnLoader>
                                                     <BtnLoader
                                                         loading={false}

@@ -613,7 +613,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
 
     if (this.state.filter_state.price.isValid) {
-      obj['price'] =  Number(this.state.filter_state.price.value); 
+      // obj['price'] = {$eq : Number(this.state.filter_state.price.value)}; 
+      obj['price'] = Number(this.state.filter_state.price.value); 
     }
 
     if(this.state.filter_state.pub_date.is_valid === true){

@@ -127,6 +127,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     content_status_old_inquiry_id: res.data.inquiry_result,
                 })
                 if (res.data.inquiry_result === 'SUCCESS') {
+                    this.clear_getFileStateBeforNewId();
                     this.setState({
                         ...this.state,
                         create_show: false,
@@ -135,6 +136,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     })
                 };
                 if (res.data.inquiry_result === 'FAILURE') {
+                    this.clear_getFileStateBeforNewId();
                     this.setState({
                         ...this.state,
                         create_show: true,
@@ -156,6 +158,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     content_status_new_inquiry_id: res.data.inquiry_result,
                 })
                 if (res.data.inquiry_result === 'SUCCESS') {
+                    this.clear_getFileStateAfterNewId();
                     this.setState({
                         ...this.state,
                         create_show: false,
@@ -164,6 +167,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     })
                 };
                 if (res.data.inquiry_result === 'FAILURE') {
+                    this.clear_getFileStateAfterNewId();
                     this.setState({
                         ...this.state,
                         create_show: true,
@@ -210,13 +214,13 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                 if (this.state.content_status_old_inquiry_id === 'SUCCESS' || this.state.content_status_old_inquiry_id === 'FAILURE') {
                     this.clear_getFileStateBeforNewId();
                 }
-                if (this.state.content_status_old_inquiry_id === 'PENDING') {
-                    this.getFileStateBeforNewId();
-                }
+                // if (this.state.content_status_old_inquiry_id === 'PENDING') {
+                //     this.getFileStateBeforNewId();
+                // }
             } else {
                 this.clear_getFileStateBeforNewId();
             }
-        }, 2000);
+        }, 3000);
     }
 
     clear_getFileStateBeforNewId() {
@@ -233,13 +237,13 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                 if (this.state.content_status_new_inquiry_id === 'SUCCESS' || this.state.content_status_new_inquiry_id === 'FAILURE') {
                     this.clear_getFileStateAfterNewId();
                 }
-                if (this.state.content_status_old_inquiry_id === 'PENDING') {
-                    this.getFileStateAfterNewId();
-                }
+                // if (this.state.content_status_old_inquiry_id === 'PENDING') {
+                //     this.getFileStateAfterNewId();
+                // }
             } else {
                 this.clear_getFileStateAfterNewId();
             }
-        }, 2000);
+        }, 3000);
     }
 
     clear_getFileStateAfterNewId() {

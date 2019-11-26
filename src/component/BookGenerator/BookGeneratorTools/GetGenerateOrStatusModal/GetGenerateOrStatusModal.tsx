@@ -23,14 +23,16 @@ interface IProps {
 interface IState {
     old_inquiry_id_fetch_status: boolean;
     old_inquiry_id: string | undefined;
-    new_inquiry_id: string | undefined;
+    new_inquiry_id: string | undefined | null;
     content_status_old_inquiry_id: string | undefined;
     content_status_new_inquiry_id: string | undefined;
+    create_show: boolean;
     create_btn_loading_status: boolean;
     create_btn_disable_status: boolean;
+    retry_show: boolean;
     retry_btn_loading_status: boolean,
     retry_btn_disable_status: boolean,
-    retry_first_dont_show: boolean;
+    generete_func_btn_is_touch: boolean;
 }
 
 class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps, IState>{
@@ -40,11 +42,13 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
         new_inquiry_id: undefined,
         content_status_old_inquiry_id: undefined,
         content_status_new_inquiry_id: undefined,
+        create_show: false,
         create_btn_loading_status: false,
-        create_btn_disable_status: true,
+        create_btn_disable_status: false,
+        retry_show: false,
         retry_btn_loading_status: false,
-        retry_btn_disable_status: true,
-        retry_first_dont_show: false,
+        retry_btn_disable_status: false,
+        generete_func_btn_is_touch: false,
     }
 
     private _getContentService = new BookGeneratorService();
@@ -56,15 +60,24 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
     async fetchContentById(book_content_id: string) {
         this.setState({ ...this.state, retry_btn_loading_status: true, retry_btn_disable_status: true })
         let res = await this._getContentService.byId(book_content_id).catch(error => {
-            this.setState({ ...this.state, retry_btn_loading_status: false, retry_btn_disable_status: false, retry_first_dont_show: true });
-            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchContentById_error_modal' } });
+            this.toastNotify(Localization.msg.ui.admin_book_content_generate.content_status_query_error_try_again, { toastId: 'fetchContentById_error_modal' }, 'error');
         });
         if (res) {
             this.setState({
                 ...this.state,
                 old_inquiry_id_fetch_status: true,
                 old_inquiry_id: res.data.celery_task_id === null ? undefined : res.data.celery_task_id,
+                retry_show: false,
+                retry_btn_loading_status: false,
+                retry_btn_disable_status: true,
             }, () => this.afterFetchDidMount_Func())
+        } else {
+            this.setState({
+                ...this.state,
+                retry_show: true,
+                retry_btn_loading_status: false,
+                retry_btn_disable_status: false,
+            })
         }
     }
 
@@ -74,10 +87,10 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
         } else if (this.state.old_inquiry_id_fetch_status === true && this.state.old_inquiry_id === undefined) {
             this.setState({
                 ...this.state,
+                create_show: true,
+                create_btn_loading_status: false,
                 create_btn_disable_status: false,
             })
-        } else {
-            /// retry btn define
         }
     }
 
@@ -85,69 +98,105 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
         clearTimeout(this._getFileStateBeforNewId_timer);
         clearTimeout(this._getFileStateAfterNewId_timer);
         this.setState({
+            old_inquiry_id_fetch_status: false,
             old_inquiry_id: undefined,
             new_inquiry_id: undefined,
             content_status_old_inquiry_id: undefined,
             content_status_new_inquiry_id: undefined,
+            create_show: false,
             create_btn_loading_status: false,
-            create_btn_disable_status: true,
+            create_btn_disable_status: false,
+            retry_show: false,
+            retry_btn_loading_status: false,
+            retry_btn_disable_status: false,
+            generete_func_btn_is_touch: false,
         })
     }
 
     async fetchContentStatus(inquiry_id: string) {
         let res = await this._getContentService.getbookBuildStatus(inquiry_id).catch(e => {
-            this.handleError(e.error)
+            this.handleError({ error: e.error, toastOptions: { toastId: 'toster_msg_func_warn', type: 'error' } });
+            this.clear_getFileStateBeforNewId();
+            this.clear_getFileStateAfterNewId();
+            this.props.onHide();
         })
         if (res) {
-            if (this.state.new_inquiry_id === undefined) {
-                if (res.data.inquiry_result === 'SUCCESS' || res.data.inquiry_result === 'FAILURE') {
-                    this.clear_getFileStateBeforNewId();
-                    if (res.data.inquiry_result === 'FAILURE') {
-                        this.setState({
-                            ...this.state,
-                            create_btn_loading_status: false,
-                            create_btn_disable_status: false,
-                        })
-                    }
-                }
+            if (this.state.generete_func_btn_is_touch === false) {
                 this.setState({
                     ...this.state,
                     content_status_old_inquiry_id: res.data.inquiry_result,
                 })
+                if (res.data.inquiry_result === 'SUCCESS') {
+                    this.setState({
+                        ...this.state,
+                        create_show: false,
+                        create_btn_loading_status: false,
+                        create_btn_disable_status: false,
+                    })
+                };
+                if (res.data.inquiry_result === 'FAILURE') {
+                    this.setState({
+                        ...this.state,
+                        create_show: true,
+                        create_btn_loading_status: false,
+                        create_btn_disable_status: false,
+                    })
+                };
+                if (res.data.inquiry_result === 'PENDING') {
+                    this.setState({
+                        ...this.state,
+                        create_show: true,
+                        create_btn_loading_status: true,
+                        create_btn_disable_status: true,
+                    }, () => this.getFileStateBeforNewId())
+                };
             } else {
-                if (res.data.inquiry_result === 'SUCCESS' || res.data.inquiry_result === 'FAILURE') {
-                    this.clear_getFileStateAfterNewId();
-                    if (res.data.inquiry_result === 'FAILURE') {
-                        this.setState({
-                            ...this.state,
-                            create_btn_loading_status: false,
-                            create_btn_disable_status: false,
-                        })
-                    }
-                }
                 this.setState({
                     ...this.state,
                     content_status_new_inquiry_id: res.data.inquiry_result,
                 })
+                if (res.data.inquiry_result === 'SUCCESS') {
+                    this.setState({
+                        ...this.state,
+                        create_show: false,
+                        create_btn_loading_status: false,
+                        create_btn_disable_status: false,
+                    })
+                };
+                if (res.data.inquiry_result === 'FAILURE') {
+                    this.setState({
+                        ...this.state,
+                        create_show: true,
+                        create_btn_loading_status: false,
+                        create_btn_disable_status: false,
+                    })
+                };
+                if (res.data.inquiry_result === 'PENDING') {
+                    this.setState({
+                        ...this.state,
+                        create_show: true,
+                        create_btn_loading_status: true,
+                        create_btn_disable_status: true,
+                    }, () => this.getFileStateAfterNewId())
+                };
             }
         }
     }
 
     async onGenerateContent(content_id: string) {
-        this.setState({ ...this.state, create_btn_disable_status: true, create_btn_loading_status: true });
+        this.clear_getFileStateBeforNewId();
+        this.setState({ ...this.state, create_btn_disable_status: true, create_btn_loading_status: true, generete_func_btn_is_touch: true });
         let res = await this._getContentService.bookBuild(content_id).catch(error => {
-            this.handleError({ error: error.response, toastOptions: { toastId: 'onGenerateContent_error' } });
+            this.handleError({ error: error.response, toastOptions: { type: 'error', toastId: 'onGenerateContent_error' } });
             this.setState({ ...this.state, create_btn_disable_status: false, create_btn_loading_status: false });
         });
         if (res) {
-            if (res) {
-                this.setState({
-                    ...this.state,
-                    new_inquiry_id: res.data.inquiry_id,
-                    create_btn_loading_status: false,
-                    create_btn_disable_status: true
-                }, () => this.getFileStateAfterNewId());
-            }
+            this.setState({
+                ...this.state,
+                new_inquiry_id: res.data.inquiry_id,
+                create_btn_loading_status: false,
+                create_btn_disable_status: true
+            }, () => this.getFileStateAfterNewId());
         }
     }
 
@@ -157,26 +206,15 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
 
             this.fetchContentStatus(this.state.old_inquiry_id!);
 
-            if (this.state.new_inquiry_id === undefined) {
+            if (this.state.generete_func_btn_is_touch === false) {
                 if (this.state.content_status_old_inquiry_id === 'SUCCESS' || this.state.content_status_old_inquiry_id === 'FAILURE') {
                     this.clear_getFileStateBeforNewId();
-                    if (this.state.content_status_old_inquiry_id === 'FAILURE') {
-                        this.setState({
-                            ...this.state,
-                            create_btn_loading_status: false,
-                            create_btn_disable_status: false,
-                        })
-                    }
-                } else if (this.state.content_status_old_inquiry_id === 'PENDING') {
-                    this.setState({
-                        ...this.state,
-                        create_btn_loading_status: true,
-                        create_btn_disable_status: true,
-                    })
-                    this.getFileStateBeforNewId();
-                } else {
+                }
+                if (this.state.content_status_old_inquiry_id === 'PENDING') {
                     this.getFileStateBeforNewId();
                 }
+            } else {
+                this.clear_getFileStateBeforNewId();
             }
         }, 2000);
     }
@@ -191,36 +229,15 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
 
             this.fetchContentStatus(this.state.new_inquiry_id!);
 
-            if (this.state.content_status_new_inquiry_id === 'SUCCESS' || this.state.content_status_new_inquiry_id === 'FAILURE') {
-                this.clear_getFileStateAfterNewId();
-                if (this.state.content_status_new_inquiry_id === 'SUCCESS') {
-                    this.setState({
-                        ...this.state,
-                        create_btn_loading_status: false,
-                        create_btn_disable_status: true,
-                    })
+            if (this.state.generete_func_btn_is_touch === true) {
+                if (this.state.content_status_new_inquiry_id === 'SUCCESS' || this.state.content_status_new_inquiry_id === 'FAILURE') {
+                    this.clear_getFileStateAfterNewId();
                 }
-                if (this.state.content_status_new_inquiry_id === 'FAILURE') {
-                    this.setState({
-                        ...this.state,
-                        create_btn_loading_status: false,
-                        create_btn_disable_status: false,
-                    })
+                if (this.state.content_status_old_inquiry_id === 'PENDING') {
+                    this.getFileStateAfterNewId();
                 }
-            } else if (this.state.content_status_old_inquiry_id === 'PENDING') {
-                this.setState({
-                    ...this.state,
-                    create_btn_loading_status: true,
-                    create_btn_disable_status: true,
-                })
-                this.getFileStateAfterNewId();
             } else {
-                this.setState({
-                    ...this.state,
-                    create_btn_loading_status: true,
-                    create_btn_disable_status: true,
-                })
-                this.getFileStateAfterNewId();
+                this.clear_getFileStateAfterNewId();
             }
         }, 2000);
     }
@@ -243,7 +260,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
             this.toastNotify(msg, { toastId: 'toster_msg_func_success_1' }, 'success');
         }
         if (status === 22) {
-            this.toastNotify(msg, { toastId: 'toster_msg_func_warn_2' }, 'warn');
+            this.toastNotify(msg, { toastId: 'toster_msg_func_warn_1' }, 'warn');
         }
         if (status === 33) {
             this.toastNotify(msg, { toastId: 'toster_msg_func_error_2' }, 'error');
@@ -254,7 +271,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
     }
 
     status_returner(): string {
-        if (this.state.new_inquiry_id === undefined) {
+        if (this.state.generete_func_btn_is_touch === false) {
             if (this.state.old_inquiry_id_fetch_status === true && this.state.old_inquiry_id === undefined && this.state.content_status_old_inquiry_id === undefined) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.book_not_created, 1);
                 return Localization.msg.ui.admin_book_content_generate.book_not_created;
@@ -288,41 +305,12 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
         return ''
     }
 
-    create_status(): boolean {
-        if (this.state.old_inquiry_id_fetch_status === false && this.state.new_inquiry_id === undefined) {
-            return false;
-        };
-        if (this.state.new_inquiry_id === undefined) {
-            if (this.state.old_inquiry_id_fetch_status === true && this.state.content_status_old_inquiry_id === undefined) {
-                return false;
-            };
-            if (this.state.old_inquiry_id_fetch_status === true && this.state.content_status_old_inquiry_id === 'SUCCESS') {
-                return false;
-            };
-            if (this.state.old_inquiry_id_fetch_status === true && this.state.content_status_old_inquiry_id === 'PENDING') {
-                return true;
-            };
-            if (this.state.old_inquiry_id_fetch_status === true && this.state.content_status_old_inquiry_id === 'FAILURE') {
-                return true;
-            };
-        }
-        if (this.state.new_inquiry_id !== undefined) {
-            if (this.state.content_status_new_inquiry_id === undefined) {
-                return false;
-            };
-            if (this.state.content_status_new_inquiry_id === 'SUCCESS') {
-                return false;
-            };
-            if (this.state.content_status_new_inquiry_id === 'PENDING') {
-                return true;
-            };
-            if (this.state.content_status_new_inquiry_id === 'FAILURE') {
-                return true;
-            };
-        }
-
-        return false;
+    internal_onHide_func() {
+        this.clear_getFileStateBeforNewId();
+        this.clear_getFileStateAfterNewId();
+        this.props.onHide();
     }
+
 
     render_generate_modal() {
         return (
@@ -346,12 +334,28 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                             <span className="text-muted">{Localization.type + " " + Localization.content}:&nbsp;</span>
                             {Localization[this.props.content_type]}
                         </p>
-                        <p>
-                            <span className="text-muted">{Localization.status + " " + Localization.content}:&nbsp;</span>
-                            {this.status_returner()}
-                        </p>
                         {
-                            this.create_status() === true
+                            (this.state.retry_show === true || this.state.old_inquiry_id_fetch_status === false)
+                                ?
+                                <p>
+                                    <span className="text-muted">{Localization.status + " " + Localization.content}:&nbsp;</span>
+                                    {
+                                        (this.state.retry_btn_loading_status === true && this.state.old_inquiry_id_fetch_status === false)
+                                            ?
+                                            Localization.msg.ui.admin_book_content_generate.Inquiring
+                                            :
+                                            ''
+                                    }
+                                </p>
+                                :
+                                <p>
+                                    <span className="text-muted">{Localization.status + " " + Localization.content}:&nbsp;</span>
+                                    {this.status_returner()}
+                                </p>
+                        }
+
+                        {
+                            this.state.create_show === true
                                 ?
                                 <p className="text-success">{Localization.msg.ui.do_you_want_create_this_book_content}</p>
                                 :
@@ -361,11 +365,11 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     <Modal.Footer>
                         <button
                             className="btn btn-light shadow-default shadow-hover"
-                            onClick={() => this.props.onHide()}>
+                            onClick={() => this.internal_onHide_func()}>
                             {Localization.close}
                         </button>
                         {
-                            this.create_status() === true
+                            this.state.create_show === true
                                 ?
                                 <BtnLoader
                                     btnClassName="btn btn-success shadow-default shadow-hover"
@@ -379,7 +383,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                                 undefined
                         }
                         {
-                            (this.state.old_inquiry_id_fetch_status === false && this.state.retry_first_dont_show === true)
+                            (this.state.retry_show === true)
                                 ?
                                 <BtnLoader
                                     btnClassName="btn btn-success shadow-default shadow-hover"

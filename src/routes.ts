@@ -184,7 +184,7 @@ var routes = [
   // generator start
   {
     path: "/book_generator/manage",
-    name: Localization.upload,
+    name: Localization.content,
     icon: "fa fa-upload",
     component: BookGeneratorManage,
     layout: "/admin",

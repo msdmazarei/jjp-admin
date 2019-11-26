@@ -338,6 +338,7 @@ export const ar = {
     control : 'کنترل',
     voice : 'فایل صوتی',
     selected_range_is_not_valid : 'بازه زمانی انتخاب شده معتبر نیست',
+    save : 'ذخیره',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

@@ -338,6 +338,7 @@ export const en = {
     control : 'control',
     voice : 'voice file',
     selected_range_is_not_valid : 'selected range invalid',
+    save : 'save',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

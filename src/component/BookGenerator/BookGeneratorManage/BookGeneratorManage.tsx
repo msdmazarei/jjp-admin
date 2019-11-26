@@ -190,7 +190,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         {
           text: <i title={Localization.create} className="fa fa-wrench text-dark"></i>,
           ac_func: (row: any) => { this.getGenerateRow(row) },
-          name: Localization.create
+          name: Localization.create + " " + Localization.content
         },
       ]
     },

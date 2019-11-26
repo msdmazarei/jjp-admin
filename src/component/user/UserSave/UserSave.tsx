@@ -290,7 +290,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
-            filter = { person: inputValue };
+            filter = { full_name: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2User_error' } });

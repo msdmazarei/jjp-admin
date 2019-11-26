@@ -48,6 +48,8 @@ interface ILocalization extends LocalizedStringsMethods {
                 after_generate_request_result_pendding: string;
                 after_generate_request_result_fail: string;
                 after_generate_request_result_success: string;
+                content_status_query_error_try_again : string;
+                Inquiring : string;
             }
         },
         back: {
@@ -350,6 +352,7 @@ interface ILocalization extends LocalizedStringsMethods {
     text : string;
     control :string;
     voice: string;
+    selected_range_is_not_valid : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

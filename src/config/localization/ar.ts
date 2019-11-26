@@ -35,6 +35,8 @@ export const ar = {
                 after_generate_request_result_pendding: 'فرآیند ایجاد کتاب در حال انجام است لطفا منتظر پاسخ سرور باشید...',
                 after_generate_request_result_fail: 'درخواست فعلی شما برای ایجاد کتاب با خطا مواجه شده است لطفا مجددا تلاش کنید. ',
                 after_generate_request_result_success: 'فرآیند ایجاد کتاب با موفقیت به پایان رسید.',
+                content_status_query_error_try_again : 'استعلام وضعیت محتوا با خطا مواجه شد، لطفا مجددا تلاش کنید.',
+                Inquiring :'در حال استعلام گیری ...',
             }
         },
         back: {
@@ -335,6 +337,7 @@ export const ar = {
     text : 'متن',
     control : 'کنترل',
     voice : 'فایل صوتی',
+    selected_range_is_not_valid : 'بازه زمانی انتخاب شده معتبر نیست',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

@@ -35,6 +35,8 @@ export const en = {
                 after_generate_request_result_pendding: 'Book creation process in progress Please wait for server response ...',
                 after_generate_request_result_fail: 'Your current request to create the book has encountered an error. Please try again.',
                 after_generate_request_result_success: 'Book creation process completed successfully.',
+                content_status_query_error_try_again : 'Error in content status query, please try again.',
+                Inquiring :'Inquiring ...',
             }
         },
         back: {
@@ -335,6 +337,7 @@ export const en = {
     text : 'text',
     control : 'control',
     voice : 'voice file',
+    selected_range_is_not_valid : 'selected range invalid',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

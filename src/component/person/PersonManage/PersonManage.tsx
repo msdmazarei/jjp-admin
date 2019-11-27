@@ -13,12 +13,17 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { Input } from "../../form/input/Input";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
+import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
+import { Input } from "../../form/input/Input";
+import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
+import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 
 //// props & state define ////////
 export interface IProps {
@@ -28,10 +33,42 @@ export interface IProps {
 }
 
 interface IFilterPerson {
-  person: {
-    value: string | undefined;
-    isValid: boolean;
+  name: {
+    value: string | undefined,
+    isValid: boolean
   };
+  full_name: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  is_legal: {
+    value: {value : string , label : string} | null,
+    is_legal : boolean | null,
+    isValid: boolean
+  };
+  cr_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  cell_no: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  email: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  phone: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  creator: {
+    value: string | undefined,
+    isValid: boolean
+  }
 }
 
 interface IState {
@@ -51,13 +88,17 @@ interface IState {
   setPriceLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
-  filter: IFilterPerson,
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
+  filter_state: IFilterPerson;
 }
 ///// define class of Person //////
 class PersonManageComponent extends BaseComponent<IProps, IState>{
 
+  is_legalOptions = [
+    { value: Localization.legal_person, label: Localization.legal_person },
+    { value: Localization.real_person, label: Localization.real_person },
+  ];
   state = {
     person_table: {
       list: [],
@@ -192,11 +233,49 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     searchVal: undefined,
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
+    filter_state: {
+      name: {
+        value: undefined,
+        isValid: false
+      },
+      full_name: {
+        value: undefined,
+        isValid: false
+      },
+      is_legal: {
+        value: null,
+        is_legal : null,
+        isValid: false
+      },
+      cr_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      cell_no: {
+        value: undefined,
+        isValid: false
+      },
+      email: {
+        value: undefined,
+        isValid: false
+      },
+      phone: {
+        value: undefined,
+        isValid: false
+      },
+      creator: {
+        value: undefined,
+        isValid: false
+      },
+    },
   }
 
   componentDidMount() {
     if (this.checkPersonManagePageRender() === true) {
-      if(AccessService.checkAccess('PERSON_GET_PREMIUM')){
+      if (AccessService.checkAccess('PERSON_GET_PREMIUM')) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -346,7 +425,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._personService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      this.get_searchFilter()
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPersons_error' } });
       this.setState({
@@ -486,32 +565,57 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/person/create');
   }
 
-  /////  onChange & search & reset function for search box ///////////
 
-  handleFilterInputChange(value: string, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        person: {
-          value, isValid
-        }
-      },
-    });
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
   }
+  private set_searchFilter() {
+    const obj: any = {};
 
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        person: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
+    if (this.state.filter_state.name.isValid) {
+      obj['name'] = { $prefix: this.state.filter_state.name.value };
+    }
+
+    if (this.state.filter_state.full_name.isValid) {
+      obj['full_name'] = { $prefix: this.state.filter_state.full_name.value };
+    }
+
+    if (this.state.filter_state.is_legal.isValid) {
+      obj['is_legal'] = { $eq: this.state.filter_state.is_legal.is_legal };
+    }
+
+    if (this.state.filter_state.cr_date.is_valid === true) {
+      if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
+      } else if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === false) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
+      } else if (this.state.filter_state.cr_date.from_isValid === false && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
+      }
+    }
+
+    if (this.state.filter_state.cell_no.isValid) {
+      obj['cell_no'] = { $prefix: this.state.filter_state.cell_no.value };
+    }
+
+    if (this.state.filter_state.email.isValid) {
+      obj['email'] = { $prefix: this.state.filter_state.email.value };
+    }
+
+    if (this.state.filter_state.phone.isValid) {
+      obj['phone'] = { $prefix: this.state.filter_state.phone.value };
+    }
+
+    if (this.state.filter_state.creator.isValid) {
+      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
+    }
+
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
   }
 
   filterSearch() {
@@ -522,36 +626,168 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       pager_offset: 0
     }, () => {
       // this.gotoTop();
-      this.setFilter();
+      // this.setFilter();
+      this.set_searchFilter();
       this.fetchPersons()
     });
   }
 
-  private _filter: IFilterPerson = {
-    person: { value: undefined, isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.person.value) {
-      return false;
-    }
-    // if ....
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.person.isValid) {
-        obj['person'] = this._filter.person.value;
+  /////  start onChange & search & reset function for search box ///////////
+
+  filter_state_reset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        name: {
+          value: undefined,
+          isValid: false
+        },
+        full_name: {
+          value: undefined,
+          isValid: false
+        },
+        is_legal: {
+          value: null,
+          is_legal : null,
+          isValid: false
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        cell_no: {
+          value: undefined,
+          isValid: false
+        },
+        email: {
+          value: undefined,
+          isValid: false
+        },
+        phone: {
+          value: undefined,
+          isValid: false
+        },
+        creator: {
+          value: undefined,
+          isValid: false
+        },
       }
-      // if  ....
-      return obj;
-    }
-    return;
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        name: {
+          value: undefined,
+          isValid: false
+        },
+        full_name: {
+          value: undefined,
+          isValid: false
+        },
+        is_legal: {
+          value: null,
+          is_legal : null,
+          isValid: false
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        cell_no: {
+          value: undefined,
+          isValid: false
+        },
+        email: {
+          value: undefined,
+          isValid: false
+        },
+        phone: {
+          value: undefined,
+          isValid: false
+        },
+        creator: {
+          value: undefined,
+          isValid: false
+        },
+      }
+    })
   }
 
+  is_legal_of_person_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        is_legal: {
+          value: null,
+          is_legal : null,
+          isValid: false,
+        }
+      }
+    })
+  }
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
+
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
+      }
+    })
+  }
+
+  handleSelectInputChange(type: { value: string , label: string } | null, inputType: any) {
+    let isValid;
+    let newVal : boolean | null = null;
+    if (type === null) {
+      newVal = null;
+      isValid = false;
+    } else {
+      newVal = type.value === Localization.legal_person ? true : false;
+      isValid = true;
+    }
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: type , is_legal : newVal , isValid: isValid }
+      }
+    })
+  }
+
+  filter: any;
+
+  /////  end onChange & search & reset function for search box ///////////
 
   //// render call Table component ///////
 
@@ -582,20 +818,88 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             AccessService.checkAccess('PERSON_GET_PREMIUM')
               ?
               <>
+                {/* start search box */}
                 <div className="row">
                   <div className="col-12">
                     <div className="template-box mb-4">
+                      {/* start search box inputs */}
                       <div className="row">
-                        <div className="col-sm-6 col-xl-4">
+                        <div className="col-md-3 col-sm-6">
                           <Input
-                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                            label={Localization.name_or_lastname}
-                            placeholder={Localization.name_or_lastname}
-                            defaultValue={this.state.filter.person.value}
+                            onChange={(value, isValid) => this.handleInputChange(value, 'name')}
+                            label={Localization.name}
+                            placeholder={Localization.name}
+                            defaultValue={this.state.filter_state.name.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'full_name')}
+                            label={Localization.lastname}
+                            placeholder={Localization.lastname}
+                            defaultValue={this.state.filter_state.full_name.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <div className="form-group">
+                            <label htmlFor="">{Localization.type}</label>
+                            <i
+                              title={Localization.reset}
+                              className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                              onClick={() => this.is_legal_of_person_in_search_remover()}
+                            ></i>
+                            <Select
+                              onChange={(value: any) => this.handleSelectInputChange(value, 'is_legal')}
+                              options={this.is_legalOptions}
+                              value={this.state.filter_state.is_legal.value}
+                              placeholder={Localization.type}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.creation_date}
+                            from={this.state.filter_state.cr_date.from}
+                            to={this.state.filter_state.cr_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'cell_no')}
+                            label={Localization.cell_no}
+                            placeholder={Localization.cell_no}
+                            defaultValue={this.state.filter_state.cell_no.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'email')}
+                            label={Localization.email}
+                            placeholder={Localization.email}
+                            defaultValue={this.state.filter_state.email.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'phone')}
+                            label={Localization.phone}
+                            placeholder={Localization.phone}
+                            defaultValue={this.state.filter_state.phone.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                            label={Localization.creator}
+                            placeholder={Localization.creator}
+                            defaultValue={this.state.filter_state.creator.value}
                           />
                         </div>
                       </div>
-                      <div className="row">
+                      {/* end search box inputs */}
+                      {/* start search btns box */}
+                      <div className="row mt-1">
                         <div className="col-12">
                           <BtnLoader
                             disabled={this.state.tableProcessLoader}
@@ -609,15 +913,17 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                             // disabled={this.state.tableProcessLoader}
                             loading={false}
                             btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                            onClick={() => this.filterReset()}
+                            onClick={() => this.filter_state_reset()}
                           >
                             {Localization.reset}
                           </BtnLoader>
                         </div>
                       </div>
+                      {/* end search btns box */}
                     </div>
                   </div>
                 </div>
+                {/* end search  box */}
                 <div className="row">
                   <div className="col-12">
                     <Table loading={this.state.tableProcessLoader} list={this.state.person_table.list} colHeaders={this.state.person_table.colHeaders} actions={this.state.person_table.actions}></Table>

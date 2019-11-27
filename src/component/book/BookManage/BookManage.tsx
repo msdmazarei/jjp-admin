@@ -25,6 +25,10 @@ import { FixNumber } from "../../form/fix-number/FixNumber";
 import { AccessService } from "../../../service/service.access"
 import Select from 'react-select';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { IPerson } from "../../../model/model.person";
+import AsyncSelect from 'react-select/async';
+import { PersonService } from "../../../service/service.person";
+import { Store2 } from "../../../redux/store";
 
 /// define props & state ///////
 export interface IProps {
@@ -59,22 +63,31 @@ interface IFilterBook {
     from_isValid: boolean,
     to: number | undefined,
     to_isValid: boolean,
-    is_valid : boolean,
+    is_valid: boolean,
   };
   mo_date: {
     from: number | undefined,
     from_isValid: boolean,
     to: number | undefined,
     to_isValid: boolean,
-    is_valid : boolean,
+    is_valid: boolean,
   };
   pub_date: {
     from: number | undefined,
     from_isValid: boolean,
     to: number | undefined,
     to_isValid: boolean,
-    is_valid : boolean,
+    is_valid: boolean,
   };
+  press: {
+    value: { label: string, value: IPerson } | null;
+    person_id: string | undefined;
+    is_valid: boolean,
+  };
+  creator: {
+    value: string | undefined,
+    isValid: boolean
+  }
 }
 interface IState {
   book_table: IProps_table;
@@ -350,7 +363,16 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         to: undefined,
         to_isValid: false,
         is_valid: false,
-      }
+      },
+      press: {
+        value: null,
+        person_id: undefined,
+        is_valid: false,
+      },
+      creator: {
+        value: undefined,
+        isValid: false,
+      },
     },
     tags_inputValue: '',
   }
@@ -358,6 +380,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   selectedBook: IBook | undefined;
   private _bookService = new BookService();
   private _priceService = new PriceService();
+  private _personService = new PersonService();
 
   componentDidMount() {
     moment.locale("en");
@@ -584,8 +607,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     const obj: any = {};
 
     if (this.state.filter_state.title.isValid) {
-      obj['title'] = "/" + this.state.filter_state.title.value + "/";
-      // obj['title'] = {$regex: this.state.filter_state.title.value} ;
+      // obj['title'] = "/" + this.state.filter_state.title.value + "/";
+      obj['title'] = {$prefix : this.state.filter_state.title.value} ;
     }
 
     if (this.state.filter_state.type.isValid) {
@@ -594,6 +617,29 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         types.push((this.state.filter_state.type.value! as { value: string, label: string }[])[i].value);
       }
       obj['type'] = { $in: types };
+    }
+
+    let persons_of_press: string[];
+    persons_of_press = [];
+    const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+    persons_of_press = [...wrapper];
+    if (this.state.filter_state.press.is_valid === true){
+      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0){
+        persons_of_press.push(this.state.filter_state.press.person_id!);
+        obj['press'] = { $in: persons_of_press };
+        persons_of_press = [];
+      }else{
+        obj['press'] = { $in: [this.state.filter_state.press.person_id] };
+      }
+    }else{
+      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0){
+        obj['press'] = { $in: persons_of_press };
+      }
+    }
+
+    if (this.state.filter_state.creator.isValid) {
+      // obj['creator'] = "/" + this.state.filter_state.creator.value + "/";
+      obj['creator'] = {$prefix: this.state.filter_state.creator.value} ;
     }
 
     if (this.state.filter_state.genre.isValid) {
@@ -613,36 +659,36 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
 
     if (this.state.filter_state.price.isValid) {
-      // obj['price'] = {$eq : Number(this.state.filter_state.price.value)}; 
-      obj['price'] = Number(this.state.filter_state.price.value); 
+      obj['price'] = {$eq : Number(this.state.filter_state.price.value)}; 
+      // obj['price'] = Number(this.state.filter_state.price.value);
     }
 
-    if(this.state.filter_state.pub_date.is_valid === true){
-      if(this.state.filter_state.pub_date.from_isValid===true&&this.state.filter_state.pub_date.to_isValid===true){
-        obj['pub_year'] = {$gte : this.state.filter_state.pub_date.from ,$lte : (this.state.filter_state.pub_date.to! + 86400)}
-      }else if(this.state.filter_state.pub_date.from_isValid===true&&this.state.filter_state.pub_date.to_isValid===false){
+    if (this.state.filter_state.pub_date.is_valid === true) {
+      if (this.state.filter_state.pub_date.from_isValid === true && this.state.filter_state.pub_date.to_isValid === true) {
+        obj['pub_year'] = { $gte: this.state.filter_state.pub_date.from, $lte: (this.state.filter_state.pub_date.to! + 86400) }
+      } else if (this.state.filter_state.pub_date.from_isValid === true && this.state.filter_state.pub_date.to_isValid === false) {
         obj['pub_year'] = { $gte: this.state.filter_state.pub_date.from }
-      }else if (this.state.filter_state.pub_date.from_isValid===false&&this.state.filter_state.pub_date.to_isValid===true){
+      } else if (this.state.filter_state.pub_date.from_isValid === false && this.state.filter_state.pub_date.to_isValid === true) {
         obj['pub_year'] = { $lte: this.state.filter_state.pub_date.to }
       }
     }
 
-    if(this.state.filter_state.cr_date.is_valid === true){
-      if(this.state.filter_state.cr_date.from_isValid===true&&this.state.filter_state.cr_date.to_isValid===true){
-        obj['creation_date'] = {$gte : this.state.filter_state.cr_date.from ,$lte : (this.state.filter_state.cr_date.to! + 86400)}
-      }else if(this.state.filter_state.cr_date.from_isValid===true&&this.state.filter_state.cr_date.to_isValid===false){
+    if (this.state.filter_state.cr_date.is_valid === true) {
+      if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
+      } else if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === false) {
         obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
-      }else if (this.state.filter_state.cr_date.from_isValid===false&&this.state.filter_state.cr_date.to_isValid===true){
+      } else if (this.state.filter_state.cr_date.from_isValid === false && this.state.filter_state.cr_date.to_isValid === true) {
         obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
       }
     }
 
-    if(this.state.filter_state.mo_date.is_valid === true){
-      if(this.state.filter_state.mo_date.from_isValid===true&&this.state.filter_state.mo_date.to_isValid===true){
-        obj['modification_date'] = {$gte : this.state.filter_state.mo_date.from ,$lte : (this.state.filter_state.mo_date.to! + 86400)}
-      }else if(this.state.filter_state.mo_date.from_isValid===true&&this.state.filter_state.mo_date.to_isValid===false){
+    if (this.state.filter_state.mo_date.is_valid === true) {
+      if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from, $lte: (this.state.filter_state.mo_date.to! + 86400) }
+      } else if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === false) {
         obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from }
-      }else if (this.state.filter_state.mo_date.from_isValid===false&&this.state.filter_state.mo_date.to_isValid===true){
+      } else if (this.state.filter_state.mo_date.from_isValid === false && this.state.filter_state.mo_date.to_isValid === true) {
         obj['modification_date'] = { $lte: this.state.filter_state.mo_date.to }
       }
     }
@@ -860,7 +906,16 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           to: undefined,
           to_isValid: false,
           is_valid: false,
-        }
+        },
+        press: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        creator: {
+          value: undefined,
+          isValid: false,
+        },
       }
     }, () => this.repetReset())
   }
@@ -908,7 +963,16 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           to: undefined,
           to_isValid: false,
           is_valid: false,
-        }
+        },
+        press: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        creator: {
+          value: undefined,
+          isValid: false,
+        },
       }
     })
   }
@@ -936,7 +1000,37 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   };
 
-  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean,  isValid: boolean, inputType: any) {
+  handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
+    let newperson = { ...selectedPerson };
+    let isValid = true;      // newperson = selectedPerson;
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        press: {
+          value: newperson,
+          person_id: newperson.value.id,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  person_of_press_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        press: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        }
+      }
+    })
+  }
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
     this.setState({
       ...this.state,
       filter_state: {
@@ -946,13 +1040,13 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           from_isValid: from_isValid,
           to: to,
           to_isValid: to_isValid,
-          is_valid : isValid,
+          is_valid: isValid,
         }
       }
     })
   }
 
-  handleInputChange(value: any, inputType: any , Validation : boolean = true) {
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
     let isValid;
     if (inputType === 'title') {
       if (value === undefined || value === '') {
@@ -961,10 +1055,17 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         isValid = true;
       }
     }
-    if (inputType === 'price') {
-      if(value === undefined || Validation === false){
+    if (inputType === 'creator') {
+      if (value === undefined || value === '') {
         isValid = false;
-      }else{
+      } else {
+        isValid = true;
+      }
+    }
+    if (inputType === 'price') {
+      if (value === undefined || value === '' || Validation === false) {
+        isValid = false;
+      } else {
         isValid = true;
       }
     }
@@ -994,6 +1095,48 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   filter: any;
 
   /////  end onChange & search & reset function for search box ///////////
+
+
+  ////// start request for options person of press in filter  ////////
+
+  private personRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { person: inputValue };
+    }
+    let res: any = await this._personService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
+      this.personRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let persons = res.data.result.map((ps: any) => {
+        return { label: this.getPersonFullName(ps), value: ps }
+      });
+      this.personRequstError_txt = Localization.no_item_found;
+      callBack(persons);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_person_val: any;
+  debounce_300(inputValue: any, callBack: any) {
+    if (this.setTimeout_person_val) {
+      clearTimeout(this.setTimeout_person_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage(obj: { inputValue: string }) {
+    return this.personRequstError_txt;
+  }
+
+  ///////////// end request for options person of press in filter ////////////////////////
 
 
   //////render call Table component //////
@@ -1048,6 +1191,31 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                     </div>
                   </div>
                   <div className="col-md-3 col-sm-6">
+                    <label >{Localization.role_type_list.Press}</label>
+                    <i
+                      title={Localization.reset}
+                      className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                      onClick={() => this.person_of_press_in_search_remover()}
+                    ></i>
+                    <AsyncSelect
+                      placeholder={Localization.person}
+                      cacheOptions
+                      defaultOptions
+                      value={this.state.filter_state.press.value}
+                      loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                      noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                      onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <Input
+                      onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                      label={Localization.creator}
+                      placeholder={Localization.creator}
+                      defaultValue={this.state.filter_state.creator.value}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
                       <label htmlFor="">{Localization.genre}</label>
                       <Select
@@ -1078,7 +1246,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                   </div>
                   <div className="col-md-3 col-sm-6">
                     <FixNumber
-                      onChange={(value, isValid) => this.handleInputChange(value, "price",isValid)}
+                      onChange={(value, isValid) => this.handleInputChange(value, "price", isValid)}
                       label={Localization.price}
                       placeholder={Localization.price}
                       defaultValue={this.state.filter_state.price.value}
@@ -1091,7 +1259,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                       label={Localization.publication_date}
                       from={this.state.filter_state.pub_date.from}
                       to={this.state.filter_state.pub_date.to}
-                      onChange={(from, from_isValid, to, to_isValid , isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid , isValid, 'pub_date')}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'pub_date')}
                     />
                   </div>
                   <div className="col-md-3 col-sm-6">
@@ -1099,7 +1267,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                       label={Localization.creation_date}
                       from={this.state.filter_state.cr_date.from}
                       to={this.state.filter_state.cr_date.to}
-                      onChange={(from, from_isValid, to, to_isValid , isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid,  isValid, 'cr_date')}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
                     />
                   </div>
                   <div className="col-md-3 col-sm-6">
@@ -1107,7 +1275,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                       label={Localization.modification_date}
                       from={this.state.filter_state.mo_date.from}
                       to={this.state.filter_state.mo_date.to}
-                      onChange={(from, from_isValid, to, to_isValid , isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid,  isValid, 'mo_date')}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
                     />
                   </div>
                 </div>

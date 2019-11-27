@@ -299,7 +299,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
-            filter = { title: inputValue };
+            filter = {title : {$prefix : inputValue} };
         }
         let res: any = await this._bookService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2content_error' } });

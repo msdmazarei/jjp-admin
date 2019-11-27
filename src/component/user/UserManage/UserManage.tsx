@@ -20,6 +20,10 @@ import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
 import { GroupService } from "../../../service/service.group";
 import { AccessService } from "../../../service/service.access";
+import { IPerson } from "../../../model/model.person";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { PersonService } from "../../../service/service.person";
+import { Store2 } from "../../../redux/store";
 
 //// props & state define ////////
 export interface IProps {
@@ -29,9 +33,25 @@ export interface IProps {
 }
 
 interface IFilterUser {
-  user: {
-    value: string | undefined;
-    isValid: boolean;
+  username: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  person_id: {
+    value: { label: string, value: IPerson } | null;
+    person_id: string | undefined;
+    is_valid: boolean,
+  };
+  creation_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  creator: {
+    value: string | undefined,
+    isValid: boolean
   };
 }
 
@@ -48,13 +68,13 @@ interface IState {
   setAddGroupLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
-  filter: IFilterUser,
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   group: {
     value: { label: string | number, value: object }[] | null,
     isValid: boolean
   };
+  filter_state: IFilterUser;
 }
 
 class UserManageComponent extends BaseComponent<IProps, IState>{
@@ -173,12 +193,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         :
         undefined
     },
-    filter: {
-      user: {
-        value: undefined,
-        isValid: true,
-      }
-    },
     UserError: undefined,
     pager_offset: 0,
     pager_limit: 10,
@@ -196,18 +210,37 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       value: null,
       isValid: true,
     },
+    filter_state: {
+      username: {
+        value: undefined,
+        isValid: false
+      },
+      person_id: {
+        value: null,
+        person_id: undefined,
+        is_valid: false,
+      },
+      creation_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      creator: {
+        value: undefined,
+        isValid: false,
+      },
+    }
   }
 
   selectedUser: IUser | undefined;
   selectedUserForGroup: IUser | undefined;
   private groupRequstError_txt: string = Localization.no_item_found;
   private setTimeout_group_val: any;
-  private _filter: IFilterUser = {
-    user: { value: undefined, isValid: true },
-  };
-
   private _userService = new UserService();
   private _groupService = new GroupService();
+  private _personService = new PersonService();
 
   // constructor(props: IProps) {
   //   super(props);
@@ -216,7 +249,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if(AccessService.checkAccess('USER_GET_PREMIUM')){
+    if (AccessService.checkAccess('USER_GET_PREMIUM')) {
       this.setState({
         ...this.state,
         tableProcessLoader: true
@@ -261,7 +294,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._userService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      this.get_searchFilter()
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUsers_error' } });
       this.setState({
@@ -730,30 +763,40 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   /////  start onChange & search & reset function for search box ///////////
 
-  handleFilterInputChange(value: string, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        user: {
-          value, isValid
-        }
-      },
-    });
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
   }
+  private set_searchFilter() {
+    const obj: any = {};
 
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        user: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
+    if (this.state.filter_state.username.isValid) {
+      obj['username'] = { $prefix: this.state.filter_state.username.value };
+    }
+    
+    if (this.state.filter_state.person_id.is_valid) {
+      obj['person_id'] = { $eq: this.state.filter_state.person_id.person_id };
+    }
+
+    if (this.state.filter_state.creation_date.is_valid === true) {
+      if (this.state.filter_state.creation_date.from_isValid === true && this.state.filter_state.creation_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.creation_date.from, $lte: (this.state.filter_state.creation_date.to! + 86400) }
+      } else if (this.state.filter_state.creation_date.from_isValid === true && this.state.filter_state.creation_date.to_isValid === false) {
+        obj['creation_date'] = { $gte: this.state.filter_state.creation_date.from }
+      } else if (this.state.filter_state.creation_date.from_isValid === false && this.state.filter_state.creation_date.to_isValid === true) {
+        obj['creation_date'] = { $lte: this.state.filter_state.creation_date.to }
+      }
+    }
+
+    if (this.state.filter_state.creator.isValid) {
+      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
+    }
+
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
   }
 
   filterSearch() {
@@ -764,36 +807,172 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       pager_offset: 0
     }, () => {
       // this.gotoTop();
-      this.setFilter();
+      // this.setFilter();
+      this.set_searchFilter();
       this.fetchUsers()
     });
   }
 
-  isFilterEmpty(): boolean {
-    if (this._filter.user.value) {
-      return false;
-    }
-    // if ....
-    return true;
-  }
-
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.user.isValid) {
-        obj['username'] = this._filter.user.value;
+  filter_state_reset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        username: {
+          value: undefined,
+          isValid: false
+        },
+        person_id: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        creation_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        creator: {
+          value: undefined,
+          isValid: false,
+        },
       }
-      // if  ....
-      return obj;
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        username: {
+          value: undefined,
+          isValid: false
+        },
+        person_id: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        creation_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        creator: {
+          value: undefined,
+          isValid: false,
+        },
+      }
+    })
+  }
+
+  handlePersonChange_search = (selectedPerson: { label: string, value: IPerson }) => {
+    let newperson = { ...selectedPerson };
+    let isValid = true;      // newperson = selectedPerson;
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person_id: {
+          value: newperson,
+          person_id: newperson.value.id,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  person_of_user_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person_id: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        }
+      }
+    })
+  }
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
     }
-    return;
+
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
+      }
+    })
   }
 
   /////  end onChange & search & reset function for search box ///////////
+
+
+  ////// start request for options person of press in filter  ////////
+
+  private personRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2_search(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { full_name: { $prefix: inputValue } };
+    }
+    let res: any = await this._personService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'user_search_error' } });
+      this.personRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let persons = res.data.result.map((ps: any) => {
+        return { label: this.getPersonFullName(ps), value: ps }
+      });
+      this.personRequstError_txt = Localization.no_item_found;
+      callBack(persons);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_person_val: any;
+  debounce_300_search(inputValue: any, callBack: any) {
+    if (this.setTimeout_person_val) {
+      clearTimeout(this.setTimeout_person_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2_search(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage_search(obj: { inputValue: string }) {
+    return this.personRequstError_txt;
+  }
+
+  ///////////// end request for options person of press in filter ////////////////////////
 
 
   //// render call Table component ///////
@@ -819,20 +998,57 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             AccessService.checkAccess('USER_GET_PREMIUM')
               ?
               <>
+                {/* start search box */}
                 <div className="row">
                   <div className="col-12">
                     <div className="template-box mb-4">
+                      {/* start search box inputs */}
                       <div className="row">
-                        <div className="col-sm-6 col-xl-4">
+                        <div className="col-md-3 col-sm-6">
                           <Input
-                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                            onChange={(value, isValid) => this.handleInputChange(value, 'username')}
                             label={Localization.username}
                             placeholder={Localization.username}
-                            defaultValue={this.state.filter.user.value}
+                            defaultValue={this.state.filter_state.username.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <label >{Localization.person}</label>
+                          <i
+                            title={Localization.reset}
+                            className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                            onClick={() => this.person_of_user_in_search_remover()}
+                          ></i>
+                          <AsyncSelect
+                            placeholder={Localization.person}
+                            cacheOptions
+                            defaultOptions
+                            value={this.state.filter_state.person_id.value}
+                            loadOptions={(inputValue, callback) => this.debounce_300_search(inputValue, callback)}
+                            noOptionsMessage={(obj) => this.select_noOptionsMessage_search(obj)}
+                            onChange={(selectedPerson: any) => this.handlePersonChange_search(selectedPerson)}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.creation_date}
+                            from={this.state.filter_state.creation_date.from}
+                            to={this.state.filter_state.creation_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'creation_date')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                            label={Localization.creator}
+                            placeholder={Localization.creator}
+                            defaultValue={this.state.filter_state.creator.value}
                           />
                         </div>
                       </div>
-                      <div className="row">
+                      {/* end search box inputs */}
+                      {/* start search btns box */}
+                      <div className="row mt-1">
                         <div className="col-12">
                           <BtnLoader
                             disabled={this.state.tableProcessLoader}
@@ -846,15 +1062,17 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
                             // disabled={this.state.tableProcessLoader}
                             loading={false}
                             btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                            onClick={() => this.filterReset()}
+                            onClick={() => this.filter_state_reset()}
                           >
                             {Localization.reset}
                           </BtnLoader>
                         </div>
                       </div>
+                      {/* end search btns box */}
                     </div>
                   </div>
                 </div>
+                {/* end search  box */}
                 <div className="row">
                   <div className="col-12">
                     <Table loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>

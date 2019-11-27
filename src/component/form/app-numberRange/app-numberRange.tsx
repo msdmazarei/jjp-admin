@@ -20,14 +20,20 @@ interface IProps {
 
 interface IState {
     from: number | undefined;
+    from_isValid: boolean;
     to: number | undefined;
+    to_isValid: boolean;
+    cmp_isValid: boolean;
 };
 
-class AppRangePickerComponent extends BaseComponent<IProps, IState> {
+class AppNumberRangeComponent extends BaseComponent<IProps, IState> {
 
     state = {
         from: undefined,
+        from_isValid: false,
         to: undefined,
+        to_isValid: false,
+        cmp_isValid: false,
     };
 
     cmp_has_error: boolean = false;
@@ -49,71 +55,84 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
             })
         }
         if (nextProps.from === undefined && nextProps.to === undefined) {
+            this.setState({
+                from: undefined,
+                from_isValid: false,
+                to: undefined,
+                to_isValid: false,
+                cmp_isValid: false,
+            })
             this.cmp_has_error = false;
         }
     }
 
-    handleChange(price: number | undefined, isValid: boolean, type: string) {
-        let cmp_validation: boolean = false;
-        if (type === 'from') {
-            if (this.state.to === undefined) {
-                if (price === undefined) {
-                    cmp_validation = false;
-                    this.cmp_has_error = true;
+
+    fromChange(value: any, Validation: boolean = true) {
+        let isValid;
+        let newVal: any = value;
+        if (value === undefined || value === '' || Validation === false) {
+            isValid = false;
+            newVal = undefined;
+        } else {
+            isValid = true;
+            newVal = Number(newVal);
+        };
+        this.setState({
+            ...this.state,
+            from: newVal,
+            from_isValid: isValid
+        }, () => this.cmpValidationCheck())
+    }
+
+    toChange(value: any, Validation: boolean = true) {
+        let isValid;
+        let newVal: any = value;
+        if (value === undefined || value === '' || Validation === false) {
+            isValid = false;
+            newVal = undefined;
+        } else {
+            isValid = true;
+            newVal = Number(newVal);
+        };
+        this.setState({
+            ...this.state,
+            to: newVal,
+            to_isValid: isValid
+        }, () => this.cmpValidationCheck())
+    }
+
+    cmpValidationCheck() {
+        let cmpValidation: boolean = false;
+        if (this.state.from_isValid === false && this.state.to_isValid === false) {
+            cmpValidation = false;
+            this.cmp_has_error = true;
+        } else {
+            if (this.state.from_isValid === true && this.state.to_isValid === false) {
+                cmpValidation = true;
+                this.cmp_has_error = false;
+            }
+            if (this.state.from_isValid === false && this.state.to_isValid === true) {
+                cmpValidation = true;
+                this.cmp_has_error = false;
+            }
+            if (this.state.from_isValid === true && this.state.to_isValid === true) {
+                if (this.state.from! <= this.state.to!) {
+                    cmpValidation = true;
+                    this.cmp_has_error = false;
                 } else {
-                    cmp_validation = true;
-                    this.cmp_has_error = false;
-                }
-            } else {
-                if (price === undefined) {
-                    cmp_validation = true;
-                    this.cmp_has_error = false;
-                } else if (price <= this.state.to!) {
-                    cmp_validation = true;
-                    this.cmp_has_error = false;
-                } else {
-                    cmp_validation = false;
+                    cmpValidation = false;
                     this.cmp_has_error = true;
                 }
             }
-            let from_isValid: boolean = (price === undefined || typeof price === 'string') ? false : true;
-            let to_isValid: boolean = (this.state.to === undefined || typeof this.state.to === 'string') ? false : true;
-            if(from_isValid === false && to_isValid === false){
-                cmp_validation =false;
-            }
-            this.setState({
-                ...this.state,
-                from: price,
-            }, () => this.props.onChange(this.state.from, from_isValid, this.state.to, to_isValid, cmp_validation))
-        }
-        if (type === 'to') {
-            if (this.state.from === undefined) {
-                if (price === undefined) {
-                    cmp_validation = false;
-                    this.cmp_has_error = true;
-                } else {
-                    cmp_validation = true;
-                    this.cmp_has_error = false;
-                }
-            } else {
-                if (price === undefined) {
-                    cmp_validation = true;
-                    this.cmp_has_error = false;
-                } else if (price >= this.state.from!) {
-                    cmp_validation = true;
-                    this.cmp_has_error = false;
-                } else {
-                    cmp_validation = false;
-                    this.cmp_has_error = true;
-                }
-            }
-            let from_isValid: boolean = (this.state.from === undefined || typeof this.state.from === 'string') ? false : true;
-            let to_isValid: boolean = (price === undefined || typeof price === 'string') ? false : true;
-            this.setState({
-                ...this.state,
-                to: price,
-            }, () => this.props.onChange(this.state.from, from_isValid, this.state.to, to_isValid, cmp_validation))
-        }
+        };
+        this.setState({
+            ...this.state,
+            cmp_isValid: cmpValidation,
+        }, () => this.statePassToProps_onChangeFunc());
+    }
+
+    statePassToProps_onChangeFunc() {
+        this.props.onChange(this.state.from, this.state.from_isValid, this.state.to, this.state.to_isValid, this.state.cmp_isValid);
     }
 
     validationFunc(from: any, to: any) {
@@ -126,7 +145,10 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
     reseter() {
         this.setState({
             from: undefined,
+            from_isValid: false,
             to: undefined,
+            to_isValid: false,
+            cmp_isValid: false,
         }, () => this.reseter2());
     }
 
@@ -134,7 +156,10 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
         this.cmp_has_error = false;
         this.setState({
             from: undefined,
+            from_isValid: false,
             to: undefined,
+            to_isValid: false,
+            cmp_isValid: false,
         }, () => this.props.onChange(undefined, false, undefined, false, false));
     }
 
@@ -153,7 +178,7 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
                 <div className="row range-picker">
                     <div className="col-5">
                         <FixNumber
-                            onChange={(value, isValid) => this.handleChange(value, isValid, "from")}
+                            onChange={(value, isValid) => this.fromChange(value, isValid)}
                             placeholder={Localization.from}
                             defaultValue={this.state.from}
                             pattern={AppRegex.number}
@@ -162,7 +187,7 @@ class AppRangePickerComponent extends BaseComponent<IProps, IState> {
                     </div>
                     <div className="col-5">
                         <FixNumber
-                            onChange={(value, isValid) => this.handleChange(value, isValid, "to")}
+                            onChange={(value, isValid) => this.toChange(value, isValid)}
                             placeholder={Localization.to}
                             defaultValue={this.state.to}
                             pattern={AppRegex.number}
@@ -196,7 +221,7 @@ const state2props = (state: redux_state) => {
     };
 };
 
-export const AppRangePicker = connect(
+export const AppNumberRange = connect(
     state2props,
     dispatch2props
-)(AppRangePickerComponent);
+)(AppNumberRangeComponent);

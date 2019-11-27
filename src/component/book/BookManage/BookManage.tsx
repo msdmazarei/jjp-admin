@@ -29,6 +29,7 @@ import { IPerson } from "../../../model/model.person";
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { Store2 } from "../../../redux/store";
+import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 
 /// define props & state ///////
 export interface IProps {
@@ -55,8 +56,11 @@ interface IFilterBook {
     isValid: boolean;
   };
   price: {
-    value: number | undefined,
-    isValid: boolean
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
   };
   cr_date: {
     from: number | undefined,
@@ -340,8 +344,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         isValid: false,
       },
       price: {
-        value: undefined,
-        isValid: false
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
       },
       cr_date: {
         from: undefined,
@@ -608,7 +615,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
     if (this.state.filter_state.title.isValid) {
       // obj['title'] = "/" + this.state.filter_state.title.value + "/";
-      obj['title'] = {$prefix : this.state.filter_state.title.value} ;
+      obj['title'] = { $prefix: this.state.filter_state.title.value };
     }
 
     if (this.state.filter_state.type.isValid) {
@@ -623,23 +630,23 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
     persons_of_press = [...wrapper];
-    if (this.state.filter_state.press.is_valid === true){
-      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0){
+    if (this.state.filter_state.press.is_valid === true) {
+      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0) {
         persons_of_press.push(this.state.filter_state.press.person_id!);
         obj['press'] = { $in: persons_of_press };
         persons_of_press = [];
-      }else{
+      } else {
         obj['press'] = { $in: [this.state.filter_state.press.person_id] };
       }
-    }else{
-      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0){
+    } else {
+      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0) {
         obj['press'] = { $in: persons_of_press };
       }
     }
 
     if (this.state.filter_state.creator.isValid) {
       // obj['creator'] = "/" + this.state.filter_state.creator.value + "/";
-      obj['creator'] = {$prefix: this.state.filter_state.creator.value} ;
+      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
     }
 
     if (this.state.filter_state.genre.isValid) {
@@ -658,9 +665,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       obj['tags'] = { $all: tags };
     }
 
-    if (this.state.filter_state.price.isValid) {
-      obj['price'] = {$eq : Number(this.state.filter_state.price.value)}; 
-      // obj['price'] = Number(this.state.filter_state.price.value);
+    if (this.state.filter_state.price.is_valid === true) {
+      if (this.state.filter_state.price.from_isValid === true && this.state.filter_state.price.to_isValid === true) {
+        obj['price'] = { $gte: this.state.filter_state.price.from, $lte:this.state.filter_state.price.to}
+      } else if (this.state.filter_state.price.from_isValid === true && this.state.filter_state.price.to_isValid === false) {
+        obj['price'] = { $gte: this.state.filter_state.price.from }
+      } else if (this.state.filter_state.price.from_isValid === false && this.state.filter_state.price.to_isValid === true) {
+        obj['price'] = { $lte: this.state.filter_state.price.to }
+      }
     }
 
     if (this.state.filter_state.pub_date.is_valid === true) {
@@ -883,8 +895,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           isValid: false,
         },
         price: {
-          value: undefined,
-          isValid: false
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
         },
         cr_date: {
           from: undefined,
@@ -940,8 +955,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           isValid: false,
         },
         price: {
-          value: undefined,
-          isValid: false
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
         },
         cr_date: {
           from: undefined,
@@ -1062,13 +1080,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         isValid = true;
       }
     }
-    if (inputType === 'price') {
-      if (value === undefined || value === '' || Validation === false) {
-        isValid = false;
-      } else {
-        isValid = true;
-      }
-    }
     this.setState({
       ...this.state,
       filter_state: {
@@ -1104,7 +1115,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   async promiseOptions2(inputValue: any, callBack: any) {
     let filter = undefined;
     if (inputValue) {
-      filter = { person: inputValue };
+      filter = {full_name : {$prefix : inputValue} };
     }
     let res: any = await this._personService.search(10, 0, filter).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
@@ -1245,13 +1256,11 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                     </div>
                   </div>
                   <div className="col-md-3 col-sm-6">
-                    <FixNumber
-                      onChange={(value, isValid) => this.handleInputChange(value, "price", isValid)}
+                    <AppNumberRange
                       label={Localization.price}
-                      placeholder={Localization.price}
-                      defaultValue={this.state.filter_state.price.value}
-                      pattern={AppRegex.number}
-                      patternError={Localization.validation_msg.Just_enter_the_numeric_value}
+                      from={this.state.filter_state.price.from}
+                      to={this.state.filter_state.price.to}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'price')}
                     />
                   </div>
                   <div className="col-md-3 col-sm-6">

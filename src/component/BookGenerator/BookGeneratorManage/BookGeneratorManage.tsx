@@ -21,6 +21,9 @@ import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { BookGeneratorService } from "../../../service/service.bookGenerator";
 import { GetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/GetGenerateOrStatusModal/GetGenerateOrStatusModal';
+import { BookService } from "../../../service/service.book";
+import AsyncSelect from 'react-select/async';
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 // import { AccessService } from "../../../service/service.access"
 
 
@@ -30,16 +33,47 @@ export interface IProps {
   internationalization: TInternationalization;
   // token: IToken;
 }
-interface IFilterCntent {
-  title: {
-    value: string | undefined;
-    isValid: boolean;
+
+interface IFilterContent {
+  book: {
+    value: { label: string, value: IBook } | null;
+    book_id: string | undefined;
+    is_valid: boolean,
   };
-  tags: {
-    value: { label: string, value: string }[];
-    isValid: boolean;
+  contentType: {
+    value: { value: string, label: string } | null,
+    type: string | null,
+    isValid: boolean
+  };
+  creator: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  modifier: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  isgenerated: {
+    value: { value: string, label: string } | null,
+    content_generated: boolean | null,
+    isValid: boolean
+  };
+  cr_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  mo_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
   };
 }
+
 interface IState {
   content_table: IProps_table;
   contentError: string | undefined;
@@ -51,15 +85,22 @@ interface IState {
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  filter: IFilterCntent,
   setRemoveLoader: boolean;
   setGenerateLoader: boolean;
-  tags_inputValue: string;
+  filter_state: IFilterContent;
 }
 
 // define class of content 
 
 class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
+  contentTypeOptions = [
+    { value: 'Original', label: Localization.Original },
+    { value: 'Brief', label: Localization.Brief },
+  ];
+  isgeneratedOptions = [
+    { value: 'content_generated', label: Localization.content_generated },
+    { value: 'content_not_generated', label: Localization.content_not_generated },
+  ];
   state = {
     content_table: {
       list: [],
@@ -203,24 +244,53 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
     removeModalShow: false,
     generateModalShow: false,
-    filter: {
-      title: {
-        value: undefined,
-        isValid: true,
-      },
-      tags: {
-        value: [],
-        isValid: true
-      }
-    },
     setRemoveLoader: false,
     setGenerateLoader: false,
-    tags_inputValue: '',
+    filter_state: {
+      book: {
+        value: null,
+        book_id: undefined,
+        is_valid: false,
+      },
+      contentType: {
+        value: null,
+        type: null,
+        isValid: false
+      },
+      creator: {
+        value: undefined,
+        isValid: false
+      },
+      modifier: {
+        value: undefined,
+        isValid: false
+      },
+      isgenerated: {
+        value: null,
+        content_generated: null,
+        isValid: false
+      },
+      cr_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      mo_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+    },
   }
 
   selectedContent: any | undefined;
   selectedContentGenerate: any;
   private _bookContentService = new BookGeneratorService();
+  private _bookService = new BookService();
 
   // checkAllAccess(): boolean {
   //   if (AccessService.checkOneOFAllAccess([])
@@ -450,7 +520,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._bookContentService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      this.get_searchFilter(),
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBooksContent_error' } });
       this.setState({
@@ -587,77 +657,58 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
 
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
+  }
+  private set_searchFilter() {
+    const obj: any = {};
 
-  //////   tag filter //////////////
-
-  handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
-    if (!this.state.tags_inputValue) return;
-    switch (event.key) {
-      case 'Enter':
-      case 'Tab':
-        const newVal = this.state.tags_inputValue;
-        this.setState({
-          ...this.state,
-          filter: {
-            ...this.state.filter,
-            tags: {
-              ...this.state.filter.tags,
-              value: [
-                ...this.state.filter.tags.value,
-                { label: newVal, value: newVal }
-              ]
-            }
-          },
-          tags_inputValue: ''
-        });
-        event.preventDefault();
+    if (this.state.filter_state.book.is_valid) {
+      obj['book_id'] = { $eq: this.state.filter_state.book.book_id };
     }
-  };
 
+    if (this.state.filter_state.contentType.isValid) {
+      obj['type'] = { $eq: this.state.filter_state.contentType.type };
+    }
 
-  handleSelectInputChange(value: any[], inputType: any) {
-    // let isValid;
-    // if (!value || !value.length) {
-    //   isValid = false;
-    // } else {
-    //   isValid = true;
-    // }
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        [inputType]: { value: value || [], isValid: true }
+    if (this.state.filter_state.creator.isValid) {
+      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
+    }
+
+    if (this.state.filter_state.modifier.isValid) {
+      obj['modifier'] = { $prefix: this.state.filter_state.modifier.value };
+    }
+
+    if (this.state.filter_state.isgenerated.isValid) {
+      obj['content_generated'] = { $eq: this.state.filter_state.isgenerated.content_generated };
+    }
+
+    if (this.state.filter_state.cr_date.is_valid === true) {
+      if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
+      } else if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === false) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
+      } else if (this.state.filter_state.cr_date.from_isValid === false && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
       }
-    })
+    }
 
-  }
+    if (this.state.filter_state.mo_date.is_valid === true) {
+      if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from, $lte: (this.state.filter_state.mo_date.to! + 86400) }
+      } else if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === false) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from }
+      } else if (this.state.filter_state.mo_date.from_isValid === false && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $lte: this.state.filter_state.mo_date.to }
+      }
+    }
 
-  /////  onChange & search & reset function for search box ///////////
-
-  handleFilterInputChange(value: string, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        title: {
-          value, isValid
-        }
-      },
-    });
-  }
-
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        title: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
   }
 
   filterSearch() {
@@ -668,43 +719,271 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       pager_offset: 0
     }, () => {
       // this.gotoTop();
-      this.setFilter();
+      // this.setFilter();
+      this.set_searchFilter();
       this.fetchBooksContent()
     });
   }
 
-  private _filter: IFilterCntent = {
-    title: { value: undefined, isValid: true },
-    tags: { value: [], isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.title.value) {
-      return false;
-    }
-    if (this._filter.tags.value.length) {
-      return false;
-    }
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.title.isValid) {
-        obj['title'] = this._filter.title.value;
+
+  /////  start onChange & search & reset function for search box ///////////
+
+  filter_state_reset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        book: {
+          value: null,
+          book_id: undefined,
+          is_valid: false,
+        },
+        contentType: {
+          value: null,
+          type: null,
+          isValid: false
+        },
+        creator: {
+          value: undefined,
+          isValid: false
+        },
+        modifier: {
+          value: undefined,
+          isValid: false
+        },
+        isgenerated: {
+          value: null,
+          content_generated: null,
+          isValid: false
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
       }
-      if (this._filter.tags.isValid) {
-        if (this._filter.tags.value.length) {
-          obj['tags'] = this._filter.tags.value.map(t => t.value);
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        book: {
+          value: null,
+          book_id: undefined,
+          is_valid: false,
+        },
+        contentType: {
+          value: null,
+          type: null,
+          isValid: false
+        },
+        creator: {
+          value: undefined,
+          isValid: false
+        },
+        modifier: {
+          value: undefined,
+          isValid: false
+        },
+        isgenerated: {
+          value: null,
+          content_generated: null,
+          isValid: false
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+      }
+    })
+  }
+
+  book_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        book: {
+          value: null,
+          book_id: undefined,
+          is_valid: false,
         }
-        // obj['tags'] = this._filter.tags.value.length?;
       }
-      return obj;
-    }
-    return;
+    })
   }
+
+  handleBookChange = (selectedBook: { label: string, value: IBook }) => {
+    let newbook = { ...selectedBook };
+    let isValid = true;      // newperson = selectedPerson;
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        book: {
+          value: newbook,
+          book_id: newbook.value.id,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  contentType_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, contentType: { value: null, type: null, isValid: false }
+      }
+    })
+  }
+
+  handleContentTypeSelectInputChange(type: { value: string, label: string } | null) {
+    if (type === null) {
+      this.setState({
+        ...this.state,
+        filter_state: {
+          ...this.state.filter_state, contentType: { value: type, type: null, isValid: false }
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        filter_state: {
+          ...this.state.filter_state, contentType: { value: type, type: type.value, isValid: true }
+        }
+      })
+    }
+  }
+
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
+
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
+      }
+    })
+  }
+
+  isgenerated_status_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, isgenerated: { value: null, content_generated: null, isValid: false }
+      }
+    })
+  }
+
+  handleIsGeneratedSelectInputChange(status: { value: string, label: string } | null) {
+    if (status === null) {
+      this.setState({
+        ...this.state,
+        filter_state: {
+          ...this.state.filter_state, isgenerated: { value: status, content_generated: null, isValid: false }
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        filter_state: {
+          ...this.state.filter_state, isgenerated: {
+            value: status,
+            content_generated: status.value === 'content_generated' ? true : false,
+            isValid: true
+          }
+        }
+      })
+    }
+  }
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+  /////  end onChange & search & reset function for search box ///////////
+
+
+  ////// start request for options person of press in filter  ////////
+
+  private personRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2_book_search(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { title: { $prefix: inputValue } };
+    }
+    let res: any = await this._bookService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
+      this.personRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let persons = res.data.result.map((ps: any) => {
+        const b_type: any = ps.type;
+        const b_t: BOOK_TYPES = b_type;
+        let type = Localization.book_type_list[b_t];
+        return { label: ps.title + " - " + type, value: ps }
+      });
+      this.personRequstError_txt = Localization.no_item_found;
+      callBack(persons);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_person_val: any;
+  debounce_300_book_search(inputValue: any, callBack: any) {
+    if (this.setTimeout_person_val) {
+      clearTimeout(this.setTimeout_person_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2_book_search(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage_book_search(obj: { inputValue: string }) {
+    return this.personRequstError_txt;
+  }
+
+  ///////////// end request for options person of press in filter ////////////////////////
+
+
 
   //////render call Table component //////
 
@@ -731,39 +1010,97 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             } */}
             </div>
           </div>
+          {/* start search box */}
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">
+                {/* start search box inputs */}
                 <div className="row">
-                  <div className="col-sm-6 col-xl-4">
-                    <Input
-                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                      label={Localization.title}
-                      placeholder={Localization.title}
-                      defaultValue={this.state.filter.title.value}
+                  <div className="col-md-3 col-sm-6">
+                    <label >{Localization.book}</label>
+                    <i
+                      title={Localization.reset}
+                      className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                      onClick={() => this.book_in_search_remover()}
+                    ></i>
+                    <AsyncSelect
+                      placeholder={Localization.book}
+                      cacheOptions
+                      defaultOptions
+                      value={this.state.filter_state.book.value}
+                      loadOptions={(inputValue, callback) => this.debounce_300_book_search(inputValue, callback)}
+                      noOptionsMessage={(obj) => this.select_noOptionsMessage_book_search(obj)}
+                      onChange={(selectedBook: any) => this.handleBookChange(selectedBook)}
                     />
                   </div>
-                  <div className="col-8 d-none">
+                  <div className="col-md-3 col-sm-6">
                     <div className="form-group">
-                      <label htmlFor="">{Localization.tags}</label>
+                      <label htmlFor="">{Localization.type + " " + Localization.content}</label>
+                      <i
+                        title={Localization.reset}
+                        className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                        onClick={() => this.contentType_in_search_remover()}
+                      ></i>
                       <Select
-                        isMulti
-                        onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
-                        value={this.state.filter.tags.value}
-                        placeholder={Localization.tags}
-                        onKeyDown={(e) => this.handle_tagsKeyDown(e)}
-                        inputValue={this.state.tags_inputValue}
-                        menuIsOpen={false}
-                        components={{
-                          DropdownIndicator: null,
-                        }}
-                        isClearable
-                        onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
+                        onChange={(value: any) => this.handleContentTypeSelectInputChange(value)}
+                        options={this.contentTypeOptions}
+                        value={this.state.filter_state.contentType.value}
+                        placeholder={Localization.type + " " + Localization.content}
                       />
                     </div>
                   </div>
+                  <div className="col-md-3 col-sm-6">
+                    <Input
+                      onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                      label={Localization.creator}
+                      placeholder={Localization.creator}
+                      defaultValue={this.state.filter_state.creator.value}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <Input
+                      onChange={(value, isValid) => this.handleInputChange(value, 'modifier')}
+                      label={Localization.modifier}
+                      placeholder={Localization.modifier}
+                      defaultValue={this.state.filter_state.modifier.value}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <div className="form-group">
+                      <label htmlFor="">{Localization.status + " " + Localization.content}</label>
+                      <i
+                        title={Localization.reset}
+                        className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                        onClick={() => this.isgenerated_status_in_search_remover()}
+                      ></i>
+                      <Select
+                        onChange={(value: any) => this.handleIsGeneratedSelectInputChange(value)}
+                        options={this.isgeneratedOptions}
+                        value={this.state.filter_state.isgenerated.value}
+                        placeholder={Localization.status + " " + Localization.content}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      label={Localization.creation_date}
+                      from={this.state.filter_state.cr_date.from}
+                      to={this.state.filter_state.cr_date.to}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      label={Localization.modification_date}
+                      from={this.state.filter_state.mo_date.from}
+                      to={this.state.filter_state.mo_date.to}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
+                    />
+                  </div>
                 </div>
-                <div className="row">
+                {/* end search box inputs */}
+                {/* start search btns box */}
+                <div className="row mt-1">
                   <div className="col-12">
                     <BtnLoader
                       disabled={this.state.tableProcessLoader}
@@ -777,20 +1114,17 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
                       // disabled={this.state.tableProcessLoader}
                       loading={false}
                       btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filterReset()}
+                      onClick={() => this.filter_state_reset()}
                     >
                       {Localization.reset}
                     </BtnLoader>
                   </div>
                 </div>
+                {/* end search btns box */}
               </div>
             </div>
           </div>
-          <div className="row">
-            <div className="col-12">
-
-            </div>
-          </div>
+          {/* end search  box */}
           <div className="row">
             <div className="col-12">
               <Table loading={this.state.tableProcessLoader} list={this.state.content_table.list} colHeaders={this.state.content_table.colHeaders} actions={this.state.content_table.actions}></Table>

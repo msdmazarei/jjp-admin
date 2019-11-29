@@ -340,6 +340,8 @@ export const en = {
     voice : 'voice file',
     selected_range_is_not_valid : 'selected range invalid',
     save : 'save',
+    content_generated : 'content generated',
+    content_not_generated : 'content not generated',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

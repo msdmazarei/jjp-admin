@@ -355,6 +355,8 @@ interface ILocalization extends LocalizedStringsMethods {
     voice: string;
     selected_range_is_not_valid : string;
     save : string;
+    content_generated : string;
+    content_not_generated : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

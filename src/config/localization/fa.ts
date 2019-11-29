@@ -343,6 +343,8 @@ export const fa = {
     voice: 'فایل صوتی',
     selected_range_is_not_valid : 'بازه انتخاب شده معتبر نیست',
     save : 'ذخیره',
+    content_generated : 'محتوا ایجاد شده',
+    content_not_generated : 'محتوا ایجاد نشده',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

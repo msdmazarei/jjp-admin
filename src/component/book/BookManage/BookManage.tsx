@@ -1209,7 +1209,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                       onClick={() => this.person_of_press_in_search_remover()}
                     ></i>
                     <AsyncSelect
-                      placeholder={Localization.person}
+                      placeholder={Localization.role_type_list.Press}
                       cacheOptions
                       defaultOptions
                       value={this.state.filter_state.press.value}

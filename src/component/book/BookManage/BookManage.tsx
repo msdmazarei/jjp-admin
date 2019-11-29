@@ -1205,7 +1205,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                     <label >{Localization.role_type_list.Press}</label>
                     <i
                       title={Localization.reset}
-                      className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                      className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
                       onClick={() => this.person_of_press_in_search_remover()}
                     ></i>
                     <AsyncSelect

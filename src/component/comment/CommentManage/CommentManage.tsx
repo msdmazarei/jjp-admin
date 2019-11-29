@@ -1014,7 +1014,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                           <label >{Localization.book}</label>
                           <i
                             title={Localization.reset}
-                            className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                            className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
                             onClick={() => this.book_in_search_remover()}
                           ></i>
                           <AsyncSelect
@@ -1039,7 +1039,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                           <label >{Localization.person}</label>
                           <i
                             title={Localization.reset}
-                            className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                            className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
                             onClick={() => this.person_in_search_remover()}
                           ></i>
                           <AsyncSelect

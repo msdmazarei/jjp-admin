@@ -21,6 +21,10 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import AsyncSelect from 'react-select/async';
+import { PersonService } from "../../../service/service.person";
+import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 
 /// define props & state ///////
 export interface IProps {
@@ -30,15 +34,43 @@ export interface IProps {
 }
 
 interface IFilterOrder {
-  title: {
-    value: string | undefined;
-    isValid: boolean;
+  creator: {
+    value: string | undefined,
+    isValid: boolean
   };
-  tags: {
-    value: { label: string, value: string }[];
-    isValid: boolean;
+  person: {
+    value: { label: string, value: IPerson } | null;
+    person_id: string | undefined;
+    is_valid: boolean,
+  };
+  cr_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  mo_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  status: {
+    value: { value: string, label: string } | null,
+    status: string | null,
+    isValid: boolean
+  };
+  total_price: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
   };
 }
+
 interface IState {
   order_table: IProps_table;
   OrderError: string | undefined;
@@ -51,17 +83,19 @@ interface IState {
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  filter: any,
   setRemoveLoader: boolean;
   setGetInvoiceLoader: boolean;
   setPriceLoader: boolean;
-  tags_inputValue: string;
+  filter_state: IFilterOrder;
 }
 
 // define class of Order 
 
 class OrderManageComponent extends BaseComponent<IProps, IState>{
-
+  statusOptions = [
+    { value: 'Created', label: Localization.order_status.Created },
+    { value: 'Invoiced' , label: Localization.order_status.Invoiced },
+  ];
   state = {
     order_table: {
       list: [],
@@ -165,20 +199,46 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     removeModalShow: false,
     orderDetailsModalShow: false,
     GetInvoiceModalShow: false,
-    filter: {
-      title: {
-        value: undefined,
-        isValid: true,
-      },
-      tags: {
-        value: [],
-        isValid: true
-      }
-    },
     setRemoveLoader: false,
     setGetInvoiceLoader: false,
     setPriceLoader: false,
-    tags_inputValue: '',
+    filter_state: {
+      creator: {
+        value: undefined,
+        isValid: false
+      },
+      person: {
+        value: null,
+        person_id: undefined,
+        is_valid: false,
+      },
+      cr_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      mo_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      status: {
+        value: null,
+        status: null,
+        isValid: false
+      },
+      total_price: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+    },
   };
 
   order_id!: string;
@@ -197,6 +257,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   } | undefined;
 
   private _orderService = new OrderService();
+  private _personService = new PersonService();
 
   // constructor(props: IProps) {
   //   super(props);
@@ -293,7 +354,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._orderService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      this.get_searchFilter()
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrders_error' } });
       this.setState({
@@ -506,10 +567,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  /////  end show details of order by user function define  /////////
-
-
-
+  /////  end show details of order by user function define  ////////
 
 
   /////  start get invoice of order by user function define  /////////
@@ -775,50 +833,61 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     this.props.history.push('/order/create'); // /admin
   }
 
-  handleSelectInputChange(value: any[], inputType: any) {
-    // let isValid;
-    // if (!value || !value.length) {
-    //   isValid = false;
-    // } else {
-    //   isValid = true;
-    // }
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        [inputType]: { value: value || [], isValid: true }
+
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
+  }
+  private set_searchFilter() {
+    const obj: any = {};
+
+    if (this.state.filter_state.creator.isValid) {
+      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
+    }
+
+    if (this.state.filter_state.person.is_valid) {
+      obj['person_id'] = { $eq: this.state.filter_state.person.person_id };
+    }
+
+    if (this.state.filter_state.cr_date.is_valid === true) {
+      if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
+      } else if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === false) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
+      } else if (this.state.filter_state.cr_date.from_isValid === false && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
       }
-    })
+    }
 
-  }
+    if (this.state.filter_state.mo_date.is_valid === true) {
+      if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from, $lte: (this.state.filter_state.mo_date.to! + 86400) }
+      } else if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === false) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from }
+      } else if (this.state.filter_state.mo_date.from_isValid === false && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $lte: this.state.filter_state.mo_date.to }
+      }
+    }
 
+    if (this.state.filter_state.status.isValid) {
+      obj['status'] = { $eq: this.state.filter_state.status.status };
+    }
 
-  ///// start onChange & search & reset function for search box ///////////
+    if (this.state.filter_state.total_price.is_valid === true) {
+      if (this.state.filter_state.total_price.from_isValid === true && this.state.filter_state.total_price.to_isValid === true) {
+        obj['total_price'] = { $gte: this.state.filter_state.total_price.from, $lte: this.state.filter_state.total_price.to }
+      } else if (this.state.filter_state.total_price.from_isValid === true && this.state.filter_state.total_price.to_isValid === false) {
+        obj['total_price'] = { $gte: this.state.filter_state.total_price.from }
+      } else if (this.state.filter_state.total_price.from_isValid === false && this.state.filter_state.total_price.to_isValid === true) {
+        obj['total_price'] = { $lte: this.state.filter_state.total_price.to }
+      }
+    }
 
-  handleFilterInputChange(value: string, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        title: {
-          value, isValid
-        }
-      },
-    });
-  }
-
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        title: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
   }
 
   filterSearch() {
@@ -829,46 +898,232 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       pager_offset: 0
     }, () => {
       // this.gotoTop();
-      this.setFilter();
+      // this.setFilter();
+      this.set_searchFilter();
       this.fetchOrders()
     });
   }
 
-  private _filter: any = {
-    title: { value: undefined, isValid: true },
-    tags: { value: [], isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.title.value) {
-      return false;
-    }
-    if (this._filter.tags.value.length) {
-      return false;
-    }
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.title.isValid) {
-        obj['title'] = this._filter.title.value;
+
+
+  /////  start onChange & search & reset function for search box ///////////
+
+  filter_state_reset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        creator: {
+          value: undefined,
+          isValid: false
+        },
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        status: {
+          value: null,
+          status: null,
+          isValid: false
+        },
+        total_price: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
       }
-      // if (this._filter.tags.isValid) {
-      //   if (this._filter.tags.value.length) {
-      //     obj['tags'] = this._filter.tags.value.map(t => t.value);
-      //   }
-      //   // obj['tags'] = this._filter.tags.value.length?;
-      // }
-      return obj;
-    }
-    return;
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        creator: {
+          value: undefined,
+          isValid: false
+        },
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        status: {
+          value: null,
+          status: null,
+          isValid: false
+        },
+        total_price: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+      }
+    })
   }
 
-  ///// end onChange & search & reset function for search box ///////////
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
 
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
+      }
+    })
+  }
+
+  person_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        }
+      }
+    })
+  }
+
+  handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
+    let newperson = { ...selectedPerson };
+    let isValid = true;      // newperson = selectedPerson;
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person: {
+          value: newperson,
+          person_id: newperson.value.id,
+          is_valid: isValid,
+        }
+      }
+    })
+  };
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  invoice_status_in_search_remover(){
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, status: { value: null, status: null , isValid: false }
+      }
+    })
+  }
+
+  handleSelectInputChange(type: { value: string, label: string } | null, inputType: any) {
+    if (type === null) {
+      this.setState({
+        ...this.state,
+        filter_state: {
+          ...this.state.filter_state, [inputType]: { value: type, status: null, isValid: false }
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        filter_state: {
+          ...this.state.filter_state, [inputType]: { value: type, status: type.value, isValid: true }
+        }
+      })
+    }
+  }
+
+  /////  end onChange & search & reset function for search box ///////////
+
+  ////// start request for options person of order in filter  ////////
+
+  private personRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { full_name: { $prefix: inputValue } };
+    }
+    let res: any = await this._personService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
+      this.personRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let persons = res.data.result.map((ps: any) => {
+        return { label: this.getPersonFullName(ps), value: ps }
+      });
+      this.personRequstError_txt = Localization.no_item_found;
+      callBack(persons);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_person_val: any;
+  debounce_300(inputValue: any, callBack: any) {
+    if (this.setTimeout_person_val) {
+      clearTimeout(this.setTimeout_person_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage(obj: { inputValue: string }) {
+    return this.personRequstError_txt;
+  }
+
+  ///////////// end request for options person of order in filter ////////////////////////
 
   //////render call Table component //////
 
@@ -899,38 +1154,81 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             AccessService.checkAccess('ORDER_GET_PREMIUM')
               ?
               <>
+                {/* start search box */}
                 <div className="row">
                   <div className="col-12">
                     <div className="template-box mb-4">
+                      {/* start search box inputs */}
                       <div className="row">
-                        <div className="col-sm-6 col-xl-4">
+                        <div className="col-md-3 col-sm-6">
                           <Input
-                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
-                            label={Localization.order}
-                            placeholder={Localization.order}
-                            defaultValue={this.state.filter.title.value}
+                            onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                            label={Localization.user}
+                            placeholder={Localization.user}
+                            defaultValue={this.state.filter_state.creator.value}
                           />
                         </div>
-                        <div className="col-8 d-none">
+                        <div className="col-md-3 col-sm-6">
+                          <label >{Localization.person}</label>
+                          <i
+                            title={Localization.reset}
+                            className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                            onClick={() => this.person_in_search_remover()}
+                          ></i>
+                          <AsyncSelect
+                            placeholder={Localization.person}
+                            cacheOptions
+                            defaultOptions
+                            value={this.state.filter_state.person.value}
+                            loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                            noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                            onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.creation_date}
+                            from={this.state.filter_state.cr_date.from}
+                            to={this.state.filter_state.cr_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.modification_date}
+                            from={this.state.filter_state.mo_date.from}
+                            to={this.state.filter_state.mo_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
                           <div className="form-group">
-                            <label htmlFor="">{Localization.tags}</label>
+                            <label htmlFor="">{Localization.status}</label>
+                            <i
+                              title={Localization.reset}
+                              className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                              onClick={() => this.invoice_status_in_search_remover()}
+                            ></i>
                             <Select
-                              isMulti
-                              onChange={(value: any) => this.handleSelectInputChange(value, "tags")}
-                              value={this.state.filter.tags.value}
-                              placeholder={Localization.tags}
-                              inputValue={this.state.tags_inputValue}
-                              menuIsOpen={false}
-                              components={{
-                                DropdownIndicator: null,
-                              }}
-                              isClearable
-                              onInputChange={(inputVal) => this.setState({ ...this.state, tags_inputValue: inputVal })}
+                              onChange={(value: any) => this.handleSelectInputChange(value, 'status')}
+                              options={this.statusOptions}
+                              value={this.state.filter_state.status.value}
+                              placeholder={Localization.status}
                             />
                           </div>
                         </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppNumberRange
+                            label={Localization.total_price}
+                            from={this.state.filter_state.total_price.from}
+                            to={this.state.filter_state.total_price.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'total_price')}
+                          />
+                        </div>
                       </div>
-                      <div className="row">
+                      {/* end search box inputs */}
+                      {/* start search btns box */}
+                      <div className="row mt-1">
                         <div className="col-12">
                           <BtnLoader
                             disabled={this.state.tableProcessLoader}
@@ -944,15 +1242,18 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                             // disabled={this.state.tableProcessLoader}
                             loading={false}
                             btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                            onClick={() => this.filterReset()}
+                            onClick={() => this.filter_state_reset()}
                           >
                             {Localization.reset}
                           </BtnLoader>
                         </div>
                       </div>
+                      {/* end search btns box */}
                     </div>
                   </div>
                 </div>
+                {/* end search  box */}
+
                 <div className="row">
                   <div className="col-12">
                   </div>

@@ -12,7 +12,7 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { BOOK_TYPES } from "../../../enum/Book";
+import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
 import { CommentService } from "../../../service/service.comment";
 import { IComment } from "../../../model/model.comment";
 import 'moment/locale/fa';
@@ -20,6 +20,13 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
+import { IPerson } from "../../../model/model.person";
+import { IBook } from "../../../model/model.book";
+import { BookService } from "../../../service/service.book";
+import { PersonService } from "../../../service/service.person";
+import AsyncSelect from 'react-select/async';
+import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 
 /// define props & state ///////
 export interface IProps {
@@ -29,15 +36,47 @@ export interface IProps {
 }
 
 interface IFilterComment {
-  book: {
-    value: string;
-    isValid: boolean;
+  comment: {
+    value: string | undefined,
+    isValid: boolean
   };
-  body: {
-    value: string | undefined;
-    isValid: boolean;
+  book: {
+    value: { label: string, value: IBook } | null;
+    book_id: string | undefined;
+    is_valid: boolean,
+  };
+  user: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  person: {
+    value: { label: string, value: IPerson } | null;
+    person_id: string | undefined;
+    is_valid: boolean,
+  };
+  likes: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  reports: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  cr_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
   };
 }
+
 interface IState {
   comment_table: IProps_table;
   CommentError: string | undefined;
@@ -49,13 +88,11 @@ interface IState {
   nextBtnLoader: boolean;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  filter: IFilterComment,
   setRemoveLoader: boolean;
-  tags_inputValue: string;
+  filter_state: IFilterComment;
 }
 
 // define class of Comment 
-
 class CommentManageComponent extends BaseComponent<IProps, IState>{
   state = {
     comment_table: {
@@ -206,22 +243,54 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     tableProcessLoader: false,
     removeModalShow: false,
     commentModalShow: false,
-    filter: {
-      book: {
-        value: "true",
-        isValid: true,
-      },
-      body: {
+    setRemoveLoader: false,
+    filter_state: {
+      comment: {
         value: undefined,
-        isValid: true,
+        isValid: false
+      },
+      book: {
+        value: null,
+        book_id: undefined,
+        is_valid: false,
+      },
+      user: {
+        value: undefined,
+        isValid: false
+      },
+      person: {
+        value: null,
+        person_id: undefined,
+        is_valid: false,
+      },
+      likes: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      reports: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      cr_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
       },
     },
-    setRemoveLoader: false,
-    tags_inputValue: '',
   }
 
   selectedComment: IComment | undefined;
   private _commentService = new CommentService();
+  private _bookService = new BookService();
+  private _personService = new PersonService();
 
   // constructor(props: IProps) {
   //   super(props);
@@ -233,7 +302,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   componentDidMount() {
     if (this.checkPageRenderAccess()) {
-      if(AccessService.checkAccess('COMMENT_GET_PREMIUM')){
+      if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -434,12 +503,86 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   // define axios for give data
 
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
+  }
+  private set_searchFilter() {
+    const obj: any = {};
+
+    if (this.state.filter_state.comment.isValid) {
+      obj['body'] = { $prefix: this.state.filter_state.comment.value };
+    }
+
+    if (this.state.filter_state.book.is_valid) {
+      obj['book_id'] = { $eq: this.state.filter_state.book.book_id };
+    }
+
+    if (this.state.filter_state.user.isValid) {
+      obj['creator'] = { $prefix: this.state.filter_state.user.value };
+    }
+
+    if (this.state.filter_state.person.is_valid) {
+      obj['person_id'] = { $eq: this.state.filter_state.person.person_id };
+    }
+
+    if (this.state.filter_state.likes.is_valid === true) {
+      if (this.state.filter_state.likes.from_isValid === true && this.state.filter_state.likes.to_isValid === true) {
+        obj['likes'] = { $gte: this.state.filter_state.likes.from, $lte:this.state.filter_state.likes.to}
+      } else if (this.state.filter_state.likes.from_isValid === true && this.state.filter_state.likes.to_isValid === false) {
+        obj['likes'] = { $gte: this.state.filter_state.likes.from }
+      } else if (this.state.filter_state.likes.from_isValid === false && this.state.filter_state.likes.to_isValid === true) {
+        obj['likes'] = { $lte: this.state.filter_state.likes.to }
+      }
+    }
+
+    if (this.state.filter_state.reports.is_valid === true) {
+      if (this.state.filter_state.reports.from_isValid === true && this.state.filter_state.reports.to_isValid === true) {
+        obj['reports'] = { $gte: this.state.filter_state.reports.from, $lte:this.state.filter_state.reports.to}
+      } else if (this.state.filter_state.reports.from_isValid === true && this.state.filter_state.reports.to_isValid === false) {
+        obj['reports'] = { $gte: this.state.filter_state.reports.from }
+      } else if (this.state.filter_state.reports.from_isValid === false && this.state.filter_state.reports.to_isValid === true) {
+        obj['reports'] = { $lte: this.state.filter_state.reports.to }
+      }
+    }
+
+    if (this.state.filter_state.cr_date.is_valid === true) {
+      if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
+      } else if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === false) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
+      } else if (this.state.filter_state.cr_date.from_isValid === false && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
+      }
+    }
+
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
+  }
+
+  filterSearch() {
+    this.setState({
+      ...this.state,
+      filterSearchBtnLoader: true,
+      tableProcessLoader: true,
+      pager_offset: 0
+    }, () => {
+      // this.gotoTop();
+      // this.setFilter();
+      this.set_searchFilter();
+      this.fetchComments()
+    });
+  }
+
   async fetchComments() {
     this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._commentService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      this.get_searchFilter()
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchComments_error' } });
       this.setState({
@@ -565,99 +708,278 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     });
   }
 
+  /////  start onChange & search & reset function for search box ///////////
 
-
-  handleSelectInputChange(value: any[], inputType: any) {
-    // let isValid;
-    // if (!value || !value.length) {
-    //   isValid = false;
-    // } else {
-    //   isValid = true;
-    // }
+  filter_state_reset() {
     this.setState({
       ...this.state,
-      filter: {
-        ...this.state.filter,
-        [inputType]: { value: value || [], isValid: true }
+      filter_state: {
+        comment: {
+          value: undefined,
+          isValid: false
+        },
+        book: {
+          value: null,
+          book_id: undefined,
+          is_valid: false,
+        },
+        user: {
+          value: undefined,
+          isValid: false
+        },
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        likes: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        reports: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+      }
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        comment: {
+          value: undefined,
+          isValid: false
+        },
+        book: {
+          value: null,
+          book_id: undefined,
+          is_valid: false,
+        },
+        user: {
+          value: undefined,
+          isValid: false
+        },
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        likes: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        reports: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
       }
     })
-
   }
 
-
-
-
-
-  /////  onChange & search & reset function for search box ///////////
-
-  handleFilterInputChange(value: string, isValid: boolean) {
+  handleBookChange = (selectedBook: { label: string, value: IBook }) => {
+    let newbook = { ...selectedBook };
+    let isValid = true;      // newperson = selectedPerson;
     this.setState({
       ...this.state,
-      filter: {
-        ...this.state.filter,
-        body: {
-          value, isValid
+      filter_state: {
+        ...this.state.filter_state,
+        book: {
+          value: newbook,
+          book_id: newbook.value.id,
+          is_valid: isValid,
         }
-      },
-    });
+      }
+    })
   }
 
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        body: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
-  }
-
-  filterSearch() {
+  book_in_search_remover() {
     this.setState({
       ...this.state,
-      filterSearchBtnLoader: true,
-      tableProcessLoader: true,
-      pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      this.setFilter();
-      this.fetchComments()
-    });
+      filter_state: {
+        ...this.state.filter_state,
+        book: {
+          value: null,
+          book_id: undefined,
+          is_valid: false,
+        }
+      }
+    })
   }
 
-  private _filter: IFilterComment = {
-    book: { value: "true", isValid: true },
-    body: { value: undefined, isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.book.value) {
-      return false;
-    }
-    if (this._filter.body.value) {
-      return false;
-    }
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.body.isValid) {
-        obj['body'] = this._filter.body.value;
+  handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
+    let newperson = { ...selectedPerson };
+    let isValid = true;      // newperson = selectedPerson;
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person: {
+          value: newperson,
+          person_id: newperson.value.id,
+          is_valid: isValid,
+        }
       }
-      if (this._filter.book.isValid) {
-        obj['book'] = true;
-      }
-      return obj;
-    }
-    return;
+    })
   }
+
+  person_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        }
+      }
+    })
+  }
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
+
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
+      }
+    })
+  }
+
+  /////  end onChange & search & reset function for search box ///////////
+
+
+  ////// start request for options person of press in filter  ////////
+
+  private bookRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2_book_search(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { title: { $prefix: inputValue } };
+    }
+    let res: any = await this._bookService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'bookSearch_in_comment_error' } });
+      this.bookRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let books = res.data.result.map((ps: any) => {
+        const b_type: any = ps.type;
+        const b_t: BOOK_TYPES = b_type;
+        let type = Localization.book_type_list[b_t];
+        return { label: ps.title + " - " + type, value: ps }
+    });
+      this.bookRequstError_txt = Localization.no_item_found;
+      callBack(books);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_book_val: any;
+  debounce_300_book_search(inputValue: any, callBack: any) {
+    if (this.setTimeout_book_val) {
+      clearTimeout(this.setTimeout_book_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2_book_search(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage_book_search(obj: { inputValue: string }) {
+    return this.bookRequstError_txt;
+  }
+
+
+
+  private personRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2_person_search(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { full_name: { $prefix: inputValue } };
+    }
+    let res: any = await this._personService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
+      this.personRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let persons = res.data.result.map((ps: any) => {
+        return { label: this.getPersonFullName(ps), value: ps }
+      });
+      this.personRequstError_txt = Localization.no_item_found;
+      callBack(persons);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_person_val: any;
+  debounce_300_person_search(inputValue: any, callBack: any) {
+    if (this.setTimeout_person_val) {
+      clearTimeout(this.setTimeout_person_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2_person_search(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage_person_search(obj: { inputValue: string }) {
+    return this.personRequstError_txt;
+  }
+
+  ///////////// end request for options person of press in filter ////////////////////////
 
   //////render call Table component //////
 
@@ -674,20 +996,90 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             AccessService.checkAccess('COMMENT_GET_PREMIUM')
               ?
               <>
+                {/* start search box */}
                 <div className="row">
                   <div className="col-12">
                     <div className="template-box mb-4">
+                      {/* start search box inputs */}
                       <div className="row">
-                        <div className="col-sm-6 col-xl-4">
+                        <div className="col-md-3 col-sm-6">
                           <Input
-                            onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                            onChange={(value, isValid) => this.handleInputChange(value, 'comment')}
                             label={Localization.comment}
                             placeholder={Localization.comment}
-                            defaultValue={this.state.filter.body.value}
+                            defaultValue={this.state.filter_state.comment.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <label >{Localization.book}</label>
+                          <i
+                            title={Localization.reset}
+                            className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                            onClick={() => this.book_in_search_remover()}
+                          ></i>
+                          <AsyncSelect
+                            placeholder={Localization.book}
+                            cacheOptions
+                            defaultOptions
+                            value={this.state.filter_state.book.value}
+                            loadOptions={(inputValue, callback) => this.debounce_300_book_search(inputValue, callback)}
+                            noOptionsMessage={(obj) => this.select_noOptionsMessage_book_search(obj)}
+                            onChange={(selectedBook: any) => this.handleBookChange(selectedBook)}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'user')}
+                            label={Localization.user}
+                            placeholder={Localization.user}
+                            defaultValue={this.state.filter_state.user.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <label >{Localization.person}</label>
+                          <i
+                            title={Localization.reset}
+                            className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                            onClick={() => this.person_in_search_remover()}
+                          ></i>
+                          <AsyncSelect
+                            placeholder={Localization.person}
+                            cacheOptions
+                            defaultOptions
+                            value={this.state.filter_state.person.value}
+                            loadOptions={(inputValue, callback) => this.debounce_300_person_search(inputValue, callback)}
+                            noOptionsMessage={(obj) => this.select_noOptionsMessage_person_search(obj)}
+                            onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppNumberRange
+                            label={Localization.number_of_likes}
+                            from={this.state.filter_state.likes.from}
+                            to={this.state.filter_state.likes.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'likes')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppNumberRange
+                            label={Localization.number_of_reports}
+                            from={this.state.filter_state.reports.from}
+                            to={this.state.filter_state.reports.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'reports')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.creation_date}
+                            from={this.state.filter_state.cr_date.from}
+                            to={this.state.filter_state.cr_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
                           />
                         </div>
                       </div>
-                      <div className="row">
+                      {/* end search box inputs */}
+                      {/* start search btns box */}
+                      <div className="row mt-1">
                         <div className="col-12">
                           <BtnLoader
                             disabled={this.state.tableProcessLoader}
@@ -701,15 +1093,17 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                             // disabled={this.state.tableProcessLoader}
                             loading={false}
                             btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                            onClick={() => this.filterReset()}
+                            onClick={() => this.filter_state_reset()}
                           >
                             {Localization.reset}
                           </BtnLoader>
                         </div>
                       </div>
+                      {/* end search btns box */}
                     </div>
                   </div>
                 </div>
+                {/* end search  box */}
                 <div className="row">
                   <div className="col-12">
                   </div>

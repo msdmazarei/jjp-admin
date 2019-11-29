@@ -19,6 +19,9 @@ import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
 import { GroupService } from "../../../service/service.group";
 import { PermissionService } from "../../../service/service.permission";
+import { PersonService } from "../../../service/service.person";
+import { IPerson } from "../../../model/model.person";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 // import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
@@ -31,18 +34,35 @@ export interface IProps {
 
 //// end define IProps ///
 
-
-//// start define IFilterUser ///
-
-interface IFilterUser {
-  group: {
-    value: string | undefined;
-    isValid: boolean;
+interface IFilterGroup {
+  title: {
+    value: string | undefined,
+    isValid: boolean
   };
+  creator: {
+    value: string | undefined,
+    isValid: boolean
+  };
+  person: {
+    value: { label: string, value: IPerson } | null;
+    person_id: string | undefined;
+    is_valid: boolean,
+  };
+  cr_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  };
+  mo_date: {
+    from: number | undefined,
+    from_isValid: boolean,
+    to: number | undefined,
+    to_isValid: boolean,
+    is_valid: boolean,
+  }
 }
-
-//// end define IFilterUser ///
-
 
 //// start define IState ///
 
@@ -59,7 +79,6 @@ interface IState {
   setAddPermissionLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
-  filter: IFilterUser,
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   permissions: {
@@ -67,6 +86,7 @@ interface IState {
     isValid: boolean
   };
   beforePermission_id_array: string[] | [];
+  filter_state: IFilterGroup;
 }
 
 //// end define IState ///
@@ -137,12 +157,6 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
         },
       ]
     },
-    filter: {
-      group: {
-        value: undefined,
-        isValid: true,
-      }
-    },
     UserError: undefined,
     pager_offset: 0,
     pager_limit: 10,
@@ -161,6 +175,35 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       isValid: true,
     },
     beforePermission_id_array: [],
+    filter_state: {
+      title: {
+        value: undefined,
+        isValid: false
+      },
+      creator: {
+        value: undefined,
+        isValid: false,
+      },
+      person: {
+        value: null,
+        person_id: undefined,
+        is_valid: false,
+      },
+      cr_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+      mo_date: {
+        from: undefined,
+        from_isValid: false,
+        to: undefined,
+        to_isValid: false,
+        is_valid: false,
+      },
+    },
   }
 
   selectedGroup: any | undefined;
@@ -170,6 +213,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   private _groupService = new GroupService();
   private _permissionService = new PermissionService();
+  private _personService = new PersonService();
 
   // constructor(props: IProps) {
   //   super(props);
@@ -202,9 +246,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._groupService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.getFilter()
+      this.get_searchFilter()
     ).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroup_error' }  });
+      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroup_error' } });
       this.setState({
         ...this.state,
         prevBtnLoader: false,
@@ -412,7 +456,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   async onRemovePermissionFromGroup(newValue: any[], group_id: string) {
 
-    if(newValue.length === 0){
+    if (newValue.length === 0) {
       return;
     }
 
@@ -436,7 +480,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   async onAddPermissionToGroup(newValue: any[], group_id: string) {
 
-    if(newValue.length === 0){
+    if (newValue.length === 0) {
       return;
     }
 
@@ -645,75 +689,6 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // end add permission modal function define ////////
 
 
-  /// start search functions and onchange handler ///
-
-  handleFilterInputChange(value: string, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      filter: {
-        ...this.state.filter,
-        group: {
-          value, isValid
-        }
-      },
-    });
-  }
-
-  filterReset() {
-    this.setState({
-      ...this.state, filter: {
-        ...this.state.filter,
-        group: {
-          value: undefined,
-          isValid: true
-        },
-      },
-      prevBtnLoader: false,
-      nextBtnLoader: false,
-    });
-  }
-
-  filterSearch() {
-    this.setState({
-      ...this.state,
-      filterSearchBtnLoader: true,
-      tableProcessLoader: true,
-      pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      this.setFilter();
-      this.fetchGroup()
-    });
-  }
-
-  private _filter: IFilterUser = {
-    group: { value: undefined, isValid: true },
-  };
-  isFilterEmpty(): boolean {
-    if (this._filter.group.value) {
-      return false;
-    }
-    // if ....
-    return true;
-  }
-  setFilter() {
-    this._filter = { ...this.state.filter };
-  }
-  getFilter() {
-    if (!this.isFilterEmpty()) {
-      let obj: any = {};
-      if (this._filter.group.isValid) {
-        obj['title'] = this._filter.group.value;
-      }
-      // if  ....
-      return obj;
-    }
-    return;
-  }
-
-  /// end search functions and onchange handler ///
-
-
   /// start timestampe to date functions ///
 
   getTimestampToDate(timestamp: number) {
@@ -844,6 +819,245 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   /// end previous and next btn onchange functions ///
 
 
+  private _searchFilter: any | undefined;
+  private get_searchFilter() {
+    return this._searchFilter;
+  }
+  private set_searchFilter() {
+    const obj: any = {};
+
+    if (this.state.filter_state.title.isValid) {
+      obj['title'] = { $prefix: this.state.filter_state.title.value };
+    }
+
+    if (this.state.filter_state.creator.isValid) {
+      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
+    }
+
+    if (this.state.filter_state.person.is_valid) {
+      obj['person_id'] = { $eq: this.state.filter_state.person.person_id };
+    }
+
+    if (this.state.filter_state.cr_date.is_valid === true) {
+      if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
+      } else if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === false) {
+        obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from }
+      } else if (this.state.filter_state.cr_date.from_isValid === false && this.state.filter_state.cr_date.to_isValid === true) {
+        obj['creation_date'] = { $lte: this.state.filter_state.cr_date.to }
+      }
+    }
+
+    if (this.state.filter_state.mo_date.is_valid === true) {
+      if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from, $lte: (this.state.filter_state.mo_date.to! + 86400) }
+      } else if (this.state.filter_state.mo_date.from_isValid === true && this.state.filter_state.mo_date.to_isValid === false) {
+        obj['modification_date'] = { $gte: this.state.filter_state.mo_date.from }
+      } else if (this.state.filter_state.mo_date.from_isValid === false && this.state.filter_state.mo_date.to_isValid === true) {
+        obj['modification_date'] = { $lte: this.state.filter_state.mo_date.to }
+      }
+    }
+
+    if (!Object.keys(obj).length) {
+      this._searchFilter = undefined;
+    } else {
+      this._searchFilter = obj;
+    }
+  }
+
+  filterSearch() {
+    this.setState({
+      ...this.state,
+      filterSearchBtnLoader: true,
+      tableProcessLoader: true,
+      pager_offset: 0
+    }, () => {
+      // this.gotoTop();
+      // this.setFilter();
+      this.set_searchFilter();
+      this.fetchGroup()
+    });
+  }
+
+
+
+  /////  start onChange & search & reset function for search box ///////////
+
+  filter_state_reset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        title: {
+          value: undefined,
+          isValid: false
+        },
+        creator: {
+          value: undefined,
+          isValid: false,
+        },
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+      }
+    }, () => this.repetReset())
+  }
+  repetReset() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        title: {
+          value: undefined,
+          isValid: false
+        },
+        creator: {
+          value: undefined,
+          isValid: false,
+        },
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        },
+        cr_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+        mo_date: {
+          from: undefined,
+          from_isValid: false,
+          to: undefined,
+          to_isValid: false,
+          is_valid: false,
+        },
+      }
+    })
+  }
+
+  handleInputChange(value: any, inputType: any, Validation: boolean = true) {
+    let isValid;
+    if (value === undefined || value === '') {
+      isValid = false;
+    } else {
+      isValid = true;
+    }
+
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
+      }
+    })
+  }
+
+  person_in_search_remover() {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person: {
+          value: null,
+          person_id: undefined,
+          is_valid: false,
+        }
+      }
+    })
+  }
+
+  handlePersonChange_person_serch = (selectedPerson: { label: string, value: IPerson }) => {
+    let newperson = { ...selectedPerson };
+    let isValid = true;      // newperson = selectedPerson;
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        person: {
+          value: newperson,
+          person_id: newperson.value.id,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
+    this.setState({
+      ...this.state,
+      filter_state: {
+        ...this.state.filter_state,
+        [inputType]: {
+          from: from,
+          from_isValid: from_isValid,
+          to: to,
+          to_isValid: to_isValid,
+          is_valid: isValid,
+        }
+      }
+    })
+  }
+
+  /////  end onChange & search & reset function for search box ///////////
+
+
+  ////// start request for options person of press in filter  ////////
+
+  private personRequstError_txt: string = Localization.no_item_found;
+
+  async promiseOptions2_person_serch(inputValue: any, callBack: any) {
+    let filter = undefined;
+    if (inputValue) {
+      filter = { full_name: { $prefix: inputValue } };
+    }
+    let res: any = await this._personService.search(10, 0, filter).catch(err => {
+      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
+      this.personRequstError_txt = err_msg.body;
+    });
+
+    if (res) {
+      let persons = res.data.result.map((ps: any) => {
+        return { label: this.getPersonFullName(ps), value: ps }
+      });
+      this.personRequstError_txt = Localization.no_item_found;
+      callBack(persons);
+    } else {
+      callBack();
+    }
+  }
+
+  private setTimeout_person_val: any;
+  debounce_300_person_serch(inputValue: any, callBack: any) {
+    if (this.setTimeout_person_val) {
+      clearTimeout(this.setTimeout_person_val);
+    }
+    this.setTimeout_person_val = setTimeout(() => {
+      this.promiseOptions2_person_serch(inputValue, callBack);
+    }, 1000);
+  }
+
+  select_noOptionsMessage_person_serch(obj: { inputValue: string }) {
+    return this.personRequstError_txt;
+  }
+
+  ///////////// end request for options person of press in filter ////////////////////////
+
   //// render call Table component ///////
 
   render() {
@@ -863,20 +1077,65 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
               </BtnLoader>
             </div>
           </div>
+          {/* start search box */}
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">
+                {/* start search box inputs */}
                 <div className="row">
-                  <div className="col-sm-6 col-xl-4">
+                  <div className="col-md-3 col-sm-6">
                     <Input
-                      onChange={(value: string, isValid) => this.handleFilterInputChange(value, isValid)}
+                      onChange={(value, isValid) => this.handleInputChange(value, 'title')}
                       label={Localization.title}
                       placeholder={Localization.title}
-                      defaultValue={this.state.filter.group.value}
+                      defaultValue={this.state.filter_state.title.value}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <Input
+                      onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                      label={Localization.creator}
+                      placeholder={Localization.creator}
+                      defaultValue={this.state.filter_state.creator.value}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <label >{Localization.person}</label>
+                    <i
+                      title={Localization.reset}
+                      className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                      onClick={() => this.person_in_search_remover()}
+                    ></i>
+                    <AsyncSelect
+                      placeholder={Localization.person}
+                      cacheOptions
+                      defaultOptions
+                      value={this.state.filter_state.person.value}
+                      loadOptions={(inputValue, callback) => this.debounce_300_person_serch(inputValue, callback)}
+                      noOptionsMessage={(obj) => this.select_noOptionsMessage_person_serch(obj)}
+                      onChange={(selectedPerson: any) => this.handlePersonChange_person_serch(selectedPerson)}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      label={Localization.creation_date}
+                      from={this.state.filter_state.cr_date.from}
+                      to={this.state.filter_state.cr_date.to}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
+                    />
+                  </div>
+                  <div className="col-md-3 col-sm-6">
+                    <AppRangePicker
+                      label={Localization.modification_date}
+                      from={this.state.filter_state.mo_date.from}
+                      to={this.state.filter_state.mo_date.to}
+                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
                     />
                   </div>
                 </div>
-                <div className="row">
+                {/* end search box inputs */}
+                {/* start search btns box */}
+                <div className="row mt-1">
                   <div className="col-12">
                     <BtnLoader
                       disabled={this.state.tableProcessLoader}
@@ -887,17 +1146,20 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
                       {Localization.search}
                     </BtnLoader>
                     <BtnLoader
+                      // disabled={this.state.tableProcessLoader}
                       loading={false}
                       btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filterReset()}
+                      onClick={() => this.filter_state_reset()}
                     >
                       {Localization.reset}
                     </BtnLoader>
                   </div>
                 </div>
+                {/* end search btns box */}
               </div>
             </div>
           </div>
+          {/* end search  box */}
           <div className="row">
             <div className="col-12">
               <Table loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>

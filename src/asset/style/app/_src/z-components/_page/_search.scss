@@ -1,9 +1,15 @@
 body{
   .remover-in_box{
-    left: 3.6rem;
+    left: 2.7rem;
     top: 2.6rem;
     position: absolute;
-    z-index: 10000;
+    z-index: 1500;
+  }
+  .remover-in_box-async{
+    left: 3.3rem;
+    top: 2.6rem;
+    position: absolute;
+    z-index: 1500;
   }
 }
 

@@ -165,7 +165,7 @@ class ReportCommentTableComponent extends ReportBase<IProps, IState> {
 
     async fetchComments() {
         this.setState({ ...this.state, commentTableLoader: true });
-        let res = await this._commentService.search(10, 0, { book: true }).catch(error => {
+        let res = await this._commentService.search(10, 0).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchCommentsDashboard_error' } });
             this.setState({
                 ...this.state,

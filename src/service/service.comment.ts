@@ -7,7 +7,7 @@ export class CommentService extends BaseService {
 
     search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<IComment>> {
         // return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip, filter });
-        return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip });
+        return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip,filter });
     }
 
     like(comment_id: string): Promise<any> {

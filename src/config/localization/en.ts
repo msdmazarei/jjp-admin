@@ -323,6 +323,7 @@ export const en = {
     create_permission: "Create a permission",
     permission_update: "permission update",
     creator: "creator",
+    modifier : 'modifier',
     modification_date: "modification_date",
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher: "Each book must have only one publisher and it is not possible to add a book without a publisher",
     name_of_organization: "name of organization",

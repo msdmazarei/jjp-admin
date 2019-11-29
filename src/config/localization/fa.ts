@@ -326,6 +326,7 @@ export const fa = {
     create_permission:"ایجاد دسترسی",
     permission_update:"بروزرسانی دسترسی",
     creator:"ایجاد کننده",
+    modifier : 'اصلاح کننده',
     modification_date:"تاریخ اصلاح",
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher:"هر کتاب باید تنها دارای یک ناشر باشد و افزودن کتاب بدون ناشر امکان پذیر نمی باشد",
     name_of_organization: "نام سازمان",

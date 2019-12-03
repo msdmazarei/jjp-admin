@@ -357,6 +357,7 @@ interface ILocalization extends LocalizedStringsMethods {
     save : string;
     content_generated : string;
     content_not_generated : string;
+    row :  string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

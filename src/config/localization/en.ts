@@ -1,3 +1,5 @@
+import { Row } from "react-bootstrap";
+
 export const en = {
     login: "login",
     register: "register",
@@ -342,6 +344,7 @@ export const en = {
     save : 'save',
     content_generated : 'content generated',
     content_not_generated : 'content not generated',
+    row : 'row',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

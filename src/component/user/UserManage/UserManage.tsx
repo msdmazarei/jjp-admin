@@ -1075,7 +1075,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
                 {/* end search  box */}
                 <div className="row">
                   <div className="col-12">
-                    <Table loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
+                    <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
                     <div>
                       {this.pager_previous_btn_render()}
                       {this.pager_next_btn_render()}

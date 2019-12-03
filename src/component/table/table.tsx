@@ -4,6 +4,7 @@ import Dropdown from "react-bootstrap/Dropdown";
 // define props of table
 
 export interface IProps_table {
+    row_offset_number?:number;
     loading?: boolean;
     list: any[];
     colHeaders: {
@@ -47,6 +48,9 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                     <table className="table table-striped table-hover table-sm table-bordered bg-white mb-0">
                         <thead className="thead-light">
                             <tr className="table-light">
+                                {
+                                    typeof this.props.row_offset_number === 'number' ? <th>{Localization.row}</th> : undefined
+                                }
                                 {(this.props.colHeaders).map((h, index) => (
                                     <Fragment key={index}>
                                         {
@@ -61,7 +65,6 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                 {
                                     this.props.actions ? <th className="text-center">#</th> : undefined
                                 }
-
                             </tr>
                         </thead>
                         <tbody>
@@ -78,6 +81,9 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                     ?
                                     this.props.list.map((row, index) => (
                                         <tr className="table-light" key={index}>
+                                            {
+                                                typeof this.props.row_offset_number === 'number' ? <td>{this.props.row_offset_number! + index + 1}</td> : undefined
+                                            }
                                             {this.props.colHeaders.map((ch, index) => (
                                                 <td key={index}>
                                                     {

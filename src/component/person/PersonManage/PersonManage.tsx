@@ -18,11 +18,8 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
-import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
 import { Input } from "../../form/input/Input";
 import Select from 'react-select';
-import AsyncSelect from 'react-select/async';
-import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 
 //// props & state define ////////

@@ -23,7 +23,6 @@ import { AccessService } from "../../../service/service.access";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { PersonService } from "../../../service/service.person";
-import { Store2 } from "../../../redux/store";
 
 //// props & state define ////////
 export interface IProps {

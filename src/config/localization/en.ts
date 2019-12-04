@@ -1,5 +1,3 @@
-import { Row } from "react-bootstrap";
-
 export const en = {
     login: "login",
     register: "register",

@@ -29,7 +29,6 @@ import { IPerson } from "../../../model/model.person";
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { Store2 } from "../../../redux/store";
-import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 
 /// define props & state ///////
 export interface IProps {

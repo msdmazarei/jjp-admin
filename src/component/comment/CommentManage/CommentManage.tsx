@@ -12,7 +12,7 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
+import { BOOK_TYPES } from "../../../enum/Book";
 import { CommentService } from "../../../service/service.comment";
 import { IComment } from "../../../model/model.comment";
 import 'moment/locale/fa';

@@ -7,7 +7,6 @@ import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
 import { FixNumber } from '../fix-number/FixNumber';
 import { AppRegex } from '../../../config/regex';
-import { string } from 'prop-types';
 
 interface IProps {
     history?: History;

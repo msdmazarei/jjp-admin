@@ -18,10 +18,10 @@ import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
 import { GroupService } from "../../../service/service.group";
-import { PermissionService } from "../../../service/service.permission";
 import { PersonService } from "../../../service/service.person";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { AddorRemovePermissionManage } from "../AddorRemovePermissionManage/AddorRemovePermissionManage"
 // import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
@@ -76,16 +76,10 @@ interface IState {
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
   setRemoveLoader: boolean;
-  setAddPermissionLoader: boolean;
   isSearch: boolean;
   searchVal: string | undefined;
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
-  permissions: {
-    value: { label: string | number, value: object }[] | null,
-    isValid: boolean
-  };
-  beforePermission_id_array: string[] | [];
   filter_state: IFilterGroup;
 }
 
@@ -170,11 +164,6 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     searchVal: undefined,
     filterSearchBtnLoader: false,
     tableProcessLoader: false,
-    permissions: {
-      value: null,
-      isValid: true,
-    },
-    beforePermission_id_array: [],
     filter_state: {
       title: {
         value: undefined,
@@ -208,11 +197,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   selectedGroup: any | undefined;
   selectedGroupForPermission: any | undefined;
-  private permissionRequstError_txt: string = Localization.no_item_found;
-  private setTimeout_permission_val: any;
 
   private _groupService = new GroupService();
-  private _permissionService = new PermissionService();
   private _personService = new PersonService();
 
   // constructor(props: IProps) {
@@ -339,351 +325,18 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   onShowAddPermissionModal(group: any) {
     this.selectedGroupForPermission = group;
-    // this.setState({ ...this.state, addPermissionModalShow: true, })
-    if (this.selectedGroupForPermission.id) {
-      this.fetchGroupPermissions(this.selectedGroupForPermission.id);
-    };
-  }
-
-  async fetchGroupPermissions(group_id: string) {
-    const groupData: object = {
-      groups: [group_id],
-    };
-    let res = await this._groupService.fetchGroupPermissions(groupData).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroupPermissions_error' } });
+    this.setState({
+      ...this.state,
+      addPermissionModalShow: true
     });
-
-    if (res) {
-
-      let newRes = res.data.result.map(item => { return { label: item.permission.permission, value: { id: item.permission_id } } });
-      let beforePermission_id_array = res.data.result.length > 0 ? res.data.result.map(item => { return item.permission_id }) : [];
-
-      this.setState({
-        ...this.state,
-        permissions: {
-          ...this.state.permissions,
-          // value: res.data.result,
-          value: newRes,
-        },
-        addPermissionModalShow: true,
-        beforePermission_id_array: beforePermission_id_array,
-      }
-      );
-    }
   }
 
   onHideAddPermissionModal() {
     this.selectedGroupForPermission = undefined;
     this.setState({
       ...this.state,
-      permissions: { value: null, isValid: false },
       addPermissionModalShow: false
     });
-
-  }
-
-  debounce_300(inputValue: any, callBack: any) {
-    if (this.setTimeout_permission_val) {
-      clearTimeout(this.setTimeout_permission_val);
-    }
-    this.setTimeout_permission_val = setTimeout(() => {
-      this.promiseOptions2(inputValue, callBack);
-    }, 1000);
-  }
-
-  async promiseOptions2(inputValue: any, callBack: any) {
-    let filter = undefined;
-    if (inputValue) {
-      filter = { permission: inputValue };
-    }
-    let res: any = await this._permissionService.search(10, 0, filter).catch(err => {
-      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2fetchGroupPermissions_error' } });
-      this.permissionRequstError_txt = err_msg.body;
-    });
-
-    if (res) {
-      let groups = res.data.result.map((ps: any) => {
-        // let per :any= ps.permission
-        // let permission : PERMISSIONS = per
-        // return { label:Localization.permissions_list[permission]?Localization.permissions_list[permission]:ps.permission, value: ps }
-        return { label: ps.permission, value: ps }
-      });
-      this.permissionRequstError_txt = Localization.no_item_found;
-      callBack(groups);
-    } else {
-      callBack();
-    }
-  }
-
-  select_noOptionsMessage(obj: { inputValue: string }) {
-    return this.permissionRequstError_txt;
-  }
-
-  handleMultiSelectInputChange(newValue: any[]) {
-    this.setState({
-      ...this.state,
-      permissions: {
-        ...this.state.permissions,
-        value: newValue,
-      }
-    })
-  }
-
-  handle_on_update_permissions_btn(group_id: string) {
-    if (this.state.beforePermission_id_array.length > 0 && this.state.permissions.value !== null) {
-      const updated: any[] = this.state.permissions.value!;
-      const before_id_array: any[] = this.state.beforePermission_id_array;
-      let updated_id_array = updated.map(item => { return item.value.id });
-      let toRemovedItems = before_id_array.filter(x => !updated_id_array.includes(x));
-      let toAddedItems = updated_id_array.filter(x => !before_id_array.includes(x));
-      this.onRemovePermissionFromGroup(toRemovedItems, group_id);
-      this.onAddPermissionToGroup(toAddedItems, group_id);
-    };
-    if (this.state.beforePermission_id_array.length > 0 && this.state.permissions.value === null) {
-      let toRemovedItems = this.state.beforePermission_id_array;
-      this.onRemovePermissionFromGroup(toRemovedItems, group_id);
-    };
-    if (this.state.beforePermission_id_array.length === 0 && this.state.permissions.value !== null) {
-      const updated: any[] = this.state.permissions.value!;
-      let updated_id_array = updated.map(item => { return item.value.id });
-      let toAddedItems = updated_id_array;
-      this.onAddPermissionToGroup(toAddedItems, group_id);
-    };
-    if (this.state.beforePermission_id_array.length === 0 && this.state.permissions.value === null) {
-      return;
-    }
-  }
-
-  async onRemovePermissionFromGroup(newValue: any[], group_id: string) {
-
-    if (newValue.length === 0) {
-      return;
-    }
-
-    const removedPermission: object = {
-      groups: [group_id],
-      permissions: newValue,
-    };
-
-    let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemovePermissionFromGroup_error' } });
-      this.fetchGroupPermissions(group_id);
-    });
-
-    if (res) {
-      this.fetchGroupPermissions(group_id);
-      this.apiSuccessNotify();
-      console.log(newValue);
-      return;
-    }
-  }
-
-  async onAddPermissionToGroup(newValue: any[], group_id: string) {
-
-    if (newValue.length === 0) {
-      return;
-    }
-
-    const addedPermission: object = {
-      groups: [group_id],
-      permissions: newValue,
-    };
-
-    let res = await this._groupService.addPermissionToGroup(addedPermission).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'onAddPermissionToGroup_error' } });
-      this.fetchGroupPermissions(group_id);
-    });
-
-    if (res) {
-      this.fetchGroupPermissions(group_id);
-      this.apiSuccessNotify();
-      console.log(newValue);
-      return;
-    }
-  }
-
-
-  // handleMultiSelectInputChange(newValue: any[]) {
-  //   const user_id: string = this.selectedGroupForPermission!.id;
-  //   if (this.state.permissions.value === null) {
-  //     this.onAddPermissionToGroup(newValue, user_id);
-  //     return;
-  //   }
-
-  //   if (newValue === null) {
-  //     this.onRemovePermissionFromGroup(newValue, user_id);
-  //     return;
-  //   }
-
-  //   const before: any[] = this.state.permissions.value!
-
-  //   if (newValue.length > before.length) {
-  //     this.onAddPermissionToGroup(newValue, user_id);
-  //     return;
-  //   }
-
-  //   if (newValue.length < before.length) {
-  //     this.onRemovePermissionFromGroup(newValue, user_id);
-  //     return;
-  //   }
-
-  //   // if (newValue.length = before.length) {
-  //   //   return;
-  //   // }
-  // }
-
-  // async onAddPermissionToGroup(newValue: any[], group_id: string) {
-
-  //   if (this.state.permissions.value === null) {
-  //     const newPermission: object = {
-  //       groups: [group_id],
-  //       permissions: [newValue[0].value.id],
-  //     };
-
-  //     let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
-  //       this.handleError({ error: error.response });
-  //     });
-
-  //     if (res) {
-  //       this.setState({
-  //         ...this.state,
-  //         permissions: {
-  //           ...this.state.permissions,
-  //           value: newValue,
-  //         }
-  //       })
-  //       this.apiSuccessNotify();
-  //       // this.fetchGroup();
-  //       console.log(newValue);
-  //       return;
-  //     }
-  //   } else {
-  //     const before: any[] = this.state.permissions.value!
-  //     let addDiff = newValue.filter(x => !before.includes(x));
-  //     const newPermission: object = {
-  //       groups: [group_id],
-  //       permissions: [addDiff[0].value.id],
-  //     };
-
-  //     let res = await this._groupService.addPermissionToGroup(newPermission).catch(error => {
-  //       this.handleError({ error: error.response });
-  //     });
-
-  //     if (res) {
-  //       this.setState({
-  //         ...this.state,
-  //         permissions: {
-  //           ...this.state.permissions,
-  //           value: newValue,
-  //         }
-  //       })
-  //       this.apiSuccessNotify();
-  //       // this.fetchGroup();
-  //       console.log(newValue);
-  //     }
-  //   }
-  // }
-
-  // async onRemovePermissionFromGroup(newValue: any[], group_id: string) {
-
-  //   if (newValue === null) {
-
-  //     const oneItemHaveState: any[] = this.state.permissions.value!;
-
-  //     const removedPermission: object = {
-  //       groups: [group_id],
-  //       permissions: [oneItemHaveState[0].value.id],
-  //     };
-
-  //     let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
-  //       this.handleError({ error: error.response });
-  //     });
-
-  //     if (res) {
-  //       this.setState({
-  //         ...this.state,
-  //         permissions: {
-  //           ...this.state.permissions,
-  //           value: null,
-  //         }
-  //       })
-  //       this.apiSuccessNotify();
-  //       this.fetchGroup();
-  //       return;
-  //     }
-
-  //   } else {
-  //     const before: any[] = this.state.permissions.value!
-  //     let removeDiff = before.filter(x => !newValue.includes(x));
-
-  //     const removedPermission: object = {
-  //       groups: [group_id],
-  //       permissions: [removeDiff[0].value.id],
-  //     };
-
-  //     let res = await this._groupService.removePermissionFromGroup(removedPermission).catch(error => {
-  //       this.handleError({ error: error.response });
-  //     });
-
-  //     if (res) {
-  //       this.setState({
-  //         ...this.state,
-  //         permissions: {
-  //           ...this.state.permissions,
-  //           value: newValue,
-  //         }
-  //       })
-  //       this.apiSuccessNotify();
-  //       this.fetchGroup();
-  //     }
-  //   }
-  // }
-
-  render_AddPermissionToGroup_modal(selectedGroupForPermission: any) {
-    if (!this.selectedGroupForPermission || !this.selectedGroupForPermission.id) return;
-    return (
-      <>
-        <Modal size='xl' show={this.state.addPermissionModalShow} onHide={() => this.onHideAddPermissionModal()}>
-          <Modal.Header>
-            <h2 className='text-bold text-dark text-center w-100'>افزودن دسترسی</h2>
-          </Modal.Header>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.name}{" "}{Localization.group}:&nbsp;
-              </span>
-              {this.selectedGroupForPermission.title}
-            </p>
-            <div className="row">
-              <div className="col-12">
-                <label >{Localization.permission}</label>
-                <AsyncSelect
-                  isClearable={false}
-                  isMulti
-                  placeholder={Localization.permission}
-                  cacheOptions
-                  defaultOptions
-                  value={this.state.permissions.value}
-                  loadOptions={(inputValue: any, callback: any) => this.debounce_300(inputValue, callback)}
-                  noOptionsMessage={(obj: any) => this.select_noOptionsMessage(obj)}
-                  onChange={(selectedPerson: any) => this.handleMultiSelectInputChange(selectedPerson)}
-                />
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideAddPermissionModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-success shadow-default shadow-hover"
-              onClick={() => this.handle_on_update_permissions_btn(selectedGroupForPermission.id)}
-              loading={this.state.setAddPermissionLoader}
-            >
-              {Localization.update}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   // end add permission modal function define ////////
@@ -1171,7 +824,18 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           </div>
         </div>
         {this.render_delete_modal(this.selectedGroup)}
-        {this.render_AddPermissionToGroup_modal(this.selectedGroupForPermission)}
+        {
+          this.selectedGroupForPermission === undefined
+            ?
+            undefined
+            :
+            <AddorRemovePermissionManage
+              onShow={this.state.addPermissionModalShow}
+              onHide={() => this.onHideAddPermissionModal()}
+              group_title={this.selectedGroupForPermission.title}
+              group_id={this.selectedGroupForPermission.id}
+            />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

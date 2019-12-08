@@ -115,7 +115,7 @@ class PdfGeneratorComponent extends BaseComponent<IProps, IState> {
                 multiple={false}
                 onDrop={(files) => this.onDropPdf(files)}
                 // maxSize={5000000}
-                // accept="doc/pdf"    //// not work to do modify
+                accept=".pdf"
                 onDropRejected={(files, event) => this.onDropRejected(files, event)}
             >
                 {

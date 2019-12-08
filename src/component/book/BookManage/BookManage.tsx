@@ -29,6 +29,7 @@ import { IPerson } from "../../../model/model.person";
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { Store2 } from "../../../redux/store";
+import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 
 /// define props & state ///////
 export interface IProps {
@@ -1254,14 +1255,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                       />
                     </div>
                   </div>
-                  {/* <div className="col-md-3 col-sm-6">
+                  <div className="col-md-3 col-sm-6">
                     <AppNumberRange
                       label={Localization.price}
                       from={this.state.filter_state.price.from}
                       to={this.state.filter_state.price.to}
                       onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'price')}
                     />
-                  </div> */}
+                  </div>
                   <div className="col-md-3 col-sm-6">
                     <AppRangePicker
                       label={Localization.publication_date}

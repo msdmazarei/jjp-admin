@@ -512,6 +512,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   async onAddGroupToUser(newValue: any[], user_id: string) {
 
     if (this.state.group.value === null) {
+      if(newValue === null){
+        return;
+      }
       const newGroup: object = {
         groups: [newValue[0].value.id],
         users: [user_id],
@@ -562,6 +565,10 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     if (newValue === null) {
 
       const oneItemHaveState: any[] = this.state.group.value!;
+
+      if(oneItemHaveState.length === 0){
+        return;
+      }
 
       const removedGroup: object = {
         groups: [oneItemHaveState[0].value.id],

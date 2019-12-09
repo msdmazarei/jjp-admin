@@ -34,8 +34,8 @@ interface IState {
     permissions_options: optionObj[];
     value: optionObj[] | null;
     beforeValue: optionObj[];
-    request_group_permissions_has_error : boolean;
-    request_permission_full_list_has_error : boolean;
+    request_group_permissions_has_error: boolean;
+    request_permission_full_list_has_error: boolean;
     setAddPermissionLoader: boolean;
     retryLoader: boolean;
 }
@@ -51,8 +51,8 @@ class AddorRemovePermissionManageComponent extends BaseComponent<IProps, IState>
         permissions_options: [],
         value: null,
         beforeValue: [],
-        request_group_permissions_has_error : false,
-        request_permission_full_list_has_error : false,
+        request_group_permissions_has_error: false,
+        request_permission_full_list_has_error: false,
         setAddPermissionLoader: false,
         retryLoader: false,
     }
@@ -71,18 +71,18 @@ class AddorRemovePermissionManageComponent extends BaseComponent<IProps, IState>
         };
         let res = await this._groupService.fetchGroupPermissions(groupData).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroupPermissions_error' } });
-            this.setState({ ...this.state, request_group_permissions_has_error: true, retryLoader : false });
+            this.setState({ ...this.state, request_group_permissions_has_error: true, retryLoader: false });
         });
 
-        if(res){
-            this.setState({...this.state, request_group_permissions_has_error : false, retryLoader : false})
-            if(res.data.result.length > 0){
-                let newRes = res.data.result.map(item => { return { label: Localization.permissions_list[item.permission.permission as TPERMISSIONS], value: item.permission_id }});
+        if (res) {
+            this.setState({ ...this.state, request_group_permissions_has_error: false, retryLoader: false })
+            if (res.data.result.length > 0) {
+                let newRes = res.data.result.map(item => { return { label: Localization.permissions_list[item.permission.permission as TPERMISSIONS], value: item.permission_id } });
                 let old_id = res.data.result.map(item => { return item.permission_id });
                 this.setState({
                     ...this.state,
-                    value : newRes,
-                    beforeValue : old_id,
+                    value: newRes,
+                    beforeValue: old_id,
                 })
             }
         }
@@ -91,23 +91,23 @@ class AddorRemovePermissionManageComponent extends BaseComponent<IProps, IState>
     async permission_full_list() {
         let res: any = await this._permissionService.search(1000, 0).catch(err => {
             this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2fetchGroupPermissions_error' } });
-            this.setState({ ...this.state, request_permission_full_list_has_error: true, retryLoader : false });
+            this.setState({ ...this.state, request_permission_full_list_has_error: true, retryLoader: false });
         });
 
-        if(res){
-            this.setState({...this.state, request_permission_full_list_has_error : false, retryLoader : false})
-            if(res.data.result.length > 0){
-                let newRes = res.data.result.map((item : any)  => { return { label: Localization.permissions_list[item.permission as TPERMISSIONS] , value: item.id }});
+        if (res) {
+            this.setState({ ...this.state, request_permission_full_list_has_error: false, retryLoader: false })
+            if (res.data.result.length > 0) {
+                let newRes = res.data.result.map((item: any) => { return { label: Localization.permissions_list[item.permission as TPERMISSIONS], value: item.id } });
                 this.setState({
                     ...this.state,
-                    permissions_options : newRes,
+                    permissions_options: newRes,
                 })
             }
         }
     }
 
     retry_func() {
-        this.setState({...this.state, retryLoader : true})
+        this.setState({ ...this.state, retryLoader: true })
         this.fetchGroupPermissions();
         this.permission_full_list()
     }
@@ -250,7 +250,7 @@ class AddorRemovePermissionManageComponent extends BaseComponent<IProps, IState>
                             {this.props.group_title}
                         </p>
                         <p className="delete-modal-content">
-                            خطا رخ داد لطفا مجددا تلاش کنید!
+                            {Localization.msg.ui.msg5}
                         </p>
                     </Modal.Body>
                     <Modal.Footer>

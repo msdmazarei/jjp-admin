@@ -343,6 +343,7 @@ export const ar = {
     content_generated : 'محتوا ایجاد شده',
     content_not_generated : 'محتوا ایجاد نشده',
     row : 'ردیف',
+    advanced_search : 'جستجوی پیشرفته',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

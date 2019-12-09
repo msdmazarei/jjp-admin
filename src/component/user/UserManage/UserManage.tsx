@@ -23,6 +23,7 @@ import { AccessService } from "../../../service/service.access";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { PersonService } from "../../../service/service.person";
+import { AddOrRemoveGroupFromUserModal } from "../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal";
 
 //// props & state define ////////
 export interface IProps {
@@ -411,256 +412,21 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   onShowAddGroupModal(user: IUser) {
     this.selectedUserForGroup = user;
-    if (this.selectedUserForGroup.id) {
-      this.fetchUserGroups(this.selectedUserForGroup.id);
-    };
-  }
-
-  async fetchUserGroups(user_id: string) {
-    let res = await this._groupService.fetchUserGroups(user_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUserGroups_error' } });
+    this.setState({
+      ...this.state,
+      addGroupModalShow: true,
     });
-
-    if (res) {
-
-      let newRes = res.data.result.map(item => { return { label: item.group.title, value: { id: item.group_id } } });
-
-      this.setState({
-        ...this.state,
-        group: {
-          ...this.state.group,
-          // value: res.data.result,
-          value: newRes,
-        },
-        addGroupModalShow: true,
-      }
-      );
-    }
   }
 
   onHideAddGroupModal() {
     this.selectedUserForGroup = undefined;
     this.setState({
       ...this.state,
-      group: { value: null, isValid: false },
-      addGroupModalShow: false
+      addGroupModalShow: false,
     });
-    // this.fetchUsers();
-  }
-
-  debounce_300(inputValue: any, callBack: any) {
-    if (this.setTimeout_group_val) {
-      clearTimeout(this.setTimeout_group_val);
-    }
-    this.setTimeout_group_val = setTimeout(() => {
-      this.promiseOptions2(inputValue, callBack);
-    }, 1000);
-  }
-
-  async promiseOptions2(inputValue: any, callBack: any) {
-    let filter = undefined;
-    if (inputValue) {
-      filter = { title: inputValue };
-    }
-    let res: any = await this._groupService.search(10, 0, filter).catch(err => {
-      let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2fetchUserGroups_error' } });
-      this.groupRequstError_txt = err_msg.body;
-    });
-
-    if (res) {
-      let groups = res.data.result.map((ps: any) => {
-        return { label: ps.title, value: ps }
-      });
-      this.groupRequstError_txt = Localization.no_item_found;
-      callBack(groups);
-    } else {
-      callBack();
-    }
-  }
-
-  select_noOptionsMessage(obj: { inputValue: string }) {
-    return this.groupRequstError_txt;
-  }
-
-  handleMultiSelectInputChange(newValue: any[]) {
-    const user_id: string = this.selectedUserForGroup!.id;
-    if (this.state.group.value === null) {
-      this.onAddGroupToUser(newValue, user_id);
-      return;
-    }
-
-    if (newValue === null) {
-      this.onRemoveGroupFromUser(newValue, user_id);
-      return;
-    }
-
-    const before: any[] = this.state.group.value!
-
-    if (newValue.length > before.length) {
-      this.onAddGroupToUser(newValue, user_id);
-      return;
-    }
-
-    if (newValue.length < before.length) {
-      this.onRemoveGroupFromUser(newValue, user_id);
-      return;
-    }
-
-    // if (newValue.length = before.length) {
-    //   return;
-    // }
-  }
-
-  async onAddGroupToUser(newValue: any[], user_id: string) {
-
-    if (this.state.group.value === null) {
-      if (newValue === null) {
-        return;
-      }
-      const newGroup: object = {
-        groups: [newValue[0].value.id],
-        users: [user_id],
-      };
-
-      let res = await this._groupService.addUserToGroup(newGroup).catch(error => {
-        this.handleError({ error: error.response, toastOptions: { toastId: 'onAddGroupToUser_error' } });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          group: {
-            ...this.state.group,
-            value: newValue,
-          }
-        })
-        this.apiSuccessNotify();
-        return;
-      }
-    } else {
-      const before: any[] = this.state.group.value!
-      let addDiff = newValue.filter(x => !before.includes(x));
-      const newGroup: object = {
-        groups: [addDiff[0].value.id],
-        users: [user_id],
-      };
-
-      let res = await this._groupService.addUserToGroup(newGroup).catch(error => {
-        this.handleError({ error: error.response });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          group: {
-            ...this.state.group,
-            value: newValue,
-          }
-        })
-        this.apiSuccessNotify();
-      }
-    }
-  }
-
-  async onRemoveGroupFromUser(newValue: any[], user_id: string) {
-
-    if (newValue === null) {
-
-      const oneItemHaveState: any[] = this.state.group.value!;
-
-      if (oneItemHaveState.length === 0) {
-        return;
-      }
-
-      const removedGroup: object = {
-        groups: [oneItemHaveState[0].value.id],
-        users: [user_id],
-      };
-
-      let res = await this._groupService.removeUserFromGroup(removedGroup).catch(error => {
-        this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveGroupFromUser_error' } });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          group: {
-            ...this.state.group,
-            value: null,
-          }
-        })
-        this.apiSuccessNotify();
-        return;
-      }
-
-    } else {
-      const before: any[] = this.state.group.value!
-      let removeDiff = before.filter(x => !newValue.includes(x));
-
-      const removedGroup: object = {
-        groups: [removeDiff[0].value.id],
-        users: [user_id],
-      };
-
-      let res = await this._groupService.removeUserFromGroup(removedGroup).catch(error => {
-        this.handleError({ error: error.response });
-      });
-
-      if (res) {
-        this.setState({
-          ...this.state,
-          group: {
-            ...this.state.group,
-            value: newValue,
-          }
-        })
-        this.apiSuccessNotify();
-      }
-    }
-  }
-
-  render_AddGroupToUser_modal(selectedUserForGroup: any) {
-    if (!this.selectedUserForGroup || !this.selectedUserForGroup.id) return;
-    return (
-      <>
-        <Modal size='xl' show={this.state.addGroupModalShow} onHide={() => this.onHideAddGroupModal()}>
-          <Modal.Header>
-            <h2 className='text-bold text-dark text-center w-100'>افزودن گروه</h2>
-          </Modal.Header>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.username}:&nbsp;
-              </span>
-              {selectedUserForGroup.name} {selectedUserForGroup.username}
-            </p>
-            <div className="row">
-              <div className="col-12">
-                <label >{Localization.group}{<span className="text-danger">*</span>}</label>
-                <AsyncSelect
-                  isClearable={false}
-                  isMulti
-                  placeholder={Localization.group}
-                  cacheOptions
-                  defaultOptions
-                  value={this.state.group.value}
-                  loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
-                  noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                  onChange={(selectedGroup: any[]) => this.handleMultiSelectInputChange(selectedGroup)}
-                />
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideAddGroupModal()}>{Localization.close}</button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   // end add group modal function define ////////
-
 
   // start previous and next button create ///////
 
@@ -1124,7 +890,18 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedUser)}
-        {this.render_AddGroupToUser_modal(this.selectedUserForGroup)}
+        {
+          this.selectedUserForGroup === undefined
+            ?
+            undefined
+            :
+            <AddOrRemoveGroupFromUserModal
+              onShow={this.state.addGroupModalShow}
+              onHide={() => this.onHideAddGroupModal()}
+              userName={this.selectedUserForGroup.username}
+              user_id={this.selectedUserForGroup.id}
+            />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

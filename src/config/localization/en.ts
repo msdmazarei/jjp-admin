@@ -17,6 +17,7 @@ export const en = {
             msg2: 'error occurred',
             msg3: 'registered successfully, we redirect you to login page.',
             msg4: 'password changed successfully, we redirect you to login page.',
+            msg5 : 'an error occurred try again.',
             your_rate_submited: 'your rate submited',
             your_comment_submited: 'your comment submited',
             your_comment_will_be_removed_continue: 'your comment will be removed, continue?',

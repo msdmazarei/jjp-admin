@@ -30,6 +30,7 @@ interface ILocalization extends LocalizedStringsMethods {
             msg2: string;
             msg3: string;
             msg4: string;
+            msg5: string;
             your_rate_submited: string;
             your_comment_submited: string;
             your_comment_will_be_removed_continue: string;

@@ -418,7 +418,7 @@ export const fa = {
         Narrator : 'گوینده',
     },
     permissions_list: {
-        IS_OWNER : 'IS_OWNER',
+        IS_OWNER : 'مالک',
         ACCOUNT_ADD_PREMIUM : 'افزودن حساب اعتباری بدون محدودیت',
         ACCOUNT_EDIT_PREMIUM : 'ویرایش حساب اعتباری بدون محدودیت',
         ACCOUNT_DELETE_PREMIUM : 'حذف حساب اعتباری بدون محدودیت',
@@ -490,22 +490,22 @@ export const fa = {
         USER_GET_PREMIUM : 'دسترسی به لیست حساب کاربران',
         USER_EDIT_PREMIUM : 'ویرایش حساب کاربری بدون محدودیت',
     
-        DISCUSSION_GROUP_PREMIUM : 'DISCUSSION_GROUP_PREMIUM',
-        DISCUSSION_MEMBER_PREMIUM : 'DISCUSSION_MEMBER_PREMIUM',
+        DISCUSSION_GROUP_PREMIUM : 'دسترسی به تمام فعالیت ها در مدیریت گروههای چت بدون محدودیت',
+        DISCUSSION_MEMBER_PREMIUM : 'دسترسی به تمام فعالیت ها در مورد اعضای گروه های چت بدون محدودیت',
     
-        CHAT_DELETE_PREMIUM : 'CHAT_DELETE_PREMIUM',
-        CHAT_GET_PREMIUM : 'CHAT_GET_PREMIUM',
-        CHAT_EDIT_PREMIUM : 'CHAT_EDIT_PREMIUM',
+        CHAT_DELETE_PREMIUM : 'حذف گفتگو بدون محدودیت',
+        CHAT_GET_PREMIUM : 'دسترسی به لیست گفتگو ها بدون محدودیت',
+        CHAT_EDIT_PREMIUM : 'ویرایش گفتگو بدون محدودیت',
     
-        PAYMENT_ADD_PREMIUM : 'PAYMENT_ADD_PREMIUM',
-        PAYMENT_ADD_PRESS : 'PAYMENT_ADD_PRESS',
-        PAYMENT_GET_PREMIUM : 'PAYMENT_GET_PREMIUM',
+        PAYMENT_ADD_PREMIUM : 'پرداخت بدون محدودیت',
+        PAYMENT_ADD_PRESS : 'پرداخت ویژه ناشرین',
+        PAYMENT_GET_PREMIUM : 'دسترسی به لیست پرداخت ها بدون محدودیت',
     
-        DEVICE_KEY_ADD_PREMIUM : 'DEVICE_KEY_ADD_PREMIUM',
-        DEVICE_KEY_GET_PREMIUM : 'DEVICE_KEY_GET_PREMIUM',
-        DEVICE_KEY_DELETE_PREMIUM : 'DEVICE_KEY_DELETE_PREMIUM',
+        DEVICE_KEY_ADD_PREMIUM : 'افزودن دستگاه بدون محدودیت',
+        DEVICE_KEY_GET_PREMIUM : 'دسترسی به لیست دستگاه ها بدون محدودیت',
+        DEVICE_KEY_DELETE_PREMIUM : 'حذف دستگاه بدون محدودیت',
     
-        PREPARE_BOOK_PREMIUM : 'PREPARE_BOOK_PREMIUM',
+        PREPARE_BOOK_PREMIUM : 'آماده سازی کتاب بدون محدودیت',
     },
     order_status:{
         Invoiced:'فاکتور شده',

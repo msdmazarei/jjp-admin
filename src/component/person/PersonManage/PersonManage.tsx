@@ -39,8 +39,8 @@ interface IFilterPerson {
     isValid: boolean
   };
   is_legal: {
-    value: {value : string , label : string} | null,
-    is_legal : boolean | null,
+    value: { value: string, label: string } | null,
+    is_legal: boolean | null,
     isValid: boolean
   };
   cr_date: {
@@ -88,6 +88,7 @@ interface IState {
   filterSearchBtnLoader: boolean;
   tableProcessLoader: boolean;
   filter_state: IFilterPerson;
+  advance_search_box_show: boolean;
 }
 ///// define class of Person //////
 class PersonManageComponent extends BaseComponent<IProps, IState>{
@@ -241,7 +242,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       },
       is_legal: {
         value: null,
-        is_legal : null,
+        is_legal: null,
         isValid: false
       },
       cr_date: {
@@ -268,6 +269,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         isValid: false
       },
     },
+    advance_search_box_show: false,
   }
 
   componentDidMount() {
@@ -645,7 +647,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         },
         is_legal: {
           value: null,
-          is_legal : null,
+          is_legal: null,
           isValid: false
         },
         cr_date: {
@@ -688,7 +690,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         },
         is_legal: {
           value: null,
-          is_legal : null,
+          is_legal: null,
           isValid: false
         },
         cr_date: {
@@ -725,7 +727,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         ...this.state.filter_state,
         is_legal: {
           value: null,
-          is_legal : null,
+          is_legal: null,
           isValid: false,
         }
       }
@@ -764,9 +766,9 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     })
   }
 
-  handleSelectInputChange(type: { value: string , label: string } | null, inputType: any) {
+  handleSelectInputChange(type: { value: string, label: string } | null, inputType: any) {
     let isValid;
-    let newVal : boolean | null = null;
+    let newVal: boolean | null = null;
     if (type === null) {
       newVal = null;
       isValid = false;
@@ -777,7 +779,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state,
       filter_state: {
-        ...this.state.filter_state, [inputType]: { value: type , is_legal : newVal , isValid: isValid }
+        ...this.state.filter_state, [inputType]: { value: type, is_legal: newVal, isValid: isValid }
       }
     })
   }
@@ -785,6 +787,20 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   filter: any;
 
   /////  end onChange & search & reset function for search box ///////////
+
+  advanceSearchBoxShowHideManager() {
+    if (this.state.advance_search_box_show === false) {
+      this.setState({
+        ...this.state,
+        advance_search_box_show: true,
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        advance_search_box_show: false,
+      })
+    }
+  }
 
   //// render call Table component ///////
 
@@ -819,8 +835,23 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                 <div className="row">
                   <div className="col-12">
                     <div className="template-box mb-4">
+                      <div className="d-flex justify-content-center mb-1">
+                        {
+                          this.state.advance_search_box_show === false
+                            ?
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-down mx-2"></i>
+                            </div>
+                            :
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-up mx-2"></i>
+                            </div>
+                        }
+                      </div>
                       {/* start search box inputs */}
-                      <div className="row">
+                      <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
                         <div className="col-md-3 col-sm-6">
                           <Input
                             onChange={(value, isValid) => this.handleInputChange(value, 'name')}
@@ -897,7 +928,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                       {/* end search box inputs */}
                       {/* start search btns box */}
                       <div className="row mt-1">
-                        <div className="col-12">
+                        <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
                           <BtnLoader
                             disabled={this.state.tableProcessLoader}
                             loading={this.state.filterSearchBtnLoader}

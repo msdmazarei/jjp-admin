@@ -86,7 +86,6 @@ class AddorRemovePermissionManageComponent extends BaseComponent<IProps, IState>
                 })
             }
         }
-
     }
 
     async permission_full_list() {
@@ -122,28 +121,34 @@ class AddorRemovePermissionManageComponent extends BaseComponent<IProps, IState>
 
     handle_on_update_permissions_btn(group_id: string) {
         if (this.state.beforeValue.length > 0 && this.state.value !== null) {
-            const updated: string[] = [];
+            let updated: string[] = [];
             for (let i = 0; i < (this.state.value! as optionObj[]).length; i++) {
                 updated.push((this.state.value! as optionObj[])[i].value)
             }
-            const before_id_array: string[] = this.state.beforeValue;
-            const updated_id_array = updated;
+            let before_id_array: string[] = this.state.beforeValue;
+            let updated_id_array: string[] = updated;
             let toRemovedItems = before_id_array.filter(x => !updated_id_array.includes(x));
             let toAddedItems = updated_id_array.filter(x => !before_id_array.includes(x));
             this.onRemovePermissionFromGroup(toRemovedItems, group_id);
             this.onAddPermissionToGroup(toAddedItems, group_id);
+            updated = [];
+            before_id_array = [];
+            updated_id_array = [];
         };
         if (this.state.beforeValue.length > 0 && this.state.value === null) {
             let toRemovedItems = this.state.beforeValue;
             this.onRemovePermissionFromGroup(toRemovedItems, group_id);
+            toRemovedItems = [];
         };
         if (this.state.beforeValue.length === 0 && this.state.value !== null) {
-            const updated: string[] = [];
+            let updated: string[] = [];
             for (let i = 0; i < (this.state.value! as optionObj[]).length; i++) {
                 updated.push((this.state.value! as optionObj[])[i].value)
             }
             let toAddedItems = updated;
             this.onAddPermissionToGroup(toAddedItems, group_id);
+            updated = [];
+            toAddedItems = [];
         };
         if (this.state.beforeValue.length === 0 && this.state.value === null) {
             return;

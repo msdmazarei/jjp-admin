@@ -88,6 +88,7 @@ interface IState {
   setRemoveLoader: boolean;
   setGenerateLoader: boolean;
   filter_state: IFilterContent;
+  advance_search_box_show: boolean;
 }
 
 // define class of content 
@@ -285,6 +286,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         is_valid: false,
       },
     },
+    advance_search_box_show: false,
   }
 
   selectedContent: any | undefined;
@@ -983,7 +985,19 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
   ///////////// end request for options person of press in filter ////////////////////////
 
-
+  advanceSearchBoxShowHideManager() {
+    if (this.state.advance_search_box_show === false) {
+      this.setState({
+        ...this.state,
+        advance_search_box_show: true,
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        advance_search_box_show: false,
+      })
+    }
+  }
 
   //////render call Table component //////
 
@@ -1014,8 +1028,23 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           <div className="row">
             <div className="col-12">
               <div className="template-box mb-4">
+                <div className="d-flex justify-content-center mb-1">
+                  {
+                    this.state.advance_search_box_show === false
+                      ?
+                      <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                        <span className="mx-2">{Localization.advanced_search}</span>
+                        <i className="fa fa-angle-down mx-2"></i>
+                      </div>
+                      :
+                      <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                        <span className="mx-2">{Localization.advanced_search}</span>
+                        <i className="fa fa-angle-up mx-2"></i>
+                      </div>
+                  }
+                </div>
                 {/* start search box inputs */}
-                <div className="row">
+                <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
                   <div className="col-md-3 col-sm-6">
                     <label >{Localization.book}</label>
                     <i
@@ -1101,7 +1130,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
                 {/* end search box inputs */}
                 {/* start search btns box */}
                 <div className="row mt-1">
-                  <div className="col-12">
+                  <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
                     <BtnLoader
                       disabled={this.state.tableProcessLoader}
                       loading={this.state.filterSearchBtnLoader}

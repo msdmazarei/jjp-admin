@@ -87,6 +87,7 @@ interface IState {
   setGetInvoiceLoader: boolean;
   setPriceLoader: boolean;
   filter_state: IFilterOrder;
+  advance_search_box_show: boolean;
 }
 
 // define class of Order 
@@ -94,7 +95,7 @@ interface IState {
 class OrderManageComponent extends BaseComponent<IProps, IState>{
   statusOptions = [
     { value: 'Created', label: Localization.order_status.Created },
-    { value: 'Invoiced' , label: Localization.order_status.Invoiced },
+    { value: 'Invoiced', label: Localization.order_status.Invoiced },
   ];
   state = {
     order_table: {
@@ -239,6 +240,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         is_valid: false,
       },
     },
+    advance_search_box_show: false,
   };
 
   order_id!: string;
@@ -1055,11 +1057,11 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     })
   }
 
-  invoice_status_in_search_remover(){
+  invoice_status_in_search_remover() {
     this.setState({
       ...this.state,
       filter_state: {
-        ...this.state.filter_state, status: { value: null, status: null , isValid: false }
+        ...this.state.filter_state, status: { value: null, status: null, isValid: false }
       }
     })
   }
@@ -1125,6 +1127,20 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   ///////////// end request for options person of order in filter ////////////////////////
 
+  advanceSearchBoxShowHideManager() {
+    if (this.state.advance_search_box_show === false) {
+      this.setState({
+        ...this.state,
+        advance_search_box_show: true,
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        advance_search_box_show: false,
+      })
+    }
+  }
+
   //////render call Table component //////
 
   render() {
@@ -1158,8 +1174,23 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                 <div className="row">
                   <div className="col-12">
                     <div className="template-box mb-4">
+                      <div className="d-flex justify-content-center mb-1">
+                        {
+                          this.state.advance_search_box_show === false
+                            ?
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-down mx-2"></i>
+                            </div>
+                            :
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-up mx-2"></i>
+                            </div>
+                        }
+                      </div>
                       {/* start search box inputs */}
-                      <div className="row">
+                      <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
                         <div className="col-md-3 col-sm-6">
                           <Input
                             onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
@@ -1229,7 +1260,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                       {/* end search box inputs */}
                       {/* start search btns box */}
                       <div className="row mt-1">
-                        <div className="col-12">
+                        <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
                           <BtnLoader
                             disabled={this.state.tableProcessLoader}
                             loading={this.state.filterSearchBtnLoader}

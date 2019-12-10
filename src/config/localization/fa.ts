@@ -349,6 +349,10 @@ export const fa = {
     row : 'ردیف',
     advanced_search : 'جستجوی پیشرفته',
     transaction : 'تراکنش',
+    transaction_amount : 'مبلغ تراکنش',
+    increase_credit : 'افزایش اعتبار',
+    reduce_credit : 'کاهش اعتبار',
+    none : 'هیچکدام',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

@@ -346,6 +346,10 @@ export const en = {
     row : 'row',
     advanced_search : 'advanced search',
     transaction : 'transaction',
+    transaction_amount : 'transaction amount',
+    increase_credit : 'increase credit',
+    reduce_credit : 'reduce credit',
+    none : 'none',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

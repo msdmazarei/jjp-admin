@@ -62,8 +62,8 @@ interface IState {
   pager_limit: number;
   removeModalShow: boolean;
   creditModalShow: boolean;
-  creditRequest_has_error: boolean;
-  creditRequest_retry_loader : boolean;
+  creditRequest_has_error: boolean | null;
+  creditRequest_retry_loader: boolean;
   addGroupModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
@@ -193,11 +193,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { (this.onShowAddGroupModal(row)) },
           name: Localization.group
         },
-        // {
-        //   text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
-        //   ac_func: (row: any) => { (this.onShowCreditModal(row)) },
-        //   name: Localization.credit_level
-        // },
+        {
+          text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
+          ac_func: (row: any) => { (this.onShowCreditModal(row)) },
+          name: Localization.credit_level
+        },
       ]
         :
         undefined
@@ -208,9 +208,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,
-    creditModalShow : false,
-    creditRequest_has_error: false,
-    creditRequest_retry_loader : false,
+    creditModalShow: false,
+    creditRequest_has_error: null,
+    creditRequest_retry_loader: false,
     addGroupModalShow: false,
     setRemoveLoader: false,
     setAddGroupLoader: false,
@@ -249,8 +249,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   selectedUser: IUser | undefined;
   selectedUserForGroup: IUser | undefined;
-  selectedUserForCredit : IUser | undefined;
-  selectedUserCreditData : any[] | undefined;
+  selectedUserForCredit: IUser | undefined;
+  selectedUserCreditData: any | undefined;
   private _userService = new UserService();
   private _personService = new PersonService();
   private _accuontService = new AccountService();
@@ -420,46 +420,78 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   // start Credit modal function define ////////
 
-  onShowCreditModal(user: IUser) {
+  onShowCreditModal(user: any) {
     this.selectedUserForCredit = user;
-    this.fetchCreditOfSelectedUser(user.person.id);
-    this.setState({ ...this.state, creditModalShow : true });
+    this.fetchCreditOfSelectedUser(user.person_id);
+    this.setState({ ...this.state, creditModalShow: true });
   }
 
-  async fetchCreditOfSelectedUser(id : string){
-    this.setState({...this.state , creditRequest_retry_loader : true})
-    let res = await this._accuontService.byId(1,0,id).catch(error => {
+  async fetchCreditOfSelectedUser(id: string) {
+    this.setState({ ...this.state, creditRequest_retry_loader: true })
+    let res = await this._accuontService.byId(1, 0, id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onFetchCreditOfUser_error' } });
-      this.setState({...this.state, creditRequest_has_error : true , creditRequest_retry_loader : false})
+      this.setState({ ...this.state, creditRequest_has_error: true, creditRequest_retry_loader: false })
     });
     if (res) {
-      this.setState({...this.state, creditRequest_has_error : false , creditRequest_retry_loader : false})
-      this.selectedUserCreditData = res.data.result;
+      this.selectedUserCreditData = res.data.result[0];
+      this.setState({ ...this.state, creditRequest_has_error: false, creditRequest_retry_loader: false })
     }
   }
-  
+
   onHideCreditModal() {
     this.selectedUserForCredit = undefined;
     this.selectedUserCreditData = undefined;
-    this.setState({ ...this.state, creditModalShow: false, creditRequest_retry_loader : false, creditRequest_has_error : false });
+    this.setState({ ...this.state, 
+      creditModalShow: false, 
+      creditRequest_retry_loader: false, 
+      creditRequest_has_error: null 
+    });
   }
 
-  render_credit_modal(userData : any , userCreditData : any) {
+  render_credit_modal(userData: any, userCreditData: any) {
     if (this.selectedUserForCredit === undefined) return;
     return (
       <>
         <Modal show={this.state.creditModalShow} onHide={() => this.onHideCreditModal()}>
           <Modal.Body>
+            <p className="delete-modal-content">
+              <span className="text-muted">{Localization.full_name}:&nbsp;</span>
+              {this.getUserFullName(this.selectedUserForCredit.person)}
+            </p>
+            <p className="delete-modal-content">
+              <span className="text-muted">{Localization.credit_level}:&nbsp;</span>
+            {
+              this.state.creditRequest_has_error === null
+              ?
+              Localization.msg.ui.admin_book_content_generate.Inquiring
+              :
+              this.state.creditRequest_has_error === true
+              ?
+              Localization.msg.ui.msg5
+              :
+              this.selectedUserCreditData !== undefined
+              ?
+              this.selectedUserCreditData.value
+              :
+              undefined
+            }
+            </p>
           </Modal.Body>
           <Modal.Footer>
             <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideCreditModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.fetchCreditOfSelectedUser(this.selectedUserForCredit!.person.id)}
-              loading={this.state.creditRequest_retry_loader}
-            >
-              {Localization.retry}
-            </BtnLoader>
+            {
+              this.state.creditRequest_has_error === true
+                ?
+                <BtnLoader
+                  btnClassName="btn btn-danger shadow-default shadow-hover"
+                  onClick={() => this.fetchCreditOfSelectedUser(this.selectedUserForCredit!.person.id)}
+                  loading={this.state.creditRequest_retry_loader}
+                >
+                  {Localization.retry}
+                </BtnLoader>
+                :
+                undefined
+            }
           </Modal.Footer>
         </Modal>
       </>
@@ -951,7 +983,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedUser)}
-        {this.render_credit_modal(this.selectedUserForCredit , this.selectedUserCreditData)}
+        {this.render_credit_modal(this.selectedUserForCredit, this.selectedUserCreditData)}
         {
           this.selectedUserForGroup === undefined
             ?

@@ -41,7 +41,7 @@ interface ILocalization extends LocalizedStringsMethods {
             upload_process_error_msg : string;
             do_you_want_create_this_book_content : string;
             admin_book_content_generate:{
-                just_one_Pdf_file_can_upload : string;
+                just_one_file_can_upload : string;
                 book_not_created : string;
                 before_generate_request_result_pendding: string;
                 before_generate_request_result_fail: string;

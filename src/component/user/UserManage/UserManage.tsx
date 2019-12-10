@@ -238,10 +238,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   selectedUser: IUser | undefined;
   selectedUserForGroup: IUser | undefined;
-  private groupRequstError_txt: string = Localization.no_item_found;
-  private setTimeout_group_val: any;
   private _userService = new UserService();
-  private _groupService = new GroupService();
   private _personService = new PersonService();
 
   // constructor(props: IProps) {

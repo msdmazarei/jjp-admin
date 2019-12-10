@@ -23,6 +23,7 @@ import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { PersonService } from "../../../service/service.person";
 import { AddOrRemoveGroupFromUserModal } from "../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal";
+import { AccountService } from "../../../service/service.account";
 
 //// props & state define ////////
 export interface IProps {
@@ -60,6 +61,9 @@ interface IState {
   pager_offset: number;
   pager_limit: number;
   removeModalShow: boolean;
+  creditModalShow: boolean;
+  creditRequest_has_error: boolean;
+  creditRequest_retry_loader : boolean;
   addGroupModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
@@ -189,6 +193,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { (this.onShowAddGroupModal(row)) },
           name: Localization.group
         },
+        {
+          text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
+          ac_func: (row: any) => { (this.onShowCreditModal(row)) },
+          name: Localization.credit_level
+        },
       ]
         :
         undefined
@@ -199,6 +208,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     prevBtnLoader: false,
     nextBtnLoader: false,
     removeModalShow: false,
+    creditModalShow : false,
+    creditRequest_has_error: false,
+    creditRequest_retry_loader : false,
     addGroupModalShow: false,
     setRemoveLoader: false,
     setAddGroupLoader: false,
@@ -237,8 +249,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   selectedUser: IUser | undefined;
   selectedUserForGroup: IUser | undefined;
+  selectedUserForCredit : IUser | undefined;
+  selectedUserCreditData : any[] | undefined;
   private _userService = new UserService();
   private _personService = new PersonService();
+  private _accuontService = new AccountService();
 
   // constructor(props: IProps) {
   //   super(props);
@@ -403,6 +418,56 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   // end delete modal function define ////////
 
+  // start Credit modal function define ////////
+
+  onShowCreditModal(user: IUser) {
+    this.selectedUserForCredit = user;
+    this.setState({ ...this.state, creditModalShow : true });
+    this.fetchCreditOfSelectedUser(user.person.id)
+  }
+
+  async fetchCreditOfSelectedUser(id : string){
+    this.setState({...this.state , creditRequest_retry_loader : true})
+    let res = await this._accuontService.byId(1,0,id).catch(error => {
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onFetchCreditOfUser_error' } });
+      this.setState({...this.state, creditRequest_has_error : true , creditRequest_retry_loader : false})
+    });
+    if (res) {
+      this.setState({...this.state, creditRequest_has_error : false , creditRequest_retry_loader : false})
+      this.selectedUserCreditData = res.data.result;
+    }
+  }
+  
+  onHideCreditModal() {
+    this.selectedUserForCredit = undefined;
+    this.selectedUserCreditData = undefined;
+    this.setState({ ...this.state, creditModalShow: false, creditRequest_retry_loader : false, creditRequest_has_error : false });
+  }
+
+  render_credit_modal(userData : any , userCreditData : any) {
+    if (this.selectedUserForCredit === undefined) return;
+    return (
+      <>
+        <Modal show={this.state.creditModalShow} onHide={() => this.onHideCreditModal()}>
+          <Modal.Body>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
+            <BtnLoader
+              btnClassName="btn btn-danger shadow-default shadow-hover"
+              onClick={() => this.fetchCreditOfSelectedUser(this.selectedUserForCredit!.person.id)}
+              loading={this.state.creditRequest_retry_loader}
+            >
+              {Localization.retry}
+            </BtnLoader>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  }
+
+
+  // end Credit modal function define ////////
 
   // start add group modal function define ////////
 
@@ -886,6 +951,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedUser)}
+        {this.render_credit_modal(this.selectedUserForCredit , this.selectedUserCreditData)}
         {
           this.selectedUserForGroup === undefined
             ?

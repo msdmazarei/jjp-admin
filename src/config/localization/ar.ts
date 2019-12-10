@@ -345,6 +345,7 @@ export const ar = {
     content_not_generated : 'محتوا ایجاد نشده',
     row : 'ردیف',
     advanced_search : 'جستجوی پیشرفته',
+    transaction : 'تراکنش',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

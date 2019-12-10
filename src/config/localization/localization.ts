@@ -360,6 +360,7 @@ interface ILocalization extends LocalizedStringsMethods {
     content_not_generated : string;
     row :  string;
     advanced_search : string;
+    transaction : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

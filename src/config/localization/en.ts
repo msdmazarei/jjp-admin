@@ -345,6 +345,7 @@ export const en = {
     content_not_generated : 'content not generated',
     row : 'row',
     advanced_search : 'advanced search',
+    transaction : 'transaction',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

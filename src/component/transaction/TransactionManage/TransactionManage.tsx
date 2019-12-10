@@ -120,12 +120,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { this.remove_transaction(row) },
           name: Localization.remove
         },
-        // {
-        //   access: (row: any) => { return this.checkShowToolAccess() },
-        //   text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
-        //   ac_func: (row: any) => { this.get_transaction(row.id) },
-        //   name: Localization.show_comment
-        // },
       ]
         :
         undefined
@@ -335,22 +329,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   }
 
   /// end delete modal /////
-
-
-  // async get_transaction(id : string){
-  //   this.setState({ ...this.state, setRemoveLoader: true });
-  //   let res = await this._transactionService.byId(id).catch(error => {
-  //     this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveOrder_error' } });
-  //     // this.setState({ ...this.state, setRemoveLoader: false });
-  //   });
-  //   if (res) {
-  //     // this.setState({ ...this.state, setRemoveLoader: false });
-  //     this.apiSuccessNotify();
-  //     // this.fetchTransactions();
-  //     // this.onHideRemoveModal();
-  //     console.log(res.data.result);
-  //   }
-  // }
 
   // define axios for give data
 

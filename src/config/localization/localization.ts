@@ -358,13 +358,14 @@ interface ILocalization extends LocalizedStringsMethods {
     save : string;
     content_generated : string;
     content_not_generated : string;
-    row :  string;
+    row : string;
     advanced_search : string;
     transaction : string;
     transaction_amount : string;
     increase_credit : string;
     reduce_credit : string;
     credit_level : string;
+    no_credit_account_has_been_registered_for_this_person : string;
     none : string;
     type_of_report: {
         Reporting_Period: string;

@@ -350,6 +350,7 @@ export const en = {
     increase_credit : 'increase credit',
     reduce_credit : 'reduce credit',
     credit_level : 'credit level',
+    no_credit_account_has_been_registered_for_this_person : 'no credit account has been registered for this person.',
     none : 'none',
     type_of_report: {
         Reporting_Period: "Reporting Period",

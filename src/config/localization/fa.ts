@@ -353,6 +353,7 @@ export const fa = {
     increase_credit : 'افزایش اعتبار',
     reduce_credit : 'کاهش اعتبار',
     credit_level : 'میزان اعتبار',
+    no_credit_account_has_been_registered_for_this_person : 'حساب اعتباری برای این شخص ثبت نشده است.',
     none : 'هیچکدام',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",

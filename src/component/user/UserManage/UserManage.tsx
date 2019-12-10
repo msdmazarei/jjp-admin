@@ -193,11 +193,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { (this.onShowAddGroupModal(row)) },
           name: Localization.group
         },
-        {
-          text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
-          ac_func: (row: any) => { (this.onShowCreditModal(row)) },
-          name: Localization.credit_level
-        },
+        // {
+        //   text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
+        //   ac_func: (row: any) => { (this.onShowCreditModal(row)) },
+        //   name: Localization.credit_level
+        // },
       ]
         :
         undefined
@@ -422,8 +422,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   onShowCreditModal(user: IUser) {
     this.selectedUserForCredit = user;
+    this.fetchCreditOfSelectedUser(user.person.id);
     this.setState({ ...this.state, creditModalShow : true });
-    this.fetchCreditOfSelectedUser(user.person.id)
   }
 
   async fetchCreditOfSelectedUser(id : string){
@@ -452,7 +452,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           <Modal.Body>
           </Modal.Body>
           <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
+            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideCreditModal()}>{Localization.close}</button>
             <BtnLoader
               btnClassName="btn btn-danger shadow-default shadow-hover"
               onClick={() => this.fetchCreditOfSelectedUser(this.selectedUserForCredit!.person.id)}

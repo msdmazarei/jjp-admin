@@ -190,8 +190,8 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
         }, () => this.passBodyObjToProps())
     }
 
-    removePreviousImgNotify() {
-        toast.warn(Localization.validation_msg.just_one_image_person_can_have, this.getNotifyConfig());
+    removePreviousVoiceNotify() {
+        toast.warn(Localization.msg.ui.admin_book_content_generate.just_one_file_can_upload, this.getNotifyConfig());
     }
 
     onDropRejected(files: any[], event: any) {
@@ -213,7 +213,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
     onDropVoice(file: any[]) {
         if (!file || !file.length) return;
         if (this.state.voice && this.state.voice!.length) {
-            this.removePreviousImgNotify();
+            this.removePreviousVoiceNotify();
             return;
         }
         this.voice = file;

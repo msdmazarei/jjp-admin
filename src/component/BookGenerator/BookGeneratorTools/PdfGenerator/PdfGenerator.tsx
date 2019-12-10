@@ -64,7 +64,7 @@ class PdfGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     removePreviousPdfNotify() {
-        toast.warn(Localization.msg.ui.admin_book_content_generate.just_one_Pdf_file_can_upload, this.getNotifyConfig());
+        toast.warn(Localization.msg.ui.admin_book_content_generate.just_one_file_can_upload, this.getNotifyConfig());
     }
 
     onDropRejected(files: any[], event: any) {

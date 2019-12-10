@@ -469,11 +469,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               ?
               Localization.msg.ui.msg5
               :
-              this.selectedUserCreditData !== undefined
+              this.selectedUserCreditData !== undefined 
               ?
               this.selectedUserCreditData.value
               :
-              undefined
+              Localization.no_credit_account_has_been_registered_for_this_person
             }
             </p>
           </Modal.Body>

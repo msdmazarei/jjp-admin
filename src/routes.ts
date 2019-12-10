@@ -13,8 +13,9 @@ import { GroupSave } from "./component/group/GroupSave/GroupSave";
 import { PermissionSave } from "./component/permission/PermissionSave/PermissionSave";
 import { PermissionManage } from "./component/permission/PermissionManage/PermissionManage";
 import { Profile } from './component/profile/Profile';
-import {BookGeneratorManage} from './component/BookGenerator/BookGeneratorManage/BookGeneratorManage';
+import { BookGeneratorManage } from './component/BookGenerator/BookGeneratorManage/BookGeneratorManage';
 import { BookGenerator } from './component/BookGenerator/BookGenerator/BookGenerator';
+import {TransactionManage} from './component/transaction/TransactionManage/TransactionManage';
 import { Localization } from "./config/localization/localization";
 
 
@@ -27,7 +28,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: true,
     brandName: ['dashboard'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // book start
   {
@@ -37,7 +38,7 @@ var routes = [
     component: BookManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/book/create",
@@ -46,7 +47,7 @@ var routes = [
     component: BookSave,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : ['BOOK_ADD_PREMIUM','BOOK_ADD_PRESS']
+    PERMISSIONS: ['BOOK_ADD_PREMIUM', 'BOOK_ADD_PRESS']
   },
   {
     path: "/book/:book_id/edit",
@@ -55,7 +56,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['book', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // book end
   // person start
@@ -66,7 +67,7 @@ var routes = [
     component: PersonManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : ['PERSON_ADD_PREMIUM','PERSON_GET_PREMIUM']
+    PERMISSIONS: ['PERSON_ADD_PREMIUM', 'PERSON_GET_PREMIUM']
   },
   {
     path: "/person/create",
@@ -74,7 +75,7 @@ var routes = [
     component: PersonSave,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/person/:person_id/edit",
@@ -83,7 +84,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['person', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // person end
   // user start
@@ -94,7 +95,7 @@ var routes = [
     component: UserManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/user/create",
@@ -102,7 +103,7 @@ var routes = [
     component: UserSave,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/user/:user_id/edit",
@@ -111,7 +112,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['user', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // user end
   // comment start
@@ -122,7 +123,7 @@ var routes = [
     component: CommentManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : ['COMMENT_GET_PREMIUM']
+    PERMISSIONS: ['COMMENT_GET_PREMIUM']
   },
   // comment end
   // order start
@@ -133,7 +134,7 @@ var routes = [
     component: OrderManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : ['ORDER_ADD_PREMIUM','ORDER_ADD_PRESS','ORDER_GET_PREMIUM']
+    PERMISSIONS: ['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']
   },
   {
     path: "/order/create",
@@ -141,7 +142,7 @@ var routes = [
     component: OrderSave,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/order/:order_id/edit",
@@ -150,7 +151,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['order', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // order end
   // group start
@@ -161,7 +162,7 @@ var routes = [
     component: GroupManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/group/create",
@@ -169,7 +170,7 @@ var routes = [
     component: GroupSave,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/group/:group_id/edit",
@@ -178,7 +179,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['group', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // group end
   // generator start
@@ -189,7 +190,7 @@ var routes = [
     component: BookGeneratorManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/book_generator/create",
@@ -198,7 +199,7 @@ var routes = [
     component: BookGenerator,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/book_generator/:book_generator_id/edit",
@@ -207,7 +208,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['book', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // generator end
   // permission start
@@ -218,7 +219,7 @@ var routes = [
     component: PermissionManage,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/permission/create",
@@ -226,7 +227,7 @@ var routes = [
     component: PermissionSave,
     layout: "/admin",
     sidebarIconVisibility: false,
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   {
     path: "/permission/:permission_id/edit",
@@ -235,7 +236,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['permission', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // permission end
   // profile start
@@ -246,8 +247,20 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: false,
     brandName: ['profile', 'edit'],
-    PERMISSIONS : []
+    PERMISSIONS: []
   },
   // profile end
+  // transaction start
+  {
+    path: "/transaction/manage",
+    name: Localization.transaction,
+    icon: "fa fa-list-alt",
+    component: TransactionManage,
+    layout: "/admin",
+    sidebarIconVisibility: true,
+    brandName: ['transaction', 'edit'],
+    PERMISSIONS: ['TRANSACTION_ADD_PREMIUM']
+  },
+  // transaction end
 ];
 export default routes;

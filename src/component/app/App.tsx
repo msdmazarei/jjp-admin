@@ -51,6 +51,7 @@ const appRoutes = (
             <Route exact path="/permission/create" render={props => <AdminLayout {...props} />} />              
             <Route exact path="/permission/:permission_id/edit" render={props => <AdminLayout {...props} />} />    
             <Route exact path="/profile" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/transaction/manage" render={props => <AdminLayout {...props} />} />
             {/* <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} /> */}
             {/* <Route exact path="/" component={() => <Redirect to="/dashboard" />} /> */}
             {/* <RouteLayoutMain exact path="/dashboard" component={Dashboard} /> */}

@@ -18,7 +18,6 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
-import { GroupService } from "../../../service/service.group";
 import { AccessService } from "../../../service/service.access";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";

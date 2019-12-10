@@ -1,5 +1,4 @@
-import { BaseService, IAPI_ResponseList, IAPI_Response } from './service.base';
-import { object } from 'prop-types';
+import { BaseService, IAPI_ResponseList } from './service.base';
 // import { appLocalStorage } from './appLocalStorage';
 
 export class AccountService extends BaseService {

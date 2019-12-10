@@ -349,6 +349,7 @@ export const en = {
     transaction_amount : 'transaction amount',
     increase_credit : 'increase credit',
     reduce_credit : 'reduce credit',
+    credit_level : 'credit level',
     none : 'none',
     type_of_report: {
         Reporting_Period: "Reporting Period",

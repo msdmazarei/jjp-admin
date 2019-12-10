@@ -364,6 +364,7 @@ interface ILocalization extends LocalizedStringsMethods {
     transaction_amount : string;
     increase_credit : string;
     reduce_credit : string;
+    credit_level : string;
     none : string;
     type_of_report: {
         Reporting_Period: string;

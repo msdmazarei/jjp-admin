@@ -349,6 +349,7 @@ export const ar = {
     transaction_amount : 'مبلغ تراکنش',
     increase_credit : 'افزایش اعتبار',
     reduce_credit : 'کاهش اعتبار',
+    credit_level : 'میزان اعتبار',
     none : 'هیچکدام',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",

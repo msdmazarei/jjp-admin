@@ -335,10 +335,10 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
   getTimestampToDate(timestamp: number) {
     if (this.props.internationalization.flag === "fa") {
-      return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+      return moment_jalaali(timestamp * 1000).format('jYYYY/jM/jD');
     }
     else {
-      return moment(timestamp * 1000).format('YYYY/MM/DD');
+      return moment(timestamp * 1000).locale("en").format('YYYY/MM/DD');
     }
   }
 

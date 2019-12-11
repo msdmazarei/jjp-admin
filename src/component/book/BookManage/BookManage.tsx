@@ -182,10 +182,37 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
+          field: "creator", title: Localization.creator,
+          cellTemplateFunc: (row: any) => {
+            if (row.creator) {
+            return <div>{row.creator}</div>
+            }
+            return '';
+          }
+        },
+        {
           field: "creation_date", title: Localization.creation_date,
           cellTemplateFunc: (row: IBook) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "modifier", title: Localization.modifier,
+          cellTemplateFunc: (row: any) => {
+            if (row.modifier) {
+            return <div>{row.modifier}</div>
+            }
+            return '';
+          }
+        },
+        {
+          field: "modification_date", title: Localization.modification_date,
+          cellTemplateFunc: (row: any) => {
+            if (row.modification_date) {
+              return <div title={this._getTimestampToDate(row.modification_date)}>{this.getTimestampToDate(row.modification_date)}</div>
             }
             return '';
           }

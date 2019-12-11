@@ -145,7 +145,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                     ))
                                     :
                                     <tr>
-                                        <td colSpan={this.props.colHeaders.length + 1} className="p-5 text-center">
+                                        <td colSpan={this.props.colHeaders.length + 2} className="p-5 text-center">
                                             <span className="text-warning ">{Localization.no_item_found}</span>
                                         </td>
                                     </tr>

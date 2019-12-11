@@ -30,6 +30,7 @@ import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { Store2 } from "../../../redux/store";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
+import {TABLE_SORT} from "../../table/tableSortHandler";
 
 /// define props & state ///////
 export interface IProps {
@@ -113,6 +114,7 @@ interface IState {
   filter_state: IFilterBook;
   tags_inputValue: string;
   advance_search_box_show: boolean;
+  sort : string[];
 }
 
 // define class of Book 
@@ -140,7 +142,23 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "title", title: Localization.title, cellTemplateFunc: (row: IBook) => {
+          field: "title", title: Localization.title,
+          templateFunc: () => {
+            return <>
+              {Localization.title}
+              <i 
+              className={this.is_this_sort_exsit_in_state("title+") ? "fa fa-sort-alpha-asc mx-3 cursor-pointer text-success" : "fa fa-sort-alpha-asc mx-3 cursor-pointer"} 
+              onClick={() => this.sort_handler_func("title+" , "title-")}
+              >
+              </i>
+              <i 
+              className={this.is_this_sort_exsit_in_state("title-") ? "fa fa-sort-alpha-desc cursor-pointer text-success" : "fa fa-sort-alpha-desc cursor-pointer"}
+              onClick={() => this.sort_handler_func("title-" , "title+")}
+              >
+              </i>
+            </>
+          },
+          cellTemplateFunc: (row: IBook) => {
             if (row.title) {
               return <div title={row.title} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.title}
@@ -172,6 +190,21 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "type", title: Localization.type,
+          templateFunc: () => {
+            return <>
+              {Localization.type}
+              <i 
+              className={this.is_this_sort_exsit_in_state("type+") ? "fa fa-sort-alpha-asc mx-3 cursor-pointer text-success" : "fa fa-sort-alpha-asc mx-3 cursor-pointer"} 
+              onClick={() => this.sort_handler_func("type+" , "type-")}
+              >
+              </i>
+              <i 
+              className={this.is_this_sort_exsit_in_state("type-") ? "fa fa-sort-alpha-desc cursor-pointer text-success" : "fa fa-sort-alpha-desc cursor-pointer"}
+              onClick={() => this.sort_handler_func("type-" , "type+")}
+              >
+              </i>
+            </>
+          },
           cellTemplateFunc: (row: IBook) => {
             if (row.type) {
               const b_type: any = row.type;
@@ -185,13 +218,28 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           field: "creator", title: Localization.creator,
           cellTemplateFunc: (row: any) => {
             if (row.creator) {
-            return <div>{row.creator}</div>
+              return <div>{row.creator}</div>
             }
             return '';
           }
         },
         {
           field: "creation_date", title: Localization.creation_date,
+          templateFunc: () => {
+            return <>
+              {Localization.creation_date}
+              <i 
+              className={this.is_this_sort_exsit_in_state("creation_date+") ? "fa fa-sort-alpha-asc mx-3 cursor-pointer text-success" : "fa fa-sort-alpha-asc mx-3 cursor-pointer"} 
+              onClick={() => this.sort_handler_func("creation_date+" , "creation_date-")}
+              >
+              </i>
+              <i 
+              className={this.is_this_sort_exsit_in_state("creation_date-") ? "fa fa-sort-alpha-desc cursor-pointer text-success" : "fa fa-sort-alpha-desc cursor-pointer"}
+              onClick={() => this.sort_handler_func("creation_date-" , "creation_date+")}
+              >
+              </i>
+            </>
+          },
           cellTemplateFunc: (row: IBook) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -203,7 +251,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           field: "modifier", title: Localization.modifier,
           cellTemplateFunc: (row: any) => {
             if (row.modifier) {
-            return <div>{row.modifier}</div>
+              return <div>{row.modifier}</div>
             }
             return '';
           }
@@ -411,6 +459,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     },
     tags_inputValue: '',
     advance_search_box_show: false,
+    sort:[],
   }
 
   selectedBook: IBook | undefined;
@@ -424,7 +473,29 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       ...this.state,
       tableProcessLoader: true
     })
+    TABLE_SORT.sortArrayReseter();
     this.fetchBooks();
+  }
+
+  sort_handler_func(comingType: string, reverseType: string){
+    TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType , reverseType);
+    this.setState({...this.state, sort : TABLE_SORT.sortArrayReturner()},() => this.fetchBooks());
+  }
+
+  is_this_sort_exsit_in_state(comingType: string): boolean{
+    const sortArray : string[] = this.state.sort;
+    let status : boolean = sortArray.includes(comingType);
+    if(status === true){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  returner_sort_array_to_fetch_func(){
+    if(this.state.sort.length > 0){
+      return this.state.sort;
+    }
   }
 
   checkAllAccess(): boolean {
@@ -761,11 +832,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._bookService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      // {$and:[{creation_date:{$gte : 0}},{creation_date:{$lte : 1654442153}}]} 
-      // {title :{$eq : 'pdf 19'}}
-      // { title: 'pdf 19' }
-      this.get_searchFilter()
-      // this.getFilter()
+      this.get_searchFilter(),
+      this.returner_sort_array_to_fetch_func()
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBooks_error' } });
       this.setState({

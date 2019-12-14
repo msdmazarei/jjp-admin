@@ -40,7 +40,7 @@
 
 .h-50px {
   height: 50px;
-} 
+}
 
 .w-75px {
   width: 75px;
@@ -48,7 +48,7 @@
 
 .h-75px {
   height: 75px;
-} 
+}
 
 .w-100px {
   width: 100px;
@@ -134,12 +134,12 @@ hr {
 }
 
 .text-nowrap-ellipsis {
-  white-space: nowrap!important;
-  overflow: hidden!important;
-  text-overflow: ellipsis!important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
-.profile-img-rounded{
-  border-radius: 50%!important;
+.profile-img-rounded {
+  border-radius: 50% !important;
 }
 
 .select-feedback {
@@ -218,14 +218,14 @@ $grid-breakpoints: (
 //.test {
 //    @include calc( width, '100% - 300px');
 //}
-.delete-modal-content{
+.delete-modal-content {
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.show-modal-content-wrapper{
+.show-modal-content-wrapper {
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -234,7 +234,7 @@ $grid-breakpoints: (
   white-space: pre-wrap;
 }
 
-.show-modal-content{
+.show-modal-content {
   max-height: 200px;
   max-width: 100%;
   white-space: nowrap;
@@ -242,4 +242,16 @@ $grid-breakpoints: (
   text-overflow: ellipsis;
   overflow-wrap: break-word;
   white-space: pre-wrap;
+}
+
+.sort-btn-icon-wrapper {
+  .sort-btn-icon {
+    cursor: pointer;
+  }
+  &:hover {
+    .sort-btn-icon {
+      cursor: pointer;
+      color: #40b292 !important;
+    }
+  }
 }

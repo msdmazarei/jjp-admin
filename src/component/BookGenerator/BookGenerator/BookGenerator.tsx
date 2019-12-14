@@ -71,7 +71,7 @@ interface IState {
     contentType: ICmp_select<string> | null;
     isContentTypeInputTouch: boolean;
     selectedBookType: any | undefined;
-    Epub_book: {
+    Msd_book: {
         BookType: number;
         PackagingVersion: number;
         title: string | undefined;
@@ -114,7 +114,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         contentType: null,
         isContentTypeInputTouch: false,
         selectedBookType: undefined,
-        Epub_book: {
+        Msd_book: {
             BookType: 0,
             PackagingVersion: 0,
             title: undefined,
@@ -174,14 +174,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             let come_selectedBook: { label: string, value: IBook } = { label: (res.data.book as IBook).title, value: (res.data.book as IBook) };
             let come_contentType: { label: string, value: string } = { label: Localization[res.data.type], value: res.data.type };
             let book_type: any = (res.data.book as IBook).type;
-            if (book_type === 'Epub') {
+            if (book_type === 'Msd') {
                 this.setState({
                     ...this.state,
                     selectedBook: come_selectedBook,
                     selectedBookType: book_type,
                     contentType: come_contentType,
-                    Epub_book: {
-                        ...this.state.Epub_book,
+                    Msd_book: {
+                        ...this.state.Msd_book,
                         BookType: res.data.content.BookType ? res.data.content.BookType : 0,
                         PackagingVersion: res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
                         title: res.data.content.title ? res.data.content.title : "",
@@ -265,11 +265,11 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     bookTitleSetter() {
-        if (this.state.selectedBookType === 'Epub') {
+        if (this.state.selectedBookType === 'Msd') {
             this.setState({
                 ...this.state,
-                Epub_book: {
-                    ...this.state.Epub_book,
+                Msd_book: {
+                    ...this.state.Msd_book,
                     title: this.state.selectedBook !== null ? (this.state.selectedBook! as ICmp_select<IBook>).value.title : undefined,
                 }
             })
@@ -402,8 +402,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             contentType: null,
             isContentTypeInputTouch: false,
             selectedBookType: undefined,
-            Epub_book: {
-                ...this.state.Epub_book,
+            Msd_book: {
+                ...this.state.Msd_book,
                 title: undefined,
                 children: [],
             },
@@ -448,14 +448,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             error_upload_modal: false,
             error_upload_modal_state: 0,
         });
-        if (this.state.selectedBookType === 'Epub') {
+        if (this.state.selectedBookType === 'Msd') {
             let res = await this._bookContentService.create(
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
                 (this.state.contentType! as { label: string, value: string }).value,
-                this.state.Epub_book
+                this.state.Msd_book
             ).catch(error => {
                 this.setState({ ...this.state, create_update_loading: false });
-                this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'createMsd_error' } });
             });
             if (res) {
                 this.Reset();
@@ -612,15 +612,15 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             error_upload_modal: false,
             error_upload_modal_state: 0,
         });
-        if (this.state.selectedBookType === 'Epub') {
+        if (this.state.selectedBookType === 'Msd') {
             let res = await this._bookContentService.update(
                 this.book_generator_id!,
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
                 (this.state.contentType! as { label: string, value: string }).value,
-                this.state.Epub_book
+                this.state.Msd_book
             ).catch(error => {
                 this.setState({ ...this.state, create_update_loading: false });
-                this.handleError({ error: error.response, toastOptions: { toastId: 'updateEpub_error' } });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'updateMsd_error' } });
             });
             if (res) {
                 this.book_generator_id = undefined;
@@ -795,11 +795,11 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBookType === undefined) {
             return
         }
-        if (this.state.selectedBookType === "Epub") {
+        if (this.state.selectedBookType === "Msd") {
             this.setState({
                 ...this.state,
-                Epub_book: {
-                    ...this.state.Epub_book,
+                Msd_book: {
+                    ...this.state.Msd_book,
                     children: children,
                 }
             })
@@ -851,12 +851,12 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (type === undefined || this.state.selectedBook === null || this.state.contentType === null) {
             return <></>
         }
-        if (type === "Epub") {
+        if (type === "Msd") {
             return <>
                 <ChapterGenerator
-                    bookType={'Epub'}
+                    bookType={'Msd'}
                     booktitle={(this.state.selectedBook! as ICmp_select<IBook>).value.title}
-                    bookContent={this.state.Epub_book.children}
+                    bookContent={this.state.Msd_book.children}
                     onChangeBook={(bookContent: Book_children[]) => this.onchange(bookContent)}
                 />
             </>
@@ -888,7 +888,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     btn_disable_status(): boolean {
         if (this.state.selectedBook !== null && this.state.contentType !== null) {
-            if (this.state.selectedBookType === 'Epub' && this.state.Epub_book.children.length > 0) {
+            if (this.state.selectedBookType === 'Msd' && this.state.Msd_book.children.length > 0) {
                 return false;
             }
             if (this.state.selectedBookType === 'Audio' && this.state.Audio_book.children.length > 0) {

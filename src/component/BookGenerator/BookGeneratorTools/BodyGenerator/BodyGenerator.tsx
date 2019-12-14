@@ -8,7 +8,7 @@ import { redux_state } from '../../../../redux/app_state';
 import { Input } from '../../../form/input/Input';
 import { Book_body, Book_body_text, book_body_control, book_body_voice } from '../../BookGenerator/BookGenerator';
 import { AppGuid } from '../../../../asset/script/guid';
-import { EpubContentGenerator } from '../EpubContentGenerator/EpubContentGenerator';
+import { MsdContentGenerator } from '../MsdContentGenerator/MsdContentGenerator';
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../../config/localization/localization';
 import { AudioContentGenerator } from '../AudioContentGenerator/AudioContentGenerator';
@@ -93,7 +93,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addContent() {
         const newId: string = AppGuid.generate();
-        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Epub' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Msd' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.push(newContent);
         this.setState({
             ...this.state,
@@ -106,7 +106,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         if (Obj === null) return;
         let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
-        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Epub' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Msd' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.splice(index, 0, newContent);
         this.setState({
             ...this.state,
@@ -119,7 +119,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         if (Obj === null) return;
         let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
-        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Epub' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Msd' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.splice((index + 1), 0, newContent);
         this.setState({
             ...this.state,
@@ -149,7 +149,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         }, () => this.passBodyArray_titleToProps());
     }
 
-    epub_body_contents_render() {
+    msd_body_contents_render() {
         return <>
             {
                 (this.state.body).map((item: Book_body, i: number) => (
@@ -157,7 +157,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                         {
                             item.type === 'text'
                                 ?
-                                <EpubContentGenerator
+                                <MsdContentGenerator
                                     id={item.front_id}
                                     type={item.type}
                                     text={(item as Book_body_text).text}
@@ -167,7 +167,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
                                     removeComingIdContent={(id: string) => this.removeComingIdContent(id)}
                                 />
                                 :
-                                <EpubContentGenerator
+                                <MsdContentGenerator
                                     id={item.front_id}
                                     type={item.type}
                                     control={(item as book_body_control).control}
@@ -231,8 +231,8 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     returner_body_by_book_type() {
-        if (this.props.bookType === 'Epub') {
-            return this.epub_body_contents_render()
+        if (this.props.bookType === 'Msd') {
+            return this.msd_body_contents_render()
         }
         if (this.props.bookType === 'Audio') {
             return this.audio_body_contents_render()

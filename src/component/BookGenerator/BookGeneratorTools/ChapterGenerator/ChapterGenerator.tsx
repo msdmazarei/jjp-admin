@@ -143,7 +143,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let newChild: Book_children = { 
             front_id: newId, 
             title: '', 
-            body: this.props.bookType === 'Epub' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }],
+            body: this.props.bookType === 'Msd' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }],
             children: [] };
         this.book.push(newChild);
         this.setState({
@@ -162,7 +162,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let newChild: Book_children = { 
             front_id: newId, 
             title: '', 
-            body: this.props.bookType === 'Epub' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
+            body: this.props.bookType === 'Msd' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
             children: [] };
         if (!this.book.length) return
         let obj = this.searchTree(this.book, current_id);
@@ -185,7 +185,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let newChild: Book_children = { 
             front_id: newId, 
             title: '', 
-            body: this.props.bookType === 'Epub' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
+            body: this.props.bookType === 'Msd' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
             children: [] };
         if (!this.book.length) return
         let obj = this.searchTree(this.book, current_id);
@@ -212,7 +212,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let newChild: Book_children = { 
             front_id: newId, 
             title: '', 
-            body: this.props.bookType === 'Epub' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
+            body: this.props.bookType === 'Msd' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
             children: [] };
         let result = this.searchTree_parent(current_id);
         if (result === null) return;
@@ -241,7 +241,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let newChild: Book_children = { 
             front_id: newId, 
             title: '', 
-            body: this.props.bookType === 'Epub' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
+            body: this.props.bookType === 'Msd' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
             children: [] };
         let result = this.searchTree_parent(current_id);
         if (result === null) return;
@@ -266,7 +266,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         let newChild: Book_children = { 
             front_id: newId, 
             title: '', 
-            body: this.props.bookType === 'Epub' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
+            body: this.props.bookType === 'Msd' ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
             children: [] };
         let result = this.searchTree(this.book, current_id);
         if (result === null) return;

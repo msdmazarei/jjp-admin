@@ -30,7 +30,7 @@ import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { Store2 } from "../../../redux/store";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
-import {TABLE_SORT} from "../../table/tableSortHandler";
+import { TABLE_SORT } from "../../table/tableSortHandler";
 
 /// define props & state ///////
 export interface IProps {
@@ -94,6 +94,17 @@ interface IFilterBook {
     isValid: boolean
   }
 }
+
+interface ISortBook {
+  title: boolean;
+  type: boolean;
+  creator: boolean;
+  creation_date: boolean;
+  modifier: boolean;
+  modification_date: boolean;
+  price: boolean;
+  pub_year: boolean;
+}
 interface IState {
   book_table: IProps_table;
   BookError: string | undefined;
@@ -114,7 +125,8 @@ interface IState {
   filter_state: IFilterBook;
   tags_inputValue: string;
   advance_search_box_show: boolean;
-  sort : string[];
+  sort: string[];
+  sortShowStyle: ISortBook;
 }
 
 // define class of Book 
@@ -146,16 +158,37 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           templateFunc: () => {
             return <>
               {Localization.title}
-              <i 
-              className={this.is_this_sort_exsit_in_state("title+") ? "fa fa-sort-alpha-asc mx-3 cursor-pointer text-success" : "fa fa-sort-alpha-asc mx-3 cursor-pointer"} 
-              onClick={() => this.sort_handler_func("title+" , "title-")}
-              >
-              </i>
-              <i 
-              className={this.is_this_sort_exsit_in_state("title-") ? "fa fa-sort-alpha-desc cursor-pointer text-success" : "fa fa-sort-alpha-desc cursor-pointer"}
-              onClick={() => this.sort_handler_func("title-" , "title+")}
-              >
-              </i>
+              {
+                (this.is_this_sort_exsit_in_state("title+") === false && this.is_this_sort_exsit_in_state("title-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("title+", "title-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('title', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('title', false)}>
+                    <i className={this.state.sortShowStyle.title === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("title+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("title-", "title+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('title', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('title', false)}>
+                      <i className={this.state.sortShowStyle.title === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("title-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("title-", "title+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('title', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('title', false)}>
+                        <i className={this.state.sortShowStyle.title === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
             </>
           },
           cellTemplateFunc: (row: IBook) => {
@@ -193,16 +226,38 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           templateFunc: () => {
             return <>
               {Localization.type}
-              <i 
-              className={this.is_this_sort_exsit_in_state("type+") ? "fa fa-sort-alpha-asc mx-3 cursor-pointer text-success" : "fa fa-sort-alpha-asc mx-3 cursor-pointer"} 
-              onClick={() => this.sort_handler_func("type+" , "type-")}
-              >
-              </i>
-              <i 
-              className={this.is_this_sort_exsit_in_state("type-") ? "fa fa-sort-alpha-desc cursor-pointer text-success" : "fa fa-sort-alpha-desc cursor-pointer"}
-              onClick={() => this.sort_handler_func("type-" , "type+")}
-              >
-              </i>
+              {
+                (this.is_this_sort_exsit_in_state("type+") === false && this.is_this_sort_exsit_in_state("type-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("type+", "type-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('type', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('type', false)}
+                  >
+                    <i className={this.state.sortShowStyle.type === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("type+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("type-", "type+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('type', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('type', false)}>
+                      <i className={this.state.sortShowStyle.type === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("type-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("type-", "type+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('type', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('type', false)}>
+                        <i className={this.state.sortShowStyle.type === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
             </>
           },
           cellTemplateFunc: (row: IBook) => {
@@ -216,6 +271,42 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "creator", title: Localization.creator,
+          templateFunc: () => {
+            return <>
+              {Localization.creator}
+              {
+                (this.is_this_sort_exsit_in_state("creator+") === false && this.is_this_sort_exsit_in_state("creator-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creator+", "creator-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                    <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creator+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creator-", "creator+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                      <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creator-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creator-", "creator+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                        <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: any) => {
             if (row.creator) {
               return <div>{row.creator}</div>
@@ -228,16 +319,37 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           templateFunc: () => {
             return <>
               {Localization.creation_date}
-              <i 
-              className={this.is_this_sort_exsit_in_state("creation_date+") ? "fa fa-sort-alpha-asc mx-3 cursor-pointer text-success" : "fa fa-sort-alpha-asc mx-3 cursor-pointer"} 
-              onClick={() => this.sort_handler_func("creation_date+" , "creation_date-")}
-              >
-              </i>
-              <i 
-              className={this.is_this_sort_exsit_in_state("creation_date-") ? "fa fa-sort-alpha-desc cursor-pointer text-success" : "fa fa-sort-alpha-desc cursor-pointer"}
-              onClick={() => this.sort_handler_func("creation_date-" , "creation_date+")}
-              >
-              </i>
+              {
+                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                    <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                      <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
             </>
           },
           cellTemplateFunc: (row: IBook) => {
@@ -249,6 +361,42 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "modifier", title: Localization.modifier,
+          templateFunc: () => {
+            return <>
+              {Localization.modifier}
+              {
+                (this.is_this_sort_exsit_in_state("modifier+") === false && this.is_this_sort_exsit_in_state("modifier-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("modifier+", "modifier-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
+                    <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("modifier+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("modifier-", "modifier+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
+                      <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("modifier-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("modifier-", "modifier+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
+                        <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: any) => {
             if (row.modifier) {
               return <div>{row.modifier}</div>
@@ -258,6 +406,42 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "modification_date", title: Localization.modification_date,
+          templateFunc: () => {
+            return <>
+              {Localization.modification_date}
+              {
+                (this.is_this_sort_exsit_in_state("modification_date+") === false && this.is_this_sort_exsit_in_state("modification_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("modification_date+", "modification_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                    <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("modification_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("modification_date-", "modification_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                      <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("modification_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("modification_date-", "modification_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                        <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: any) => {
             if (row.modification_date) {
               return <div title={this._getTimestampToDate(row.modification_date)}>{this.getTimestampToDate(row.modification_date)}</div>
@@ -267,6 +451,42 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "price", title: Localization.price,
+          templateFunc: () => {
+            return <>
+              {Localization.price}
+              {
+                (this.is_this_sort_exsit_in_state("price+") === false && this.is_this_sort_exsit_in_state("price-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("price+", "price-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
+                    <i className={this.state.sortShowStyle.price === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("price+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("price-", "price+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
+                      <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("price-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("price-", "price+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
+                        <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: IBook) => {
             // row.price = 3436465;
             if (row.price) {
@@ -355,6 +575,42 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "pub_year", title: Localization.publication_date,
+          templateFunc: () => {
+            return <>
+              {Localization.publication_date}
+              {
+                (this.is_this_sort_exsit_in_state("pub_year+") === false && this.is_this_sort_exsit_in_state("pub_year-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("pub_year+", "pub_year-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('pub_year', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('pub_year', false)}>
+                    <i className={this.state.sortShowStyle.pub_year === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("pub_year+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("pub_year-", "pub_year+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('pub_year', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('pub_year', false)}>
+                      <i className={this.state.sortShowStyle.pub_year === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("pub_year-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("pub_year-", "pub_year+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('pub_year', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('pub_year', false)}>
+                        <i className={this.state.sortShowStyle.pub_year === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: IBook) => {
             if (row.pub_year) {
               return <div title={this._getTimestampToDate(row.pub_year)}>{this.getTimestampToDate(row.pub_year)}</div>
@@ -363,7 +619,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-
       actions: this.checkAllAccess() ? [
         {
           access: (row: any) => { return this.checkDeleteToolAccess() },
@@ -459,7 +714,17 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     },
     tags_inputValue: '',
     advance_search_box_show: false,
-    sort:[],
+    sort: [],
+    sortShowStyle: {
+      title: false,
+      type: false,
+      creator: false,
+      creation_date: false,
+      modifier: false,
+      modification_date: false,
+      price: false,
+      pub_year: false,
+    }
   }
 
   selectedBook: IBook | undefined;
@@ -477,23 +742,48 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.fetchBooks();
   }
 
-  sort_handler_func(comingType: string, reverseType: string){
-    TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType , reverseType);
-    this.setState({...this.state, sort : TABLE_SORT.sortArrayReturner()},() => this.fetchBooks());
+  sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
+    if (is_just_add_or_remove === false) {
+      TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
+    }
+    if (is_just_add_or_remove === true) {
+      TABLE_SORT.just_add_or_remove(comingType, typeOfSingleAction)
+    }
+    this.setState({ ...this.state, sort: TABLE_SORT.sortArrayReturner() }, () => this.fetchBooks());
   }
 
-  is_this_sort_exsit_in_state(comingType: string): boolean{
-    const sortArray : string[] = this.state.sort;
-    let status : boolean = sortArray.includes(comingType);
-    if(status === true){
+  is_this_sort_exsit_in_state(comingType: string): boolean {
+    const sortArray: string[] = this.state.sort;
+    let status: boolean = sortArray.includes(comingType);
+    if (status === true) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-  returner_sort_array_to_fetch_func(){
-    if(this.state.sort.length > 0){
+  sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
+    if (isOver === true) {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: true,
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: false,
+        }
+      })
+    }
+  }
+
+  returner_sort_array_to_fetch_func() {
+    if (this.state.sort.length > 0) {
       return this.state.sort;
     }
   }

@@ -24,6 +24,7 @@ import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { PersonService } from "../../../service/service.person";
 import { AddOrRemoveGroupFromUserModal } from "../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal";
 import { AccountService } from "../../../service/service.account";
+import { TABLE_SORT } from "../../table/tableSortHandler";
 
 //// props & state define ////////
 export interface IProps {
@@ -55,6 +56,10 @@ interface IFilterUser {
   };
 }
 
+interface ISortUser {
+  username: boolean;
+  creation_date: boolean;
+}
 interface IState {
   user_table: IProps_table;
   UserError: string | undefined;
@@ -79,6 +84,8 @@ interface IState {
   };
   filter_state: IFilterUser;
   advance_search_box_show: boolean;
+  sort: string[];
+  sortShowStyle: ISortUser;
 }
 
 class UserManageComponent extends BaseComponent<IProps, IState>{
@@ -88,7 +95,44 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "email", title: Localization.username, cellTemplateFunc: (row: IUser) => {
+          field: "username", title: Localization.username, 
+          templateFunc: () => {
+            return <>
+              {Localization.username}
+              {
+                (this.is_this_sort_exsit_in_state("username+") === false && this.is_this_sort_exsit_in_state("username-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("username+", "username-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('username', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('username', false)}>
+                    <i className={this.state.sortShowStyle.username === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("username+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("username-", "username+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('username', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('username', false)}>
+                      <i className={this.state.sortShowStyle.username === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("username-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("username-", "username+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('username', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('username', false)}>
+                        <i className={this.state.sortShowStyle.username === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: IUser) => {
             if (row.username) {
               return <div title={row.username} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.username}
@@ -98,7 +142,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "name", title: Localization.full_name, cellTemplateFunc: (row: IUser) => {
+          field: "full_name", title: Localization.full_name, cellTemplateFunc: (row: IUser) => {
             if (row.person.name) {
               return <div title={this.getUserFullName(row.person)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {this.getUserFullName(row.person)}
@@ -127,6 +171,42 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "creation_date", title: Localization.creation_date,
+          templateFunc: () => {
+            return <>
+              {Localization.creation_date}
+              {
+                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                    <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                      <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: IUser) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -245,6 +325,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       },
     },
     advance_search_box_show: false,
+    sort: [],
+    sortShowStyle: {
+      username: false,
+      creation_date: false,
+    }
   }
 
   selectedUser: IUser | undefined;
@@ -267,7 +352,54 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         ...this.state,
         tableProcessLoader: true
       })
+      TABLE_SORT.sortArrayReseter();
       this.fetchUsers();
+    }
+  }
+
+  sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
+    if (is_just_add_or_remove === false) {
+      TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
+    }
+    if (is_just_add_or_remove === true) {
+      TABLE_SORT.just_add_or_remove(comingType, typeOfSingleAction)
+    }
+    this.setState({ ...this.state, sort: TABLE_SORT.sortArrayReturner() }, () => this.fetchUsers());
+  }
+
+  is_this_sort_exsit_in_state(comingType: string): boolean {
+    const sortArray: string[] = this.state.sort;
+    let status: boolean = sortArray.includes(comingType);
+    if (status === true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
+    if (isOver === true) {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: true,
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: false,
+        }
+      })
+    }
+  }
+
+  returner_sort_array_to_fetch_func() {
+    if (this.state.sort.length > 0) {
+      return this.state.sort;
     }
   }
 
@@ -307,7 +439,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._userService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.get_searchFilter()
+      this.get_searchFilter(),
+      this.returner_sort_array_to_fetch_func(),
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUsers_error' } });
       this.setState({

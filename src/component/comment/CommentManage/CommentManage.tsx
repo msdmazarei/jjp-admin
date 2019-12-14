@@ -27,6 +27,7 @@ import { PersonService } from "../../../service/service.person";
 import AsyncSelect from 'react-select/async';
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { TABLE_SORT } from "../../table/tableSortHandler";
 
 /// define props & state ///////
 export interface IProps {
@@ -77,6 +78,13 @@ interface IFilterComment {
   };
 }
 
+interface ISortComment {
+  creator: boolean;
+  body: boolean;
+  creation_date: boolean;
+  likes: boolean;
+  reports: boolean;
+}
 interface IState {
   comment_table: IProps_table;
   CommentError: string | undefined;
@@ -91,6 +99,8 @@ interface IState {
   setRemoveLoader: boolean;
   filter_state: IFilterComment;
   advance_search_box_show: boolean;
+  sort: string[];
+  sortShowStyle: ISortComment;
 }
 
 // define class of Comment 
@@ -100,7 +110,44 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "creator", title: Localization.user, cellTemplateFunc: (row: IComment) => {
+          field: "creator", title: Localization.user, 
+          templateFunc: () => {
+            return <>
+              {Localization.user}
+              {
+                (this.is_this_sort_exsit_in_state("creator+") === false && this.is_this_sort_exsit_in_state("creator-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creator+", "creator-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                    <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creator+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creator-", "creator+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                      <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creator-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creator-", "creator+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                        <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: IComment) => {
             if (row.creator) {
               return <div title={row.creator} className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.creator}
@@ -120,8 +167,45 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "body", title: Localization.comment, cellTemplateFunc: (row: IComment) => {
-            if (row.person) {
+          field: "body", title: Localization.comment, 
+          templateFunc: () => {
+            return <>
+              {Localization.comment}
+              {
+                (this.is_this_sort_exsit_in_state("body+") === false && this.is_this_sort_exsit_in_state("body-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("body+", "body-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('body', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('body', false)}>
+                    <i className={this.state.sortShowStyle.body === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("body+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("body-", "body+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('body', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('body', false)}>
+                      <i className={this.state.sortShowStyle.body === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("body-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("body-", "body+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('body', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('body', false)}>
+                        <i className={this.state.sortShowStyle.body === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: IComment) => {
+            if (row.body) {
               return <div title={row.body} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.body}
               </div>
@@ -131,6 +215,42 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "creation_date", title: Localization.creation_date,
+          templateFunc: () => {
+            return <>
+              {Localization.creation_date}
+              {
+                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                    <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                      <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: IComment) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -149,7 +269,44 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "likes", title: Localization.number_of_likes, cellTemplateFunc: (row: IComment) => {
+          field: "likes", title: Localization.number_of_likes, 
+          templateFunc: () => {
+            return <>
+              {Localization.number_of_likes}
+              {
+                (this.is_this_sort_exsit_in_state("likes+") === false && this.is_this_sort_exsit_in_state("likes-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("likes+", "likes-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('likes', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('likes', false)}>
+                    <i className={this.state.sortShowStyle.likes === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("likes+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("likes-", "likes+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('likes', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('likes', false)}>
+                      <i className={this.state.sortShowStyle.likes === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("likes-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("likes-", "likes+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('likes', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('likes', false)}>
+                        <i className={this.state.sortShowStyle.likes === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: IComment) => {
             if (row.likes) {
               return <div title={row.likes.toLocaleString()} className="text-center">
                 {row.likes}{
@@ -167,7 +324,44 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "reports", title: Localization.number_of_reports, cellTemplateFunc: (row: IComment) => {
+          field: "reports", title: Localization.number_of_reports, 
+          templateFunc: () => {
+            return <>
+              {Localization.number_of_reports}
+              {
+                (this.is_this_sort_exsit_in_state("reports+") === false && this.is_this_sort_exsit_in_state("reports-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("reports+", "reports-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('reports', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('reports', false)}>
+                    <i className={this.state.sortShowStyle.reports === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("reports+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("reports-", "reports+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('reports', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('reports', false)}>
+                      <i className={this.state.sortShowStyle.reports === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("reports-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("reports-", "reports+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('reports', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('reports', false)}>
+                        <i className={this.state.sortShowStyle.reports === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: IComment) => {
             if (row.reports) {
               return <div title={row.reports.toLocaleString()} className="text-center">
                 {row.reports}{
@@ -287,6 +481,14 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       },
     },
     advance_search_box_show: false,
+    sort: [],
+    sortShowStyle: {
+      creator: false,
+      body: false,
+      creation_date: false,
+      likes: false,
+      reports: false,
+    }
   }
 
   selectedComment: IComment | undefined;
@@ -309,10 +511,57 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           ...this.state,
           tableProcessLoader: true
         })
+        TABLE_SORT.sortArrayReseter();
         this.fetchComments();
       }
     } else {
       this.noAccessRedirect(this.props.history);
+    }
+  }
+
+  sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
+    if (is_just_add_or_remove === false) {
+      TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
+    }
+    if (is_just_add_or_remove === true) {
+      TABLE_SORT.just_add_or_remove(comingType, typeOfSingleAction)
+    }
+    this.setState({ ...this.state, sort: TABLE_SORT.sortArrayReturner() }, () => this.fetchComments());
+  }
+
+  is_this_sort_exsit_in_state(comingType: string): boolean {
+    const sortArray: string[] = this.state.sort;
+    let status: boolean = sortArray.includes(comingType);
+    if (status === true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
+    if (isOver === true) {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: true,
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: false,
+        }
+      })
+    }
+  }
+
+  returner_sort_array_to_fetch_func() {
+    if (this.state.sort.length > 0) {
+      return this.state.sort;
     }
   }
 
@@ -584,7 +833,8 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._commentService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.get_searchFilter()
+      this.get_searchFilter(),
+      this.returner_sort_array_to_fetch_func(),
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchComments_error' } });
       this.setState({

@@ -22,6 +22,7 @@ import { PersonService } from "../../../service/service.person";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { AddorRemovePermissionManage } from "../AddorRemovePermissionManage/AddorRemovePermissionManage"
+import { TABLE_SORT } from "../../table/tableSortHandler";
 // import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
@@ -64,6 +65,12 @@ interface IFilterGroup {
   }
 }
 
+interface ISortGroup {
+  title: boolean;
+  creator: boolean;
+  creation_date: boolean;
+  modification_date: boolean;
+}
 //// start define IState ///
 
 interface IState {
@@ -82,6 +89,8 @@ interface IState {
   tableProcessLoader: boolean;
   filter_state: IFilterGroup;
   advance_search_box_show: boolean;
+  sort: string[];
+  sortShowStyle: ISortGroup;
 }
 
 //// end define IState ///
@@ -96,7 +105,44 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "title", title: Localization.title, cellTemplateFunc: (row: any) => {
+          field: "title", title: Localization.title,
+          templateFunc: () => {
+            return <>
+              {Localization.title}
+              {
+                (this.is_this_sort_exsit_in_state("title+") === false && this.is_this_sort_exsit_in_state("title-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("title+", "title-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('title', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('title', false)}>
+                    <i className={this.state.sortShowStyle.title === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("title+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("title-", "title+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('title', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('title', false)}>
+                      <i className={this.state.sortShowStyle.title === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("title-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("title-", "title+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('title', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('title', false)}>
+                        <i className={this.state.sortShowStyle.title === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: any) => {
             if (row.title) {
               return <div title={row.title} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.title}
@@ -106,7 +152,44 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "creator", title: Localization.creator, cellTemplateFunc: (row: any) => {
+          field: "creator", title: Localization.creator,
+          templateFunc: () => {
+            return <>
+              {Localization.creator}
+              {
+                (this.is_this_sort_exsit_in_state("creator+") === false && this.is_this_sort_exsit_in_state("creator-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creator+", "creator-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                    <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creator+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creator-", "creator+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                      <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creator-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creator-", "creator+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                        <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: any) => {
             if (row.creator) {
               return <div title={row.creator} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.creator}
@@ -117,6 +200,42 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "creation_date", title: Localization.creation_date,
+          templateFunc: () => {
+            return <>
+              {Localization.creation_date}
+              {
+                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                    <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                      <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: any) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -126,6 +245,42 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "modification_date", title: Localization.modification_date,
+          templateFunc: () => {
+            return <>
+              {Localization.modification_date}
+              {
+                (this.is_this_sort_exsit_in_state("modification_date+") === false && this.is_this_sort_exsit_in_state("modification_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("modification_date+", "modification_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                    <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("modification_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("modification_date-", "modification_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                      <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("modification_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("modification_date-", "modification_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                        <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
           cellTemplateFunc: (row: any) => {
             if (row.modification_date) {
               return <div title={this._getTimestampToDate(row.modification_date)}>{this.getTimestampToDate(row.modification_date)}</div>
@@ -195,6 +350,13 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       },
     },
     advance_search_box_show: false,
+    sort: [],
+    sortShowStyle: {
+      title: false,
+      creator: false,
+      creation_date: false,
+      modification_date: false,
+    }
   }
 
   selectedGroup: any | undefined;
@@ -213,7 +375,54 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       ...this.state,
       tableProcessLoader: true
     })
+    TABLE_SORT.sortArrayReseter();
     this.fetchGroup();
+  }
+
+  sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
+    if (is_just_add_or_remove === false) {
+      TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
+    }
+    if (is_just_add_or_remove === true) {
+      TABLE_SORT.just_add_or_remove(comingType, typeOfSingleAction)
+    }
+    this.setState({ ...this.state, sort: TABLE_SORT.sortArrayReturner() }, () => this.fetchGroup());
+  }
+
+  is_this_sort_exsit_in_state(comingType: string): boolean {
+    const sortArray: string[] = this.state.sort;
+    let status: boolean = sortArray.includes(comingType);
+    if (status === true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
+    if (isOver === true) {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: true,
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: false,
+        }
+      })
+    }
+  }
+
+  returner_sort_array_to_fetch_func() {
+    if (this.state.sort.length > 0) {
+      return this.state.sort;
+    }
   }
 
   /// start navigation function for create ant update ///
@@ -234,7 +443,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._groupService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.get_searchFilter()
+      this.get_searchFilter(),
+      this.returner_sort_array_to_fetch_func(),
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchGroup_error' } });
       this.setState({

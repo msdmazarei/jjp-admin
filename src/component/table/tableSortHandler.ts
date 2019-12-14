@@ -56,4 +56,16 @@ export abstract class TABLE_SORT {
         }
         return;
     }
+
+    static just_add_or_remove(comingType : string , num : number){
+
+        if(num === 1){  /// for add sort
+            TABLE_SORT.sort.push(comingType);
+        }
+ 
+        if(num === 2){  /// for remove sort
+            let index_for_action: number = TABLE_SORT.sort.indexOf(comingType);
+            TABLE_SORT.sort.splice(index_for_action, 1);
+        }
+    }
 }

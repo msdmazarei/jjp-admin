@@ -342,7 +342,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     ...this.state.book,
                     edition: { ...this.state.book.edition, value: res.data.edition, isValid: true },
                     language: { ...this.state.book.language, value: Language!, isValid: true },
-                    pub_year: { ...this.state.book.pub_year, value: res.data.pub_year, isValid: true },
+                    pub_year: { ...this.state.book.pub_year, value: res.data.pub_year === null ? undefined : res.data.pub_year , isValid: true },
                     title: { ...this.state.book.title, value: res.data.title, isValid: true },
                     isben: { ...this.state.book.isben, value: res.data.isben, isValid: true },
                     pages: { ...this.state.book.pages, value: res.data.pages, isValid: true },

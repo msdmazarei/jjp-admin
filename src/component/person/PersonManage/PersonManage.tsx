@@ -21,6 +21,7 @@ import { AccessService } from "../../../service/service.access";
 import { Input } from "../../form/input/Input";
 import Select from 'react-select';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { TABLE_SORT } from "../../table/tableSortHandler";
 
 //// props & state define ////////
 export interface IProps {
@@ -68,6 +69,13 @@ interface IFilterPerson {
   }
 }
 
+interface ISortPerson {
+  full_name: boolean;
+  is_legal: boolean;
+  creation_date: boolean;
+  cell_no: boolean;
+  phone: boolean;
+}
 interface IState {
   person_table: IProps_table;
   PersonError: string | undefined;
@@ -89,6 +97,8 @@ interface IState {
   tableProcessLoader: boolean;
   filter_state: IFilterPerson;
   advance_search_box_show: boolean;
+  sort: string[];
+  sortShowStyle: ISortPerson;
 }
 ///// define class of Person //////
 class PersonManageComponent extends BaseComponent<IProps, IState>{
@@ -102,7 +112,44 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "name", title: Localization.full_name, cellTemplateFunc: (row: IPerson) => {
+          field: "full_name", title: Localization.full_name,
+          templateFunc: () => {
+            return <>
+              {Localization.full_name}
+              {
+                (this.is_this_sort_exsit_in_state("full_name+") === false && this.is_this_sort_exsit_in_state("full_name-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("full_name+", "full_name-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('full_name', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('full_name', false)}>
+                    <i className={this.state.sortShowStyle.full_name === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("full_name+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("full_name-", "full_name+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('full_name', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('full_name', false)}>
+                      <i className={this.state.sortShowStyle.full_name === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("full_name-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("full_name-", "full_name+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('full_name', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('full_name', false)}>
+                        <i className={this.state.sortShowStyle.full_name === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          }, 
+          cellTemplateFunc: (row: IPerson) => {
             if (row.name) {
               return <div title={this.getPersonFullName(row)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {this.getPersonFullName(row)}
@@ -130,7 +177,44 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "type", title: Localization.type, cellTemplateFunc: (row: IPerson) => {
+          field: "type", title: Localization.type, 
+          templateFunc: () => {
+            return <>
+              {Localization.type}
+              {
+                (this.is_this_sort_exsit_in_state("is_legal+") === false && this.is_this_sort_exsit_in_state("is_legal-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("is_legal+", "is_legal-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('is_legal', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('is_legal', false)}>
+                    <i className={this.state.sortShowStyle.is_legal === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("is_legal+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("is_legal-", "is_legal+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('is_legal', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('is_legal', false)}>
+                      <i className={this.state.sortShowStyle.is_legal === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("is_legal-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("is_legal-", "is_legal+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('is_legal', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('is_legal', false)}>
+                        <i className={this.state.sortShowStyle.is_legal === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          }, 
+          cellTemplateFunc: (row: IPerson) => {
             if (row.is_legal) {
               return <div className="text-nowrap-ellipsis max-w-100px d-inline-block">
                 {row.is_legal === true ? Localization.legal_person : Localization.real_person}
@@ -143,6 +227,42 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "creation_date", title: Localization.creation_date,
+          templateFunc: () => {
+            return <>
+              {Localization.creation_date}
+              {
+                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                    <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                      <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          }, 
           cellTemplateFunc: (row: IPerson) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -151,7 +271,44 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "cell_no", title: Localization.cell_no, cellTemplateFunc: (row: IPerson) => {
+          field: "cell_no", title: Localization.cell_no, 
+          templateFunc: () => {
+            return <>
+              {Localization.cell_no}
+              {
+                (this.is_this_sort_exsit_in_state("cell_no+") === false && this.is_this_sort_exsit_in_state("cell_no-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("cell_no+", "cell_no-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('cell_no', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('cell_no', false)}>
+                    <i className={this.state.sortShowStyle.cell_no === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("cell_no+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("cell_no-", "cell_no+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('cell_no', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('cell_no', false)}>
+                      <i className={this.state.sortShowStyle.cell_no === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("cell_no-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("cell_no-", "cell_no+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('cell_no', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('cell_no', false)}>
+                        <i className={this.state.sortShowStyle.cell_no === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          }, 
+          cellTemplateFunc: (row: IPerson) => {
             if (row.cell_no) {
               return <div title={row.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.cell_no}
@@ -171,7 +328,44 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "phone", title: Localization.phone, cellTemplateFunc: (row: IPerson) => {
+          field: "phone", title: Localization.phone, 
+          templateFunc: () => {
+            return <>
+              {Localization.phone}
+              {
+                (this.is_this_sort_exsit_in_state("phone+") === false && this.is_this_sort_exsit_in_state("phone-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("phone+", "phone-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('phone', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('phone', false)}>
+                    <i className={this.state.sortShowStyle.phone === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("phone+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("phone-", "phone+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('phone', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('phone', false)}>
+                      <i className={this.state.sortShowStyle.phone === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("phone-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("phone-", "phone+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('phone', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('phone', false)}>
+                        <i className={this.state.sortShowStyle.phone === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          }, 
+          cellTemplateFunc: (row: IPerson) => {
             if (row.phone) {
               return <div title={row.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
                 {row.phone}
@@ -270,6 +464,14 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       },
     },
     advance_search_box_show: false,
+    sort: [],
+    sortShowStyle: {
+      full_name: false,
+      is_legal: false,
+      creation_date: false,
+      cell_no: false,
+      phone: false,
+    }
   }
 
   componentDidMount() {
@@ -279,10 +481,57 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           ...this.state,
           tableProcessLoader: true
         })
+        TABLE_SORT.sortArrayReseter();
         this.fetchPersons();
       }
     } else {
       this.noAccessRedirect(this.props.history);
+    }
+  }
+
+  sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
+    if (is_just_add_or_remove === false) {
+      TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
+    }
+    if (is_just_add_or_remove === true) {
+      TABLE_SORT.just_add_or_remove(comingType, typeOfSingleAction)
+    }
+    this.setState({ ...this.state, sort: TABLE_SORT.sortArrayReturner() }, () => this.fetchPersons());
+  }
+
+  is_this_sort_exsit_in_state(comingType: string): boolean {
+    const sortArray: string[] = this.state.sort;
+    let status: boolean = sortArray.includes(comingType);
+    if (status === true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
+    if (isOver === true) {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: true,
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: false,
+        }
+      })
+    }
+  }
+
+  returner_sort_array_to_fetch_func() {
+    if (this.state.sort.length > 0) {
+      return this.state.sort;
     }
   }
 
@@ -424,7 +673,8 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._personService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.get_searchFilter()
+      this.get_searchFilter(),
+      this.returner_sort_array_to_fetch_func(),
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPersons_error' } });
       this.setState({

@@ -83,6 +83,13 @@ export abstract class BGUtility {
         return BGUtility.Pdfuploaded_id.length;
     }
 
+    static number_of_epub_file_uploaded() {
+        if (!BGUtility.Epubuploaded_id.length) {
+            return 0;
+        }
+        return BGUtility.Epubuploaded_id.length;
+    }
+
     static book_children_array_filter_by_body_type(array: Book_children[], body_type: string): Book_body[] | [] {
         let i;
         for (i = 0; i < array.length; i++) {

@@ -34,7 +34,7 @@ interface IState {
     control?: { value: string, label: string } | null;
 }
 
-class EpubContentGeneratorComponent extends BaseComponent<IProps, IState> {
+class MsdContentGeneratorComponent extends BaseComponent<IProps, IState> {
 
     typesOption = [
         { value: 'text', label: Localization.text },
@@ -262,7 +262,7 @@ const state2props = (state: redux_state) => {
     };
 };
 
-export const EpubContentGenerator = connect(
+export const MsdContentGenerator = connect(
     state2props,
     dispatch2props
-)(EpubContentGeneratorComponent);
+)(MsdContentGeneratorComponent);

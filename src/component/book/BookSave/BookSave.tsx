@@ -139,7 +139,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         { value: 'Audio', label: Localization.book_type_list.Audio },
         { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
         { value: 'Pdf', label: Localization.book_type_list.Pdf },
-        { value: 'Epub', label: Localization.book_type_list.Epub }
+        { value: 'Epub', label: Localization.book_type_list.Epub },
+        { value: 'Msd', label: Localization.book_type_list.Msd },
     ];
 
     private languages_opts: { value: LANGUAGES, label: string }[] = this._languages_opts();

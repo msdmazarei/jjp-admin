@@ -14,6 +14,7 @@ export enum BOOK_TYPES {
     Hard_Copy = 'Hard_Copy',
     Pdf = 'Pdf',
     Epub = 'Epub',
+    Msd = 'Msd',
 }
 
 export enum BOOK_GENRE {

@@ -21,6 +21,7 @@ import { BGUtility } from '../BookGeneratorTools/fileUploader/fileUploader';
 import { Modal } from 'react-bootstrap';
 import { ToastContainer } from 'react-toastify';
 import { AppGuid } from '../../../asset/script/guid';
+import { EpubGenerator } from '../BookGeneratorTools/EpubGenerator/EpubGenerator';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -242,8 +243,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     selectedBook: come_selectedBook,
                     selectedBookType: book_type,
                     contentType: come_contentType,
-                    Pdf_book: {
-                        ...this.state.Pdf_book,
+                    Epub_book: {
+                        ...this.state.Epub_book,
                         BookType: res.data.content.BookType ? res.data.content.BookType : 1,
                         PackagingVersion: res.data.content.PackagingVersion ? res.data.content.PackagingVersion : 0,
                         title: res.data.content.title ? res.data.content.title : "",
@@ -327,8 +328,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBookType === 'Epub') {
             this.setState({
                 ...this.state,
-                Pdf_book: {
-                    ...this.state.Pdf_book,
+                Epub_book: {
+                    ...this.state.Epub_book,
                     title: this.state.selectedBook !== null ? (this.state.selectedBook! as ICmp_select<IBook>).value.title : undefined,
                 }
             })
@@ -624,19 +625,17 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 converted_content,
             ).catch(error => {
                 this.content_modification();
-                this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'createPdf_error' } });
             });
             if (res) {
                 this.Reset();
                 this.apiSuccessNotify();
             }
-        }
-
-
+        };
         if (this.state.selectedBookType === 'Epub') {
-            this.getPdfUploadFileState();
+            this.getEpubUploadFileState();
             this.setState({ ...this.state, number_of_file_should_upload: 1, upload_modal: true });
-            let uploadedAndThatsId: book_body_epub[] = await BGUtility.upload_epub_file_and_save_id((this.state.Pdf_book.children as Book_children[])[0].body);
+            let uploadedAndThatsId: book_body_epub[] = await BGUtility.upload_epub_file_and_save_id((this.state.Epub_book.children as Book_children[])[0].body);
             if (uploadedAndThatsId.length === 1 && uploadedAndThatsId[0].front_id === 'rejected') {
                 this.setState({
                     ...this.state,
@@ -674,9 +673,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             ];
             let converted_content: Object = {
-                BookType: this.state.Pdf_book.BookType,
-                PackagingVersion: this.state.Pdf_book.PackagingVersion,
-                title: this.state.Pdf_book.title,
+                BookType: this.state.Epub_book.BookType,
+                PackagingVersion: this.state.Epub_book.PackagingVersion,
+                title: this.state.Epub_book.title,
                 children: convertedChildren,
             }
             let res = await this._bookContentService.create(
@@ -685,7 +684,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 converted_content,
             ).catch(error => {
                 this.content_modification();
-                this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
+                this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
             });
             if (res) {
                 this.Reset();
@@ -876,7 +875,87 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     converted_content,
                 ).catch(error => {
                     this.content_modification();
-                    this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
+                    this.handleError({ error: error.response, toastOptions: { toastId: 'createPdf_error' } });
+                });
+                if (res) {
+                    this.book_generator_id = undefined;
+                    this.Reset();
+                    this.backTO();
+                    this.apiSuccessNotify();
+                }
+            }
+        };
+        if (this.state.selectedBookType === 'Epub') {
+            if (typeof ((this.state.Epub_book.children as Book_children[])[0].body as book_body_epub[])[0].epub === "string") {
+                let res = await this._bookContentService.update(
+                    this.book_generator_id!,
+                    (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                    (this.state.contentType! as { label: string, value: string }).value,
+                    this.state.Epub_book
+                ).catch(error => {
+                    this.content_modification();
+                    this.handleError({ error: error.response, toastOptions: { toastId: 'updateEpub_error' } });
+                });
+                if (res) {
+                    this.book_generator_id = undefined;
+                    this.Reset();
+                    this.backTO();
+                    this.apiSuccessNotify();
+                }
+            } else {
+                this.getEpubUploadFileState();
+                this.setState({ ...this.state, number_of_file_should_upload: 1, upload_modal: true });
+                let uploadedAndThatsId: book_body_epub[] = await BGUtility.upload_epub_file_and_save_id((this.state.Epub_book.children as Book_children[])[0].body);
+                if (uploadedAndThatsId.length === 1 && uploadedAndThatsId[0].front_id === 'rejected') {
+                    this.setState({
+                        ...this.state,
+                        create_update_loading: false,
+                        number_of_file_should_upload: 0,
+                        number_of_uploaded: 0,
+                        uploadStop: false,
+                        uploadRej: true,
+                        upload_modal: false,
+                        error_upload_modal: true,
+                        error_upload_modal_state: 2,
+                    });
+                    return;
+                }
+                if (uploadedAndThatsId.length === 1 && uploadedAndThatsId[0].front_id === 'stop') {
+                    this.setState({
+                        ...this.state,
+                        create_update_loading: false,
+                        number_of_file_should_upload: 0,
+                        number_of_uploaded: 0,
+                        uploadStop: true,
+                        uploadRej: false,
+                        upload_modal: false,
+                        error_upload_modal: true,
+                        error_upload_modal_state: 1,
+                    });
+                    return;
+                }
+                const convertedChildren: Book_children[] = [
+                    {
+                        front_id: AppGuid.generate(),
+                        title: "",
+                        body: uploadedAndThatsId,
+                        children: [],
+                    }
+                ];
+                let converted_content: Object = {
+                    BookType: this.state.Epub_book.BookType,
+                    PackagingVersion: this.state.Epub_book.PackagingVersion,
+                    title: this.state.Epub_book.title,
+                    children: convertedChildren,
+                }
+                let res = await this._bookContentService.update(
+                    this.book_generator_id!,
+                    (this.state.selectedBook! as { label: string, value: IBook }).value.id,
+                    (this.state.contentType! as { label: string, value: string }).value,
+                    converted_content,
+                ).catch(error => {
+                    this.content_modification();
+                    this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
                 });
                 if (res) {
                     this.book_generator_id = undefined;
@@ -924,6 +1003,15 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         }
+        if (this.state.selectedBookType === "Epub") {
+            this.setState({
+                ...this.state,
+                Epub_book: {
+                    ...this.state.Epub_book,
+                    children: children,
+                }
+            })
+        }
     }
 
     onPdfChange(newBody: Book_body[]) {
@@ -939,6 +1027,24 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             Pdf_book: {
                 ...this.state.Pdf_book,
+                children: newChildren
+            }
+        })
+    }
+
+    onEpubChange(newBody: Book_body[]) {
+        let newChildren: Book_children[] = [
+            {
+                front_id: AppGuid.generate(),
+                title: "",
+                body: newBody,
+                children: [],
+            }
+        ];
+        this.setState({
+            ...this.state,
+            Epub_book: {
+                ...this.state.Epub_book,
                 children: newChildren
             }
         })
@@ -981,6 +1087,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 />
             </>
         }
+        if (type === "Epub") {
+            return <>
+                <EpubGenerator
+                    body={this.state.Epub_book.children.length !== 0 ? ((this.state.Epub_book.children as Book_children[])[0].body as book_body_epub[]) : []}
+                    onFileChange={(newBody: book_body_epub[]) => this.onEpubChange(newBody)}
+                />
+            </>
+        }
     }
 
     //// end returner by book type function /////
@@ -998,6 +1112,11 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             }
             if (this.state.selectedBookType === 'Pdf' && this.state.Pdf_book.children.length > 0) {
                 if (((this.state.Pdf_book.children as Book_children[])[0].body as book_body_pdf[])[0].pdf.length > 0) {
+                    return false;
+                }
+            }
+            if (this.state.selectedBookType === 'Epub' && this.state.Epub_book.children.length > 0) {
+                if (((this.state.Epub_book.children as Book_children[])[0].body as book_body_epub[])[0].epub.length > 0) {
                     return false;
                 }
             }
@@ -1137,7 +1256,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     private _getPdfUploadFileState_timer: any;
     getPdfUploadFileState() {
-        this._getUploadFileState_timer = setTimeout(() => {
+        this._getPdfUploadFileState_timer = setTimeout(() => {
 
             const new_number = BGUtility.number_of_pdf_file_uploaded();
             if (this.state.number_of_uploaded !== new_number) {
@@ -1146,6 +1265,21 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
             if (new_number !== this.state.number_of_file_should_upload || !this.state.uploadStop || !this.state.uploadRej) {
                 this.getPdfUploadFileState();
+            }
+        }, 1000);
+    }
+
+    private _getEpubUploadFileState_timer: any;
+    getEpubUploadFileState() {
+        this._getEpubUploadFileState_timer = setTimeout(() => {
+
+            const new_number = BGUtility.number_of_epub_file_uploaded();
+            if (this.state.number_of_uploaded !== new_number) {
+                this.setState({ ...this.state, number_of_uploaded: new_number });
+            }
+
+            if (new_number !== this.state.number_of_file_should_upload || !this.state.uploadStop || !this.state.uploadRej) {
+                this.getEpubUploadFileState();
             }
         }, 1000);
     }

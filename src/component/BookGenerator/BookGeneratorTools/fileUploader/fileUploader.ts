@@ -245,22 +245,22 @@ export abstract class BGUtility {
                 if (BGUtility.Stop) {
                     BGUtility.Stop = false;
                     stop = true;
-                    BGUtility.PdfUploaded_id_obj_array = [];
-                    BGUtility.Pdfuploaded_id = [];
+                    BGUtility.EpubUploaded_id_obj_array = [];
+                    BGUtility.Epubuploaded_id = [];
                 };
                 if (stop) {
                     break;
                 };
                 let res = await BGUtility.uploadFileReq((array[i] as book_body_epub).epub).catch(e => {
-                    BGUtility.PdfUploaded_id_obj_array = [];
-                    BGUtility.Pdfuploaded_id = [];
+                    BGUtility.EpubUploaded_id_obj_array = [];
+                    BGUtility.Epubuploaded_id = [];
                     rejected = true;
                 });
                 if (BGUtility.Stop) {
                     BGUtility.Stop = false;
                     stop = true;
-                    BGUtility.PdfUploaded_id_obj_array = [];
-                    BGUtility.Pdfuploaded_id = [];
+                    BGUtility.EpubUploaded_id_obj_array = [];
+                    BGUtility.Epubuploaded_id = [];
                 };
                 if (rejected || stop) {
                     break;

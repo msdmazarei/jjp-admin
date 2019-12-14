@@ -8,8 +8,8 @@ export class PersonService extends BaseService {
         return this.axiosTokenInstance.post('/persons',person);
     }
     
-    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<IPerson>> {
-        return this.axiosTokenInstance.post(`/persons/_search`, { limit, skip, filter });
+    search(limit: number, skip: number, filter?: Object, sort?: string[]): Promise<IAPI_ResponseList<IPerson>> {
+        return this.axiosTokenInstance.post(`/persons/_search`, { limit, skip, filter, sort });
         // return this.instance.post(`http://book.mazarei.id.ir/persons/_search`, { limit, skip, filter});
     }
     // search(limit: number, skip: number): Promise<IAPI_ResponseList<IPerson>> {

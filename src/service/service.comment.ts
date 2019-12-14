@@ -5,9 +5,9 @@ import { IComment } from '../model/model.comment';
 
 export class CommentService extends BaseService {
 
-    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<IComment>> {
+    search(limit: number, skip: number, filter?: Object, sort?: string[]): Promise<IAPI_ResponseList<IComment>> {
         // return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip, filter });
-        return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip,filter });
+        return this.axiosTokenInstance.post(`/comments/_search`, { limit, skip,filter, sort });
     }
 
     like(comment_id: string): Promise<any> {

@@ -10,8 +10,8 @@ export type IOrderItems = IOrderItem[];
 
 export class OrderService extends BaseService {
 
-    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<any>> {
-        return this.axiosTokenInstance.post(`/orders/_search`, { limit, skip, filter });
+    search(limit: number, skip: number, filter?: Object, sort?: string[]): Promise<IAPI_ResponseList<any>> {
+        return this.axiosTokenInstance.post(`/orders/_search`, { limit, skip, filter, sort });
     }
 
     remove(order_id: string) {

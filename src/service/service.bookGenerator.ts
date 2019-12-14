@@ -8,8 +8,8 @@ export class BookGeneratorService extends BaseService {
     // });
 
 
-    search(limit: number, skip: number, filter?: Object): Promise<IAPI_ResponseList<any>> {
-        return this.axiosTokenInstance.post(`/book-contents/_search`, { limit, skip, filter });
+    search(limit: number, skip: number, filter?: Object, sort?: string[]): Promise<IAPI_ResponseList<any>> {
+        return this.axiosTokenInstance.post(`/book-contents/_search`, { limit, skip, filter, sort });
     }
 
     create( book_id : string, type : string, content : object ) {

@@ -1,6 +1,5 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
-import { Input } from '../../form/input/Input';
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
@@ -21,6 +20,7 @@ import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TransactionService } from "../../../service/service.transaction";
 import Select from 'react-select';
+import { TABLE_SORT } from "../../table/tableSortHandler";
 
 /// define props & state ///////
 export interface IProps {
@@ -55,6 +55,10 @@ interface IFilterTransaction {
   };
 }
 
+interface ISortTransaction {
+  creation_date: boolean;
+}
+
 interface IState {
   transaction_table: IProps_table;
   TransactionError: string | undefined;
@@ -69,6 +73,8 @@ interface IState {
   setRemoveLoader: boolean;
   filter_state: IFilterTransaction;
   advance_search_box_show: boolean;
+  sort: string[];
+  sortShowStyle: ISortTransaction;
 }
 
 // define class of Comment 
@@ -82,17 +88,44 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "creator", title: Localization.creator, cellTemplateFunc: (row: any) => {
-            if (row.creator) {
-              return <div title={row.creator} className="text-nowrap-ellipsis max-w-100px d-inline-block">
-                {row.creator}
-              </div>
-            }
-            return '';
-          }
-        },
-        {
-          field: "creation_date", title: Localization.creation_date, cellTemplateFunc: (row: any) => {
+          field: "creation_date", title: Localization.creation_date,
+          templateFunc: () => {
+            return <>
+              {Localization.creation_date}
+              {
+                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                  ?
+                  <span
+                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                    <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                  </span>
+                  :
+                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                    ?
+                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                      <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                    </span>
+                    :
+                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                      ?
+                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                      </span>
+                      :
+                      undefined
+              }
+            </>
+          },
+          cellTemplateFunc: (row: any) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
             }
@@ -160,6 +193,10 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
       },
     },
     advance_search_box_show: false,
+    sort: [],
+    sortShowStyle: {
+      creation_date: false,
+    }
   }
 
   selectedTransaction: any | undefined;
@@ -180,10 +217,57 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
           ...this.state,
           tableProcessLoader: true
         })
+        TABLE_SORT.sortArrayReseter();
         this.fetchTransactions();
       }
     } else {
       this.noAccessRedirect(this.props.history);
+    }
+  }
+
+  sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
+    if (is_just_add_or_remove === false) {
+      TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
+    }
+    if (is_just_add_or_remove === true) {
+      TABLE_SORT.just_add_or_remove(comingType, typeOfSingleAction)
+    }
+    this.setState({ ...this.state, sort: TABLE_SORT.sortArrayReturner() }, () => this.fetchTransactions());
+  }
+
+  is_this_sort_exsit_in_state(comingType: string): boolean {
+    const sortArray: string[] = this.state.sort;
+    let status: boolean = sortArray.includes(comingType);
+    if (status === true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
+    if (isOver === true) {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: true,
+        }
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        sortShowStyle: {
+          ...this.state.sortShowStyle,
+          [sort]: false,
+        }
+      })
+    }
+  }
+
+  returner_sort_array_to_fetch_func() {
+    if (this.state.sort.length > 0) {
+      return this.state.sort;
     }
   }
 
@@ -339,10 +423,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   private set_searchFilter() {
     const obj: any = {};
 
-    if (this.state.filter_state.creator.isValid) {
-      obj['creator'] = { $prefix: this.state.filter_state.creator.value };
-    }
-
     if (this.state.filter_state.cr_date.is_valid === true) {
       if (this.state.filter_state.cr_date.from_isValid === true && this.state.filter_state.cr_date.to_isValid === true) {
         obj['creation_date'] = { $gte: this.state.filter_state.cr_date.from, $lte: (this.state.filter_state.cr_date.to! + 86400) }
@@ -401,7 +481,8 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
     let res = await this._transactionService.search(
       this.state.pager_limit,
       this.state.pager_offset,
-      this.get_searchFilter()
+      this.get_searchFilter(),
+      this.returner_sort_array_to_fetch_func(),
     ).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchComments_error' } });
       this.setState({
@@ -714,14 +795,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
                       </div>
                       {/* start search box inputs */}
                       <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
-                        <div className="col-md-3 col-sm-6">
-                          <Input
-                            onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
-                            label={Localization.creator}
-                            placeholder={Localization.creator}
-                            defaultValue={this.state.filter_state.creator.value}
-                          />
-                        </div>
                         <div className="col-md-3 col-sm-6">
                           <AppRangePicker
                             label={Localization.creation_date}

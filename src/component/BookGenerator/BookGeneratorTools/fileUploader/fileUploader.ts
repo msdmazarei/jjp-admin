@@ -1,4 +1,4 @@
-import { Book_children, Book_body, book_body_voice, book_body_pdf } from "../../BookGenerator/BookGenerator";
+import { Book_children, Book_body, book_body_voice, book_body_pdf, book_body_epub } from "../../BookGenerator/BookGenerator";
 import { UploadService } from "../../../../service/service.upload";
 
 
@@ -60,6 +60,8 @@ export abstract class BGUtility {
     private static uploaded_id: string[] = [];
     private static PdfUploaded_id_obj_array: book_body_pdf[] = [];
     private static Pdfuploaded_id: string[] = [];
+    private static EpubUploaded_id_obj_array: book_body_epub[] = [];
+    private static Epubuploaded_id: string[] = [];
     private static book_json: Book_children[] = [];
 
 
@@ -223,6 +225,55 @@ export abstract class BGUtility {
         const rtnArray = BGUtility.PdfUploaded_id_obj_array;
         BGUtility.PdfUploaded_id_obj_array = [];
         BGUtility.Pdfuploaded_id = [];
+        return rtnArray;
+    }
+
+    static async upload_epub_file_and_save_id(array: Book_body[]): Promise<book_body_epub[] | []> {
+        let rejected: boolean = false;
+        let stop: boolean = false;
+        for (let i = 0; i < array.length; i++) {
+            let current_id: string = array[i].front_id;
+            // if(!BGUtility.id_exist_checker(current_id)){   to do add condition for don't upload file if uploaded before
+            if (true) {
+                if (BGUtility.Stop) {
+                    BGUtility.Stop = false;
+                    stop = true;
+                    BGUtility.PdfUploaded_id_obj_array = [];
+                    BGUtility.Pdfuploaded_id = [];
+                };
+                if (stop) {
+                    break;
+                };
+                let res = await BGUtility.uploadFileReq((array[i] as book_body_epub).epub).catch(e => {
+                    BGUtility.PdfUploaded_id_obj_array = [];
+                    BGUtility.Pdfuploaded_id = [];
+                    rejected = true;
+                });
+                if (BGUtility.Stop) {
+                    BGUtility.Stop = false;
+                    stop = true;
+                    BGUtility.PdfUploaded_id_obj_array = [];
+                    BGUtility.Pdfuploaded_id = [];
+                };
+                if (rejected || stop) {
+                    break;
+                };
+                if (res && res.length) {
+                    let newBody: book_body_epub = { front_id: current_id, type: 'epub', name: (array[i] as book_body_epub).name, epub: res[0] }
+                    BGUtility.EpubUploaded_id_obj_array.push(newBody);
+                    BGUtility.Epubuploaded_id.push(current_id);
+                };
+            }
+        }
+        if (rejected) {
+            return [{ front_id: 'rejected', type: 'epub', name: 'rejected', epub: 'rejected' }];
+        };
+        if (stop) {
+            return [{ front_id: 'stop', type: 'epub', name: 'stop', epub: 'stop' }];
+        };
+        const rtnArray = BGUtility.EpubUploaded_id_obj_array;
+        BGUtility.EpubUploaded_id_obj_array = [];
+        BGUtility.Epubuploaded_id = [];
         return rtnArray;
     }
 

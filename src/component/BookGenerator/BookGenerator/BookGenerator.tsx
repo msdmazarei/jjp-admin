@@ -145,7 +145,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             children: [],
         },
         Epub_book: {
-            BookType: 1,
+            BookType: 4,
             PackagingVersion: 0,
             title: undefined,
             children: [],

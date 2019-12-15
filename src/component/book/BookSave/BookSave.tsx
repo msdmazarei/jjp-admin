@@ -429,19 +429,34 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         })
     }
 
-    bookPressChange(selectedPerson: { label: string, value: IPerson }) {
-        this.setState({
-            ...this.state,
-            book: {
-                ...this.state.book,
-                roles: {
-                    ...this.state.book.roles,
-                    isValid: true,
-                }
-            },
-            book_roll_press: selectedPerson,
-            isFormValid: this.checkFormValidate(true, 'roles'),
-        })
+    bookPressChange(selectedPerson: { label: string, value: IPerson } | null) {
+        if(selectedPerson === null){
+            this.setState({
+                ...this.state,
+                book: {
+                    ...this.state.book,
+                    roles: {
+                        ...this.state.book.roles,
+                        isValid: false,
+                    }
+                },
+                book_roll_press: selectedPerson,
+                isFormValid: false,
+            })
+        }else{
+            this.setState({
+                ...this.state,
+                book: {
+                    ...this.state.book,
+                    roles: {
+                        ...this.state.book.roles,
+                        isValid: true,
+                    }
+                },
+                book_roll_press: selectedPerson,
+                isFormValid: this.checkFormValidate(true, 'roles'),
+            })
+        }
     }
 
     pressCheckValidation(list: any[]) {
@@ -892,22 +907,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             />
                                             {/* {this.typeInvalidFeedback()} */}
                                         </div>
-                                        {/* <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, 'language')}
-                                            label={Localization.language}
-                                            placeholder={Localization.language}
-                                            defaultValue={this.state.book.language.value}
-                                        /> */}
                                     </div>
                                     <div className="col-md-4 col-sm-6">
-                                        {/* <Input
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "pub_year")}
-                                            label={Localization.publication_date}
-                                            placeholder={Localization.publication_date}
-                                            defaultValue={this.state.book.pub_year.value}
-                                            pattern={AppRegex.integer}
-                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
-                                        /> */}
                                         <AppDatePicker
                                             label={Localization.publication_date}
                                             value={this.state.book.pub_year.value}
@@ -994,6 +995,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                     undefined
                                             }
                                             <AsyncSelect
+                                                isClearable
                                                 placeholder={Localization.person}
                                                 cacheOptions
                                                 defaultOptions

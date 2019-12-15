@@ -455,7 +455,12 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 children: [],
             },
             Pdf_book: {
-                ...this.state.Audio_book,
+                ...this.state.Pdf_book,
+                title: undefined,
+                children: [],
+            },
+            Epub_book: {
+                ...this.state.Epub_book,
                 title: undefined,
                 children: [],
             },

@@ -103,7 +103,7 @@ class EpubGeneratorComponent extends BaseComponent<IProps, IState> {
             return <div className="img-item m-2">
                 <a rel="noopener noreferrer" target='_blank' href={"/api/serve-files/" + this.state.epub}>
                     <span className="">
-                        <i className="fa fa fa-file-pdf-o text-info"></i>
+                        <i className="fa fa-file-text-o text-info"></i>
                     </span>
                     <span className="text-info mx-3">{this.state.name}</span>
                 </a>
@@ -123,7 +123,7 @@ class EpubGeneratorComponent extends BaseComponent<IProps, IState> {
                         <section className="container">
                             <div {...getRootProps({ className: 'dropzone' })}>
                                 <input {...getInputProps()} />
-                    <p className="img-container text-center text-muted p-3">{<i className="fa fa fa-file-pdf-o text-info mx-3"></i>}{Localization.DRAG_AND_DROP}</p>
+                    <p className="img-container text-center text-muted p-3">{<i className="fa fa-file-text-o text-info mx-3"></i>}{Localization.DRAG_AND_DROP}</p>
                             </div>
                             <aside>
                                 <h5 className="m-2">{Localization.preview}:</h5>
@@ -139,11 +139,11 @@ class EpubGeneratorComponent extends BaseComponent<IProps, IState> {
                                                         (this.state.epub)
                                                             ?
                                                             <span className="">
-                                                                <i className="fa fa fa-file-pdf-o text-info"></i>
+                                                                <i className="fa fa-file-text-o text-info"></i>
                                                             </span>
                                                             :
                                                             <span className="">
-                                                                <i className="fa fa fa-file-pdf-o text-info"></i>
+                                                                <i className="fa fa-file-text-o text-info"></i>
                                                             </span>
                                                     }
                                                     {

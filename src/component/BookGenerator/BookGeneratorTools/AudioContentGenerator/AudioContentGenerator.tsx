@@ -248,7 +248,7 @@ class AudioContentGeneratorComponent extends BaseComponent<IProps, IState> {
                         <section className="container">
                             <div {...getRootProps({ className: 'dropzone' })}>
                                 <input {...getInputProps()} />
-                                <p className="img-container text-center text-muted p-3">{Localization.DRAG_AND_DROP}</p>
+                                <p className="img-container text-center text-muted p-3">{<i className="fa fa-file-audio-o text-info mx-3"></i>}{Localization.DRAG_AND_DROP}</p>
                             </div>
                             <aside>
                                 {

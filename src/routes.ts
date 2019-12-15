@@ -15,7 +15,7 @@ import { PermissionManage } from "./component/permission/PermissionManage/Permis
 import { Profile } from './component/profile/Profile';
 import { BookGeneratorManage } from './component/BookGenerator/BookGeneratorManage/BookGeneratorManage';
 import { BookGenerator } from './component/BookGenerator/BookGenerator/BookGenerator';
-import {TransactionManage} from './component/transaction/TransactionManage/TransactionManage';
+import { TransactionManage } from './component/transaction/TransactionManage/TransactionManage';
 import { Localization } from "./config/localization/localization";
 
 
@@ -59,6 +59,35 @@ var routes = [
     PERMISSIONS: []
   },
   // book end
+  // generator start
+  {
+    path: "/book_generator/manage",
+    name: Localization.content,
+    icon: "fa fa-upload",
+    component: BookGeneratorManage,
+    layout: "/admin",
+    sidebarIconVisibility: true,
+    PERMISSIONS: []
+  },
+  {
+    path: "/book_generator/create",
+    name: Localization.create,
+    icon: "fa fa-plus",
+    component: BookGenerator,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    PERMISSIONS: []
+  },
+  {
+    path: "/book_generator/:book_generator_id/edit",
+    name: Localization.update,
+    component: BookGenerator,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['book', 'edit'],
+    PERMISSIONS: []
+  },
+  // generator end
   // person start
   {
     path: "/person/manage",
@@ -182,35 +211,6 @@ var routes = [
     PERMISSIONS: []
   },
   // group end
-  // generator start
-  {
-    path: "/book_generator/manage",
-    name: Localization.content,
-    icon: "fa fa-upload",
-    component: BookGeneratorManage,
-    layout: "/admin",
-    sidebarIconVisibility: true,
-    PERMISSIONS: []
-  },
-  {
-    path: "/book_generator/create",
-    name: Localization.create,
-    icon: "fa fa-plus",
-    component: BookGenerator,
-    layout: "/admin",
-    sidebarIconVisibility: false,
-    PERMISSIONS: []
-  },
-  {
-    path: "/book_generator/:book_generator_id/edit",
-    name: Localization.update,
-    component: BookGenerator,
-    layout: "/admin",
-    sidebarIconVisibility: false,
-    brandName: ['book', 'edit'],
-    PERMISSIONS: []
-  },
-  // generator end
   // permission start
   {
     path: "/permission/manage",

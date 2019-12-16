@@ -11,6 +11,9 @@ import { redux_state } from "../../../../redux/app_state";
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
+import { ReportService } from "../../../../service/service.reports";
+import { R_1_CUtility } from './report-chart-1-Utils';
+import { BtnLoader } from "../../../form/btn-loader/BtnLoader";
 
 export interface IProps {
     history?: History;
@@ -21,6 +24,12 @@ export interface IProps {
 }
 
 interface IState {
+    hi_month: { name: string, value: number }[];
+    low_month: { name: string, value: number }[];
+    hi_week: { name: string, value: number }[];
+    low_week: { name: string, value: number }[];
+    all_request_success: boolean;
+    retryLoader: boolean;
     type_of_report: {
         label: string;
         value: string;
@@ -52,6 +61,12 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     /// start of state
 
     state = {
+        hi_month: [],
+        low_month: [],
+        hi_week: [],
+        low_week: [],
+        all_request_success: true,
+        retryLoader: false,
         type_of_report: this.reportOptions[0],
         type_of_report_kind: this.reportOptionsKind[0],
         barChart: false,
@@ -59,15 +74,49 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
     /// end of state
 
     private _report_title: string = Localization.name_of_report.The_best_selling_and_least_selling_of_recent_weeks_and_months;
-
+    private reportService = new ReportService();
     // constructor(props: IProps) {
     //     super(props);
     // }
 
     componentDidMount() {
+        this.all_requests_handler_func();
         this.init_title();
         this.init_tools();
     }
+
+    async all_requests_handler_func() {
+        this.setState({ ...this.state, retryLoader: true });
+        let hi_month_res = await this.reportService.best_seller_book_month().catch(error => {
+            this.setState({ ...this.state, all_request_success: false, retryLoader: false });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'hi_month_res_error' } });
+        });
+        let low_month_res = await this.reportService.low_seller_book_month().catch(error => {
+            this.setState({ ...this.state, all_request_success: false, retryLoader: false });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'low_month_res_error' } });
+        });
+        let hi_week_res = await this.reportService.best_seller_book_week().catch(error => {
+            this.setState({ ...this.state, all_request_success: false, retryLoader: false });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'hi_week_res_error' } });
+        });
+        let low_week_res = await this.reportService.low_seller_book_week().catch(error => {
+            this.setState({ ...this.state, all_request_success: false, retryLoader: false });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'low_week_res_error' } });
+        });
+
+        if (hi_month_res && low_month_res && hi_week_res && low_week_res) {
+            this.setState({
+                ...this.state,
+                hi_month: R_1_CUtility.report_creat_in_custom_type(hi_month_res.data.result),
+                low_month: R_1_CUtility.report_creat_in_custom_type(low_month_res.data.result),
+                hi_week: R_1_CUtility.report_creat_in_custom_type(hi_week_res.data.result),
+                low_week: R_1_CUtility.report_creat_in_custom_type(low_week_res.data.result),
+                all_request_success: true,
+                retryLoader: false
+            })
+        }
+    }
+
 
     // start define custom tools & pass that to widget
 
@@ -77,6 +126,7 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                 <i className="tool fa fa-pie-chart" onClick={() => this.setChartToPie()}></i>
                 <i className="tool fa fa-bar-chart" onClick={() => this.setChartToBar()}></i>
                 <i className="tool fa fa-file-pdf-o" onClick={(e) => this.goToPdfFunction(e)}></i>
+                <i className="tool fa fa-refresh" onClick={() => this.refreshFunction()}></i>
             </>
         )
     }
@@ -97,6 +147,10 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                 barChart: true,
             })
         };
+    }
+
+    refreshFunction() {
+        this.all_requests_handler_func();
     }
 
     init_tools() {
@@ -182,21 +236,9 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     data_option_max_returner(value: string | undefined) {
 
-        const monthly = [
-            { name: 'book 1', value: 100 },
-            { name: 'book 2', value: 200 },
-            { name: 'book 3', value: 300 },
-            { name: 'book 4', value: 400 },
-            { name: 'book 5', value: 500 },
-        ];
+        const monthly = this.state.hi_month;
 
-        const weekly = [
-            { name: 'book 1', value: 100 },
-            { name: 'book 2', value: 100 },
-            { name: 'book 3', value: 100 },
-            { name: 'book 4', value: 100 },
-            { name: 'book 5', value: 100 },
-        ];
+        const weekly = this.state.hi_week;
 
         if (value === "monthly") {
             return monthly
@@ -216,21 +258,9 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
 
     data_option_min_returner(value: string | undefined) {
 
-        const monthly = [
-            { name: 'book 1', value: 500 },
-            { name: 'book 2', value: 500 },
-            { name: 'book 3', value: 500 },
-            { name: 'book 4', value: 500 },
-            { name: 'book 5', value: 500 },
-        ];
+        const monthly = this.state.low_month;
 
-        const weekly = [
-            { name: 'book 1', value: 100 },
-            { name: 'book 2', value: 200 },
-            { name: 'book 3', value: 300 },
-            { name: 'book 4', value: 400 },
-            { name: 'book 5', value: 500 },
-        ];
+        const weekly = this.state.low_week;
 
         if (value === "monthly") {
             return monthly
@@ -548,11 +578,39 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
                     </div>
                 </div>
                 {
-                    this.state.barChart
+                    this.state.all_request_success === false
                         ?
-                        this.report_status_in_bar_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="text-center my-3">
+                                    {
+                                        this.state.retryLoader === true
+                                            ?
+                                            undefined
+                                            :
+                                            Localization.msg.ui.msg5
+                                    }
+                                </div>
+                            </div>
+                            <div className="col-12">
+                                <div className="text-center">
+                                    <BtnLoader
+                                        btnClassName="btn btn-danger shadow-default shadow-hover"
+                                        loading={this.state.retryLoader}
+                                        onClick={() => this.all_requests_handler_func()}
+                                        disabled={false}
+                                    >
+                                        {Localization.retry}
+                                    </BtnLoader>
+                                </div>
+                            </div>
+                        </div>
                         :
-                        this.report_status_in_pie_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
+                        this.state.barChart
+                            ?
+                            this.report_status_in_bar_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
+                            :
+                            this.report_status_in_pie_chart(this.state.type_of_report.value, this.state.type_of_report_kind.value)
                 }
             </>
         );

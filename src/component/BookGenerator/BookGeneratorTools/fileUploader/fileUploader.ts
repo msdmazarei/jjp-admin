@@ -297,5 +297,68 @@ export abstract class BGUtility {
         const rtnArray = BGUtility.book_json;
         BGUtility.book_json = [];
         return rtnArray;
+    };
+
+    static is_all_chapter_have_title(tree: Book_children[]): boolean {
+        let result: boolean = true;
+        let i;
+        let temp;
+        for (i = 0; i < tree.length; i++) {
+            if (tree[i].title === '') {
+                return false;
+            }
+            if (tree[i].children.length > 0) {
+                temp = this.is_all_chapter_have_title(tree[i].children);
+                if (!temp) {
+                    return temp;
+                }
+            }
+        }
+        return result;
+    };
+
+    static is_all_chapter_body_full(tree: Book_children[]): boolean {
+        let result: boolean = true;
+        let i;
+        let temp;
+        for (i = 0; i < tree.length; i++) {
+            if (tree[i].body.length === 0) {
+                return false;
+            }
+            for (let j = 0; j < tree[i].body.length; j++) {
+                if ((tree[i].body[j] as book_body_voice).voice === '') {
+                    return false;
+                }
+                if ((tree[i].body[j] as book_body_voice).voice.length === 0) {
+                    return false
+                }
+            }
+            if (tree[i].children.length > 0) {
+                temp = this.is_all_chapter_body_full(tree[i].children);
+                if (!temp) {
+                    return temp;
+                }
+            }
+        }
+        return result;
+    }
+
+    static is_this_chapter_body_full(body : book_body_voice[]):boolean{
+        let result : boolean = true;
+        if(body.length === 0){
+            return false;
+        }
+        for (let i = 0; i < body.length; i++) {
+            if(typeof body[i].voice === 'string'){
+                if(body[i].voice === ''){
+                    return false;
+                }
+            }else{
+                if(body[i].voice.length === 0){
+                    return false;
+                }
+            }
+        }
+        return result;
     }
 }

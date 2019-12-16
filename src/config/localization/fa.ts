@@ -28,6 +28,8 @@ export const fa = {
             upload_process_error_msg : 'عملیات بارگذاری با خطا مواجه گردید',
             do_you_want_create_this_book_content : 'آیا می خواهید محتوای این کتاب ساخته شود؟',
             admin_book_content_generate:{
+                chapter_title_cannot_be_blank : 'عنوان فصل نمی تواند خالی باشد.',
+                chapter_title_and_content_cannot_be_blank : 'عنوان و محتوا فصل نمی تواند خالی باشد.',
                 just_one_file_can_upload : 'تنها می توانید یک فایل بارگذاری کنید لطفا فایل قبلی را پاک کنید.',
                 book_not_created : 'این کتاب تاکنون ایجاد نشده است.',
                 before_generate_request_result_pendding: 'با توجه به درخواست قبلی، فرآیند ایجاد کتاب در حال انجام است لطفا منتظر پاسخ سرور باشید...',

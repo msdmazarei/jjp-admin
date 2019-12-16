@@ -28,6 +28,8 @@ export const en = {
             upload_process_error_msg : 'there is error in upload process',
             do_you_want_create_this_book_content : 'do you want build this book content ?',
             admin_book_content_generate:{
+                chapter_title_cannot_be_blank : 'chapter title cannot be blank.',
+                chapter_title_and_content_cannot_be_blank : 'chapter title and content cannot be blank.',
                 just_one_file_can_upload : 'You can only upload a file Please delete the previous file.',
                 book_not_created : 'This book has not been created yet.',
                 before_generate_request_result_pendding: 'Due to a previous request, the book creation process is in progress, please wait for the server response ...',

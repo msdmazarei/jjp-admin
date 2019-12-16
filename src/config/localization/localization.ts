@@ -41,6 +41,8 @@ interface ILocalization extends LocalizedStringsMethods {
             upload_process_error_msg : string;
             do_you_want_create_this_book_content : string;
             admin_book_content_generate:{
+                chapter_title_cannot_be_blank : string ;
+                chapter_title_and_content_cannot_be_blank : string;
                 just_one_file_can_upload : string;
                 book_not_created : string;
                 before_generate_request_result_pendding: string;

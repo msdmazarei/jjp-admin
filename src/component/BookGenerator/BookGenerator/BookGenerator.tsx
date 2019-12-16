@@ -19,7 +19,7 @@ import { PdfGenerator } from '../BookGeneratorTools/PdfGenerator/PdfGenerator';
 import { BookGeneratorService } from '../../../service/service.bookGenerator';
 import { BGUtility } from '../BookGeneratorTools/fileUploader/fileUploader';
 import { Modal } from 'react-bootstrap';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { AppGuid } from '../../../asset/script/guid';
 import { EpubGenerator } from '../BookGeneratorTools/EpubGenerator/EpubGenerator';
 interface ICmp_select<T> {
@@ -477,12 +477,42 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     ////////////   end reset page func ////////////////////
 
+    audio_content_validation_check():boolean{
+        let titleStatus : boolean = BGUtility.is_all_chapter_have_title(this.state.Audio_book.children);
+        let bodyStatus : boolean = BGUtility.is_all_chapter_body_full(this.state.Audio_book.children);
+        if(titleStatus === false || bodyStatus === false){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    msd_content_validation_check():boolean{
+        let titleStatus : boolean = BGUtility.is_all_chapter_have_title(this.state.Msd_book.children);
+        if(titleStatus === false){
+            return false;
+        }else{
+            return true;
+        }
+    }
 
     ////////////   start create btn function ////////////////////
 
     async create() {
         if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
             return
+        }
+        if(this.state.selectedBookType === 'Audio'){
+            if(this.audio_content_validation_check() === false){
+                toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank, this.getNotifyConfig());
+                return;
+            }
+        }
+        if(this.state.selectedBookType === 'Msd'){
+            if(this.msd_content_validation_check() === false){
+                toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank, this.getNotifyConfig());
+                return;
+            }
         }
         this.setState({
             ...this.state,
@@ -706,6 +736,18 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     async update() {
         if (this.state.selectedBook === null || this.state.contentType === null) {
             return
+        }
+        if(this.state.selectedBookType === 'Audio'){
+            if(this.audio_content_validation_check() === false){
+                toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank, this.getNotifyConfig());
+                return;
+            }
+        }
+        if(this.state.selectedBookType === 'Msd'){
+            if(this.msd_content_validation_check() === false){
+                toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank, this.getNotifyConfig());
+                return;
+            }
         }
         this.setState({
             ...this.state,

@@ -4,12 +4,13 @@ import { TInternationalization } from '../../../../config/setup';
 import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { redux_state } from '../../../../redux/app_state';
-import { Book_body, Book_children } from '../../BookGenerator/BookGenerator';
+import { Book_body, Book_children, book_body_voice } from '../../BookGenerator/BookGenerator';
 import { AppGuid } from '../../../../asset/script/guid';
 import { BodyGenerator } from '../BodyGenerator/BodyGenerator';
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../../config/localization/localization';
 import { BtnLoader } from '../../../form/btn-loader/BtnLoader';
+import { BGUtility } from '../fileUploader/fileUploader';
 
 interface IProps {
     match?: any;
@@ -383,6 +384,17 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 <i className="fa fa-folder text-success mx-1 cursor-pointer" onClick={() => this.itemIdSetter(item.front_id)}></i>
                                                 :
                                                 <i className="fa fa-folder text-warning mx-1 cursor-pointer" onClick={() => this.itemIdSetter(item.front_id)}></i>
+                                        }
+                                        {
+                                            (this.props.bookType === 'Msd' && item.title === '')
+                                            ?
+                                            <i title={Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank} className="fa fa-minus-circle text-danger"></i>
+                                            :
+                                            ((this.props.bookType === 'Audio' && item.title === '') || (this.props.bookType === 'Audio' && BGUtility.is_this_chapter_body_full(item.body as book_body_voice[]) === false))
+                                            ?
+                                            <i title={Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank} className="fa fa-minus-circle text-danger"></i>
+                                            :
+                                            undefined    
                                         }
                                         {item.title}
                                     </div>

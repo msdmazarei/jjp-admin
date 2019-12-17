@@ -89,19 +89,19 @@ class ReportBestSellsChartComponent extends BaseComponent<IProps, IState> {
         this.setState({ ...this.state, retryLoader: true });
         let hi_month_res = await this.reportService.best_seller_book_month().catch(error => {
             this.setState({ ...this.state, all_request_success: false, retryLoader: false });
-            this.handleError({ error: error.response, toastOptions: { toastId: 'hi_month_res_error' } });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'sell_with_time_period_fetch_error' } });
         });
         let low_month_res = await this.reportService.low_seller_book_month().catch(error => {
             this.setState({ ...this.state, all_request_success: false, retryLoader: false });
-            this.handleError({ error: error.response, toastOptions: { toastId: 'low_month_res_error' } });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'sell_with_time_period_fetch_error' } });
         });
         let hi_week_res = await this.reportService.best_seller_book_week().catch(error => {
             this.setState({ ...this.state, all_request_success: false, retryLoader: false });
-            this.handleError({ error: error.response, toastOptions: { toastId: 'hi_week_res_error' } });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'sell_with_time_period_fetch_error' } });
         });
         let low_week_res = await this.reportService.low_seller_book_week().catch(error => {
             this.setState({ ...this.state, all_request_success: false, retryLoader: false });
-            this.handleError({ error: error.response, toastOptions: { toastId: 'low_week_res_error' } });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'sell_with_time_period_fetch_error' } });
         });
 
         if (hi_month_res && low_month_res && hi_week_res && low_week_res) {

@@ -11,6 +11,7 @@ import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, Brush, BarChart, Legend, Bar, LabelList } from "recharts";
+import { ReportService } from "../../../../service/service.reports";
 
 
 export interface IProps {
@@ -74,15 +75,23 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     /// end of state
 
     private _report_title: string = Localization.name_of_report.Compare_publishers_sales_by_time_period;
-
+    private _reportService = new ReportService();
 
     // constructor(props: IProps) {
     //     super(props);
     // }
 
     componentDidMount() {
+        this.request();
         this.init_title();
         this.init_tools();
+    }
+
+    async request(){
+        let res= await this._reportService.press_sale_compare();
+        if(res){
+            console.log(res.data.result)
+        }
     }
 
 

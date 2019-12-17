@@ -7,16 +7,15 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { TInternationalization } from "../../../../config/setup";
-// import { IToken } from "../../../../model/model.token";
 import { IProps_table, Table } from "../../../table/table";
 import { Localization } from "../../../../config/localization/localization";
 import { BOOK_TYPES } from "../../../../enum/Book";
 import { redux_state } from "../../../../redux/app_state";
 import { ReportBase } from "../ReportBase";
-import { BookService } from "../../../../service/service.book";
 import { IBook } from "../../../../model/model.book";
 import Select from 'react-select'
 import { CSVLink } from "react-csv";
+import { ReportService } from "../../../../service/service.reports";
 
 
 export interface IProps {
@@ -34,9 +33,6 @@ interface IState {
         label: string;
         value: string;
     } | undefined;
-    gregorianCalender: boolean;
-    timeStampFrom: number;
-    timeStampTo: number;
 }
 
 class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
@@ -46,7 +42,10 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     typeOptions = [
         { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
         { value: 'Audio', label: Localization.book_type_list.Audio },
-        { value: 'Epub', label: Localization.book_type_list.Epub }
+        { value: 'Epub', label: Localization.book_type_list.Epub },
+        { value: 'DVD', label: Localization.book_type_list.DVD },
+        { value: 'Pdf', label: Localization.book_type_list.Pdf },
+        { value: 'Msd', label: Localization.book_type_list.Msd },
     ];
 
     // end book type option
@@ -106,20 +105,18 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                         return '';
                     }
                 },
-                {
-                    field: "price", title: Localization.price,
-                    cellTemplateFunc: (row: IBook) => {
-                        // row.price = 3436465;
-                        if (row.price) {
-                            return <span className="text-info">
-                                {row.price.toLocaleString()}
-                            </span>
-                        }
-                        else {
-                            return <div className="text-muted text-center">-</div>;
-                        }
-                    }
-                },
+                // {
+                //     field: "price", title: Localization.price,
+                //     cellTemplateFunc: (row: IBook) => {
+                //         if (row.price) {
+                //             return <div className="text-info text-center">{row.price.toLocaleString()}</div>
+                //         } else if (row.price === 0) {
+                //             return <div className="text-info text-center">0</div>;
+                //         } else {
+                //             return <div className="text-danger text-center">---</div>;
+                //         }
+                //     }
+                // },
                 {
                     field: "rate",
                     title: Localization.vote_s,
@@ -132,14 +129,69 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                         return '';
                     }
                 },
-                { field: "duration", title: Localization.duration },
-                { field: "pub_year", title: Localization.publication_date },
+                {
+                    field: "duration", title: Localization.duration,
+                    cellTemplateFunc: (row: IBook) => {
+                        let hour;
+                        let minute;
+                        let second;
+                        if (row.duration) {
+                            if (row.duration === 'NaN') {
+                                return ''
+                            }
+                            if (row.type !== 'Audio') {
+                                return ''
+                            }
+                            let totalTime = Number(row.duration);
+                            if (totalTime === 0) {
+                                return ''
+                            }
+                            if (totalTime < 60) {
+                                hour = 0;
+                                minute = 0;
+                                second = totalTime;
+                                return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                            }
+                            if (totalTime >= 60 && totalTime < 3600) {
+                                let min = Math.floor(totalTime / 60);
+                                let sec = totalTime - (min * 60);
+                                hour = 0;
+                                minute = min;
+                                second = sec;
+                                return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                            } else {
+                                let hours = Math.floor(totalTime / 3600);
+                                if ((totalTime - (hours * 3600)) < 60) {
+                                    let sec = totalTime % 3600;
+                                    hour = hours;
+                                    minute = 0;
+                                    second = sec;
+                                    return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                                } else {
+                                    let min = Math.floor(((totalTime - (hours * 3600)) / 60));
+                                    let sec = (totalTime - ((hours * 3600) + (min * 60)));
+                                    hour = hours;
+                                    minute = min;
+                                    second = sec;
+                                    return <div title={row.duration} className="text-right d-inline-block text-nowrap-ellipsis max-w-100px"> {second} : {minute} : {hour}</div>
+                                }
+                            }
+                        }
+                        return '';
+                    }
+                },
+                {
+                    field: "pub_year", title: Localization.publication_date
+                    , cellTemplateFunc: (row: IBook) => {
+                        if (row.pub_year) {
+                            return <div title={this._getTimestampToDate(row.pub_year)}>{this.getTimestampToDate(row.pub_year)}</div>
+                        }
+                        return '';
+                    }
+                },
             ],
         },
         type: this.typeOptions[0],
-        gregorianCalender: true,
-        timeStampFrom: 0,
-        timeStampTo: 0,
     }
 
     /// end of state
@@ -149,7 +201,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
 
     // start list of services for request define
 
-    private _bookService = new BookService();
+    private _reportService = new ReportService();
 
     // end list of services for request define
 
@@ -160,19 +212,6 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
     // }
 
     componentDidMount() {
-        if (this.props.internationalization.flag === "fa") {
-            this.setState({
-                ...this.state,
-                gregorianCalender: false,
-                lastSellWithTypeTableLoader: true,
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                gregorianCalender: true,
-                lastSellWithTypeTableLoader: true,
-            })
-        };
         this.fetchLastSellWithType();
         this.init_title();
         this.init_tools();
@@ -183,7 +222,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
 
     async fetchLastSellWithType() {
         this.setState({ ...this.state, lastSellWithTypeTableLoader: true });
-        let res = await this._bookService.search(200, 0).catch(error => {
+        let res = await this._reportService.last_sell_by_book_type(this.state.type.value).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchLastSellWithTypeDashboard_error' } });
             this.setState({
                 ...this.state,
@@ -202,11 +241,10 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 () => this.init_renders());
         }
     }
-    
+
     init_renders() {
         this.init_title();
         this.init_tools();
-        this.get_split(this.state.lastSellWithType_table.list, this.state.type.value);
     }
 
     // end request & set data for comment table
@@ -221,7 +259,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 <i className={this.state.lastSellWithType_table.list.length === 0 ? 'd-none' : "tool fa fa-file-pdf-o"} onClick={(e) => this.goToPdfFunction(e)}></i>
                 <CSVLink
                     headers={this.excelDataHeaderPassToDownloader()}
-                    data={this.excelDataPassToDownloader(this.get_split(this.state.lastSellWithType_table.list, this.state.type.value))}
+                    data={this.excelDataPassToDownloader(this.state.lastSellWithType_table.list)}
                     filename={'ten-recent-comment.csv'}
                 >
                     <i className={this.state.lastSellWithType_table.list.length === 0 ? 'd-none' : "tool fa fa-file-excel-o"}></i>
@@ -317,11 +355,11 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 type = Localization.book_type_list[b_t];
             }
             return {
-                book_title : item.title ,
+                book_title: item.title,
                 book_type: type,
                 creation_date: this.getTimestampToDate(item.creation_date),
                 price: item.price,
-                rate: item.rate + " " + Localization.from + " " + 5 ,
+                rate: item.rate + " " + Localization.from + " " + 5,
                 duration: item.duration,
                 publication_date: item.pub_year,
             }
@@ -340,60 +378,20 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
         this.setState({
             ...this.state,
             type: value,
-        },
-            () => this.get_split(this.state.lastSellWithType_table.list, this.state.type.value))
+        }, () => this.fetchLastSellWithType())
     }
 
     // end set type of book
-
-
-    // start functio to split type of books in sevrel arrays
-
-    get_split(total_list: any, type: string) {
-        const Hard_Copy: {}[] = [];
-        const Epub: {}[] = [];
-        const Audio: {}[] = [];
-
-        total_list.map((book: IBook, index: any) => (
-
-            book.type === "Hard_Copy"
-                ?
-                Hard_Copy.push(book)
-                :
-                book.type === "Epub"
-                    ?
-                    Epub.push(book)
-                    :
-                    book.type === "Audio"
-                        ?
-                        Audio.push(book)
-                        :
-                        undefined
-        ));
-        if (type === "Hard_Copy") {
-            return Hard_Copy
-        };
-        if (type === "Epub") {
-            return Epub
-        };
-        if (type === "Audio") {
-            return Audio
-        } else {
-            return Hard_Copy
-        }
-    }
-
-    // end functio to split type of books in sevrel arrays
 
 
     // start timestamp to date for comment table
 
     getTimestampToDate(timestamp: number) {
         if (this.props.internationalization.flag === "fa") {
-            return moment_jalaali(timestamp * 1000).locale("en").format('jYYYY/jM/jD');
+            return moment_jalaali(timestamp * 1000).format('jYYYY/jM/jD');
         }
         else {
-            return moment(timestamp * 1000).format('YYYY/MM/DD');
+            return moment(timestamp * 1000).locale("en").format('YYYY/MM/DD');
         }
     }
 
@@ -429,7 +427,7 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
                 </div>
                 <Table
                     loading={this.state.lastSellWithTypeTableLoader}
-                    list={this.get_split(this.state.lastSellWithType_table.list, this.state.type.value)}
+                    list={this.state.lastSellWithType_table.list}
                     colHeaders={this.state.lastSellWithType_table.colHeaders}
                 >
                 </Table>

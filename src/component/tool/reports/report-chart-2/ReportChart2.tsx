@@ -11,6 +11,9 @@ import { redux_state } from "../../../../redux/app_state";
 import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, PieChart, Pie, Legend, Cell, BarChart, Bar } from "recharts";
+import { ReportService } from "../../../../service/service.reports";
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
 
 
 export interface IProps {
@@ -29,6 +32,8 @@ interface IState {
     lineChart: boolean;
     barChart: boolean;
     pieChart: boolean;
+    sale_array : any[];
+    current_month : number;
 }
 
 class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
@@ -54,21 +59,69 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
         lineChart: false,
         barChart: true,
         pieChart: false,
+        sale_array: [],
+        current_month : 0,
     }
     /// end of state
 
     private _report_title: string = Localization.name_of_report.Monthly_sale_seasonal_and_yearly;
-
+    private _reportService = new ReportService();
 
     // constructor(props: IProps) {
     //     super(props);
     // }
 
     componentDidMount() {
+        if(this.props.internationalization.flag === 'fa'){
+            this.setState({
+                ...this.state,
+                current_month : (moment_jalaali().jMonth()+1),
+            })
+        }else{
+            this.setState({
+                ...this.state,
+                current_month : (moment().month()+1),
+            })
+        }
+        this.fetch_income_data();
         this.init_title();
         this.init_tools();
     }
 
+
+    // start fetch data of income by time period
+
+    async fetch_income_data(){
+        let res = await this._reportService.income_by_time_period().catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetch_income_data_error' } });
+        });
+
+        if(res){
+            this.setState({
+                ...this.state,
+                sale_array : res.data.result.length > 0 ? res.data.result : []
+            })
+        }
+    }
+    // end fetch data of income by time period
+
+    // start month sale returner if month exist in array
+
+    month_sale_returner(is_exist_this_month : number):number{
+        let data: any[] = this.state.sale_array;
+        let defult_num: number = 0;
+        if(data.length === 0){
+            return defult_num;
+        }else{
+            for (let i = 0; i < data.length; i++) {
+                if(data[i].sale_month === is_exist_this_month){
+                    return data[i].total_income;
+                }
+            }
+        }
+        return defult_num;
+    }
+    // end month sale returner if month exist in array
 
     // start function for set type & kind of report
 
@@ -183,20 +236,20 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     data_option_returner(value: string | undefined) {
 
         const yearly: any[] = [
-            { name: 'فروردین', value: 320 },
-            { name: 'اردیبهشت ', value: 310 },
-            { name: ' خرداد', value: 250 },
-            { name: 'تیر', value: 220 },
-            { name: 'مرداد', value: 200 },
-            { name: 'شهریور', value: 260 },
-            { name: 'مهر', value: 500 },
-            { name: 'آبان', value: 600 },
-            { name: 'آذر', value: 650 },
-            { name: 'دی', value: 400 },
-            { name: 'بهمن', value: 550 },
-            { name: 'اسفند', value: 380 },
+            { name: 'فروردین', value: this.month_sale_returner(1) },
+            { name: 'اردیبهشت ', value: this.month_sale_returner(2) },
+            { name: ' خرداد', value: this.month_sale_returner(3) },
+            { name: 'تیر', value: this.month_sale_returner(4) },
+            { name: 'مرداد', value: this.month_sale_returner(5) },
+            { name: 'شهریور', value: this.month_sale_returner(6) },
+            { name: 'مهر', value: this.month_sale_returner(7) },
+            { name: 'آبان', value: this.month_sale_returner(8) },
+            { name: 'آذر', value: this.month_sale_returner(9) },
+            { name: 'دی', value: this.month_sale_returner(10) },
+            { name: 'بهمن', value: this.month_sale_returner(11) },
+            { name: 'اسفند', value: this.month_sale_returner(12) },
         ];
-        const last_quarter = yearly.length >= 4 ? yearly.slice(yearly.length - 3, yearly.length) : yearly.slice(0, yearly.length);
+        const last_quarter = this.state.current_month > 3 ? yearly.slice((this.state.current_month-3), this.state.current_month) : yearly.slice(0, yearly.length);
         const spring = yearly.length >= 4 ? yearly.slice(0, 3) : yearly.slice(0, yearly.length);
         const summer = yearly.length >= 7 ? yearly.slice(3, 6) : yearly.slice(3, yearly.length);
         const fall = yearly.length >= 10 ? yearly.slice(6, 9) : yearly.slice(6, yearly.length);

@@ -1,6 +1,5 @@
 // import Axios from "axios";
-import { IBook } from "../model/model.book";
-import { IAPI_Response, IAPI_ResponseList, BaseService } from "./service.base";
+import { IAPI_ResponseList, BaseService } from "./service.base";
 
 export class ReportService extends BaseService {
 
@@ -24,6 +23,14 @@ export class ReportService extends BaseService {
         let typeObj : object = {type : selectedType}
         return this.axiosTokenInstance.post(`/reports/book-by-type`, typeObj);
     };
+
+    income_by_time_period(){
+        return this.axiosTokenInstance.get(`/reports/total-income-by-month`);
+    }
+
+    press_sale_compare(press_id_array?: object){
+        return this.axiosTokenInstance.post(`/reports/annual-book-sale-by-press`, press_id_array);
+    }
 
     user_to_customer(){
         return this.axiosTokenInstance.get(`/reports/user-performance`);

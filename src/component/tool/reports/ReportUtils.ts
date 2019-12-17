@@ -10,7 +10,7 @@ export type TReport = 'newst_comment' | 'best_sells_chart' | 'last_sell_with_typ
 
 export type TReportName = 'ten_Recent_Comments' | 'The_best_selling_and_least_selling_of_recent_weeks_and_months' |
     'fifteen_books_have_recently_been_sold_by_type' | 'Monthly_sale_seasonal_and_yearly' | 'Compare_publishers_sales_by_time_period' |
-    'User_to_customer_conversion_process_chart';
+    'Order_to_customer_conversion_process_chart';
 
 export const reportListMapCmp: { [key in TReport]: any;} = {
     newst_comment: ReportCommentTable,

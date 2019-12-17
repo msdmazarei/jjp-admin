@@ -451,44 +451,43 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "price", title: Localization.price,
-          templateFunc: () => {
-            return <>
-              {Localization.price}
-              {
-                (this.is_this_sort_exsit_in_state("price+") === false && this.is_this_sort_exsit_in_state("price-") === false)
-                  ?
-                  <span
-                    className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("price+", "price-", true, 1)}
-                    onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
-                    onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
-                    <i className={this.state.sortShowStyle.price === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
-                  </span>
-                  :
-                  this.is_this_sort_exsit_in_state("price+") === true
-                    ?
-                    <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("price-", "price+", false, 0)}
-                      onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
-                      onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
-                      <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
-                    </span>
-                    :
-                    this.is_this_sort_exsit_in_state("price-") === true
-                      ?
-                      <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("price-", "price+", true, 2)}
-                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
-                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
-                        <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
-                      </span>
-                      :
-                      undefined
-              }
-            </>
-          },
+          // templateFunc: () => {
+          //   return <>
+          //     {Localization.price}
+          //     {
+          //       (this.is_this_sort_exsit_in_state("price+") === false && this.is_this_sort_exsit_in_state("price-") === false)
+          //         ?
+          //         <span
+          //           className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+          //           onClick={() => this.sort_handler_func("price+", "price-", true, 1)}
+          //           onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
+          //           onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
+          //           <i className={this.state.sortShowStyle.price === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+          //         </span>
+          //         :
+          //         this.is_this_sort_exsit_in_state("price+") === true
+          //           ?
+          //           <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+          //             onClick={() => this.sort_handler_func("price-", "price+", false, 0)}
+          //             onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
+          //             onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
+          //             <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+          //           </span>
+          //           :
+          //           this.is_this_sort_exsit_in_state("price-") === true
+          //             ?
+          //             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+          //               onClick={() => this.sort_handler_func("price-", "price+", true, 2)}
+          //               onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
+          //               onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
+          //               <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+          //             </span>
+          //             :
+          //             undefined
+          //     }
+          //   </>
+          // },
           cellTemplateFunc: (row: IBook) => {
-            // row.price = 3436465;
             if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>
             } else if (row.price === 0) {

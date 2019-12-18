@@ -27,6 +27,7 @@ export const en = {
             you_stop_uploading_process : 'you stoped the upload process',
             upload_process_error_msg : 'there is error in upload process',
             do_you_want_create_this_book_content : 'do you want build this book content ?',
+            at_least_two_publishers_must_be_selected_to_compare_publisher_sales : 'At least two publishers must be selected to compare publisher sales.',
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : 'chapter title cannot be blank.',
                 chapter_title_and_content_cannot_be_blank : 'chapter title and content cannot be blank.',

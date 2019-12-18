@@ -27,6 +27,7 @@ export const ar = {
             you_stop_uploading_process : 'شما عملیات بارگذاری را متوقف کرده اید!',
             upload_process_error_msg : 'عملیات بارگذاری با خطا مواجه گردید',
             do_you_want_create_this_book_content : 'آیا می خواهید محتوای این کتاب ساخته شود؟',
+            at_least_two_publishers_must_be_selected_to_compare_publisher_sales : 'برای مقایسه فروش ناشرین باید حداقل دو ناشر انتخاب شود.',
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : 'عنوان فصل نمی تواند خالی باشد.',
                 chapter_title_and_content_cannot_be_blank : 'عنوان و محتوا فصل نمی تواند خالی باشد.',

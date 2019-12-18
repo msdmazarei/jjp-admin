@@ -817,9 +817,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     private personRequstError_txt: string = Localization.no_item_found;
 
     async promiseOptions2(inputValue: any, callBack: any) {
-        let filter = undefined;
+        let filter :any = {is_legal: {$eq: true}};
         if (inputValue) {
-            filter = {full_name : {$prefix : inputValue} };
+            filter['full_name'] = {$prefix : inputValue};
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookPress_error' } });

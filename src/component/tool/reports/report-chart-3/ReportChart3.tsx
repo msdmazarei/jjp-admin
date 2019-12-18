@@ -12,7 +12,11 @@ import { Localization } from "../../../../config/localization/localization";
 import Select from 'react-select'
 import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContainer, Brush, BarChart, Legend, Bar, LabelList } from "recharts";
 import { ReportService } from "../../../../service/service.reports";
-
+import { IPerson } from "../../../../model/model.person";
+import AsyncSelect from 'react-select/async';
+import { PersonService } from "../../../../service/service.person";
+import moment from 'moment';
+import moment_jalaali from 'moment-jalaali';
 
 export interface IProps {
     history?: History;
@@ -22,15 +26,29 @@ export interface IProps {
     init_tools: (tools: JSX.Element) => void;
 }
 
+interface ICmp_select<T> {
+    label: string;
+    value: T
+}
+
+interface back_returner_format {
+    press: string;
+    press_month: string;
+    sale_month: string;
+    total_price: number;
+    value_occurrence: number;
+};
+
 interface IState {
     type_of_report: {
         label: string;
         value: string;
     } | undefined;
-    compear_options: {
-        label: string;
-        value: string;
-    }[] | undefined;
+    compear_options: ICmp_select<IPerson>[] | null;
+    perss_id_array: string[];
+    back_data: back_returner_format[];
+    chart_data: any[];
+    current_month: number;
     barChart: boolean;
     lineChart: boolean;
 }
@@ -51,23 +69,15 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     // end option for report
 
 
-    // start option for compear
-
-    compearOptions = [
-        { value: 'جام جم', label: "جام جم" },
-        { value: 'قناری', label: "قناری" },
-        { value: 'خودنویس', label: "خودنویس" },
-        { value: 'انتشارات الکترونیک', label: "انتشارات الکترونیک" },
-    ];
-
-    // end option for compear
-
-
     /// start of state
 
     state = {
         type_of_report: this.reportOptions[0],
-        compear_options: this.compearOptions,
+        compear_options: [],
+        perss_id_array: [],
+        back_data: [],
+        chart_data: [],
+        current_month: 0,
         barChart: false,
         lineChart: true,
     }
@@ -76,23 +86,79 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
 
     private _report_title: string = Localization.name_of_report.Compare_publishers_sales_by_time_period;
     private _reportService = new ReportService();
+    private _personService = new PersonService();
+    month: string[] = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند',]
 
     // constructor(props: IProps) {
     //     super(props);
     // }
 
     componentDidMount() {
+        if (this.props.internationalization.flag === 'fa') {
+            this.setState({
+                ...this.state,
+                current_month: (moment_jalaali().jMonth() + 1),
+            })
+        } else {
+            this.setState({
+                ...this.state,
+                current_month: (moment().month() + 1),
+            })
+        }
         this.request();
         this.init_title();
         this.init_tools();
     }
 
-    async request(){
-        let res= await this._reportService.press_sale_compare();
-        if(res){
-            console.log(res.data.result)
+    async request() {
+        const press_id: string[] = this.state.perss_id_array;
+        if (press_id.length <= 1) {
+            return
+        } else {
+            const obj: { press: string[] } = { press: press_id };
+            let res = await this._reportService.press_sale_compare(obj).catch(error => {
+
+            });
+            if (res) {
+                this.setState({
+                    ...this.state,
+                    back_data: res.data.result,
+                }, () => this.data_creator_for_chart())
+            }
         }
     }
+
+
+    back_data_filter_by_press_and_month(id: string, month: number): number {
+        let b_data: back_returner_format[] = this.state.back_data;
+        for (let i = 0; i < b_data.length; i++) {
+            let b_month: number = Number(b_data[i].sale_month);
+            if (b_month === month && b_data[i].press === id) {
+                return b_data[i].total_price;
+            }
+        }
+        return 0;
+    }
+
+
+    data_creator_for_chart() {
+        let chartData: any[] = [];
+        let press: ICmp_select<IPerson>[] = this.state.compear_options;
+        for (let i = 0; i < this.month.length; i++) {
+            const monthData: any = {};
+            monthData['name'] = this.month[i];
+            for (let j = 0; j < press.length; j++) {
+                monthData[this.getPersonFullName(press[j].value)] = this.back_data_filter_by_press_and_month(press[j].value.id, (i + 1))
+            }
+            chartData.push(monthData);
+        };
+        this.setState({
+            ...this.state,
+            chart_data: chartData
+        }, () => console.log(this.state.chart_data));
+    }
+
+
 
 
     // start function for set type & kind of report
@@ -109,14 +175,27 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
 
     // start function for set type & kind of report
 
-    handleCompearOptions(value: any[]) {
-        if (value.length <= 1) {
-            return;
+    bookPressChange(value: ICmp_select<IPerson>[] | null) {
+        if (value === null) {
+            this.setState({
+                ...this.state,
+                compear_options: [],
+                perss_id_array: [],
+                back_data: [],
+                chart_data: [],
+            })
+        } else {
+            let newpress: string[] = [];
+            let data: ICmp_select<IPerson>[] = value;
+            for (let i = 0; i < data.length; i++) {
+                newpress.push(data[i].value.id);
+            };
+            this.setState({
+                ...this.state,
+                compear_options: value,
+                perss_id_array: newpress,
+            }, () => this.request())
         }
-        this.setState({
-            ...this.state,
-            compear_options: value,
-        })
     }
 
     // end function for set type of report
@@ -208,23 +287,10 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
 
     // start function for select to return user custom data for yearly report
 
-    data_option_returner(value: string | undefined) {
+    data_option_returner(value: string | undefined): any[] {
 
-        const yearly: any[] = [
-            { name: 'فروردین', 'جام جم': 320, 'قناری': 310, 'خودنویس': 300, 'انتشارات الکترونیک': 400 },
-            { name: 'اردیبهشت ', 'جام جم': 310, 'قناری': 300, 'خودنویس': 290, 'انتشارات الکترونیک': 390 },
-            { name: ' خرداد', 'جام جم': 250, 'قناری': 240, 'خودنویس': 230, 'انتشارات الکترونیک': 380 },
-            { name: 'تیر', 'جام جم': 220, 'قناری': 210, 'خودنویس': 200, 'انتشارات الکترونیک': 350 },
-            { name: 'مرداد', 'جام جم': 200, 'قناری': 240, 'خودنویس': 250, 'انتشارات الکترونیک': 290 },
-            { name: 'شهریور', 'جام جم': 260, 'قناری': 290, 'خودنویس': 260, 'انتشارات الکترونیک': 500 },
-            { name: 'مهر', 'جام جم': 500, 'قناری': 420, 'خودنویس': 600, 'انتشارات الکترونیک': 550 },
-            { name: 'آبان', 'جام جم': 600, 'قناری': 700, 'خودنویس': 550, 'انتشارات الکترونیک': 600 },
-            { name: 'آذر', 'جام جم': 650, 'قناری': 650, 'خودنویس': 600, 'انتشارات الکترونیک': 580 },
-            { name: 'دی', 'جام جم': 400, 'قناری': 620, 'خودنویس': 480, 'انتشارات الکترونیک': 350 },
-            { name: 'بهمن', 'جام جم': 550, 'قناری': 600, 'خودنویس': 510, 'انتشارات الکترونیک': 250 },
-            { name: 'اسفند', 'جام جم': 380, 'قناری': 410, 'خودنویس': 700, 'انتشارات الکترونیک': 750 },
-        ];
-        const last_quarter = yearly.length >= 4 ? yearly.slice(yearly.length - 3, yearly.length) : yearly.slice(0, yearly.length);
+        const yearly: any[] = this.state.chart_data;
+        const last_quarter = this.state.current_month > 3 ? yearly.slice((this.state.current_month - 3), this.state.current_month) : yearly.slice(0, yearly.length);
         const spring = yearly.length >= 4 ? yearly.slice(0, 3) : yearly.slice(0, yearly.length);
         const summer = yearly.length >= 7 ? yearly.slice(3, 6) : yearly.slice(3, yearly.length);
         const fall = yearly.length >= 10 ? yearly.slice(6, 9) : yearly.slice(6, yearly.length);
@@ -259,8 +325,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     // start function for return user custom data chart color
 
     data_option_color_returner() {
-        const COLORS = ['red', 'green', 'gray', 'blue', 'red', '#FF8042',
-            'gray', '#00C49F', '#green', '#FF8042', 'blue', 'red'];
+        const COLORS = ['red', 'green', 'gray', 'blue', 'red', '#FF8042', 'gray', '#00C49F', '#green', '#FF8042', 'blue', 'red'];
         return COLORS
     }
 
@@ -271,8 +336,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
 
     report_status_in_line_chart() {
 
-        const data: any = this.data_option_returner(this.state.type_of_report.value)
-
+        const data: any[] = this.data_option_returner(this.state.type_of_report.value)
         return <>
             <div className="col-12">
                 <div style={{ width: '100%', height: 250 }}>
@@ -294,11 +358,15 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                                     ?
                                     <Line type="monotone" dataKey='جام جم' stroke="red" fill="red" />
                                     :
-                                    this.state.compear_options.map((item, index) =>
+                                    this.state.compear_options.map((item: { label: string; value: IPerson }, index) =>
 
                                         <Line
                                             key={index}
-                                            type="monotone" dataKey={item.value} stroke={this.data_option_color_returner()[index]} fill="#8884d8" />
+                                            type="monotone"
+                                            dataKey={item.label}
+                                            stroke={this.data_option_color_returner()[index]}
+                                            fill="#8884d8"
+                                        />
                                     )
                             }
                             <Brush dataKey="name" height={20} stroke="#8884d8" />
@@ -333,15 +401,15 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                                     ?
                                     <Bar dataKey="p1" stroke="red" fill="red" />
                                     :
-                                    this.state.compear_options.map((item, index) =>
+                                    this.state.compear_options.map((item: { label: string; value: IPerson }, index) =>
 
                                         <Bar
-                                            dataKey={item.value}
+                                            dataKey={item.label}
                                             stroke={this.data_option_color_returner()[index]}
                                             fill={this.data_option_color_returner()[index]}
                                             minPointSize={10}
                                         >
-                                            <LabelList dataKey={item.value} position="top" angle={90} />
+                                            <LabelList dataKey={item.label} position="top" angle={90} />
                                         </Bar>
 
                                     )
@@ -355,6 +423,49 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     }
 
     // end return_report function with selected option
+
+
+    ////// request for book roll person ////////
+
+    private personRequstError_txt: string = Localization.no_item_found;
+
+    async promiseOptions2(inputValue: any, callBack: any) {
+        let filter: any = { is_legal: { $eq: true } };
+        if (inputValue) {
+            filter['full_name'] = { $prefix: inputValue };
+        }
+        let res: any = await this._personService.search(10, 0, filter).catch(err => {
+            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookPress_error' } });
+            this.personRequstError_txt = err_msg.body;
+        });
+
+        if (res) {
+            let persons = res.data.result.map((ps: any) => {
+                return { label: this.getPersonFullName(ps), value: ps }
+            });
+            this.personRequstError_txt = Localization.no_item_found;
+            callBack(persons);
+        } else {
+            callBack();
+        }
+    }
+
+    private setTimeout_person_val: any;
+    debounce_300(inputValue: any, callBack: any) {
+        if (this.setTimeout_person_val) {
+            clearTimeout(this.setTimeout_person_val);
+        }
+        this.setTimeout_person_val = setTimeout(() => {
+            this.promiseOptions2(inputValue, callBack);
+        }, 1000);
+    }
+
+    select_noOptionsMessage(obj: { inputValue: string }) {
+        return this.personRequstError_txt;
+    }
+
+
+    /////////////////////////////////////
 
 
 
@@ -376,13 +487,17 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                     </div>
                     <div className="col-12 col-md-6">
                         <div className="form-group">
-                            <label htmlFor="">{Localization.publisher}</label>
-                            <Select
+                            <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
+                            <AsyncSelect
                                 isMulti
-                                onChange={(value: any) => this.handleCompearOptions(value)}
-                                options={this.compearOptions}
+                                isClearable
+                                placeholder={Localization.role_type_list.Press}
+                                cacheOptions
+                                defaultOptions
                                 value={this.state.compear_options}
-                                placeholder={Localization.publisher}
+                                loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                                noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                                onChange={(selectedPerson: any) => this.bookPressChange(selectedPerson)}
                             />
                         </div>
                     </div>
@@ -423,15 +538,21 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
                     <div className="col-12">
                         <div style={{ width: '100%', height: 600 }}>
                             {
-                                this.state.lineChart === true && this.state.barChart === false
+                                this.state.perss_id_array.length <= 1
                                     ?
-                                    this.report_status_in_line_chart()
+                                    <div className="text-center">
+                                        {Localization.msg.ui.at_least_two_publishers_must_be_selected_to_compare_publisher_sales}
+                                    </div>
                                     :
-                                    this.state.lineChart === false && this.state.barChart === true
+                                    this.state.lineChart === true && this.state.barChart === false
                                         ?
-                                        this.report_status_in_bar_chart()
+                                        this.report_status_in_line_chart()
                                         :
-                                        undefined
+                                        this.state.lineChart === false && this.state.barChart === true
+                                            ?
+                                            this.report_status_in_bar_chart()
+                                            :
+                                            undefined
                             }
                         </div>
                     </div>

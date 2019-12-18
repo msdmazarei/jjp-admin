@@ -230,15 +230,15 @@ class ReportlastSellWithTypeTableComponent extends ReportBase<IProps, IState> {
             });
         });
         if (res) {
+            let slicedArray : any[] = res.data.result.slice(0,15);
             this.setState({
                 ...this.state,
                 lastSellWithType_table: {
                     ...this.state.lastSellWithType_table,
-                    list: res.data.result
+                    list: res.data.result.length > 15 ? slicedArray : res.data.result,
                 },
                 lastSellWithTypeTableLoader: false,
-            },
-                () => this.init_renders());
+            },() => this.init_renders());
         }
     }
 

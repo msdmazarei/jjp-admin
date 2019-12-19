@@ -174,12 +174,29 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     private _bookContentService = new BookGeneratorService();
     private book_generator_id: string | undefined;
+    private book_id: string | undefined;
 
     componentDidMount() {
         if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
             this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
             this.book_generator_id = this.props.match.params.book_generator_id;
             this.fetchContentById(this.props.match.params.book_generator_id);
+        }
+        if (this.props.match.path.includes('/book_generator/:book_id/wizard')) {
+            this.book_id = this.props.match.params.book_id;
+            this.fetchBookById(this.props.match.params.book_id);
+        }
+    }
+
+    async fetchBookById(book_id: string) {
+        let res = await this._bookService.byId(book_id).catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBookById_error' } });
+        });
+
+        if(res){
+            let book : IBook = res.data;
+            let come_selectedBook: { label: string, value: IBook } = { label: book.title, value: book };
+            this.handleBookChange(come_selectedBook);
         }
     }
 

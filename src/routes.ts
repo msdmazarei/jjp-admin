@@ -84,7 +84,16 @@ var routes = [
     component: BookGenerator,
     layout: "/admin",
     sidebarIconVisibility: false,
-    brandName: ['book', 'edit'],
+    brandName: ['book_generator', 'edit'],
+    PERMISSIONS: []
+  },
+  {
+    path: "/book_generator/:book_id/wizard",
+    name: Localization.create,
+    component: BookGenerator,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['book_generator', 'wizard'],
     PERMISSIONS: []
   },
   // generator end

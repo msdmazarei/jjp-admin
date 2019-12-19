@@ -47,6 +47,7 @@ const appRoutes = (
             <Route exact path="/book_generator/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/book_generator/create" render={props => <AdminLayout {...props} />} />
             <Route exact path="/book_generator/:book_generator_id/edit" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/book_generator/:book_id/wizard" render={props => <AdminLayout {...props} />} />
             <Route exact path="/permission/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/permission/create" render={props => <AdminLayout {...props} />} />              
             <Route exact path="/permission/:permission_id/edit" render={props => <AdminLayout {...props} />} />    

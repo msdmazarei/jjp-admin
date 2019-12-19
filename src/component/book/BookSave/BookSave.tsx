@@ -26,6 +26,8 @@ import AsyncSelect from 'react-select/async';
 import { PersonService } from '../../../service/service.person';
 import { AccessService } from '../../../service/service.access';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
+import { IBook } from '../../../model/model.book';
+import { BookSavePassToContentModal } from './BookSavePassToContentModal';
 
 interface ICmp_select<T> {
     label: string;
@@ -112,6 +114,8 @@ interface IState {
     isBookPressInputTouch: boolean;
     isBookLanguageInputTouch: boolean;
     quickPersonModalStatus: boolean;
+    passToContentModalStatus: boolean;
+    passedBookToContent: IBook | null;
 }
 interface IProps {
     match: any;
@@ -240,6 +244,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         isBookPressInputTouch: false,
         isBookLanguageInputTouch: false,
         quickPersonModalStatus: false,
+        passToContentModalStatus: false,
+        passedBookToContent: null,
     }
 
 
@@ -269,16 +275,16 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         // this._uploadService.setToken(this.props.token);
 
         if (this.props.match.path.includes('/book/:book_id/edit')) {
-            if(this.checkBookUpdateAccess()){
+            if (this.checkBookUpdateAccess()) {
                 // this.saveMode = "edit";
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.book_id = this.props.match.params.book_id;
                 this.fetchBookById(this.props.match.params.book_id);
-            }else{
+            } else {
                 this.noAccessRedirect(this.props.history);
             }
-        }else{
-            if(!this.checkBookAddAccess()){
+        } else {
+            if (!this.checkBookAddAccess()) {
                 this.noAccessRedirect(this.props.history);
             }
         }
@@ -343,7 +349,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     ...this.state.book,
                     edition: { ...this.state.book.edition, value: res.data.edition, isValid: true },
                     language: { ...this.state.book.language, value: Language!, isValid: true },
-                    pub_year: { ...this.state.book.pub_year, value: res.data.pub_year === null ? undefined : res.data.pub_year , isValid: true },
+                    pub_year: { ...this.state.book.pub_year, value: res.data.pub_year === null ? undefined : res.data.pub_year, isValid: true },
                     title: { ...this.state.book.title, value: res.data.title, isValid: true },
                     isben: { ...this.state.book.isben, value: res.data.isben, isValid: true },
                     pages: { ...this.state.book.pages, value: res.data.pages, isValid: true },
@@ -360,7 +366,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 book_roll_press: press[0],
             })
         }
-
     }
 
     __waitOnMe() {
@@ -430,7 +435,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookPressChange(selectedPerson: { label: string, value: IPerson } | null) {
-        if(selectedPerson === null){
+        if (selectedPerson === null) {
             this.setState({
                 ...this.state,
                 book: {
@@ -443,7 +448,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 book_roll_press: selectedPerson,
                 isFormValid: false,
             })
-        }else{
+        } else {
             this.setState({
                 ...this.state,
                 book: {
@@ -558,13 +563,18 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             tags: tagList
         }
         let res = await this._bookService.create(newBook).catch(error => {
-            this.handleError({ error: error.response , toastOptions: { toastId: 'bookCreate_error' }});
+            this.handleError({ error: error.response, toastOptions: { toastId: 'bookCreate_error' } });
         });
         this.setState({ ...this.state, createLoader: false });
 
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
+            this.setState({
+                ...this.state,
+                passedBookToContent: res.data.result[0],
+                passToContentModalStatus: true,
+            })
         }
     }
 
@@ -794,7 +804,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     seterPerson(person: IPerson) {
-        const selectedPerson : { label: string, value: IPerson } = { label : this.getPersonFullName(person) , value : person }
+        const selectedPerson: { label: string, value: IPerson } = { label: this.getPersonFullName(person), value: person }
         this.setState({
             ...this.state,
             book: {
@@ -805,7 +815,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 }
             },
             book_roll_press: selectedPerson,
-            isBookPressInputTouch : true,
+            isBookPressInputTouch: true,
             isFormValid: this.checkFormValidate(true, 'roles'),
         })
     }
@@ -817,9 +827,9 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     private personRequstError_txt: string = Localization.no_item_found;
 
     async promiseOptions2(inputValue: any, callBack: any) {
-        let filter :any = {is_legal: {$eq: true}};
+        let filter: any = { is_legal: { $eq: true } };
         if (inputValue) {
-            filter['full_name'] = {$prefix : inputValue};
+            filter['full_name'] = { $prefix: inputValue };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookPress_error' } });
@@ -853,6 +863,38 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
 
     /////////////////////////////////////
+
+
+    /// start modal of pass book to content function ///
+
+    onHide_book_passer_to_content_modal() {
+        this.setState({
+            ...this.state,
+            passToContentModalStatus: false,
+            passedBookToContent: null,
+        })
+    }
+
+    onPass_book_passer_to_content_modal() {
+        if (this.state.passedBookToContent !== null) {
+            let book: IBook = this.state.passedBookToContent!;
+            this.props.history.push(`/book_generator/${book.id}/wizard`);
+        }
+        this.setState({
+            ...this.state,
+            passToContentModalStatus: false,
+            passedBookToContent: null,
+        })
+    }
+
+
+
+
+
+
+
+
+    /// end modal of pass book to content function ///
 
 
 
@@ -1186,6 +1228,18 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}
                     ></QuickPerson>
+                }
+                {
+                    this.state.passedBookToContent !== null
+                        ?
+                        <BookSavePassToContentModal
+                            modalShow={this.state.passToContentModalStatus}
+                            book={this.state.passedBookToContent!}
+                            onPass={() => this.onPass_book_passer_to_content_modal()}
+                            onHide={() => this.onHide_book_passer_to_content_modal()}
+                        ></BookSavePassToContentModal>
+                        :
+                        undefined
                 }
                 <ToastContainer {...this.getNotifyContainerConfig()} />
             </>

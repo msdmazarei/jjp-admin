@@ -41,6 +41,7 @@ interface ILocalization extends LocalizedStringsMethods {
             upload_process_error_msg : string;
             do_you_want_create_this_book_content : string;
             at_least_two_publishers_must_be_selected_to_compare_publisher_sales : string;
+            book_creation_successful_do_you_want_to_create_content_for_this_book : string;
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : string ;
                 chapter_title_and_content_cannot_be_blank : string;

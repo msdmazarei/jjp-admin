@@ -28,6 +28,7 @@ export const ar = {
             upload_process_error_msg : 'عملیات بارگذاری با خطا مواجه گردید',
             do_you_want_create_this_book_content : 'آیا می خواهید محتوای این کتاب ساخته شود؟',
             at_least_two_publishers_must_be_selected_to_compare_publisher_sales : 'برای مقایسه فروش ناشرین باید حداقل دو ناشر انتخاب شود.',
+            book_creation_successful_do_you_want_to_create_content_for_this_book : 'ایجاد کتاب با موفقیت انجام شد، آیا می خواهید برای این کتاب محتوا ایجاد کنید؟',
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : 'عنوان فصل نمی تواند خالی باشد.',
                 chapter_title_and_content_cannot_be_blank : 'عنوان و محتوا فصل نمی تواند خالی باشد.',

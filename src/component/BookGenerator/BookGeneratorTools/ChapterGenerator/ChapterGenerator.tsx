@@ -481,7 +481,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                     {
                                         <>
                                             {Localization.create + " " + Localization.first_Chapter}
-                                            <i className="fa fa-plus text-white mx-2 mt-2" onClick={() => this.addChapter()}></i>
+                                            <i className="fa fa-plus text-white mx-2 mt-2"></i>
                                         </>
                                     }
                                 </BtnLoader>

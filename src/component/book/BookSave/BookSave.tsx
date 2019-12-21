@@ -115,7 +115,8 @@ interface IState {
     isBookLanguageInputTouch: boolean;
     quickPersonModalStatus: boolean;
     passToContentModalStatus: boolean;
-    passedBookToContent: IBook | null;
+    passedBookToContent: IBook[] | null;
+    passerModalBookTypeOption: { label: string, value: BOOK_TYPES }[] | null;
 }
 interface IProps {
     match: any;
@@ -246,6 +247,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         quickPersonModalStatus: false,
         passToContentModalStatus: false,
         passedBookToContent: null,
+        passerModalBookTypeOption: null,
     }
 
 
@@ -555,7 +557,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            price: this.state.book.price.value,
+            price: this.state.book.price.value === '' ? null : this.state.book.price.value,
             genre: genreList,
             types: typeList,
             roles: roleListWithPress,
@@ -570,11 +572,29 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
-            this.setState({
-                ...this.state,
-                passedBookToContent: res.data.result[0],
-                passToContentModalStatus: true,
-            })
+            if (res.data.result.length === 0) {
+                return;
+            } else {
+                let option: { label: string, value: BOOK_TYPES }[] = [];
+                for (let i = 0; i < res.data.result.length; i++) {
+                    if (((res.data.result[i] as IBook).type as BOOK_TYPES) !== BOOK_TYPES.Hard_Copy && ((res.data.result[i] as IBook).type as BOOK_TYPES) !== BOOK_TYPES.DVD) {
+                        option.push(
+                            {
+                                label: Localization.book_type_list[((res.data.result[i] as IBook).type as BOOK_TYPES)],
+                                value: ((res.data.result[i] as IBook).type as BOOK_TYPES)
+                            }
+                        );
+                    }
+                };
+                if (option.length > 0) {
+                    this.setState({
+                        ...this.state,
+                        passToContentModalStatus: true,
+                        passedBookToContent: res.data.result,
+                        passerModalBookTypeOption: option,
+                    })
+                }
+            }
         }
     }
 
@@ -608,7 +628,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            price: this.state.book.price.value,
+            price: this.state.book.price.value === '' ? null : this.state.book.price.value,
             genre: genreList,
             roles: roleListWithPress,
             images: imgUrls,
@@ -872,31 +892,34 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             ...this.state,
             passToContentModalStatus: false,
             passedBookToContent: null,
+            passerModalBookTypeOption: null,
         })
     }
 
-    onPass_book_passer_to_content_modal() {
+    onPass_book_passer_to_content_modal(type: BOOK_TYPES) {
+        if(this.state.passedBookToContent === null){
+            return;
+        }
+        let selected_id: string = '';
+        const bookArray: IBook[] = this.state.passedBookToContent!;
+        for (let i = 0; i < bookArray.length; i++) {
+            if (bookArray[i].type === type) {
+                selected_id = bookArray[i].id;
+                break;
+            }
+        }
         if (this.state.passedBookToContent !== null) {
-            let book: IBook = this.state.passedBookToContent!;
-            this.props.history.push(`/book_generator/${book.id}/wizard`);
+            this.props.history.push(`/book_generator/${selected_id}/wizard`);
         }
         this.setState({
             ...this.state,
             passToContentModalStatus: false,
             passedBookToContent: null,
+            passerModalBookTypeOption: null,
         })
     }
 
-
-
-
-
-
-
-
     /// end modal of pass book to content function ///
-
-
 
     /////////////////// render ////////////////////////
 
@@ -1230,12 +1253,13 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     ></QuickPerson>
                 }
                 {
-                    this.state.passedBookToContent !== null
+                    this.state.passerModalBookTypeOption !== null
                         ?
                         <BookSavePassToContentModal
                             modalShow={this.state.passToContentModalStatus}
-                            book={this.state.passedBookToContent!}
-                            onPass={() => this.onPass_book_passer_to_content_modal()}
+                            bookTitle={(this.state.passedBookToContent![0] as IBook).title}
+                            typeOption={this.state.passerModalBookTypeOption!}
+                            onPass={(type: BOOK_TYPES) => this.onPass_book_passer_to_content_modal(type)}
                             onHide={() => this.onHide_book_passer_to_content_modal()}
                         ></BookSavePassToContentModal>
                         :

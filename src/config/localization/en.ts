@@ -29,6 +29,8 @@ export const en = {
             do_you_want_create_this_book_content : 'do you want build this book content ?',
             at_least_two_publishers_must_be_selected_to_compare_publisher_sales : 'at least two publishers must be selected to compare publisher sales.',
             book_creation_successful_do_you_want_to_create_content_for_this_book : 'book creation successful, do you want to create content for this book?',
+            content_saved_successfully_do_you_want_to_make_the_book : 'Content saved successfully, do you want to make the book?',
+            choose_the_type_of_book : 'Choose the type of book:',
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : 'chapter title cannot be blank.',
                 chapter_title_and_content_cannot_be_blank : 'chapter title and content cannot be blank.',
@@ -166,6 +168,7 @@ export const en = {
     create: "Create",
     reset: "reset",
     back: "back",
+    continue : "continue",
     reading_insights: 'reading insights',
     settings: 'settings',
     info: 'info',

@@ -42,6 +42,8 @@ interface ILocalization extends LocalizedStringsMethods {
             do_you_want_create_this_book_content : string;
             at_least_two_publishers_must_be_selected_to_compare_publisher_sales : string;
             book_creation_successful_do_you_want_to_create_content_for_this_book : string;
+            content_saved_successfully_do_you_want_to_make_the_book: string;
+            choose_the_type_of_book: string;
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : string ;
                 chapter_title_and_content_cannot_be_blank : string;
@@ -180,6 +182,7 @@ interface ILocalization extends LocalizedStringsMethods {
     create: string;
     reset: string;
     back: string;
+    continue : string;
     reading_insights: string;
     settings: string;
     info: string;

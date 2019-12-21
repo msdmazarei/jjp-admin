@@ -22,6 +22,8 @@ import { Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import { AppGuid } from '../../../asset/script/guid';
 import { EpubGenerator } from '../BookGeneratorTools/EpubGenerator/EpubGenerator';
+import { GetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/GetGenerateOrStatusModal/GetGenerateOrStatusModal';
+import { PreGetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/PreGetGenerateOrStatusModal/PreGetGenerateOrStatusModal';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -109,6 +111,8 @@ interface IState {
     upload_modal: boolean;
     error_upload_modal: boolean;
     error_upload_modal_state: number;
+    pre_generateModalShow: boolean;
+    generateModalShow: boolean;
 }
 
 interface IProps {
@@ -158,6 +162,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         upload_modal: false,
         error_upload_modal: false,
         error_upload_modal_state: 0,
+        pre_generateModalShow : false,
+        generateModalShow: false,
     }
 
     //// start navigation for back to BookGeneratorManage /////
@@ -175,6 +181,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     private _bookContentService = new BookGeneratorService();
     private book_generator_id: string | undefined;
     private book_id: string | undefined;
+    selectedContentGenerate: any;
+    bookForGenerate : any;
 
     componentDidMount() {
         if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
@@ -193,8 +201,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchBookById_error' } });
         });
 
-        if(res){
-            let book : IBook = res.data;
+        if (res) {
+            let book: IBook = res.data;
             let come_selectedBook: { label: string, value: IBook } = { label: book.title, value: book };
             this.handleBookChange(come_selectedBook);
         }
@@ -358,7 +366,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
-            filter = {title : {$prefix : inputValue} };
+            filter = { title: { $prefix: inputValue } };
         }
         let res: any = await this._bookService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2content_error' } });
@@ -494,21 +502,21 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     ////////////   end reset page func ////////////////////
 
-    audio_content_validation_check():boolean{
-        let titleStatus : boolean = BGUtility.is_all_chapter_have_title(this.state.Audio_book.children);
-        let bodyStatus : boolean = BGUtility.is_all_chapter_body_full(this.state.Audio_book.children);
-        if(titleStatus === false || bodyStatus === false){
+    audio_content_validation_check(): boolean {
+        let titleStatus: boolean = BGUtility.is_all_chapter_have_title(this.state.Audio_book.children);
+        let bodyStatus: boolean = BGUtility.is_all_chapter_body_full(this.state.Audio_book.children);
+        if (titleStatus === false || bodyStatus === false) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
-    msd_content_validation_check():boolean{
-        let titleStatus : boolean = BGUtility.is_all_chapter_have_title(this.state.Msd_book.children);
-        if(titleStatus === false){
+    msd_content_validation_check(): boolean {
+        let titleStatus: boolean = BGUtility.is_all_chapter_have_title(this.state.Msd_book.children);
+        if (titleStatus === false) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -519,14 +527,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
             return
         }
-        if(this.state.selectedBookType === 'Audio'){
-            if(this.audio_content_validation_check() === false){
+        if (this.state.selectedBookType === 'Audio') {
+            if (this.audio_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank, this.getNotifyConfig());
                 return;
             }
         }
-        if(this.state.selectedBookType === 'Msd'){
-            if(this.msd_content_validation_check() === false){
+        if (this.state.selectedBookType === 'Msd') {
+            if (this.msd_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank, this.getNotifyConfig());
                 return;
             }
@@ -552,6 +560,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createMsd_error' } });
             });
             if (res) {
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                this.selectedContentGenerate = res.data;
+                this.setState({...this.state, pre_generateModalShow : true});
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -569,6 +580,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
                 });
                 if (res) {
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -620,6 +634,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     this.handleError({ error: error.response, toastOptions: { toastId: 'createAudio_error' } });
                 });
                 if (res) {
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -680,6 +697,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createPdf_error' } });
             });
             if (res) {
+                this.selectedContentGenerate = res.data;
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                this.setState({...this.state, pre_generateModalShow : true});
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -739,6 +759,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createEpub_error' } });
             });
             if (res) {
+                this.selectedContentGenerate = res.data;
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                this.setState({...this.state, pre_generateModalShow : true});
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -754,14 +777,14 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBook === null || this.state.contentType === null) {
             return
         }
-        if(this.state.selectedBookType === 'Audio'){
-            if(this.audio_content_validation_check() === false){
+        if (this.state.selectedBookType === 'Audio') {
+            if (this.audio_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank, this.getNotifyConfig());
                 return;
             }
         }
-        if(this.state.selectedBookType === 'Msd'){
-            if(this.msd_content_validation_check() === false){
+        if (this.state.selectedBookType === 'Msd') {
+            if (this.msd_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank, this.getNotifyConfig());
                 return;
             }
@@ -789,8 +812,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             });
             if (res) {
                 this.book_generator_id = undefined;
+                this.selectedContentGenerate = res.data;
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                this.setState({...this.state, pre_generateModalShow : true});
                 this.Reset();
-                this.backTO();
                 this.apiSuccessNotify();
             }
         }
@@ -809,8 +834,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.book_generator_id = undefined;
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
-                    this.backTO();
                     this.apiSuccessNotify();
                 }
             } else {
@@ -863,8 +890,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.book_generator_id = undefined;
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
-                    this.backTO();
                     this.apiSuccessNotify();
                 }
             }
@@ -882,8 +911,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.book_generator_id = undefined;
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
-                    this.backTO();
                     this.apiSuccessNotify();
                 }
             } else {
@@ -943,8 +974,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.book_generator_id = undefined;
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
-                    this.backTO();
                     this.apiSuccessNotify();
                 }
             }
@@ -962,8 +995,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.book_generator_id = undefined;
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
-                    this.backTO();
                     this.apiSuccessNotify();
                 }
             } else {
@@ -1023,8 +1058,10 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.book_generator_id = undefined;
+                    this.selectedContentGenerate = res.data;
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                    this.setState({...this.state, pre_generateModalShow : true});
                     this.Reset();
-                    this.backTO();
                     this.apiSuccessNotify();
                 }
             }
@@ -1368,6 +1405,32 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     //// end upload and error upload modal function ///////
 
+    // start generate modal function define /////
+
+    onHidePreGenerateModal(){
+        this.bookForGenerate = undefined;
+        this.selectedContentGenerate = undefined;
+        this.setState({ ...this.state, pre_generateModalShow : false });
+        if(this.state.saveMode === SAVE_MODE.EDIT){
+            this.backTO();
+        }
+    }
+
+    getGenerateContent() {
+        this.setState({ ...this.state, pre_generateModalShow : false, generateModalShow: true });
+    }
+
+    onHideGenerateModal() {
+        this.bookForGenerate = undefined;
+        this.selectedContentGenerate = undefined;
+        this.setState({ ...this.state, generateModalShow: false });
+        if(this.state.saveMode === SAVE_MODE.EDIT){
+            this.backTO();
+        }
+    }
+
+    // end generate modal function define /////
+
 
     // start render cmp
 
@@ -1472,6 +1535,30 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 </div>
                 {this.render_upload_modal()}
                 {this.render_error_upload_modal()}
+                {
+                    this.selectedContentGenerate === undefined || this.bookForGenerate === undefined
+                        ?
+                        undefined
+                        :
+                        <PreGetBookContentGenerateOrStatusModal
+                            modalShow={this.state.pre_generateModalShow}
+                            onHide={() => this.onHidePreGenerateModal()}
+                            getContinue={() => this.getGenerateContent()}
+                        />
+                }
+                {
+                    this.selectedContentGenerate === undefined || this.bookForGenerate === undefined || this.state.pre_generateModalShow === true
+                        ?
+                        undefined
+                        :
+                        <GetBookContentGenerateOrStatusModal
+                            book={this.bookForGenerate}
+                            content_type={this.selectedContentGenerate.type}
+                            book_content_id={this.selectedContentGenerate.id}
+                            modalShow={this.state.generateModalShow}
+                            onHide={() => this.onHideGenerateModal()}
+                        />
+                }
                 <ToastContainer {...this.getNotifyContainerConfig()} />
             </>
         )

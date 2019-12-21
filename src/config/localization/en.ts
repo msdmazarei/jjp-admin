@@ -96,7 +96,8 @@ export const en = {
             commit_error: 'error while commiting in db',
             person_has_books: 'person already has roles for books',
             book_not_in_lib: 'book is not in users library and cannot add to a collection',
-            used_somewhere :'The row cannot be deleted due to use.',
+            used_somewhere :'the row cannot be deleted due to use.',
+            cell_no_exists : 'the mobile field cannot be empty.',
         }
     },
     validation: {

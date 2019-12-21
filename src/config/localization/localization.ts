@@ -111,6 +111,7 @@ interface ILocalization extends LocalizedStringsMethods {
             person_has_books: string;
             book_not_in_lib: string;
             used_somewhere : string;
+            cell_no_exists : string;
         }
     };
     validation: {

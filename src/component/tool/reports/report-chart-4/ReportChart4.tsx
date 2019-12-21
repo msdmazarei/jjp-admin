@@ -12,6 +12,7 @@ import { Localization } from "../../../../config/localization/localization";
 import { ResponsiveContainer, Tooltip, LabelList } from "recharts";
 import { FunnelChart, Funnel } from 'recharts';
 import { ReportService } from "../../../../service/service.reports";
+import { BtnLoader } from "../../../form/btn-loader/BtnLoader";
 
 
 
@@ -27,7 +28,7 @@ interface IState {
     number_of_member: number;
     number_of_order: number;
     number_of_invoiced: number;
-    is_request_success : boolean;
+    is_request_success: boolean | null;
 }
 
 class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, IState> {
@@ -38,7 +39,7 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
         number_of_member: 0,
         number_of_order: 0,
         number_of_invoiced: 0,
-        is_request_success : true,
+        is_request_success: null,
     }
     /// end of state
 
@@ -55,18 +56,19 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
         this.init_tools();
     }
 
-    async fetch_number_of_user_order_invoiceedOrder(){
+    async fetch_number_of_user_order_invoiceedOrder() {
+        this.setState({ ...this.state, is_request_success: null });
         let res = await this._reportService.user_to_customer().catch(error => {
-            this.setState({...this.state, is_request_success : false});
+            this.setState({ ...this.state, is_request_success: false });
             this.handleError({ error: error.response, toastOptions: { toastId: 'user_to_customer_request_error' } });
         });
-        if(res){
+        if (res) {
             this.setState({
                 ...this.state,
-                number_of_member : res.data.user_count,
-                number_of_order : res.data.order_count,
-                number_of_invoiced : res.data.invoice_count,
-                is_request_success : true,
+                number_of_member: res.data.user_count,
+                number_of_order: res.data.order_count,
+                number_of_invoiced: res.data.invoice_count,
+                is_request_success: true,
             })
         }
 
@@ -76,7 +78,7 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
     // start request for fetch user & order & invoiceedOrder number in system
 
 
-   
+
     // end request for fetch user & order & invoiceedOrder number in system
 
 
@@ -109,7 +111,7 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
 
     // end define custom tools & pass that to widget
 
-    
+
     // start report export in pdf format tool function 
 
     goToPdfFunction(e: any) {
@@ -186,13 +188,13 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
 
         return <>
             <div className="col-12">
-                <div style={{ width: 'auto' , height: 300 }}>
+                <div style={{ width: 'auto', height: 300 }}>
                     <ResponsiveContainer width="99%" height={300}>
                         <FunnelChart>
                             <Tooltip position={{ x: -20, y: 40 }} />
                             <Funnel
                                 dataKey="value"
-                                data={this.data_option_returner(this.state.number_of_member,this.state.number_of_order, this.state.number_of_invoiced)}
+                                data={this.data_option_returner(this.state.number_of_member, this.state.number_of_order, this.state.number_of_invoiced)}
                                 isAnimationActive={true}
                             >
                                 <LabelList dataKey="name" />
@@ -218,13 +220,45 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
                             {(Localization.count + " " + Localization.user + ":" + " " + this.state.number_of_member)}
                         </div>
                     </div>
-                    <div className="col-12">
-                        <div style={{ maxWidth: '100%', height: 600 }}>
-                            {
-                                this.report_status()
-                            }
-                        </div>
-                    </div>
+                    {
+                        this.state.is_request_success === null
+                            ?
+                            <div className="col-12">
+                                <div className="text-center my-3">
+                                    {
+                                        Localization.loading_with_dots
+                                    }
+                                </div>
+                            </div>
+                            :
+                            this.state.is_request_success === true
+                                ?
+                                <div className="col-12">
+                                    <div style={{ maxWidth: '100%', height: 600 }}>
+                                        {
+                                            this.report_status()
+                                        }
+                                    </div>
+                                </div>
+                                :
+                                <div className="col-12">
+                                    <div className="text-center my-3">
+                                        {
+                                            Localization.msg.ui.msg5
+                                        }
+                                    </div>
+                                    <div className="text-center">
+                                        <BtnLoader
+                                            btnClassName="btn btn-danger shadow-default shadow-hover"
+                                            loading={false}
+                                            onClick={() => this.fetch_number_of_user_order_invoiceedOrder()}
+                                            disabled={false}
+                                        >
+                                            {Localization.retry}
+                                        </BtnLoader>
+                                    </div>
+                                </div>
+                    }
                 </div>
             </>
         );

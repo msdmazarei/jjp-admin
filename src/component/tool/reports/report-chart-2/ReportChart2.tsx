@@ -14,6 +14,7 @@ import { LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Line, ResponsiveContai
 import { ReportService } from "../../../../service/service.reports";
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import { BtnLoader } from "../../../form/btn-loader/BtnLoader";
 
 
 export interface IProps {
@@ -32,8 +33,9 @@ interface IState {
     lineChart: boolean;
     barChart: boolean;
     pieChart: boolean;
-    sale_array : any[];
-    current_month : number;
+    sale_array: any[];
+    current_month: number;
+    is_request_success: boolean | null;
 }
 
 class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
@@ -60,7 +62,8 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
         barChart: true,
         pieChart: false,
         sale_array: [],
-        current_month : 0,
+        current_month: 0,
+        is_request_success: null,
     }
     /// end of state
 
@@ -72,15 +75,15 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     // }
 
     componentDidMount() {
-        if(this.props.internationalization.flag === 'fa'){
+        if (this.props.internationalization.flag === 'fa') {
             this.setState({
                 ...this.state,
-                current_month : (moment_jalaali().jMonth()+1),
+                current_month: (moment_jalaali().jMonth() + 1),
             })
-        }else{
+        } else {
             this.setState({
                 ...this.state,
-                current_month : (moment().month()+1),
+                current_month: (moment().month() + 1),
             })
         }
         this.fetch_income_data();
@@ -91,15 +94,18 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
     // start fetch data of income by time period
 
-    async fetch_income_data(){
+    async fetch_income_data() {
+        this.setState({ ...this.state, is_request_success: null })
         let res = await this._reportService.income_by_time_period().catch(error => {
+            this.setState({ ...this.state, is_request_success: false })
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetch_income_data_error' } });
         });
 
-        if(res){
+        if (res) {
             this.setState({
                 ...this.state,
-                sale_array : res.data.result.length > 0 ? res.data.result : []
+                is_request_success: true,
+                sale_array: res.data.result.length > 0 ? res.data.result : []
             })
         }
     }
@@ -107,14 +113,14 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
 
     // start month sale returner if month exist in array
 
-    month_sale_returner(is_exist_this_month : number):number{
+    month_sale_returner(is_exist_this_month: number): number {
         let data: any[] = this.state.sale_array;
         let defult_num: number = 0;
-        if(data.length === 0){
+        if (data.length === 0) {
             return defult_num;
-        }else{
+        } else {
             for (let i = 0; i < data.length; i++) {
-                if(data[i].sale_month === is_exist_this_month){
+                if (data[i].sale_month === is_exist_this_month) {
                     return data[i].total_income;
                 }
             }
@@ -249,7 +255,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
             { name: 'بهمن', value: this.month_sale_returner(11) },
             { name: 'اسفند', value: this.month_sale_returner(12) },
         ];
-        const last_quarter = this.state.current_month > 3 ? yearly.slice((this.state.current_month-3), this.state.current_month) : yearly.slice(0, yearly.length);
+        const last_quarter = this.state.current_month > 3 ? yearly.slice((this.state.current_month - 3), this.state.current_month) : yearly.slice(0, yearly.length);
         const spring = yearly.length >= 4 ? yearly.slice(0, 3) : yearly.slice(0, yearly.length);
         const summer = yearly.length >= 7 ? yearly.slice(3, 6) : yearly.slice(3, yearly.length);
         const fall = yearly.length >= 10 ? yearly.slice(6, 9) : yearly.slice(6, yearly.length);
@@ -437,21 +443,53 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
                             }
                         </div>
                     </div>
-                    <div className="col-12">
-                        <div style={{ width: '100%', height: 600 }}>
-                            {
-                                this.state.lineChart === true && this.state.barChart === false && this.state.pieChart === false
-                                    ?
-                                    this.report_status_in_line_chart(this.state.type_of_report.value)
-                                    :
-                                    this.state.lineChart === false && this.state.barChart === false && this.state.pieChart === true
-                                        ?
-                                        this.report_status_in_pie_chart(this.state.type_of_report.value)
-                                        :
-                                        this.report_status_in_bar_chart(this.state.type_of_report.value)
-                            }
+                    {
+                        this.state.is_request_success === null
+                            ?
+                            <div className="col-12">
+                            <div className="text-center my-3">
+                                {
+                                    Localization.loading_with_dots
+                                }
+                            </div>
                         </div>
-                    </div>
+                            :
+                            this.state.is_request_success === true
+                                ?
+                                <div className="col-12">
+                                    <div style={{ width: '100%', height: 600 }}>
+                                        {
+                                            this.state.lineChart === true && this.state.barChart === false && this.state.pieChart === false
+                                                ?
+                                                this.report_status_in_line_chart(this.state.type_of_report.value)
+                                                :
+                                                this.state.lineChart === false && this.state.barChart === false && this.state.pieChart === true
+                                                    ?
+                                                    this.report_status_in_pie_chart(this.state.type_of_report.value)
+                                                    :
+                                                    this.report_status_in_bar_chart(this.state.type_of_report.value)
+                                        }
+                                    </div>
+                                </div>
+                                :
+                                <div className="col-12">
+                                    <div className="text-center my-3">
+                                        {
+                                            Localization.msg.ui.msg5
+                                        }
+                                    </div>
+                                    <div className="text-center">
+                                        <BtnLoader
+                                            btnClassName="btn btn-danger shadow-default shadow-hover"
+                                            loading={false}
+                                            onClick={() => this.fetch_income_data()}
+                                            disabled={false}
+                                        >
+                                            {Localization.retry}
+                                        </BtnLoader>
+                                    </div>
+                                </div>
+                    }
                 </div>
             </>
         );

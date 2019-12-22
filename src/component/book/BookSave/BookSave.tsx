@@ -370,6 +370,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     type: { ...this.state.book.type, value: typeList, isValid: true },
                     images: { ...this.state.book.images, value: res.data.images, isValid: true },
                     tags: { ...this.state.book.tags, value: tagList, isValid: true },
+                    book_roll_press : {isValid : press.length > 0 ? true : false },
                 },
                 book_roll_press: press[0],
             })

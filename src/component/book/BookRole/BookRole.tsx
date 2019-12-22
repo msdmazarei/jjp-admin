@@ -68,6 +68,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
     componentDidMount() {
         // this._personService.setToken(this.props.token);
     }
+
     componentWillReceiveProps(nextProps: IProps) {
         if (
             JSON.stringify(this.convertInnerToOuter(this.convertOuterToInner(nextProps.defaultValue || [])))
@@ -213,14 +214,10 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
 
     private _errorTxt = 'isReqi';
     handleValidate(list: IRoleRow[]): boolean {
-        const parentValid = this.props.validationFunc!(this.convertInnerToOuter(list));
-        if (!parentValid) {
-            this._errorTxt = this.props.errorTxt || 'not valid';
-            return false;
-        };
-
         this._errorTxt = Localization.required_field;
-
+        if(list.length === 0){
+            return true
+        };
         let valid = true;
         for (let i = 0; i < list.length; i++) {
             let obj = list[i];
@@ -228,9 +225,6 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                 valid = false;
                 break;
             }
-        }
-        if (this.props.required && !list.length) {
-            valid = false;
         }
         return valid;
     }

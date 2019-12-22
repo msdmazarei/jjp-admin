@@ -103,6 +103,9 @@ interface IState {
             value: [] | any,
             isValid: boolean
         };
+        book_roll_press :{
+            isValid: boolean
+        }
     };
     book_roll_press: ICmp_select<IPerson> | null;
     isFormValid: boolean;
@@ -228,11 +231,14 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             },
             roles: {
                 value: undefined,
-                isValid: false
+                isValid: true
             },
             images: {
                 value: undefined,
                 isValid: true
+            },
+            book_roll_press:{
+                isValid : false,
             }
         },
         book_roll_press: null,
@@ -422,7 +428,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookRollChange(list: any[], isValid: boolean) {
-        // const isavl: boolean = isValid && this.pressCheckValidation(list);
         this.setState({
             ...this.state,
             book: {
@@ -430,40 +435,39 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 roles: {
                     ...this.state.book.roles,
                     value: list,
+                    isValid: isValid,
                 }
             }
-            // , isFormValid: this.checkFormValidate(isavl, 'roles'),
+            , isFormValid: this.checkFormValidate(isValid, 'roles'),
         })
     }
 
     bookPressChange(selectedPerson: { label: string, value: IPerson } | null) {
-        if (selectedPerson === null) {
+        if(selectedPerson === null){
             this.setState({
                 ...this.state,
-                book: {
+                book:{
                     ...this.state.book,
-                    roles: {
-                        ...this.state.book.roles,
-                        isValid: false,
+                    book_roll_press : {
+                        isValid : false
                     }
                 },
                 book_roll_press: selectedPerson,
-                isFormValid: false,
-            })
-        } else {
+                isFormValid: this.checkFormValidate(false, 'book_roll_press'),
+            });
+        }else{
             this.setState({
                 ...this.state,
-                book: {
+                book:{
                     ...this.state.book,
-                    roles: {
-                        ...this.state.book.roles,
-                        isValid: true,
+                    book_roll_press : {
+                        isValid : true
                     }
                 },
                 book_roll_press: selectedPerson,
-                isFormValid: this.checkFormValidate(true, 'roles'),
-            })
-        }
+                isFormValid: this.checkFormValidate(true, 'book_roll_press'),
+            });
+        };
     }
 
     pressCheckValidation(list: any[]) {
@@ -737,6 +741,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 price: { value: undefined, isValid: true },
                 images: { value: undefined, isValid: true },
                 tags: { value: [], isValid: true },
+                book_roll_press: {isValid : false},
             },
             book_roll_press: null,
             isFormValid: false,
@@ -897,7 +902,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     onPass_book_passer_to_content_modal(type: BOOK_TYPES) {
-        if(this.state.passedBookToContent === null){
+        if (this.state.passedBookToContent === null) {
             return;
         }
         let selected_id: string = '';
@@ -1126,8 +1131,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         <BookRole
                                             defaultValue={this.state.book.roles.value}
                                             onChange={(list, isValid) => this.bookRollChange(list, isValid)}
-                                            validationFunc={(list) => this.pressCheckValidation(list)}
-                                            required
                                             label={Localization.roles}
                                             errorTxt={Localization.each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher}
                                         ></BookRole>

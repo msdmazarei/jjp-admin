@@ -38,7 +38,7 @@ var routes = [
     component: BookManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: []
+    PERMISSIONS: ['BOOK_ADD_PREMIUM','BOOK_EDIT_PREMIUM','BOOK_DELETE_PREMIUM','BOOK_ADD_PRESS','BOOK_EDIT_PRESS','BOOK_DELETE_PRESS']
   },
   {
     path: "/book/create",
@@ -67,7 +67,7 @@ var routes = [
     component: BookGeneratorManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: []
+    PERMISSIONS: ['BOOK_CONTENT_ADD_PREMIUM','BOOK_CONTENT_ADD_PRESS','BOOK_CONTENT_GET_PREMIUM','BOOK_CONTENT_GET_PRESS',]
   },
   {
     path: "/book_generator/create",

@@ -25,6 +25,8 @@ import { BookService } from "../../../service/service.book";
 import AsyncSelect from 'react-select/async';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { AccessService } from "../../../service/service.access";
+import { Store2 } from "../../../redux/store";
 // import { AccessService } from "../../../service/service.access"
 
 
@@ -1166,8 +1168,28 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   async promiseOptions2_book_search(inputValue: any, callBack: any) {
     let filter = undefined;
     if (inputValue) {
-      filter = { title: { $prefix: inputValue } };
-    }
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
+        filter = { title: { $prefix: inputValue } };
+      }
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
+        let persons_of_press: string[];
+        persons_of_press = [];
+        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+        persons_of_press = [...wrapper];
+        filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
+      }
+    }else{
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
+        filter = undefined;
+      }
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
+        let persons_of_press: string[];
+        persons_of_press = [];
+        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+        persons_of_press = [...wrapper];
+        filter = {press : { $in: persons_of_press }};
+      }
+    };
     let res: any = await this._bookService.search(10, 0, filter).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
       this.personRequstError_txt = err_msg.body;

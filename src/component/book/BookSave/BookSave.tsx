@@ -28,6 +28,7 @@ import { AccessService } from '../../../service/service.access';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { IBook } from '../../../model/model.book';
 import { BookSavePassToContentModal } from './BookSavePassToContentModal';
+import { Store2 } from '../../../redux/store';
 
 interface ICmp_select<T> {
     label: string;
@@ -857,9 +858,17 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (inputValue) {
             filter['full_name'] = { $prefix: inputValue };
         }
+        if(AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
+            let persons_of_press: string[];
+            persons_of_press = [];
+            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+            persons_of_press = [...wrapper];
+            filter['id'] = { $in: persons_of_press };
+        }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookPress_error' } });
             this.personRequstError_txt = err_msg.body;
+            
         });
 
         if (res) {

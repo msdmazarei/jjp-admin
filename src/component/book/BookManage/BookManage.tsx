@@ -997,6 +997,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
   private _searchFilter: any | undefined;
   private get_searchFilter() {
+    this.set_searchFilter();
     return this._searchFilter;
   }
   private set_searchFilter() {
@@ -1018,19 +1019,17 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    persons_of_press = [...wrapper];
-    if (this.state.filter_state.press.is_valid === true) {
-      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0) {
-        persons_of_press.push(this.state.filter_state.press.person_id!);
-        obj['press'] = { $in: persons_of_press };
-        persons_of_press = [];
-      } else {
-        obj['press'] = { $in: [this.state.filter_state.press.person_id] };
-      }
-    } else {
-      if (persons_of_press !== null && persons_of_press !== undefined && persons_of_press.length > 0) {
-        obj['press'] = { $in: persons_of_press };
-      }
+    if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true && this.state.filter_state.press.is_valid === true){
+      persons_of_press.push(this.state.filter_state.press.person_id!);
+      obj['press'] = { $in: persons_of_press };
+    }
+    if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === true){
+      persons_of_press.push(this.state.filter_state.press.person_id!);
+      obj['press'] = { $in: persons_of_press };
+    }
+    if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === false){
+      persons_of_press = [...wrapper];
+      obj['press'] = { $in: persons_of_press };
     }
 
     if (this.state.filter_state.creator.isValid) {
@@ -1110,7 +1109,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       // this.gotoTop();
       // this.setFilter();
-      this.set_searchFilter();
+      // this.set_searchFilter();
       this.fetchBooks()
     });
   }
@@ -1499,9 +1498,16 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   private personRequstError_txt: string = Localization.no_item_found;
 
   async promiseOptions2(inputValue: any, callBack: any) {
-    let filter = undefined;
+    let filter: any = { is_legal: { $eq: true } };
     if (inputValue) {
-      filter = { full_name: { $prefix: inputValue } };
+        filter['full_name'] = { $prefix: inputValue };
+    }
+    if(AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
+        let persons_of_press: string[];
+        persons_of_press = [];
+        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+        persons_of_press = [...wrapper];
+        filter['id'] = { $in: persons_of_press };
     }
     let res: any = await this._personService.search(10, 0, filter).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });

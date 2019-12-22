@@ -28,6 +28,7 @@ import AsyncSelect from 'react-select/async';
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { Store2 } from "../../../redux/store";
 
 /// define props & state ///////
 export interface IProps {
@@ -1150,26 +1151,46 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   /////  end onChange & search & reset function for search box ///////////
 
 
-  ////// start request for options person of press in filter  ////////
+  ////// start request for options book & person of press in filter  ////////
 
   private bookRequstError_txt: string = Localization.no_item_found;
 
   async promiseOptions2_book_search(inputValue: any, callBack: any) {
     let filter = undefined;
     if (inputValue) {
-      filter = { title: { $prefix: inputValue } };
-    }
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
+        filter = { title: { $prefix: inputValue } };
+      }
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
+        let persons_of_press: string[];
+        persons_of_press = [];
+        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+        persons_of_press = [...wrapper];
+        filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
+      }
+    }else{
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
+        filter = undefined;
+      }
+      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
+        let persons_of_press: string[];
+        persons_of_press = [];
+        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+        persons_of_press = [...wrapper];
+        filter = {press : { $in: persons_of_press }};
+      }
+    };
     let res: any = await this._bookService.search(10, 0, filter).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'bookSearch_in_comment_error' } });
       this.bookRequstError_txt = err_msg.body;
     });
 
     if (res) {
-      let books = res.data.result.map((ps: any) => {
-        const b_type: any = ps.type;
+      let books = res.data.result.map((book: any) => {
+        const b_type: any = book.type;
         const b_t: BOOK_TYPES = b_type;
         let type = Localization.book_type_list[b_t];
-        return { label: ps.title + " - " + type, value: ps }
+        return { label: book.title + " - " + type, value: book }
       });
       this.bookRequstError_txt = Localization.no_item_found;
       callBack(books);
@@ -1231,7 +1252,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     return this.personRequstError_txt;
   }
 
-  ///////////// end request for options person of press in filter ////////////////////////
+  ///////////// end request for options book & person of press in filter ////////////////////////
 
   advanceSearchBoxShowHideManager() {
     if (this.state.advance_search_box_show === false) {

@@ -24,6 +24,8 @@ import { AppGuid } from '../../../asset/script/guid';
 import { EpubGenerator } from '../BookGeneratorTools/EpubGenerator/EpubGenerator';
 import { GetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/GetGenerateOrStatusModal/GetGenerateOrStatusModal';
 import { PreGetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/PreGetGenerateOrStatusModal/PreGetGenerateOrStatusModal';
+import { AccessService } from '../../../service/service.access';
+import { Store2 } from '../../../redux/store';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -366,8 +368,28 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
+          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
             filter = { title: { $prefix: inputValue } };
-        }
+          }
+          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
+            let persons_of_press: string[];
+            persons_of_press = [];
+            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+            persons_of_press = [...wrapper];
+            filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
+          }
+        }else{
+          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
+            filter = undefined;
+          }
+          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
+            let persons_of_press: string[];
+            persons_of_press = [];
+            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+            persons_of_press = [...wrapper];
+            filter = {press : { $in: persons_of_press }};
+          }
+        };
         let res: any = await this._bookService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2content_error' } });
             this.personRequstError_txt = err_msg.body;

@@ -58,6 +58,7 @@ interface IState {
 interface IProps {
     internationalization: TInternationalization;
     // token: IToken;
+    is_legal?: boolean;
     modalShow: boolean;
     onHide: () => void;
     data?: any;
@@ -118,6 +119,34 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
     componentWillReceiveProps() {
         if (this.props.modalShow === false) {
             this.resetForm();
+        }
+        if(this.props.is_legal === true){
+            this.setState({
+                ...this.state,
+                person: {
+                    ...this.state.person,
+                    last_name: {
+                        value: undefined,
+                        isValid: true,
+                    }
+                },
+                isFormValid: this.state.person.name.isValid === true ? true : this.state.isFormValid,
+                is_legal: true,
+            });
+        }
+        if(this.props.is_legal === false){
+            this.setState({
+                ...this.state,
+                person: {
+                    ...this.state.person,
+                    last_name: {
+                        value: undefined,
+                        isValid: false,
+                    }
+                },
+                is_legal: false,
+                isFormValid: false,
+            });
         }
     }
 
@@ -368,17 +397,23 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-12">
-                                <div className="form-group">
-                                    <input id={'person_is_legal_handler_quick_person'} type="checkbox" className="app-checkbox-round"
-                                        onChange={() => this.personIsLegalHandler()}
-                                    />
-                                    <label htmlFor={'person_is_legal_handler_quick_person'}></label>
-                                    <label htmlFor={'person_is_legal_handler_quick_person'}>
-                                        <h6 className="ml-2 text-dark">{Localization.legal_person}</h6>
-                                    </label>
-                                </div>
-                            </div>
+                            {
+                                this.props.is_legal === undefined
+                                    ?
+                                    <div className="col-12">
+                                        <div className="form-group">
+                                            <input id={'person_is_legal_handler_quick_person'} type="checkbox" className="app-checkbox-round"
+                                                onChange={() => this.personIsLegalHandler()}
+                                            />
+                                            <label htmlFor={'person_is_legal_handler_quick_person'}></label>
+                                            <label htmlFor={'person_is_legal_handler_quick_person'}>
+                                                <h6 className="ml-2 text-dark">{Localization.legal_person}</h6>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    :
+                                    undefined
+                            }
                             <div className={this.state.is_legal === true ? "col-12" : "col-6"}>
                                 <Input
                                     onChange={(value, isValid) => this.handleInputChange(value, isValid, "name")}

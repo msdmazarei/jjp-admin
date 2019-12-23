@@ -28,7 +28,6 @@ import { AccessService } from '../../../service/service.access';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { IBook } from '../../../model/model.book';
 import { BookSavePassToContentModal } from './BookSavePassToContentModal';
-import { Store2 } from '../../../redux/store';
 
 interface ICmp_select<T> {
     label: string;
@@ -104,7 +103,7 @@ interface IState {
             value: [] | any,
             isValid: boolean
         };
-        book_roll_press :{
+        book_roll_press: {
             isValid: boolean
         }
     };
@@ -238,8 +237,8 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 value: undefined,
                 isValid: true
             },
-            book_roll_press:{
-                isValid : false,
+            book_roll_press: {
+                isValid: false,
             }
         },
         book_roll_press: null,
@@ -265,24 +264,21 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
 
     checkBookAddAccess(): boolean {
-        if (AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')) {
+        if (AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM', 'BOOK_ADD_PRESS']) === true) {
             return true;
         }
-        return false
+        return false;
     }
 
     checkBookUpdateAccess(): boolean {
-        if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
+        if (AccessService.checkOneOFAllAccess(['BOOK_EDIT_PREMIUM', 'BOOK_EDIT_PRESS']) === true) {
             return true;
         }
-        return false
+        return false;
     }
 
 
     componentDidMount() {
-        // this._bookService.setToken(this.props.token);
-        // this._uploadService.setToken(this.props.token);
-
         if (this.props.match.path.includes('/book/:book_id/edit')) {
             if (this.checkBookUpdateAccess()) {
                 // this.saveMode = "edit";
@@ -297,10 +293,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         }
-
-        // setTimeout(() => {
-        //     this.setState({ book: { ...this.state.book, pub_year: { value: 1571134116617, isValid: true } } })
-        // }, 3000)
     }
 
     async fetchBookById(book_id: string) {
@@ -371,7 +363,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     type: { ...this.state.book.type, value: typeList, isValid: true },
                     images: { ...this.state.book.images, value: res.data.images, isValid: true },
                     tags: { ...this.state.book.tags, value: tagList, isValid: true },
-                    book_roll_press : {isValid : press.length > 0 ? true : false },
+                    book_roll_press: { isValid: press.length > 0 ? true : false },
                 },
                 book_roll_press: press[0],
             })
@@ -445,25 +437,25 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     bookPressChange(selectedPerson: { label: string, value: IPerson } | null) {
-        if(selectedPerson === null){
+        if (selectedPerson === null) {
             this.setState({
                 ...this.state,
-                book:{
+                book: {
                     ...this.state.book,
-                    book_roll_press : {
-                        isValid : false
+                    book_roll_press: {
+                        isValid: false
                     }
                 },
                 book_roll_press: selectedPerson,
                 isFormValid: this.checkFormValidate(false, 'book_roll_press'),
             });
-        }else{
+        } else {
             this.setState({
                 ...this.state,
-                book:{
+                book: {
                     ...this.state.book,
-                    book_roll_press : {
-                        isValid : true
+                    book_roll_press: {
+                        isValid: true
                     }
                 },
                 book_roll_press: selectedPerson,
@@ -491,7 +483,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         };
     }
 
-
     //  check form validation for avtive button
 
     checkFormValidate(isValid: boolean, inputType: any): boolean {
@@ -510,6 +501,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         valid = valid && isValid;
         return valid;
     }
+
     async uploadFileReq(): Promise<string[]> {
         let fileImg = (this.state.book.images.value || []).filter(img => typeof img !== "string");
         let strImg = (this.state.book.images.value || []).filter(img => typeof img === "string");
@@ -578,29 +570,32 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
-            if (res.data.result.length === 0) {
-                return;
-            } else {
-                let option: { label: string, value: BOOK_TYPES }[] = [];
-                for (let i = 0; i < res.data.result.length; i++) {
-                    if (((res.data.result[i] as IBook).type as BOOK_TYPES) !== BOOK_TYPES.Hard_Copy && ((res.data.result[i] as IBook).type as BOOK_TYPES) !== BOOK_TYPES.DVD) {
-                        option.push(
-                            {
-                                label: Localization.book_type_list[((res.data.result[i] as IBook).type as BOOK_TYPES)],
-                                value: ((res.data.result[i] as IBook).type as BOOK_TYPES)
-                            }
-                        );
+            if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === true) {
+                if (res.data.result.length === 0) {
+                    return;
+                } else {
+                    let option: { label: string, value: BOOK_TYPES }[] = [];
+                    for (let i = 0; i < res.data.result.length; i++) {
+                        if (((res.data.result[i] as IBook).type as BOOK_TYPES) !== BOOK_TYPES.Hard_Copy && ((res.data.result[i] as IBook).type as BOOK_TYPES) !== BOOK_TYPES.DVD) {
+                            option.push(
+                                {
+                                    label: Localization.book_type_list[((res.data.result[i] as IBook).type as BOOK_TYPES)],
+                                    value: ((res.data.result[i] as IBook).type as BOOK_TYPES)
+                                }
+                            );
+                        }
+                    };
+                    if (option.length > 0) {
+                        this.setState({
+                            ...this.state,
+                            passToContentModalStatus: true,
+                            passedBookToContent: res.data.result,
+                            passerModalBookTypeOption: option,
+                        })
                     }
-                };
-                if (option.length > 0) {
-                    this.setState({
-                        ...this.state,
-                        passToContentModalStatus: true,
-                        passedBookToContent: res.data.result,
-                        passerModalBookTypeOption: option,
-                    })
                 }
             }
+
         }
     }
 
@@ -661,7 +656,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     gotoBookManage() {
         this.props.history.push('/book/manage'); // /admin
     }
-
 
     // image add functions /////
 
@@ -743,7 +737,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 price: { value: undefined, isValid: true },
                 images: { value: undefined, isValid: true },
                 tags: { value: [], isValid: true },
-                book_roll_press: {isValid : false},
+                book_roll_press: { isValid: false },
             },
             book_roll_press: null,
             isFormValid: false,
@@ -813,7 +807,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         }
     }
 
-
     ////////   start crate quick person  //////////
 
     quickpersonOpen() {
@@ -854,21 +847,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     private personRequstError_txt: string = Localization.no_item_found;
 
     async promiseOptions2(inputValue: any, callBack: any) {
-        let filter: any = { is_legal: { $eq: true } };
-        if (inputValue) {
-            filter['full_name'] = { $prefix: inputValue };
-        }
-        if(AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
-            let persons_of_press: string[];
-            persons_of_press = [];
-            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-            persons_of_press = [...wrapper];
-            filter['id'] = { $in: persons_of_press };
-        }
-        let res: any = await this._personService.search(10, 0, filter).catch(err => {
+
+        let res: any = await this._personService.searchPress(10, 0, inputValue).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2BookPress_error' } });
             this.personRequstError_txt = err_msg.body;
-            
+
         });
 
         if (res) {
@@ -896,9 +879,25 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         return this.personRequstError_txt;
     }
 
-
     /////////////////////////////////////
 
+    /// start function for show or hide price input by user permission ////
+
+    is_price_input_show(): boolean {
+        let result: boolean = false;
+        if (this.state.saveMode === SAVE_MODE.EDIT) {
+            if (AccessService.checkOneOFAllAccess(['PRICE_EDIT_PREMIUM', 'PRICE_EDIT_PRESS']) === true) {
+                result = true;
+            }
+        } else {
+            if (AccessService.checkOneOFAllAccess(['PRICE_ADD_PREMIUM', 'PRICE_ADD_PRESS']) === true) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    /// end function for show or hide price input by user permission ////
 
     /// start modal of pass book to content function ///
 
@@ -1026,14 +1025,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             minutePlaceholder={Localization.minute}
                                             secondPlaceholder={Localization.second}
                                         />
-                                        {/* <FixNumber      // change this to cpm for time
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "duration")}
-                                            label={Localization.duration}
-                                            placeholder={Localization.duration}
-                                            defaultValue={this.state.book.duration.value}
-                                            pattern={AppRegex.number}
-                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
-                                        /> */}
                                     </div>
                                     <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
@@ -1050,16 +1041,22 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             {this.typeInvalidFeedback()}
                                         </div>
                                     </div>
-                                    <div className="col-md-4 col-sm-6">
-                                        <FixNumber
-                                            onChange={(value, isValid) => this.handleInputChange(value, isValid, "price")}
-                                            label={Localization.price}
-                                            placeholder={Localization.price}
-                                            defaultValue={this.state.book.price.value}
-                                            pattern={AppRegex.number}
-                                            patternError={Localization.validation_msg.Just_enter_the_numeric_value}
-                                        />
-                                    </div>
+                                    {
+                                        this.is_price_input_show() === true
+                                            ?
+                                            <div className="col-md-4 col-sm-6">
+                                                <FixNumber
+                                                    onChange={(value, isValid) => this.handleInputChange(value, isValid, "price")}
+                                                    label={Localization.price}
+                                                    placeholder={Localization.price}
+                                                    defaultValue={this.state.book.price.value}
+                                                    pattern={AppRegex.number}
+                                                    patternError={Localization.validation_msg.Just_enter_the_numeric_value}
+                                                />
+                                            </div>
+                                            :
+                                            undefined
+                                    }
                                     <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
@@ -1076,7 +1073,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             }
                                             <AsyncSelect
                                                 isClearable
-                                                placeholder={Localization.person}
+                                                placeholder={Localization.role_type_list.Press}
                                                 cacheOptions
                                                 defaultOptions
                                                 value={this.state.book_roll_press}
@@ -1260,6 +1257,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 </div>
                 {
                     <QuickPerson
+                        is_legal={true}
                         onCreate={(person: IPerson) => this.seterPerson(person)}
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}

@@ -5,7 +5,7 @@ import { BookService } from "../../../service/service.book";
 import { History } from 'history';
 import { Modal } from "react-bootstrap";
 import { IBook } from "../../../model/model.book";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
@@ -451,44 +451,10 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         },
         {
           field: "price", title: Localization.price,
-          // templateFunc: () => {
-          //   return <>
-          //     {Localization.price}
-          //     {
-          //       (this.is_this_sort_exsit_in_state("price+") === false && this.is_this_sort_exsit_in_state("price-") === false)
-          //         ?
-          //         <span
-          //           className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-          //           onClick={() => this.sort_handler_func("price+", "price-", true, 1)}
-          //           onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
-          //           onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
-          //           <i className={this.state.sortShowStyle.price === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
-          //         </span>
-          //         :
-          //         this.is_this_sort_exsit_in_state("price+") === true
-          //           ?
-          //           <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-          //             onClick={() => this.sort_handler_func("price-", "price+", false, 0)}
-          //             onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
-          //             onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
-          //             <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
-          //           </span>
-          //           :
-          //           this.is_this_sort_exsit_in_state("price-") === true
-          //             ?
-          //             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-          //               onClick={() => this.sort_handler_func("price-", "price+", true, 2)}
-          //               onMouseOver={() => this.sort_icon_change_on_mouse_over_out('price', true)}
-          //               onMouseOut={() => this.sort_icon_change_on_mouse_over_out('price', false)}>
-          //               <i className={this.state.sortShowStyle.price === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
-          //             </span>
-          //             :
-          //             undefined
-          //     }
-          //   </>
-          // },
           cellTemplateFunc: (row: IBook) => {
-            if (row.price) {
+            if (AccessService.checkAccess('PRICE_GET_PREMIUM') === false) {
+              return <div className="text-danger text-center">---</div>;
+            } else if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>
             } else if (row.price === 0) {
               return <div className="text-info text-center">0</div>;
@@ -741,6 +707,42 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.fetchBooks();
   }
 
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_GET_PREMIUM'])
+      || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS', 'BOOK_EDIT_PRESS', 'PRICE_GET_PREMIUM'])
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
+      return true;
+    }
+    return false
+  }
+
+  checkPriceAddToolAccess(): boolean {
+    if (AccessService.checkAccess('PRICE_GET_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  // constructor(props: IProps) {
+  //   super(props);
+  //   // this._bookService.setToken(this.props.token)
+  //   // this._priceService.setToken(this.props.token)
+  // }
+
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
     if (is_just_add_or_remove === false) {
       TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
@@ -786,43 +788,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       return this.state.sort;
     }
   }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_ADD_PREMIUM'])
-      || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS', 'BOOK_EDIT_PRESS', 'PRICE_ADD_PRESS'])
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
-      return true;
-    }
-    return false
-  }
-
-  checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAllAccess(['PRICE_ADD_PREMIUM', 'PRICE_GET_PREMIUM', 'PRICE_EDIT_PREMIUM', 'PRICE_DELETE_PREMIUM'])
-      || AccessService.checkAllAccess(['PRICE_ADD_PRESS', 'PRICE_EDIT_PRESS', 'PRICE_DELETE_PRESS'])) {
-      return true;
-    }
-    return false
-  }
-
-  // constructor(props: IProps) {
-  //   super(props);
-  //   // this._bookService.setToken(this.props.token)
-  //   // this._priceService.setToken(this.props.token)
-  // }
 
   updateRow(book_id: any) {
     if (this.checkUpdateToolAccess() === false) {
@@ -917,17 +882,35 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       return;
     }
     this.selectedBook = book;
+    if (typeof book.price !== 'number') {
+      if (AccessService.checkAllAccess(['PRICE_ADD_PREMIUM', 'PRICE_EDIT_PREMIUM']) === false
+        && AccessService.checkAllAccess(['PRICE_ADD_PRESS', 'PRICE_EDIT_PRESS']) === false) {
+          toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
+        return;
+      }
+    }
+    if (typeof book.price === 'number') {
+      if (AccessService.checkOneOFAllAccess(['PRICE_EDIT_PREMIUM','PRICE_EDIT_PRESS']) === false) {
+          toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
+        return;
+      }
+    }
+
     this.setState({
-      ...this.state, priceModalShow: true, price: {
+      ...this.state,
+      priceModalShow: true,
+      price: {
         isValid: (book.price || book.price === 0) ? true : false,
         value: book.price
       }
     });
   }
+
   onHidePriceModal() {
     this.selectedBook = undefined;
     this.setState({ ...this.state, priceModalShow: false });
   }
+
   async onPriceBook(book_id: string) {
     if (this.checkPriceAddToolAccess() === false) {
       return;
@@ -945,7 +928,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       this.onHidePriceModal();
     }
   }
-
 
   handlePriceInputChange(value: number, isValid: boolean) {
     this.setState({
@@ -1000,6 +982,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.set_searchFilter();
     return this._searchFilter;
   }
+
   private set_searchFilter() {
     const obj: any = {};
 
@@ -1019,15 +1002,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true && this.state.filter_state.press.is_valid === true){
+    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === true && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === true){
+    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === false){
+    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === false) {
       persons_of_press = [...wrapper];
       obj['press'] = { $in: persons_of_press };
     }
@@ -1106,13 +1089,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      // this.setFilter();
-      // this.set_searchFilter();
-      this.fetchBooks()
-    });
+    }, () => { this.fetchBooks() });
   }
+
   // define axios for give data
 
   async fetchBooks() {
@@ -1181,7 +1160,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         </>
       );
-
     } else if (this.state.BookError) {
       return;
     } else {
@@ -1217,7 +1195,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-
   // on previous click
 
   onPreviousClick() {
@@ -1246,7 +1223,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       this.fetchBooks()
     });
   }
-
 
   ///// navigation function //////
 
@@ -1319,6 +1295,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       }
     }, () => this.repetReset())
   }
+
   repetReset() {
     this.setState({
       ...this.state,
@@ -1492,24 +1469,13 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
 
   /////  end onChange & search & reset function for search box ///////////
 
-
   ////// start request for options person of press in filter  ////////
 
   private personRequstError_txt: string = Localization.no_item_found;
 
   async promiseOptions2(inputValue: any, callBack: any) {
-    let filter: any = { is_legal: { $eq: true } };
-    if (inputValue) {
-        filter['full_name'] = { $prefix: inputValue };
-    }
-    if(AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
-        let persons_of_press: string[];
-        persons_of_press = [];
-        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-        persons_of_press = [...wrapper];
-        filter['id'] = { $in: persons_of_press };
-    }
-    let res: any = await this._personService.search(10, 0, filter).catch(err => {
+
+    let res: any = await this._personService.searchPress(10, 0, inputValue).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
       this.personRequstError_txt = err_msg.body;
     });

@@ -164,14 +164,18 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         upload_modal: false,
         error_upload_modal: false,
         error_upload_modal_state: 0,
-        pre_generateModalShow : false,
+        pre_generateModalShow: false,
         generateModalShow: false,
     }
 
     //// start navigation for back to BookGeneratorManage /////
 
     backTO() {
-        this.gotoBookGeneratorManage();
+        if( AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === true){
+            this.gotoBookGeneratorManage();
+        }else {
+            this.noAccessRedirect(this.props.history);
+        }
     }
 
     gotoBookGeneratorManage() {
@@ -184,17 +188,21 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     private book_generator_id: string | undefined;
     private book_id: string | undefined;
     selectedContentGenerate: any;
-    bookForGenerate : any;
+    bookForGenerate: any;
 
     componentDidMount() {
-        if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
-            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.book_generator_id = this.props.match.params.book_generator_id;
-            this.fetchContentById(this.props.match.params.book_generator_id);
-        }
-        if (this.props.match.path.includes('/book_generator/:book_id/wizard')) {
-            this.book_id = this.props.match.params.book_id;
-            this.fetchBookById(this.props.match.params.book_id);
+        if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === true) {
+            if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
+                this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+                this.book_generator_id = this.props.match.params.book_generator_id;
+                this.fetchContentById(this.props.match.params.book_generator_id);
+            }
+            if (this.props.match.path.includes('/book_generator/:book_id/wizard')) {
+                this.book_id = this.props.match.params.book_id;
+                this.fetchBookById(this.props.match.params.book_id);
+            }
+        } else {
+            this.noAccessRedirect(this.props.history);
         }
     }
 
@@ -366,31 +374,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     personRequstError_txt: string = Localization.no_item_found;
 
     async promiseOptions2(inputValue: any, callBack: any) {
-        let filter = undefined;
-        if (inputValue) {
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-            filter = { title: { $prefix: inputValue } };
-          }
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-            let persons_of_press: string[];
-            persons_of_press = [];
-            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-            persons_of_press = [...wrapper];
-            filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
-          }
-        }else{
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-            filter = undefined;
-          }
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-            let persons_of_press: string[];
-            persons_of_press = [];
-            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-            persons_of_press = [...wrapper];
-            filter = {press : { $in: persons_of_press }};
-          }
-        };
-        let res: any = await this._bookService.search(10, 0, filter).catch(err => {
+
+        let res: any = await this._bookService.searchWithPress(10, 0, inputValue).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2content_error' } });
             this.personRequstError_txt = err_msg.body;
         });
@@ -546,6 +531,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start create btn function ////////////////////
 
     async create() {
+        if(AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === false){
+            return;
+        }
         if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
             return
         }
@@ -582,9 +570,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.handleError({ error: error.response, toastOptions: { toastId: 'createMsd_error' } });
             });
             if (res) {
-                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
                 this.selectedContentGenerate = res.data;
-                this.setState({...this.state, pre_generateModalShow : true});
+                this.setState({ ...this.state, pre_generateModalShow: true });
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -603,8 +591,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -657,8 +645,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 });
                 if (res) {
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -720,8 +708,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             });
             if (res) {
                 this.selectedContentGenerate = res.data;
-                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                this.setState({...this.state, pre_generateModalShow : true});
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                this.setState({ ...this.state, pre_generateModalShow: true });
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -782,8 +770,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             });
             if (res) {
                 this.selectedContentGenerate = res.data;
-                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                this.setState({...this.state, pre_generateModalShow : true});
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                this.setState({ ...this.state, pre_generateModalShow: true });
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -796,6 +784,9 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start update btn function ////////////////////
 
     async update() {
+        if(AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === false){
+            return;
+        }
         if (this.state.selectedBook === null || this.state.contentType === null) {
             return
         }
@@ -835,8 +826,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             if (res) {
                 this.book_generator_id = undefined;
                 this.selectedContentGenerate = res.data;
-                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                this.setState({...this.state, pre_generateModalShow : true});
+                this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                this.setState({ ...this.state, pre_generateModalShow: true });
                 this.Reset();
                 this.apiSuccessNotify();
             }
@@ -857,8 +848,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 if (res) {
                     this.book_generator_id = undefined;
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -913,8 +904,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 if (res) {
                     this.book_generator_id = undefined;
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -934,8 +925,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 if (res) {
                     this.book_generator_id = undefined;
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -997,8 +988,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 if (res) {
                     this.book_generator_id = undefined;
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -1018,8 +1009,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 if (res) {
                     this.book_generator_id = undefined;
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -1081,8 +1072,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 if (res) {
                     this.book_generator_id = undefined;
                     this.selectedContentGenerate = res.data;
-                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook}).value;
-                    this.setState({...this.state, pre_generateModalShow : true});
+                    this.bookForGenerate = (this.state.selectedBook! as { label: string, value: IBook }).value;
+                    this.setState({ ...this.state, pre_generateModalShow: true });
                     this.Reset();
                     this.apiSuccessNotify();
                 }
@@ -1429,24 +1420,24 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     // start generate modal function define /////
 
-    onHidePreGenerateModal(){
+    onHidePreGenerateModal() {
         this.bookForGenerate = undefined;
         this.selectedContentGenerate = undefined;
-        this.setState({ ...this.state, pre_generateModalShow : false });
-        if(this.state.saveMode === SAVE_MODE.EDIT){
+        this.setState({ ...this.state, pre_generateModalShow: false });
+        if (this.state.saveMode === SAVE_MODE.EDIT) {
             this.backTO();
         }
     }
 
     getGenerateContent() {
-        this.setState({ ...this.state, pre_generateModalShow : false, generateModalShow: true });
+        this.setState({ ...this.state, pre_generateModalShow: false, generateModalShow: true });
     }
 
     onHideGenerateModal() {
         this.bookForGenerate = undefined;
         this.selectedContentGenerate = undefined;
         this.setState({ ...this.state, generateModalShow: false });
-        if(this.state.saveMode === SAVE_MODE.EDIT){
+        if (this.state.saveMode === SAVE_MODE.EDIT) {
             this.backTO();
         }
     }
@@ -1504,14 +1495,20 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
-                                                    <BtnLoader
-                                                        loading={this.state.create_update_loading}
-                                                        btnClassName="btn btn-success shadow-default shadow-hover"
-                                                        onClick={() => this.create()}
-                                                        disabled={this.btn_disable_status()}
-                                                    >
-                                                        {Localization.save + " " + Localization.content}
-                                                    </BtnLoader>
+                                                    {
+                                                        AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === true
+                                                            ?
+                                                            <BtnLoader
+                                                                loading={this.state.create_update_loading}
+                                                                btnClassName="btn btn-success shadow-default shadow-hover"
+                                                                onClick={() => this.create()}
+                                                                disabled={this.btn_disable_status()}
+                                                            >
+                                                                {Localization.save + " " + Localization.content}
+                                                            </BtnLoader>
+                                                            :
+                                                            undefined
+                                                    }
                                                     <BtnLoader
                                                         loading={false}
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
@@ -1522,25 +1519,37 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 </>
                                                 :
                                                 <>
-                                                    <BtnLoader
-                                                        loading={this.state.create_update_loading}
-                                                        btnClassName="btn btn-info shadow-default shadow-hover"
-                                                        onClick={() => this.update()}
-                                                        disabled={this.btn_disable_status()}
-                                                    >
-                                                        {Localization.update}
-                                                    </BtnLoader>
+                                                    {
+                                                        AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === true
+                                                            ?
+                                                            <BtnLoader
+                                                                loading={this.state.create_update_loading}
+                                                                btnClassName="btn btn-info shadow-default shadow-hover"
+                                                                onClick={() => this.update()}
+                                                                disabled={this.btn_disable_status()}
+                                                            >
+                                                                {Localization.update}
+                                                            </BtnLoader>
+                                                            :
+                                                            undefined
+                                                    }
                                                 </>
                                         }
                                     </div>
-                                    <BtnLoader
-                                        btnClassName="btn btn-primary shadow-default shadow-hover"
-                                        loading={false}
-                                        onClick={() => this.backTO()}
-                                        disabled={false}
-                                    >
-                                        {Localization.back}
-                                    </BtnLoader>
+                                    {
+                                        AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === true
+                                            ?
+                                            <BtnLoader
+                                                btnClassName="btn btn-primary shadow-default shadow-hover"
+                                                loading={false}
+                                                onClick={() => this.backTO()}
+                                                disabled={false}
+                                            >
+                                                {Localization.back}
+                                            </BtnLoader>
+                                            :
+                                            undefined
+                                    }
                                 </div>
                             </div>
                         </div>

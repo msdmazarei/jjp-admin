@@ -247,7 +247,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           },
           cellTemplateFunc: (row: any) => {
             if (row.creator) {
-            return <div>{row.creator}</div>
+              return <div>{row.creator}</div>
             }
             return '';
           }
@@ -337,7 +337,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           },
           cellTemplateFunc: (row: any) => {
             if (row.modifier) {
-            return <div>{row.modifier}</div>
+              return <div>{row.modifier}</div>
             }
             return '';
           }
@@ -524,13 +524,26 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   private _bookService = new BookService();
 
   componentDidMount() {
-    moment.locale("en");
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    TABLE_SORT.sortArrayReseter();
-    this.fetchBooksContent();
+    if (this.checkBookContentManagePageRender() === true) {
+      moment.locale("en");
+      if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === true) {
+        this.setState({
+          ...this.state,
+          tableProcessLoader: true
+        })
+        TABLE_SORT.sortArrayReseter();
+        this.fetchBooksContent();
+      }
+    } else {
+      this.noAccessRedirect(this.props.history);
+    }
+  }
+
+  checkBookContentManagePageRender(): boolean {
+    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS', 'BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS'])) {
+      return true;
+    }
+    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -737,6 +750,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchBooksContent() {
+    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false){
+      return;
+    }
     this.setState({ ...this.state, tableProcessLoader: true })
     let res = await this._bookContentService.search(
       this.state.pager_limit,
@@ -872,10 +888,10 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookContentCreate() {
-    // if (AccessService.checkAccess('') === false && AccessService.checkAccess('') === false) {
-    //   return;
-    // };
-    this.props.history.push('/book_generator/create'); // /admin
+    if(AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false){
+      return;
+    }
+    this.props.history.push('/book_generator/create');
   }
 
 
@@ -934,6 +950,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   filterSearch() {
+    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false){
+      return;
+    }
     this.setState({
       ...this.state,
       filterSearchBtnLoader: true,
@@ -1166,31 +1185,8 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   private personRequstError_txt: string = Localization.no_item_found;
 
   async promiseOptions2_book_search(inputValue: any, callBack: any) {
-    let filter = undefined;
-    if (inputValue) {
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-        filter = { title: { $prefix: inputValue } };
-      }
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-        let persons_of_press: string[];
-        persons_of_press = [];
-        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-        persons_of_press = [...wrapper];
-        filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
-      }
-    }else{
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-        filter = undefined;
-      }
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-        let persons_of_press: string[];
-        persons_of_press = [];
-        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-        persons_of_press = [...wrapper];
-        filter = {press : { $in: persons_of_press }};
-      }
-    };
-    let res: any = await this._bookService.search(10, 0, filter).catch(err => {
+
+    let res: any = await this._bookService.searchWithPress(10, 0, inputValue).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
       this.personRequstError_txt = err_msg.body;
     });
@@ -1248,20 +1244,20 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
-              {/* {
-            AccessService.checkAccess('BOOK_ADD_PREMIUM') || AccessService.checkAccess('BOOK_ADD_PRESS')
-              ? */}
-              <BtnLoader
-                loading={false}
-                disabled={false}
-                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoBookContentCreate()}
-              >
-                {Localization.new}
-              </BtnLoader>
-              {/* :
-              undefined
-            } */}
+              {
+                AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') || AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS')
+                  ?
+                  <BtnLoader
+                    loading={false}
+                    disabled={false}
+                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                    onClick={() => this.gotoBookContentCreate()}
+                  >
+                    {Localization.new}
+                  </BtnLoader>
+                  :
+                  undefined
+              }
             </div>
           </div>
           {/* start search box */}

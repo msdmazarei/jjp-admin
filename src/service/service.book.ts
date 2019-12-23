@@ -1,6 +1,8 @@
 // import Axios from "axios";
 import { IBook } from "../model/model.book";
 import { IAPI_Response, IAPI_ResponseList, BaseService } from "./service.base";
+import { AccessService } from "./service.access";
+import { Store2 } from "../redux/store";
 
 export class BookService extends BaseService {
     // instance = Axios.create({
@@ -15,16 +17,34 @@ export class BookService extends BaseService {
     search(limit: number, skip: number, filter?: Object , sort?: string[]): Promise<IAPI_ResponseList<IBook>> { 
         return this.axiosTokenInstance.post(`/books/filter-book`, { limit, skip, filter, sort });
     } 
-    // change path from _search to filter-boo
 
-
-    // bookById(bookId: string) {
-    //     return this.axiosTokenInstance.post(`/books/_search`, { filter: { id: { bookId } } });
-    // }
-
-    // bookEditById(editedbook: {}) {
-    //     return this.instance.put("url", editedbook)
-    // }
+    searchWithPress(limit: number, skip: number, inputValue: any): Promise<IAPI_ResponseList<IBook>> { 
+        let filter = undefined;
+        if (inputValue) {
+            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === true) {
+                filter = { title: { $prefix: inputValue } };
+            }
+            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false) {
+                let persons_of_press: string[];
+                persons_of_press = [];
+                const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+                persons_of_press = [...wrapper];
+                filter = { title: { $prefix: inputValue }, press: { $in: persons_of_press } };
+            }
+        } else {
+            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === true) {
+                filter = undefined;
+            }
+            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false) {
+                let persons_of_press: string[];
+                persons_of_press = [];
+                const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+                persons_of_press = [...wrapper];
+                filter = { press: { $in: persons_of_press } };
+            }
+        };
+        return this.axiosTokenInstance.post(`/books/filter-book`, { limit, skip,filter });
+    }
 
     remove(bookId: string) {
         return this.axiosTokenInstance.delete(`/books/${bookId}`);

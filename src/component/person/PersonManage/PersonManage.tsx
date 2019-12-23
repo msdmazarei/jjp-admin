@@ -489,6 +489,44 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
+  checkPersonManagePageRender(): boolean {
+    if (AccessService.checkOneOFAllAccess(['PERSON_GET_PREMIUM', 'PERSON_ADD_PREMIUM'])) {
+      return true;
+    }
+    return false
+  }
+
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['PERSON_DELETE_PREMIUM', 'PERSON_EDIT_PREMIUM'])) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('PERSON_DELETE_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('PERSON_EDIT_PREMIUM')) {
+      return true;
+    }
+    return false
+  }
+
+  selectedPerson: IPerson | undefined;
+  private _personService = new PersonService();
+  // private _priceService = new PriceService();
+
+  // constructor(props: IProps) {
+  //   super(props);
+  //   // this._personService.setToken(this.props.token)
+  // }
+
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
     if (is_just_add_or_remove === false) {
       TABLE_SORT.coming_field_name_by_sortType_and_that_reverseType_exist_in_sortArray(comingType, reverseType);
@@ -534,44 +572,6 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       return this.state.sort;
     }
   }
-
-  checkPersonManagePageRender(): boolean {
-    if (AccessService.checkOneOFAllAccess(['PERSON_GET_PREMIUM', 'PERSON_ADD_PREMIUM'])) {
-      return true;
-    }
-    return false
-  }
-
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['PERSON_DELETE_PREMIUM', 'PERSON_EDIT_PREMIUM'])) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('PERSON_DELETE_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('PERSON_EDIT_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  selectedPerson: IPerson | undefined;
-  private _personService = new PersonService();
-  // private _priceService = new PriceService();
-
-  // constructor(props: IProps) {
-  //   super(props);
-  //   // this._personService.setToken(this.props.token)
-  // }
 
   updateRow(person_id: any) {
     if (!AccessService.checkAccess('PERSON_EDIT_PREMIUM')) {

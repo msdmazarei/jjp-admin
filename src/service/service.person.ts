@@ -1,5 +1,7 @@
 import { IAPI_Response,IAPI_ResponseList, BaseService } from "./service.base";
 import { IPerson } from "../model/model.person";
+import { AccessService } from "./service.access";
+import { Store2 } from "../redux/store";
 
 export class PersonService extends BaseService {
 
@@ -10,11 +12,22 @@ export class PersonService extends BaseService {
     
     search(limit: number, skip: number, filter?: Object, sort?: string[]): Promise<IAPI_ResponseList<IPerson>> {
         return this.axiosTokenInstance.post(`/persons/_search`, { limit, skip, filter, sort });
-        // return this.instance.post(`http://book.mazarei.id.ir/persons/_search`, { limit, skip, filter});
     }
-    // search(limit: number, skip: number): Promise<IAPI_ResponseList<IPerson>> {
-    //     return this.axiosTokenInstance.post(`/books/_search`, { limit, skip });
-    // }
+
+    searchPress(limit: number, skip: number, inputValue?: any): Promise<IAPI_ResponseList<IPerson>> {
+        let filter: any = { is_legal: { $eq: true } };
+        if (inputValue) {
+            filter['full_name'] = { $prefix: inputValue };
+        }
+        if(AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
+            let persons_of_press: string[];
+            persons_of_press = [];
+            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+            persons_of_press = [...wrapper];
+            filter['id'] = { $in: persons_of_press };
+        }
+        return this.axiosTokenInstance.post(`/persons/_search`, { limit, skip, filter});
+    }
 
     remove(personId: string) {
         return this.axiosTokenInstance.delete(`/persons/${personId}`);

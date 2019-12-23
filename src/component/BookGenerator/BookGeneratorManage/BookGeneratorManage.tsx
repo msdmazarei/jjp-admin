@@ -26,7 +26,6 @@ import AsyncSelect from 'react-select/async';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { AccessService } from "../../../service/service.access";
-import { Store2 } from "../../../redux/store";
 // import { AccessService } from "../../../service/service.access"
 
 

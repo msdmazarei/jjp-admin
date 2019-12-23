@@ -25,7 +25,6 @@ import { EpubGenerator } from '../BookGeneratorTools/EpubGenerator/EpubGenerator
 import { GetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/GetGenerateOrStatusModal/GetGenerateOrStatusModal';
 import { PreGetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/PreGetGenerateOrStatusModal/PreGetGenerateOrStatusModal';
 import { AccessService } from '../../../service/service.access';
-import { Store2 } from '../../../redux/store';
 interface ICmp_select<T> {
     label: string;
     value: T

@@ -31,6 +31,7 @@ export const fa = {
             book_creation_successful_do_you_want_to_create_content_for_this_book : 'ایجاد کتاب با موفقیت انجام شد، آیا می خواهید برای این کتاب محتوا ایجاد کنید؟',
             content_saved_successfully_do_you_want_to_make_the_book : 'ذخیره محتوا با موفقیت انجام شد، آیا می خواهید کتاب را بسازید؟',
             choose_the_type_of_book: 'نوع کتاب را انتخاب کنید:',
+            there_is_no_access_for_you : 'برای شما امکان دسترسی وجود ندارد.',
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : 'عنوان فصل نمی تواند خالی باشد.',
                 chapter_title_and_content_cannot_be_blank : 'عنوان و محتوا فصل نمی تواند خالی باشد.',

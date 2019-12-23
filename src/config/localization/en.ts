@@ -31,6 +31,7 @@ export const en = {
             book_creation_successful_do_you_want_to_create_content_for_this_book : 'book creation successful, do you want to create content for this book?',
             content_saved_successfully_do_you_want_to_make_the_book : 'Content saved successfully, do you want to make the book?',
             choose_the_type_of_book : 'Choose the type of book:',
+            there_is_no_access_for_you : 'there is no access for you.',
             admin_book_content_generate:{
                 chapter_title_cannot_be_blank : 'chapter title cannot be blank.',
                 chapter_title_and_content_cannot_be_blank : 'chapter title and content cannot be blank.',

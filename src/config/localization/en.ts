@@ -533,6 +533,6 @@ export const en = {
         Just_enter_the_email: "Just enter the email",
         Just_enter_the_numeric_value: "Just enter the numeric value",
         just_one_image_person_can_have: "You can only upload an image Please delete the previous image",
-        file_can_not_added: "file can not be added.",
+        file_can_not_added: "file can not be added.(max size of file is 500KB)",
     },
 }

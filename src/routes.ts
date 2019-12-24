@@ -133,7 +133,7 @@ var routes = [
     component: UserManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: []
+    PERMISSIONS: ['USER_GET_PREMIUM']
   },
   {
     path: "/user/create",
@@ -268,7 +268,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: true,
     brandName: ['transaction', 'edit'],
-    PERMISSIONS: ['TRANSACTION_ADD_PREMIUM']
+    PERMISSIONS: ['TRANSACTION_GET_PREMIUM']
   },
   // transaction end
 ];

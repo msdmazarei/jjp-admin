@@ -115,25 +115,25 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     private person_id: string | undefined;
 
     componentDidMount() {
-        // this._personService.setToken(this.props.token);
-        // this._uploadService.setToken(this.props.token);
-
         if (this.props.match.path.includes('/person/:person_id/edit')) {
-            if(AccessService.checkAccess('PERSON_EDIT_PREMIUM')){
+            if (AccessService.checkAccess('PERSON_EDIT_PREMIUM') === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.person_id = this.props.match.params.person_id;
                 this.fetchPersonById(this.props.match.params.person_id);
-            }else{
+            } else {
                 this.noAccessRedirect(this.props.history);
             }
-        }else{
-            if(!AccessService.checkAccess('PERSON_ADD_PREMIUM')){
+        } else {
+            if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
     }
 
     async fetchPersonById(person_id: string) {
+        if (AccessService.checkAccess('PERSON_GET_PREMIUM') === false) {
+            return;
+        }
         let res = await this._personService.byId(person_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPersonById_error' } });
         });
@@ -222,6 +222,9 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     // add person function 
 
     async create() {
+        if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false) {
+            return;
+        }
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
         let imgUrls = await this.uploadFileReq().catch(error => {
@@ -253,6 +256,9 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
+        if (AccessService.checkAccess('PERSON_EDIT_PREMIUM') === false) {
+            return;
+        }
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 
@@ -286,6 +292,9 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
+        if(AccessService.checkOneOFAllAccess(['PERSON_ADD_PREMIUM', 'PERSON_GET_PREMIUM']) === false){
+            return;
+        }
         this.gotoPersonManage();
     }
 
@@ -628,14 +637,20 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
 
                                         }
                                     </div>
-                                    <BtnLoader
-                                        btnClassName="btn btn-primary shadow-default shadow-hover"
-                                        loading={false}
-                                        onClick={() => this.backTO()}
-                                        disabled={false}
-                                    >
-                                        {Localization.back}
-                                    </BtnLoader>
+                                    {
+                                        AccessService.checkOneOFAllAccess(['PERSON_ADD_PREMIUM', 'PERSON_GET_PREMIUM'])
+                                            ?
+                                            <BtnLoader
+                                                btnClassName="btn btn-primary shadow-default shadow-hover"
+                                                loading={false}
+                                                onClick={() => this.backTO()}
+                                                disabled={false}
+                                            >
+                                                {Localization.back}
+                                            </BtnLoader>
+                                            :
+                                            undefined
+                                    }
                                 </div>
                             </div>
                         </div>

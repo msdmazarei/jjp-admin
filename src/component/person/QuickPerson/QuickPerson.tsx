@@ -158,7 +158,9 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
 
 
     async quickAddPerson() {
-        if (!AccessService.checkAccess('PERSON_ADD_PREMIUM')) return;
+        if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false){
+            return;
+        } 
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, quickPersonAddBtnLoader: true, });
         let imgUrls = await this.uploadFileReq().catch(error => {

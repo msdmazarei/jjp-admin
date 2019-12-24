@@ -28,7 +28,6 @@ import AsyncSelect from 'react-select/async';
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { Store2 } from "../../../redux/store";
 
 /// define props & state ///////
 export interface IProps {
@@ -506,8 +505,8 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // timestamp to date 
 
   componentDidMount() {
-    if (this.checkPageRenderAccess()) {
-      if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
+    if (this.checkPageRenderAccess() === true) {
+      if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -567,28 +566,28 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPageRenderAccess(): boolean {
-    if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
+    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM']) === true) {
       return true;
     }
     return false;
   }
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM', 'COMMENT_DELETE_PREMIUM'])) {
+    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM', 'COMMENT_DELETE_PREMIUM']) === true) {
       return true;
     }
     return false;
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM')) {
+    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM') === true) {
       return true;
     }
     return false
   }
 
   checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess('COMMENT_GET_PREMIUM')) {
+    if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === true) {
       return true;
     }
     return false
@@ -616,6 +615,9 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // comment show modal function define
 
   onShowCommentModal(comment: IComment) {
+    if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === false) {
+      return;
+    }
     this.selectedComment = comment;
     this.setState({ ...this.state, commentModalShow: true });
   }
@@ -701,6 +703,9 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(comment: IComment) {
+    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.selectedComment = comment;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -711,6 +716,9 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveComment(comment_id: string) {
+    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._commentService.remove(comment_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveComment_error' } });
@@ -757,6 +765,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   private _searchFilter: any | undefined;
   private get_searchFilter() {
+    this.set_searchFilter();
     return this._searchFilter;
   }
   private set_searchFilter() {
@@ -821,15 +830,13 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      // this.setFilter();
-      this.set_searchFilter();
-      this.fetchComments()
-    });
+    }, () => {this.fetchComments()});
   }
 
   async fetchComments() {
+    if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === false) {
+      return;
+    }
     this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._commentService.search(
       this.state.pager_limit,
@@ -1156,31 +1163,8 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   private bookRequstError_txt: string = Localization.no_item_found;
 
   async promiseOptions2_book_search(inputValue: any, callBack: any) {
-    let filter = undefined;
-    if (inputValue) {
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-        filter = { title: { $prefix: inputValue } };
-      }
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-        let persons_of_press: string[];
-        persons_of_press = [];
-        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-        persons_of_press = [...wrapper];
-        filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
-      }
-    }else{
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-        filter = undefined;
-      }
-      if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-        let persons_of_press: string[];
-        persons_of_press = [];
-        const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-        persons_of_press = [...wrapper];
-        filter = {press : { $in: persons_of_press }};
-      }
-    };
-    let res: any = await this._bookService.search(10, 0, filter).catch(err => {
+    
+    let res: any = await this._bookService.searchWithPress(10, 0, inputValue).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'bookSearch_in_comment_error' } });
       this.bookRequstError_txt = err_msg.body;
     });

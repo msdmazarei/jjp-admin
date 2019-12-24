@@ -26,6 +26,7 @@ import AsyncSelect from 'react-select/async';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { AccessService } from "../../../service/service.access";
+import { Store2 } from "../../../redux/store";
 // import { AccessService } from "../../../service/service.access"
 
 
@@ -590,35 +591,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       return this.state.sort;
     }
   }
-  // checkAllAccess(): boolean {
-  //   if (AccessService.checkOneOFAllAccess([])
-  //     || AccessService.checkOneOFAllAccess([])
-  //   ) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  // checkDeleteToolAccess(): boolean {
-  //   if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
-  //     return true;
-  //   }
-  //   return false
-  // }
-
-  // checkUpdateToolAccess(): boolean {
-  //   if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
-  //     return true;
-  //   }
-  //   return false
-  // }
-
-  // checkPriceAddToolAccess(): boolean {
-  //   if (AccessService.checkAccess('') || AccessService.checkAccess('')) {
-  //     return true;
-  //   }
-  //   return false
-  // }
 
   // constructor(props: IProps) {
   //   super(props);
@@ -629,9 +601,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
 
   updateRow(book_generator_id: any) {
-    // if (this.checkUpdateToolAccess() === false) {
-    //   return;
-    // }
+    if(AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false){
+      return;
+    }
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
   }
 
@@ -896,10 +868,19 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
   private _searchFilter: any | undefined;
   private get_searchFilter() {
+    this.set_searchFilter();
     return this._searchFilter;
   }
   private set_searchFilter() {
     const obj: any = {};
+
+    let persons_of_press: string[];
+    persons_of_press = [];
+    const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+    if (AccessService.checkAccess('BOOK_CONTENT_GET_PREMIUM') === false ) {
+      persons_of_press = [...wrapper];
+      obj['book_press'] = { $in: persons_of_press };
+    }
 
     if (this.state.filter_state.book.is_valid) {
       obj['book_id'] = { $eq: this.state.filter_state.book.book_id };
@@ -960,7 +941,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     }, () => {
       // this.gotoTop();
       // this.setFilter();
-      this.set_searchFilter();
       this.fetchBooksContent()
     });
   }

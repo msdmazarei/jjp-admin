@@ -15,6 +15,7 @@ import { IPerson } from '../../../model/model.person';
 import { PersonService } from '../../../service/service.person';
 import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
+import { AccessService } from '../../../service/service.access';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -285,11 +286,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     private personRequstError_txt: string = Localization.no_item_found;
 
     async promiseOptions2(inputValue: any, callBack: any) {
-        let filter = undefined;
-        if (inputValue) {
-            filter = {full_name : {$prefix : inputValue} };
-        }
-        let res: any = await this._personService.search(10, 0, filter).catch(err => {
+        let res: any = await this._personService.searchPress(10, 0, inputValue).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
             this.personRequstError_txt = err_msg.body;
         });
@@ -398,11 +395,17 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                     </div>
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}</label>
-                                        <i
-                                            title={Localization.Quick_person_creation}
-                                            className="fa fa-plus-circle cursor-pointer text-success mx-1"
-                                            onClick={() => this.quickpersonOpen()}
-                                        ></i>
+                                        {
+                                            AccessService.checkAccess('PERSON_ADD_PREMIUM') === true
+                                                ?
+                                                <i
+                                                    title={Localization.Quick_person_creation}
+                                                    className="fa fa-plus-circle cursor-pointer text-success mx-1"
+                                                    onClick={() => this.quickpersonOpen()}
+                                                ></i>
+                                                :
+                                                undefined
+                                        }
                                         <AsyncSelect
                                             placeholder={Localization.person}
                                             cacheOptions
@@ -472,7 +475,8 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                 <ToastContainer {...this.getNotifyContainerConfig()} />
                 {
                     <QuickPerson
-                        data = {0}
+                        is_legal={true}
+                        data={0}
                         onCreate={(person: IPerson, index: number) => this.seterPerson(person)}
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}

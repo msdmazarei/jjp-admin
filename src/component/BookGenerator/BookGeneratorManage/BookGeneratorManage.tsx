@@ -601,7 +601,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
 
   updateRow(book_generator_id: any) {
-    if(AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false){
+    if (AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false) {
       return;
     }
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
@@ -718,7 +718,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchBooksContent() {
-    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false){
+    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true })
@@ -856,7 +856,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookContentCreate() {
-    if(AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false){
+    if (AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false) {
       return;
     }
     this.props.history.push('/book_generator/create');
@@ -874,7 +874,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (AccessService.checkAccess('BOOK_CONTENT_GET_PREMIUM') === false ) {
+    if (AccessService.checkAccess('BOOK_CONTENT_GET_PREMIUM') === false) {
       persons_of_press = [...wrapper];
       obj['book_press'] = { $in: persons_of_press };
     }
@@ -927,7 +927,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   filterSearch() {
-    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false){
+    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false) {
       return;
     }
     this.setState({
@@ -935,7 +935,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {this.fetchBooksContent()});
+    }, () => { this.fetchBooksContent() });
   }
 
 
@@ -1232,145 +1232,153 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
               }
             </div>
           </div>
-          {/* start search box */}
-          <div className="row">
-            <div className="col-12">
-              <div className="template-box mb-4">
-                <div className="d-flex justify-content-center mb-1">
-                  {
-                    this.state.advance_search_box_show === false
-                      ?
-                      <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
-                        <span className="mx-2">{Localization.advanced_search}</span>
-                        <i className="fa fa-angle-down mx-2"></i>
+          {
+            AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === true
+              ?
+              <>
+                {/* start search box */}
+                <div className="row">
+                  <div className="col-12">
+                    <div className="template-box mb-4">
+                      <div className="d-flex justify-content-center mb-1">
+                        {
+                          this.state.advance_search_box_show === false
+                            ?
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-down mx-2"></i>
+                            </div>
+                            :
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-up mx-2"></i>
+                            </div>
+                        }
                       </div>
-                      :
-                      <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
-                        <span className="mx-2">{Localization.advanced_search}</span>
-                        <i className="fa fa-angle-up mx-2"></i>
+                      {/* start search box inputs */}
+                      <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
+                        <div className="col-md-3 col-sm-6">
+                          <label >{Localization.book}</label>
+                          <i
+                            title={Localization.reset}
+                            className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
+                            onClick={() => this.book_in_search_remover()}
+                          ></i>
+                          <AsyncSelect
+                            placeholder={Localization.book}
+                            cacheOptions
+                            defaultOptions
+                            value={this.state.filter_state.book.value}
+                            loadOptions={(inputValue, callback) => this.debounce_300_book_search(inputValue, callback)}
+                            noOptionsMessage={(obj) => this.select_noOptionsMessage_book_search(obj)}
+                            onChange={(selectedBook: any) => this.handleBookChange(selectedBook)}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <div className="form-group">
+                            <label htmlFor="">{Localization.type + " " + Localization.content}</label>
+                            <i
+                              title={Localization.reset}
+                              className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                              onClick={() => this.contentType_in_search_remover()}
+                            ></i>
+                            <Select
+                              onChange={(value: any) => this.handleContentTypeSelectInputChange(value)}
+                              options={this.contentTypeOptions}
+                              value={this.state.filter_state.contentType.value}
+                              placeholder={Localization.type + " " + Localization.content}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                            label={Localization.creator}
+                            placeholder={Localization.creator}
+                            defaultValue={this.state.filter_state.creator.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'modifier')}
+                            label={Localization.modifier}
+                            placeholder={Localization.modifier}
+                            defaultValue={this.state.filter_state.modifier.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <div className="form-group">
+                            <label htmlFor="">{Localization.status + " " + Localization.content}</label>
+                            <i
+                              title={Localization.reset}
+                              className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
+                              onClick={() => this.isgenerated_status_in_search_remover()}
+                            ></i>
+                            <Select
+                              onChange={(value: any) => this.handleIsGeneratedSelectInputChange(value)}
+                              options={this.isgeneratedOptions}
+                              value={this.state.filter_state.isgenerated.value}
+                              placeholder={Localization.status + " " + Localization.content}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.creation_date}
+                            from={this.state.filter_state.cr_date.from}
+                            to={this.state.filter_state.cr_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.modification_date}
+                            from={this.state.filter_state.mo_date.from}
+                            to={this.state.filter_state.mo_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
+                          />
+                        </div>
                       </div>
-                  }
-                </div>
-                {/* start search box inputs */}
-                <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
-                  <div className="col-md-3 col-sm-6">
-                    <label >{Localization.book}</label>
-                    <i
-                      title={Localization.reset}
-                      className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
-                      onClick={() => this.book_in_search_remover()}
-                    ></i>
-                    <AsyncSelect
-                      placeholder={Localization.book}
-                      cacheOptions
-                      defaultOptions
-                      value={this.state.filter_state.book.value}
-                      loadOptions={(inputValue, callback) => this.debounce_300_book_search(inputValue, callback)}
-                      noOptionsMessage={(obj) => this.select_noOptionsMessage_book_search(obj)}
-                      onChange={(selectedBook: any) => this.handleBookChange(selectedBook)}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <div className="form-group">
-                      <label htmlFor="">{Localization.type + " " + Localization.content}</label>
-                      <i
-                        title={Localization.reset}
-                        className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
-                        onClick={() => this.contentType_in_search_remover()}
-                      ></i>
-                      <Select
-                        onChange={(value: any) => this.handleContentTypeSelectInputChange(value)}
-                        options={this.contentTypeOptions}
-                        value={this.state.filter_state.contentType.value}
-                        placeholder={Localization.type + " " + Localization.content}
-                      />
+                      {/* end search box inputs */}
+                      {/* start search btns box */}
+                      <div className="row mt-1">
+                        <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
+                          <BtnLoader
+                            disabled={this.state.tableProcessLoader}
+                            loading={this.state.filterSearchBtnLoader}
+                            btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
+                            onClick={() => this.filterSearch()}
+                          >
+                            {Localization.search}
+                          </BtnLoader>
+                          <BtnLoader
+                            // disabled={this.state.tableProcessLoader}
+                            loading={false}
+                            btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
+                            onClick={() => this.filter_state_reset()}
+                          >
+                            {Localization.reset}
+                          </BtnLoader>
+                        </div>
+                      </div>
+                      {/* end search btns box */}
                     </div>
                   </div>
-                  <div className="col-md-3 col-sm-6">
-                    <Input
-                      onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
-                      label={Localization.creator}
-                      placeholder={Localization.creator}
-                      defaultValue={this.state.filter_state.creator.value}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <Input
-                      onChange={(value, isValid) => this.handleInputChange(value, 'modifier')}
-                      label={Localization.modifier}
-                      placeholder={Localization.modifier}
-                      defaultValue={this.state.filter_state.modifier.value}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <div className="form-group">
-                      <label htmlFor="">{Localization.status + " " + Localization.content}</label>
-                      <i
-                        title={Localization.reset}
-                        className="fa fa-times cursor-pointer remover-in_box text-danger mx-1"
-                        onClick={() => this.isgenerated_status_in_search_remover()}
-                      ></i>
-                      <Select
-                        onChange={(value: any) => this.handleIsGeneratedSelectInputChange(value)}
-                        options={this.isgeneratedOptions}
-                        value={this.state.filter_state.isgenerated.value}
-                        placeholder={Localization.status + " " + Localization.content}
-                      />
+                </div>
+                {/* end search  box */}
+                <div className="row">
+                  <div className="col-12">
+                    <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.content_table.list} colHeaders={this.state.content_table.colHeaders} actions={this.state.content_table.actions}></Table>
+                    <div>
+                      {this.pager_previous_btn_render()}
+                      {this.pager_next_btn_render()}
                     </div>
                   </div>
-                  <div className="col-md-3 col-sm-6">
-                    <AppRangePicker
-                      label={Localization.creation_date}
-                      from={this.state.filter_state.cr_date.from}
-                      to={this.state.filter_state.cr_date.to}
-                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <AppRangePicker
-                      label={Localization.modification_date}
-                      from={this.state.filter_state.mo_date.from}
-                      to={this.state.filter_state.mo_date.to}
-                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
-                    />
-                  </div>
                 </div>
-                {/* end search box inputs */}
-                {/* start search btns box */}
-                <div className="row mt-1">
-                  <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
-                    <BtnLoader
-                      disabled={this.state.tableProcessLoader}
-                      loading={this.state.filterSearchBtnLoader}
-                      btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
-                      onClick={() => this.filterSearch()}
-                    >
-                      {Localization.search}
-                    </BtnLoader>
-                    <BtnLoader
-                      // disabled={this.state.tableProcessLoader}
-                      loading={false}
-                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filter_state_reset()}
-                    >
-                      {Localization.reset}
-                    </BtnLoader>
-                  </div>
-                </div>
-                {/* end search btns box */}
-              </div>
-            </div>
-          </div>
-          {/* end search  box */}
-          <div className="row">
-            <div className="col-12">
-              <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.content_table.list} colHeaders={this.state.content_table.colHeaders} actions={this.state.content_table.actions}></Table>
-              <div>
-                {this.pager_previous_btn_render()}
-                {this.pager_next_btn_render()}
-              </div>
-            </div>
-          </div>
+              </>
+              :
+              undefined
+          }
         </div>
         {
           this.selectedContentGenerate === undefined

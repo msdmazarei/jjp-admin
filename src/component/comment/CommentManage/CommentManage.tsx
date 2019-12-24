@@ -1264,7 +1264,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('COMMENT_GET_PREMIUM')
+            AccessService.checkAccess('COMMENT_GET_PREMIUM') === true
               ?
               <>
                 {/* start search box */}
@@ -1390,10 +1390,6 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                   </div>
                 </div>
                 {/* end search  box */}
-                <div className="row">
-                  <div className="col-12">
-                  </div>
-                </div>
                 <div className="row">
                   <div className="col-12">
                     <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.comment_table.list} colHeaders={this.state.comment_table.colHeaders} actions={this.state.comment_table.actions}></Table>

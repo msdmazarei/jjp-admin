@@ -1077,7 +1077,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('PERSON_GET_PREMIUM')
+            AccessService.checkAccess('PERSON_GET_PREMIUM') === true
               ?
               <>
                 {/* start search box */}

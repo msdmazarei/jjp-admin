@@ -1035,7 +1035,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('USER_GET_PREMIUM')
+            AccessService.checkAccess('USER_GET_PREMIUM') === true
               ?
               <>
                 {/* start search box */}

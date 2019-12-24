@@ -663,7 +663,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     onDropRejectedNotify(files: any[]) {
-        toast.warn(`${files.length} files can not be added.`, this.getNotifyConfig());
+        toast.warn(Localization.validation_msg.file_can_not_added, this.getNotifyConfig());
     }
 
     onDrop(files: any[]) {

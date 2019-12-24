@@ -35,7 +35,7 @@ interface IFilterPerson {
     value: string | undefined,
     isValid: boolean
   };
-  full_name: {
+  last_name: {
     value: string | undefined,
     isValid: boolean
   };
@@ -430,7 +430,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         value: undefined,
         isValid: false
       },
-      full_name: {
+      last_name: {
         value: undefined,
         isValid: false
       },
@@ -830,8 +830,8 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       obj['name'] = { $prefix: this.state.filter_state.name.value };
     }
 
-    if (this.state.filter_state.full_name.isValid) {
-      obj['full_name'] = { $prefix: this.state.filter_state.full_name.value };
+    if (this.state.filter_state.last_name.isValid) {
+      obj['last_name'] = { $prefix: this.state.filter_state.last_name.value };
     }
 
     if (this.state.filter_state.is_legal.isValid) {
@@ -890,7 +890,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           value: undefined,
           isValid: false
         },
-        full_name: {
+        last_name: {
           value: undefined,
           isValid: false
         },
@@ -933,7 +933,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           value: undefined,
           isValid: false
         },
-        full_name: {
+        last_name: {
           value: undefined,
           isValid: false
         },
@@ -1111,10 +1111,10 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                         </div>
                         <div className="col-md-3 col-sm-6">
                           <Input
-                            onChange={(value, isValid) => this.handleInputChange(value, 'full_name')}
+                            onChange={(value, isValid) => this.handleInputChange(value, 'last_name')}
                             label={Localization.lastname}
                             placeholder={Localization.lastname}
-                            defaultValue={this.state.filter_state.full_name.value}
+                            defaultValue={this.state.filter_state.last_name.value}
                           />
                         </div>
                         <div className="col-md-3 col-sm-6">

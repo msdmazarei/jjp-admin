@@ -12,8 +12,6 @@ import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { BookService } from '../../../service/service.book';
 import { IBook } from '../../../model/model.book';
-import { AccessService } from '../../../service/service.access';
-import { Store2 } from '../../../redux/store';
 
 interface IBookRow {
     id: string;

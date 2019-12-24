@@ -247,7 +247,7 @@ export abstract class BaseComponent<p extends IBaseProps, S = {}, SS = any> exte
     }
 
     noAccessNotify() {
-        toast.warn('Localization.msg.ui.msg', this.getNotifyConfig({ autoClose: Setup.notify.timeout.warning }));
+        toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig({ autoClose: Setup.notify.timeout.warning }));
     }
 
 

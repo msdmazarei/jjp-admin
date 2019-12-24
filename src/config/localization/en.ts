@@ -98,6 +98,7 @@ export const en = {
             person_has_books: 'person already has roles for books',
             book_not_in_lib: 'book is not in users library and cannot add to a collection',
             used_somewhere :'the row cannot be deleted due to use.',
+            deleting_the_item_encountered_a_problem : 'the row cannot be deleted due to use.',
             cell_no_exists : 'the mobile field cannot be empty.',
         }
     },

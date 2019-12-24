@@ -281,7 +281,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     componentDidMount() {
         if (this.props.match.path.includes('/book/:book_id/edit')) {
             if (this.checkBookUpdateAccess()) {
-                // this.saveMode = "edit";
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.book_id = this.props.match.params.book_id;
                 this.fetchBookById(this.props.match.params.book_id);

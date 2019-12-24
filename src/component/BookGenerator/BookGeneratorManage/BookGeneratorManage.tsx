@@ -706,9 +706,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // generate modal function define
 
   getGenerateRow(content: any) {
-    // if (this.checkDeleteToolAccess() === false) {
-    //   return;
-    // }
     this.selectedContentGenerate = content;
     this.setState({ ...this.state, generateModalShow: true });
   }
@@ -938,11 +935,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      // this.setFilter();
-      this.fetchBooksContent()
-    });
+    }, () => {this.fetchBooksContent()});
   }
 
 

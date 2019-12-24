@@ -146,7 +146,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: this.checkAllAccessForTools() ? [
         {
           access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
@@ -211,8 +211,8 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   // timestamp to date 
 
   componentDidMount() {
-    if (this.checkPageRenderAccess()) {
-      if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM')) {
+    if (this.checkPageRenderAccess() === true) {
+      if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -223,6 +223,27 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
+  }
+
+  checkPageRenderAccess(): boolean {
+    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === true) {
+      return true;
+    }
+    return false;
+  }
+
+  checkAllAccessForTools():boolean {
+    if(AccessService.checkOneOFAllAccess(['TRANSACTION_DELETE_PREMIUM']) === true){
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM') === true) {
+      return true;
+    }
+    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -271,34 +292,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  checkPageRenderAccess(): boolean {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM')) {
-      return true;
-    }
-    return false;
-  }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['TRANSACTION_GET_PREMIUM', 'TRANSACTION_DELETE_PREMIUM'])) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
   getTimestampToDate(timestamp: number) {
     if (this.props.internationalization.flag === "fa") {
       return moment_jalaali(timestamp * 1000).format('HH:mm:ss - jYYYY/jMM/jD');
@@ -320,6 +313,9 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   /// start delete modal /////
 
   remove_transaction(transaction: any) {
+    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.selectedTransaction = transaction;
     this.setState({ ...this.state, removeModalShow: true, })
   }
@@ -330,6 +326,9 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveTransaction(transaction_id: string) {
+    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._transactionService.remove(transaction_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveOrder_error' } });
@@ -418,6 +417,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
 
   private _searchFilter: any | undefined;
   private get_searchFilter() {
+    this.set_searchFilter();
     return this._searchFilter;
   }
   private set_searchFilter() {
@@ -468,12 +468,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      // this.setFilter();
-      this.set_searchFilter();
-      this.fetchTransactions()
-    });
+    }, () => {this.fetchTransactions()});
   }
 
   async fetchTransactions() {

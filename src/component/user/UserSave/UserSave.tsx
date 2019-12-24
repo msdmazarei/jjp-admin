@@ -100,27 +100,16 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     private user_id: string | undefined;
     private _personService = new PersonService();
 
-    // checkUserAddAccess(): boolean {
-    //     if (AccessService.checkAccess('')) {
-    //         return true;
-    //     }
-    //     return false
-    // }
-
     checkUserUpdateAccess(): boolean {
-        if (AccessService.checkAccess('USER_EDIT_PREMIUM')) {
+        if (AccessService.checkAccess('USER_EDIT_PREMIUM') === true) {
             return true;
         }
-        return false
+        return false;
     }
 
     componentDidMount() {
-        // this._userService.setToken(this.props.token);
-        // this._uploadService.setToken(this.props.token);
-        // this._personService.setToken(this.props.token);
-
         if (this.props.match.path.includes('/user/:user_id/edit')) {
-            if (this.checkUserUpdateAccess()) {
+            if (this.checkUserUpdateAccess() === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.user_id = this.props.match.params.user_id;
                 this.fetchUserById(this.props.match.params.user_id);
@@ -131,6 +120,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async fetchUserById(user_id: string) {
+        if (AccessService.checkAccess('USER_EDIT_PREMIUM') === false) {
+            return;
+        }
         let res = await this._userService.byId(user_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchUserById_error' } });
         });
@@ -255,6 +247,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
+        if (AccessService.checkAccess('USER_EDIT_PREMIUM') === false) {
+            return;
+        }
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 
@@ -276,6 +271,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
+        if (AccessService.checkAccess('USER_GET_PREMIUM') === false) {
+            return;
+        }
         this.gotoUserManage();
     }
 
@@ -290,7 +288,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
-            filter = {full_name : {$prefix : inputValue} };
+            filter = { full_name: { $prefix: inputValue } };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2User_error' } });
@@ -459,7 +457,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         {
-                                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                            AccessService.checkAccess('PERSON_ADD_PREMIUM') === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}
@@ -524,14 +522,20 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
 
                                         }
                                     </div>
-                                    <BtnLoader
-                                        btnClassName="btn btn-primary shadow-default shadow-hover"
-                                        loading={false}
-                                        onClick={() => this.backTO()}
-                                        disabled={false}
-                                    >
-                                        {Localization.back}
-                                    </BtnLoader>
+                                    {
+                                        AccessService.checkAccess('USER_GET_PREMIUM') === true
+                                            ?
+                                            <BtnLoader
+                                                btnClassName="btn btn-primary shadow-default shadow-hover"
+                                                loading={false}
+                                                onClick={() => this.backTO()}
+                                                disabled={false}
+                                            >
+                                                {Localization.back}
+                                            </BtnLoader>
+                                            :
+                                            undefined
+                                    }
                                 </div>
                             </div>
                         </div>

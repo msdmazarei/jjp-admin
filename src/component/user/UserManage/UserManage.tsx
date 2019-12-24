@@ -274,6 +274,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           name: Localization.group
         },
         {
+          access: (row : any ) => { return this.checkCreditToolAccess() },
           text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
           ac_func: (row: any) => { (this.onShowCreditModal(row)) },
           name: Localization.credit_level
@@ -347,14 +348,44 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (AccessService.checkAccess('USER_GET_PREMIUM')) {
+    if (AccessService.checkAccess('USER_GET_PREMIUM') === true) {
       this.setState({
         ...this.state,
         tableProcessLoader: true
       })
       TABLE_SORT.sortArrayReseter();
       this.fetchUsers();
+    }else{
+      this.noAccessRedirect(this.props.history);
     }
+  }
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['USER_DELETE_PREMIUM', 'USER_EDIT_PREMIUM','TRANSACTION_GET_PREMIUM']) === true) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('USER_DELETE_PREMIUM') === true) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('USER_EDIT_PREMIUM') === true) {
+      return true;
+    }
+    return false
+  }
+
+  checkCreditToolAccess(): boolean {
+    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === true) {
+      return true;
+    }
+    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -403,38 +434,23 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['USER_DELETE_PREMIUM', 'USER_EDIT_PREMIUM'])) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('USER_DELETE_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('USER_EDIT_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
   gotoUserCreate() {
     this.props.history.push('/user/create');
   }
 
   updateRow(user_id: any) {
+    if (AccessService.checkAccess('USER_EDIT_PREMIUM') === false) {
+      return;
+    }
     this.props.history.push(`/user/${user_id.id}/edit`);
   }
 
   // start define axios for give data for user table /////
 
   async fetchUsers() {
+    if (AccessService.checkAccess('USER_GET_PREMIUM') === false){
+      return;
+    }
     this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._userService.search(
       this.state.pager_limit,
@@ -495,6 +511,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start delete modal function define ////////
 
   onShowRemoveModal(user: IUser) {
+    if (AccessService.checkAccess('USER_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.selectedUser = user;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -506,6 +525,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveUser(user_id: string) {
+    if (AccessService.checkAccess('USER_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._userService.remove(user_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveUser_error' } });
@@ -554,12 +576,18 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start Credit modal function define ////////
 
   onShowCreditModal(user: any) {
+    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === false) {
+      return;
+    }
     this.selectedUserForCredit = user;
     this.fetchCreditOfSelectedUser(user.person_id);
     this.setState({ ...this.state, creditModalShow: true });
   }
 
   async fetchCreditOfSelectedUser(id: string) {
+    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === false) {
+      return;
+    }
     this.setState({ ...this.state, creditRequest_retry_loader: true })
     let res = await this._accuontService.byId(1, 0, id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onFetchCreditOfUser_error' } });
@@ -582,6 +610,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   render_credit_modal(userData: any, userCreditData: any) {
+    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === false) {
+      return;
+    }
     if (this.selectedUserForCredit === undefined) return;
     return (
       <>
@@ -765,6 +796,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
 
   private _searchFilter: any | undefined;
   private get_searchFilter() {
+    this.set_searchFilter();
     return this._searchFilter;
   }
   private set_searchFilter() {
@@ -805,12 +837,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      // this.setFilter();
-      this.set_searchFilter();
-      this.fetchUsers()
-    });
+    }, () => {this.fetchUsers()});
   }
 
   filter_state_reset() {

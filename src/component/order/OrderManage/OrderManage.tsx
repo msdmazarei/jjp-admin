@@ -468,8 +468,8 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (this.checkPageRenderAccess()) {
-      if (AccessService.checkAccess('ORDER_GET_PREMIUM')) {
+    if (this.checkPageRenderAccess() === true) {
+      if (AccessService.checkAccess('ORDER_GET_PREMIUM') === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -480,6 +480,55 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
+  }
+
+  checkPageRenderAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']) === true) {
+      return true;
+    }
+    return false
+  }
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess(['ORDER_DELETE_PREMIUM', 'ORDER_EDIT_PREMIUM', 'ORDER_ITEM_GET_PREMIUM']) === true || this.checkGetInvoiceToolAccess() === true) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM') === true) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === true) {
+      return true;
+    }
+    return false
+  }
+
+  checkShowToolAccess(): boolean {
+    if (AccessService.checkAccess('ORDER_ITEM_GET_PREMIUM') === true) {
+      return true;
+    }
+    return false
+  }
+
+  checkGetInvoiceToolAccess(): boolean {
+    if (AccessService.checkAllAccess(['ORDER_ITEM_GET_PREMIUM', 'ORDER_CHECKOUT_PREMIUM']) === true) {
+      return true;
+    }
+    return false
+  }
+
+  orderCheckoutAccess(row: any): boolean {
+    if (row.status === "Invoiced") {
+      return false;
+    }
+    return true;
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -526,55 +575,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     if (this.state.sort.length > 0) {
       return this.state.sort;
     }
-  }
-
-  checkPageRenderAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM'])) {
-      return true;
-    }
-    return false
-  }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['ORDER_DELETE_PREMIUM', 'ORDER_EDIT_PREMIUM', 'ORDER_ITEM_GET_PREMIUM']) || this.checkGetInvoiceToolAccess()) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_EDIT_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_ITEM_GET_PREMIUM')) {
-      return true;
-    }
-    return false
-  }
-
-  checkGetInvoiceToolAccess(): boolean {
-    if (AccessService.checkAllAccess(['ORDER_ITEM_GET_PREMIUM', 'ORDER_CHECKOUT_PREMIUM'])) {
-      return true;
-    }
-    return false
-  }
-
-  orderCheckoutAccess(row: any): boolean {
-    if (row.status === "Invoiced") {
-      return false;
-    }
-    return true;
   }
 
   // timestamp to date 
@@ -636,6 +636,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   /////  start for update row function  /////////
 
   updateRow(order_id: any) {
+    if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === false) {
+      return;
+    }
     this.props.history.push(`/order/${order_id.id}/edit`);
   }
 
@@ -645,6 +648,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ////// start delete modal function define  //////
 
   onShowRemoveModal(order: any) {
+    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.selectedOrder = order;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -655,6 +661,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveOrder(order_id: string) {
+    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM') === false) {
+      return;
+    }
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._orderService.remove(order_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveOrder_error' } });
@@ -715,6 +724,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById(order_id: string) {
+    if (AccessService.checkAccess('ORDER_ITEM_GET_PREMIUM') === false) {
+      return;
+    }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_error' } });
     });
@@ -840,6 +852,9 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById_GetInvoice(order_id: string) {
+    if (AccessService.checkAllAccess(['ORDER_ITEM_GET_PREMIUM', 'ORDER_CHECKOUT_PREMIUM']) === false) {
+      return;
+    }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_GetInvoice_error' } });
     });
@@ -1081,12 +1096,16 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoOrderCreate() {
+    if(AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === false){
+      return;
+    }
     this.props.history.push('/order/create'); // /admin
   }
 
 
   private _searchFilter: any | undefined;
   private get_searchFilter() {
+    this.set_searchFilter();
     return this._searchFilter;
   }
   private set_searchFilter() {
@@ -1147,12 +1166,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {
-      // this.gotoTop();
-      // this.setFilter();
-      this.set_searchFilter();
-      this.fetchOrders()
-    });
+    }, () => {this.fetchOrders()});
   }
 
 
@@ -1400,7 +1414,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.order}</h2>
               {
-                AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS'])
+                AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1416,7 +1430,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('ORDER_GET_PREMIUM')
+            AccessService.checkAccess('ORDER_GET_PREMIUM') === true
               ?
               <>
                 {/* start search box */}
@@ -1533,11 +1547,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                   </div>
                 </div>
                 {/* end search  box */}
-
-                <div className="row">
-                  <div className="col-12">
-                  </div>
-                </div>
                 <div className="row">
                   <div className="col-12">
                     <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.order_table.list} colHeaders={this.state.order_table.colHeaders} actions={this.state.order_table.actions}></Table>

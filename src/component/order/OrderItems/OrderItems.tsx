@@ -140,31 +140,7 @@ class OrderItemsComponent extends BaseComponent<IProps, IState> {
     personRequstError_txt: string = Localization.no_item_found;
 
     async promiseOptions2(inputValue: any, callBack: any) {
-        let filter = undefined;
-        if (inputValue) {
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-            filter = { title: { $prefix: inputValue } };
-          }
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-            let persons_of_press: string[];
-            persons_of_press = [];
-            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-            persons_of_press = [...wrapper];
-            filter = { title: { $prefix: inputValue } , press : { $in: persons_of_press }};
-          }
-        }else{
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === true){
-            filter = undefined;
-          }
-          if(AccessService.checkAccess('BOOK_ADD_PREMIUM') === false){
-            let persons_of_press: string[];
-            persons_of_press = [];
-            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-            persons_of_press = [...wrapper];
-            filter = {press : { $in: persons_of_press }};
-          }
-        };
-        let res: any = await this._bookService.search(10, 0, filter).catch(err => {
+        let res: any = await this._bookService.searchWithPress(10, 0, inputValue).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2OrderBookItem_error' } });
             this.personRequstError_txt = err_msg.body;
         });

@@ -89,12 +89,8 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     private order_id: string | undefined;
 
     componentDidMount() {
-        // this._orderService.setToken(this.props.token);
-        // this._personService.setToken(this.props.token);
-        // this._priceService.setToken(this.props.token);
-
         if (this.props.match.path.includes('/order/:order_id/edit')) {
-            if (this.checkOrderUpdateAccess()) {
+            if (this.checkOrderUpdateAccess() === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.order_id = this.props.match.params.order_id;
                 this.fetchOrderById(this.props.match.params.order_id);
@@ -102,27 +98,30 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         } else {
-            if (!this.checkOrderAddAccess()) {
+            if (this.checkOrderAddAccess() === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
     }
 
     checkOrderAddAccess(): boolean {
-        if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS'])) {
+        if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === true) {
             return true;
         }
         return false
     }
 
     checkOrderUpdateAccess(): boolean {
-        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM')) {
+        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === true) {
             return true;
         }
         return false
     }
 
     async fetchOrderById(order_id: string) {
+        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === false) {
+            return;
+        }
         let res = await this._orderService.getOrder_items(order_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderByIdEdit_error' } });
         });
@@ -225,6 +224,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     // add order function 
 
     async create() {
+        if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === false) {
+            return;
+        }
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
 
@@ -251,9 +253,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        // if (!this.state.isFormValid) return;
-        // this.setState({ ...this.state, updateLoader: true });
-
+        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === false) {
+            return;
+        }
         this.setState({ ...this.state, updateLoader: true });
         if (this.state.order_items.value === []) {
             return;
@@ -283,6 +285,9 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
+        if(AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']) === false){
+            return;
+        }
         this.gotoOrderManage();
     }
 
@@ -297,7 +302,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     async promiseOptions2(inputValue: any, callBack: any) {
         let filter = undefined;
         if (inputValue) {
-            filter = {full_name : {$prefix : inputValue} };
+            filter = { full_name: { $prefix: inputValue } };
         }
         let res: any = await this._personService.search(10, 0, filter).catch(err => {
             let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2OrderSaveAndEdit_error' } });
@@ -517,7 +522,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS'])
+                                                        AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === true
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-success shadow-default shadow-hover"
@@ -559,14 +564,20 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
                                         }
                                     </div>
-                                    <BtnLoader
-                                        btnClassName="btn btn-primary shadow-default shadow-hover"
-                                        loading={false}
-                                        onClick={() => this.backTO()}
-                                        disabled={false}
-                                    >
-                                        {Localization.back}
-                                    </BtnLoader>
+                                    {
+                                        AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']) === true
+                                            ?
+                                            <BtnLoader
+                                                btnClassName="btn btn-primary shadow-default shadow-hover"
+                                                loading={false}
+                                                onClick={() => this.backTO()}
+                                                disabled={false}
+                                            >
+                                                {Localization.back}
+                                            </BtnLoader>
+                                            :
+                                            undefined
+                                    }
                                 </div>
                             </div>
                         </div>

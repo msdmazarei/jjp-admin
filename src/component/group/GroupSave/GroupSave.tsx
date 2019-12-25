@@ -16,6 +16,7 @@ import { PersonService } from '../../../service/service.person';
 import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { AccessService } from '../../../service/service.access';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -396,7 +397,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}</label>
                                         {
-                                            AccessService.checkAccess('PERSON_ADD_PREMIUM') === true
+                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}

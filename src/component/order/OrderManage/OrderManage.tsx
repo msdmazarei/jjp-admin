@@ -26,6 +26,7 @@ import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { TPERMISSIONS } from "../../../enum/Permission";
 
 /// define props & state ///////
 export interface IProps {
@@ -469,7 +470,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   componentDidMount() {
     if (this.checkPageRenderAccess() === true) {
-      if (AccessService.checkAccess('ORDER_GET_PREMIUM') === true) {
+      if (AccessService.checkAccess(TPERMISSIONS.ORDER_GET_PREMIUM) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -483,42 +484,42 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPageRenderAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']) === true) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]) === true) {
       return true;
     }
     return false
   }
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['ORDER_DELETE_PREMIUM', 'ORDER_EDIT_PREMIUM', 'ORDER_ITEM_GET_PREMIUM']) === true || this.checkGetInvoiceToolAccess() === true) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_DELETE_PREMIUM, TPERMISSIONS.ORDER_EDIT_PREMIUM, TPERMISSIONS.ORDER_ITEM_GET_PREMIUM]) === true || this.checkGetInvoiceToolAccess() === true) {
       return true;
     }
     return false;
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_DELETE_PREMIUM) === true) {
       return true;
     }
     return false
   }
 
   checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === true) {
       return true;
     }
     return false
   }
 
   checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess('ORDER_ITEM_GET_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_ITEM_GET_PREMIUM) === true) {
       return true;
     }
     return false
   }
 
   checkGetInvoiceToolAccess(): boolean {
-    if (AccessService.checkAllAccess(['ORDER_ITEM_GET_PREMIUM', 'ORDER_CHECKOUT_PREMIUM']) === true) {
+    if (AccessService.checkAllAccess([TPERMISSIONS.ORDER_ITEM_GET_PREMIUM, TPERMISSIONS.ORDER_CHECKOUT_PREMIUM]) === true) {
       return true;
     }
     return false
@@ -636,7 +637,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   /////  start for update row function  /////////
 
   updateRow(order_id: any) {
-    if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === false) {
       return;
     }
     this.props.history.push(`/order/${order_id.id}/edit`);
@@ -648,7 +649,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ////// start delete modal function define  //////
 
   onShowRemoveModal(order: any) {
-    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_DELETE_PREMIUM) === false) {
       return;
     }
     this.selectedOrder = order;
@@ -661,7 +662,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveOrder(order_id: string) {
-    if (AccessService.checkAccess('ORDER_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_DELETE_PREMIUM) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -724,7 +725,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById(order_id: string) {
-    if (AccessService.checkAccess('ORDER_ITEM_GET_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.ORDER_ITEM_GET_PREMIUM) === false) {
       return;
     }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -852,7 +853,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById_GetInvoice(order_id: string) {
-    if (AccessService.checkAllAccess(['ORDER_ITEM_GET_PREMIUM', 'ORDER_CHECKOUT_PREMIUM']) === false) {
+    if (AccessService.checkAllAccess([TPERMISSIONS.ORDER_ITEM_GET_PREMIUM, TPERMISSIONS.ORDER_CHECKOUT_PREMIUM]) === false) {
       return;
     }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -1096,7 +1097,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoOrderCreate() {
-    if(AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === false){
+    if(AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === false){
       return;
     }
     this.props.history.push('/order/create'); // /admin
@@ -1414,7 +1415,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.order}</h2>
               {
-                AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === true
+                AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1430,7 +1431,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('ORDER_GET_PREMIUM') === true
+            AccessService.checkAccess(TPERMISSIONS.ORDER_GET_PREMIUM) === true
               ?
               <>
                 {/* start search box */}

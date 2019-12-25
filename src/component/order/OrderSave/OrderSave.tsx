@@ -18,6 +18,7 @@ import { IBook } from '../../../model/model.book';
 import { PriceService } from '../../../service/service.price';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { AccessService } from '../../../service/service.access';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -105,21 +106,21 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     checkOrderAddAccess(): boolean {
-        if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === true) {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === true) {
             return true;
         }
         return false
     }
 
     checkOrderUpdateAccess(): boolean {
-        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === true) {
+        if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === true) {
             return true;
         }
         return false
     }
 
     async fetchOrderById(order_id: string) {
-        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === false) {
             return;
         }
         let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -224,7 +225,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     // add order function 
 
     async create() {
-        if (AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === false) {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -253,7 +254,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (AccessService.checkAccess('ORDER_EDIT_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === false) {
             return;
         }
         this.setState({ ...this.state, updateLoader: true });
@@ -285,7 +286,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if(AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']) === false){
+        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]) === false){
             return;
         }
         this.gotoOrderManage();
@@ -454,7 +455,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-6 col-sm-12">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         {
-                                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}
@@ -522,7 +523,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS']) === true
+                                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === true
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-success shadow-default shadow-hover"
@@ -547,7 +548,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        (AccessService.checkAccess('ORDER_EDIT_PREMIUM') && this.state.saveBtnVisibility)
+                                                        (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) && this.state.saveBtnVisibility)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
@@ -565,7 +566,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkOneOFAllAccess(['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']) === true
+                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]) === true
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

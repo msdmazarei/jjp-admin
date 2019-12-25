@@ -17,6 +17,7 @@ import { IPerson } from '../../../model/model.person';
 import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { AccessService } from '../../../service/service.access';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -101,7 +102,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     private _personService = new PersonService();
 
     checkUserUpdateAccess(): boolean {
-        if (AccessService.checkAccess('USER_EDIT_PREMIUM') === true) {
+        if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === true) {
             return true;
         }
         return false;
@@ -120,7 +121,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async fetchUserById(user_id: string) {
-        if (AccessService.checkAccess('USER_EDIT_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === false) {
             return;
         }
         let res = await this._userService.byId(user_id).catch(error => {
@@ -247,7 +248,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (AccessService.checkAccess('USER_EDIT_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -271,7 +272,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if (AccessService.checkAccess('USER_GET_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === false) {
             return;
         }
         this.gotoUserManage();
@@ -457,7 +458,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         {
-                                            AccessService.checkAccess('PERSON_ADD_PREMIUM') === true
+                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}
@@ -523,7 +524,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkAccess('USER_GET_PREMIUM') === true
+                                        AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === true
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

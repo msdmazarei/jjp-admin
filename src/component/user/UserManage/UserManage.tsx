@@ -25,6 +25,7 @@ import { PersonService } from "../../../service/service.person";
 import { AddOrRemoveGroupFromUserModal } from "../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal";
 import { AccountService } from "../../../service/service.account";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { TPERMISSIONS } from "../../../enum/Permission";
 
 //// props & state define ////////
 export interface IProps {
@@ -348,7 +349,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (AccessService.checkAccess('USER_GET_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === true) {
       this.setState({
         ...this.state,
         tableProcessLoader: true
@@ -361,28 +362,28 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['USER_DELETE_PREMIUM', 'USER_EDIT_PREMIUM','TRANSACTION_GET_PREMIUM']) === true) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.USER_DELETE_PREMIUM, TPERMISSIONS.USER_EDIT_PREMIUM,TPERMISSIONS.TRANSACTION_GET_PREMIUM]) === true) {
       return true;
     }
     return false;
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('USER_DELETE_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.USER_DELETE_PREMIUM) === true) {
       return true;
     }
     return false
   }
 
   checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('USER_EDIT_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === true) {
       return true;
     }
     return false
   }
 
   checkCreditToolAccess(): boolean {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
       return true;
     }
     return false
@@ -439,7 +440,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(user_id: any) {
-    if (AccessService.checkAccess('USER_EDIT_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === false) {
       return;
     }
     this.props.history.push(`/user/${user_id.id}/edit`);
@@ -448,7 +449,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start define axios for give data for user table /////
 
   async fetchUsers() {
-    if (AccessService.checkAccess('USER_GET_PREMIUM') === false){
+    if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === false){
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -511,7 +512,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start delete modal function define ////////
 
   onShowRemoveModal(user: IUser) {
-    if (AccessService.checkAccess('USER_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.USER_DELETE_PREMIUM) === false) {
       return;
     }
     this.selectedUser = user;
@@ -525,7 +526,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveUser(user_id: string) {
-    if (AccessService.checkAccess('USER_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.USER_DELETE_PREMIUM) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -576,7 +577,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start Credit modal function define ////////
 
   onShowCreditModal(user: any) {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === false) {
       return;
     }
     this.selectedUserForCredit = user;
@@ -610,7 +611,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   render_credit_modal(userData: any, userCreditData: any) {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === false) {
       return;
     }
     if (this.selectedUserForCredit === undefined) return;
@@ -1035,7 +1036,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('USER_GET_PREMIUM') === true
+            AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === true
               ?
               <>
                 {/* start search box */}

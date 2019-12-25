@@ -17,6 +17,7 @@ import { AppRegex } from '../../../config/regex';
 import { IPerson } from '../../../model/model.person';
 import { FixNumber } from '../../form/fix-number/FixNumber';
 import { AccessService } from '../../../service/service.access';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 interface IState {
     person: {
@@ -158,7 +159,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
 
 
     async quickAddPerson() {
-        if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false){
+        if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false){
             return;
         } 
         if (!this.state.isFormValid) return;
@@ -456,7 +457,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                                     <Dropzone
                                         multiple={false}
                                         onDrop={(files) => this.onDrop(files)}
-                                        maxSize={5000000}
+                                        maxSize={524288}
                                         accept="image/*"
                                         onDropRejected={(files, event) => this.onDropRejected(files, event)}
                                     >
@@ -507,7 +508,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                     <Modal.Footer>
                         <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.is_legalChangeFalseOnHideBtn()}>{Localization.close}</button>
                         {
-                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
                                 ?
                                 <BtnLoader
                                     loading={this.state.quickPersonAddBtnLoader}

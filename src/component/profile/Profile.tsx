@@ -421,7 +421,7 @@ class ProfileComponent extends BaseComponent<IProps, IState> {
                                                     <Dropzone
                                                         multiple={false}
                                                         onDrop={(files) => this.onDrop(files)}
-                                                        maxSize={5000000}
+                                                        maxSize={524288}
                                                         accept="image/*"
                                                         onDropRejected={(files, event) => this.onDropRejected(files, event)}
                                                     >

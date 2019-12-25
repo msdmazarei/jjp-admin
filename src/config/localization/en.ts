@@ -363,6 +363,7 @@ export const en = {
     credit_level : 'credit level',
     no_credit_account_has_been_registered_for_this_person : 'no credit account has been registered for this person.',
     none : 'none',
+    number_of_users : 'number of users',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

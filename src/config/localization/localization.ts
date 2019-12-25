@@ -378,6 +378,7 @@ interface ILocalization extends LocalizedStringsMethods {
     credit_level : string;
     no_credit_account_has_been_registered_for_this_person : string;
     none : string;
+    number_of_users: string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

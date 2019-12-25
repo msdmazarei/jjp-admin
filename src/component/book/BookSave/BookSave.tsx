@@ -3,7 +3,7 @@ import { Input } from '../../form/input/Input';
 import { BookService } from "../../../service/service.book";
 import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
-import { BOOK_GENRE, BOOK_TYPES } from '../../../enum/Book';
+import { BOOK_GENRE, BOOK_TYPES, BOOK_ROLES } from '../../../enum/Book';
 import { IPerson } from '../../../model/model.person';
 import { BookRole } from "../BookRole/BookRole";
 import Select from 'react-select';
@@ -134,22 +134,22 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     /////////// start Select's options define
 
     genreOptions = [
-        { value: 'Comedy', label: Localization.genre_type_list.Comedy },
-        { value: 'Drama', label: Localization.genre_type_list.Drama },
-        { value: 'Romance', label: Localization.genre_type_list.Romance },
-        { value: 'Social', label: Localization.genre_type_list.Social },
-        { value: 'Religious', label: Localization.genre_type_list.Religious },
-        { value: 'Historical', label: Localization.genre_type_list.Historical },
-        { value: 'Classic', label: Localization.genre_type_list.Classic },
-        { value: 'Science', label: Localization.genre_type_list.Science }
+        { value: BOOK_GENRE.Comedy, label: Localization.genre_type_list.Comedy },
+        { value: BOOK_GENRE.Drama, label: Localization.genre_type_list.Drama },
+        { value: BOOK_GENRE.Romance, label: Localization.genre_type_list.Romance },
+        { value: BOOK_GENRE.Social, label: Localization.genre_type_list.Social },
+        { value: BOOK_GENRE.Religious, label: Localization.genre_type_list.Religious },
+        { value: BOOK_GENRE.Historical, label: Localization.genre_type_list.Historical },
+        { value: BOOK_GENRE.Classic, label: Localization.genre_type_list.Classic },
+        { value: BOOK_GENRE.Science, label: Localization.genre_type_list.Science },
     ];
     typeOptions = [
-        { value: 'DVD', label: Localization.book_type_list.DVD },
-        { value: 'Audio', label: Localization.book_type_list.Audio },
-        { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
-        { value: 'Pdf', label: Localization.book_type_list.Pdf },
-        { value: 'Epub', label: Localization.book_type_list.Epub },
-        { value: 'Msd', label: Localization.book_type_list.Msd },
+        { value: BOOK_TYPES.DVD, label: Localization.book_type_list.DVD },
+        { value: BOOK_TYPES.Audio, label: Localization.book_type_list.Audio },
+        { value: BOOK_TYPES.Hard_Copy, label: Localization.book_type_list.Hard_Copy },
+        { value: BOOK_TYPES.Pdf, label: Localization.book_type_list.Pdf },
+        { value: BOOK_TYPES.Epub, label: Localization.book_type_list.Epub },
+        { value: BOOK_TYPES.Msd, label: Localization.book_type_list.Msd },
     ];
 
     private languages_opts: { value: LANGUAGES, label: string }[] = this._languages_opts();
@@ -336,7 +336,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             }
             if (res.data.roles && res.data.roles.length) {
                 for (let i = 0; i < res.data.roles.length; i++) {
-                    if (res.data.roles[i].role === 'Press') {
+                    if (res.data.roles[i].role === BOOK_ROLES.Press) {
                         let item = { label: this.getPersonFullName(res.data.roles[i].person), value: res.data.roles[i].person }
                         press.push(item);
                     } else {
@@ -469,7 +469,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let pressCounter: number = 0;
 
         list.map((item: { role: string, person: IPerson }) =>
-            item.role === "Press"
+            item.role === BOOK_ROLES.Press
                 ?
                 pressCounter++
                 :
@@ -543,7 +543,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let roleList = (this.state.book.roles.value || []).map((item: any) => { return { role: item.role, person: { id: item.person.id } } });
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         let roleListWithPress = roleList;
-        let press = { role: 'Press', person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
+        let press = { role: BOOK_ROLES.Press, person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
         roleListWithPress.push(press);
         const newBook = {
             edition: this.state.book.edition.value,
@@ -617,7 +617,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         // let imagesList = (this.state.book.images.value || []).map((list: { label: string; value: string }) => list.value);
         let roleListWithPress = roleList;
-        let press = { role: 'Press', person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
+        let press = { role: BOOK_ROLES.Press, person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
         roleListWithPress.push(press);
 
         const newBook = {

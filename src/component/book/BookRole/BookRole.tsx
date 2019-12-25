@@ -57,13 +57,13 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         errorTxt: ''
     }
     roleOptions = [
-        { value: 'Author', label: Localization.role_type_list.Author },
-        { value: 'Writer', label: Localization.role_type_list.Writer },
-        { value: 'Translator', label: Localization.role_type_list.Translator },
-        // { value: 'Press', label: Localization.role_type_list.Press },
-        { value: 'Contributer', label: Localization.role_type_list.Contributer },
-        { value: 'Designer', label: Localization.role_type_list.Designer },
-        { value: 'Narrator', label: Localization.role_type_list.Narrator },
+        { value: BOOK_ROLES.Author, label: Localization.role_type_list.Author },
+        { value: BOOK_ROLES.Writer, label: Localization.role_type_list.Writer },
+        { value: BOOK_ROLES.Translator, label: Localization.role_type_list.Translator },
+        // { value: BOOK_ROLES.Press, label: Localization.role_type_list.Press },
+        { value: BOOK_ROLES.Contributer, label: Localization.role_type_list.Contributer },
+        { value: BOOK_ROLES.Designer, label: Localization.role_type_list.Designer },
+        { value: BOOK_ROLES.Narrator, label: Localization.role_type_list.Narrator },
     ];
     _personService = new PersonService();
     componentDidMount() {

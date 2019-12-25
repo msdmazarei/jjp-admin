@@ -134,21 +134,22 @@ interface IState {
 
 class BookManageComponent extends BaseComponent<IProps, IState>{
   genreOptions = [
-    { value: 'Comedy', label: Localization.genre_type_list.Comedy },
-    { value: 'Drama', label: Localization.genre_type_list.Drama },
-    { value: 'Romance', label: Localization.genre_type_list.Romance },
-    { value: 'Social', label: Localization.genre_type_list.Social },
-    { value: 'Religious', label: Localization.genre_type_list.Religious },
-    { value: 'Historical', label: Localization.genre_type_list.Historical },
-    { value: 'Classic', label: Localization.genre_type_list.Classic },
-    { value: 'Science', label: Localization.genre_type_list.Science }
+    { value: BOOK_GENRE.Comedy, label: Localization.genre_type_list.Comedy },
+    { value: BOOK_GENRE.Drama, label: Localization.genre_type_list.Drama },
+    { value: BOOK_GENRE.Romance, label: Localization.genre_type_list.Romance },
+    { value: BOOK_GENRE.Social, label: Localization.genre_type_list.Social },
+    { value: BOOK_GENRE.Religious, label: Localization.genre_type_list.Religious },
+    { value: BOOK_GENRE.Historical, label: Localization.genre_type_list.Historical },
+    { value: BOOK_GENRE.Classic, label: Localization.genre_type_list.Classic },
+    { value: BOOK_GENRE.Science, label: Localization.genre_type_list.Science },
   ];
   typeOptions = [
-    { value: 'DVD', label: Localization.book_type_list.DVD },
-    { value: 'Audio', label: Localization.book_type_list.Audio },
-    { value: 'Hard_Copy', label: Localization.book_type_list.Hard_Copy },
-    { value: 'Pdf', label: Localization.book_type_list.Pdf },
-    { value: 'Epub', label: Localization.book_type_list.Epub }
+    { value: BOOK_TYPES.DVD, label: Localization.book_type_list.DVD },
+    { value: BOOK_TYPES.Audio, label: Localization.book_type_list.Audio },
+    { value: BOOK_TYPES.Hard_Copy, label: Localization.book_type_list.Hard_Copy },
+    { value: BOOK_TYPES.Pdf, label: Localization.book_type_list.Pdf },
+    { value: BOOK_TYPES.Epub, label: Localization.book_type_list.Epub },
+    { value: BOOK_TYPES.Msd, label: Localization.book_type_list.Msd },
   ];
   state = {
     book_table: {
@@ -453,7 +454,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "price", title: Localization.price,
           cellTemplateFunc: (row: IBook) => {
-            if (AccessService.checkAccess('PRICE_GET_PREMIUM') === false) {
+            if (AccessService.checkAccess(TPERMISSIONS.PRICE_GET_PREMIUM) === false) {
               return <div className="text-danger text-center">---</div>;
             } else if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>

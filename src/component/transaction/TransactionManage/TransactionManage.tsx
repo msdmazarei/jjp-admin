@@ -21,6 +21,7 @@ import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TransactionService } from "../../../service/service.transaction";
 import Select from 'react-select';
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { TPERMISSIONS } from "../../../enum/Permission";
 
 /// define props & state ///////
 export interface IProps {
@@ -212,7 +213,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
 
   componentDidMount() {
     if (this.checkPageRenderAccess() === true) {
-      if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === true) {
+      if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -226,21 +227,21 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPageRenderAccess(): boolean {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
       return true;
     }
     return false;
   }
 
   checkAllAccessForTools():boolean {
-    if(AccessService.checkOneOFAllAccess(['TRANSACTION_DELETE_PREMIUM']) === true){
+    if(AccessService.checkOneOFAllAccess([TPERMISSIONS.TRANSACTION_DELETE_PREMIUM]) === true){
       return true;
     }
     return false;
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === true) {
       return true;
     }
     return false
@@ -313,7 +314,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   /// start delete modal /////
 
   remove_transaction(transaction: any) {
-    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
       return;
     }
     this.selectedTransaction = transaction;
@@ -326,7 +327,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveTransaction(transaction_id: string) {
-    if (AccessService.checkAccess('TRANSACTION_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -766,7 +767,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('TRANSACTION_GET_PREMIUM')
+            AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM)
               ?
               <>
                 {/* start search box */}

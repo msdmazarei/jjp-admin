@@ -3,6 +3,7 @@ import { IBook } from "../model/model.book";
 import { IAPI_Response, IAPI_ResponseList, BaseService } from "./service.base";
 import { AccessService } from "./service.access";
 import { Store2 } from "../redux/store";
+import { TPERMISSIONS } from "../enum/Permission";
 
 export class BookService extends BaseService {
     // instance = Axios.create({
@@ -21,10 +22,10 @@ export class BookService extends BaseService {
     searchWithPress(limit: number, skip: number, inputValue: any): Promise<IAPI_ResponseList<IBook>> { 
         let filter = undefined;
         if (inputValue) {
-            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === true) {
+            if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === true) {
                 filter = { title: { $prefix: inputValue } };
             }
-            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false) {
+            if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false) {
                 let persons_of_press: string[];
                 persons_of_press = [];
                 const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
@@ -32,10 +33,10 @@ export class BookService extends BaseService {
                 filter = { title: { $prefix: inputValue }, press: { $in: persons_of_press } };
             }
         } else {
-            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === true) {
+            if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === true) {
                 filter = undefined;
             }
-            if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false) {
+            if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false) {
                 let persons_of_press: string[];
                 persons_of_press = [];
                 const wrapper = Store2.getState().logged_in_user!.permission_groups || [];

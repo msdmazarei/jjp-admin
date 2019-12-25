@@ -2,6 +2,7 @@ import { IAPI_Response,IAPI_ResponseList, BaseService } from "./service.base";
 import { IPerson } from "../model/model.person";
 import { AccessService } from "./service.access";
 import { Store2 } from "../redux/store";
+import { TPERMISSIONS } from "../enum/Permission";
 
 export class PersonService extends BaseService {
 
@@ -19,7 +20,7 @@ export class PersonService extends BaseService {
         if (inputValue) {
             filter['full_name'] = { $prefix: inputValue };
         }
-        if(AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
+        if(AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === false){
             let persons_of_press: string[];
             persons_of_press = [];
             const wrapper = Store2.getState().logged_in_user!.permission_groups || [];

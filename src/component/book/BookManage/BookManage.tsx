@@ -31,6 +31,7 @@ import { PersonService } from "../../../service/service.person";
 import { Store2 } from "../../../redux/store";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { TPERMISSIONS } from "../../../enum/Permission";
 
 /// define props & state ///////
 export interface IProps {
@@ -708,8 +709,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['BOOK_DELETE_PREMIUM', 'BOOK_EDIT_PREMIUM', 'PRICE_GET_PREMIUM'])
-      || AccessService.checkOneOFAllAccess(['BOOK_DELETE_PRESS', 'BOOK_EDIT_PRESS', 'PRICE_GET_PREMIUM'])
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PREMIUM, TPERMISSIONS.BOOK_EDIT_PREMIUM, TPERMISSIONS.PRICE_GET_PREMIUM])
+      || AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PRESS, TPERMISSIONS.BOOK_EDIT_PRESS, TPERMISSIONS.PRICE_GET_PREMIUM])
     ) {
       return true;
     }
@@ -717,21 +718,21 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('BOOK_DELETE_PREMIUM') || AccessService.checkAccess('BOOK_DELETE_PRESS')) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_DELETE_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_DELETE_PRESS)) {
       return true;
     }
     return false
   }
 
   checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('BOOK_EDIT_PREMIUM') || AccessService.checkAccess('BOOK_EDIT_PRESS')) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_EDIT_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_EDIT_PRESS)) {
       return true;
     }
     return false
   }
 
   checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAccess('PRICE_GET_PREMIUM')) {
+    if (AccessService.checkAccess(TPERMISSIONS.PRICE_GET_PREMIUM)) {
       return true;
     }
     return false
@@ -883,14 +884,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
     this.selectedBook = book;
     if (typeof book.price !== 'number') {
-      if (AccessService.checkAllAccess(['PRICE_ADD_PREMIUM', 'PRICE_EDIT_PREMIUM']) === false
-        && AccessService.checkAllAccess(['PRICE_ADD_PRESS', 'PRICE_EDIT_PRESS']) === false) {
+      if (AccessService.checkAllAccess([TPERMISSIONS.PRICE_ADD_PREMIUM, TPERMISSIONS.PRICE_EDIT_PREMIUM]) === false
+        && AccessService.checkAllAccess([TPERMISSIONS.PRICE_ADD_PRESS, TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
           toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
     }
     if (typeof book.price === 'number') {
-      if (AccessService.checkOneOFAllAccess(['PRICE_EDIT_PREMIUM','PRICE_EDIT_PRESS']) === false) {
+      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PRICE_EDIT_PREMIUM,TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
           toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
@@ -1002,15 +1003,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === true && this.state.filter_state.press.is_valid === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === true && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && this.state.filter_state.press.is_valid === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false && this.state.filter_state.press.is_valid === false) {
       persons_of_press = [...wrapper];
       obj['press'] = { $in: persons_of_press };
     }
@@ -1227,7 +1228,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookCreate() {
-    if (AccessService.checkAccess('BOOK_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_ADD_PRESS') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false && AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PRESS) === false) {
       return;
     };
     this.props.history.push('/book/create'); // /admin
@@ -1531,7 +1532,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
               {
-                AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM', 'BOOK_ADD_PRESS'])
+                AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_ADD_PREMIUM, TPERMISSIONS.BOOK_ADD_PRESS])
                   ?
                   <BtnLoader
                     loading={false}

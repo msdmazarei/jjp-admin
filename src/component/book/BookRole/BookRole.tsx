@@ -14,6 +14,7 @@ import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { AccessService } from '../../../service/service.access';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 
 interface IRoleRow {
@@ -301,7 +302,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-5">
                                         <label htmlFor="">{Localization.person}</label>
                                         {
-                                            AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}

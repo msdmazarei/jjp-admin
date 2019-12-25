@@ -28,6 +28,7 @@ import { AccessService } from '../../../service/service.access';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { IBook } from '../../../model/model.book';
 import { BookSavePassToContentModal } from './BookSavePassToContentModal';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 interface ICmp_select<T> {
     label: string;
@@ -264,14 +265,14 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
 
     checkBookAddAccess(): boolean {
-        if (AccessService.checkOneOFAllAccess(['BOOK_ADD_PREMIUM', 'BOOK_ADD_PRESS']) === true) {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_ADD_PREMIUM, TPERMISSIONS.BOOK_ADD_PRESS]) === true) {
             return true;
         }
         return false;
     }
 
     checkBookUpdateAccess(): boolean {
-        if (AccessService.checkOneOFAllAccess(['BOOK_EDIT_PREMIUM', 'BOOK_EDIT_PRESS']) === true) {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_EDIT_PREMIUM, TPERMISSIONS.BOOK_EDIT_PRESS]) === true) {
             return true;
         }
         return false;
@@ -569,7 +570,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
-            if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS']) === true) {
+            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS]) === true) {
                 if (res.data.result.length === 0) {
                     return;
                 } else {
@@ -885,11 +886,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     is_price_input_show(): boolean {
         let result: boolean = false;
         if (this.state.saveMode === SAVE_MODE.EDIT) {
-            if (AccessService.checkOneOFAllAccess(['PRICE_EDIT_PREMIUM', 'PRICE_EDIT_PRESS']) === true) {
+            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PRICE_EDIT_PREMIUM, TPERMISSIONS.PRICE_EDIT_PRESS]) === true) {
                 result = true;
             }
         } else {
-            if (AccessService.checkOneOFAllAccess(['PRICE_ADD_PREMIUM', 'PRICE_ADD_PRESS']) === true) {
+            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PRICE_ADD_PREMIUM, TPERMISSIONS.PRICE_ADD_PRESS]) === true) {
                 result = true;
             }
         }
@@ -1060,7 +1061,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
                                             {
-                                                AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
                                                     ?
                                                     <i
                                                         title={Localization.Quick_person_creation}

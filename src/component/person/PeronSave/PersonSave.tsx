@@ -16,6 +16,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
 import { AccessService } from '../../../service/service.access';
+import { TPERMISSIONS } from '../../../enum/Permission';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -116,7 +117,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         if (this.props.match.path.includes('/person/:person_id/edit')) {
-            if (AccessService.checkAccess('PERSON_EDIT_PREMIUM') === true) {
+            if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.person_id = this.props.match.params.person_id;
                 this.fetchPersonById(this.props.match.params.person_id);
@@ -124,14 +125,14 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         } else {
-            if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false) {
+            if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
     }
 
     async fetchPersonById(person_id: string) {
-        if (AccessService.checkAccess('PERSON_GET_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === false) {
             return;
         }
         let res = await this._personService.byId(person_id).catch(error => {
@@ -222,7 +223,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     // add person function 
 
     async create() {
-        if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -256,7 +257,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (AccessService.checkAccess('PERSON_EDIT_PREMIUM') === false) {
+        if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -292,7 +293,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if(AccessService.checkOneOFAllAccess(['PERSON_ADD_PREMIUM', 'PERSON_GET_PREMIUM']) === false){
+        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM]) === false){
             return;
         }
         this.gotoPersonManage();
@@ -595,7 +596,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                                                        AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-success shadow-default shadow-hover"
@@ -620,7 +621,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        (AccessService.checkAccess('PERSON_EDIT_PREMIUM') && this.state.saveBtnVisibility)
+                                                        (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) && this.state.saveBtnVisibility)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
@@ -638,7 +639,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkOneOFAllAccess(['PERSON_ADD_PREMIUM', 'PERSON_GET_PREMIUM'])
+                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM])
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

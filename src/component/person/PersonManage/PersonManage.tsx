@@ -22,6 +22,7 @@ import { Input } from "../../form/input/Input";
 import Select from 'react-select';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { TPERMISSIONS } from "../../../enum/Permission";
 
 //// props & state define ////////
 export interface IProps {
@@ -476,7 +477,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
   componentDidMount() {
     if (this.checkPersonManagePageRender() === true) {
-      if (AccessService.checkAccess('PERSON_GET_PREMIUM')) {
+      if (AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM)) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -490,7 +491,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPersonManagePageRender(): boolean {
-    if (AccessService.checkOneOFAllAccess(['PERSON_GET_PREMIUM', 'PERSON_ADD_PREMIUM'])) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_GET_PREMIUM, TPERMISSIONS.PERSON_ADD_PREMIUM])) {
       return true;
     }
     return false
@@ -498,21 +499,21 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
 
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['PERSON_DELETE_PREMIUM', 'PERSON_EDIT_PREMIUM'])) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_DELETE_PREMIUM, TPERMISSIONS.PERSON_EDIT_PREMIUM])) {
       return true;
     }
     return false;
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('PERSON_DELETE_PREMIUM')) {
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_DELETE_PREMIUM)) {
       return true;
     }
     return false
   }
 
   checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess('PERSON_EDIT_PREMIUM')) {
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM)) {
       return true;
     }
     return false
@@ -574,7 +575,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(person_id: any) {
-    if (AccessService.checkAccess('PERSON_EDIT_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) === false) {
       return;
     }
     this.props.history.push(`/person/${person_id.id}/edit`);
@@ -605,7 +606,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   /////// delete modal function define ////////
 
   onShowRemoveModal(person: IPerson) {
-    if (AccessService.checkAccess('PERSON_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_DELETE_PREMIUM) === false) {
       return;
     };
     this.selectedPerson = person;
@@ -619,7 +620,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemovePerson(person_id: string) {
-    if (AccessService.checkAccess('PERSON_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_DELETE_PREMIUM) === false) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -669,7 +670,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchPersons() {
-    if (AccessService.checkAccess('PERSON_GET_PREMIUM') === false){
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === false){
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -811,7 +812,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   //// navigation function //////
 
   gotoPersonCreate() {
-    if (AccessService.checkAccess('PERSON_ADD_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false) {
       return;
     };
     this.props.history.push('/person/create');
@@ -1061,7 +1062,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
               {
-                AccessService.checkAccess('PERSON_ADD_PREMIUM')
+                AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
                   ?
                   <BtnLoader
                     loading={false}
@@ -1077,7 +1078,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('PERSON_GET_PREMIUM') === true
+            AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === true
               ?
               <>
                 {/* start search box */}

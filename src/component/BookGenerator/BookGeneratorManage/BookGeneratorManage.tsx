@@ -27,6 +27,7 @@ import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { AccessService } from "../../../service/service.access";
 import { Store2 } from "../../../redux/store";
+import { TPERMISSIONS } from "../../../enum/Permission";
 // import { AccessService } from "../../../service/service.access"
 
 
@@ -526,7 +527,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   componentDidMount() {
     if (this.checkBookContentManagePageRender() === true) {
       moment.locale("en");
-      if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === true) {
+      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -540,7 +541,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkBookContentManagePageRender(): boolean {
-    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_ADD_PREMIUM', 'BOOK_CONTENT_ADD_PRESS', 'BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS'])) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS, TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS])) {
       return true;
     }
     return false
@@ -601,7 +602,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
 
   updateRow(book_generator_id: any) {
-    if (AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM) === false && AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PRESS) === false) {
       return;
     }
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
@@ -718,7 +719,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchBooksContent() {
-    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true })
@@ -856,7 +857,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookContentCreate() {
-    if (AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') === false && AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM) === false && AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PRESS) === false) {
       return;
     }
     this.props.history.push('/book_generator/create');
@@ -874,7 +875,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (AccessService.checkAccess('BOOK_CONTENT_GET_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM) === false) {
       persons_of_press = [...wrapper];
       obj['book_press'] = { $in: persons_of_press };
     }
@@ -927,7 +928,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   filterSearch() {
-    if (AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === false) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === false) {
       return;
     }
     this.setState({
@@ -1217,7 +1218,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
               {
-                AccessService.checkAccess('BOOK_CONTENT_ADD_PREMIUM') || AccessService.checkAccess('BOOK_CONTENT_ADD_PRESS')
+                AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PRESS)
                   ?
                   <BtnLoader
                     loading={false}
@@ -1233,7 +1234,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkOneOFAllAccess(['BOOK_CONTENT_GET_PREMIUM', 'BOOK_CONTENT_GET_PRESS']) === true
+            AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === true
               ?
               <>
                 {/* start search box */}

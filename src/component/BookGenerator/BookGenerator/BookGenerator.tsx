@@ -12,7 +12,7 @@ import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { IBook } from '../../../model/model.book';
 import { BookService } from '../../../service/service.book';
-import { BOOK_TYPES } from '../../../enum/Book';
+import { BOOK_TYPES, BOOK_CONTRNT_TYPE } from '../../../enum/Book';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { ChapterGenerator } from '../BookGeneratorTools/ChapterGenerator/ChapterGenerator';
 import { PdfGenerator } from '../BookGeneratorTools/PdfGenerator/PdfGenerator';
@@ -227,7 +227,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             let come_selectedBook: { label: string, value: IBook } = { label: (res.data.book as IBook).title, value: (res.data.book as IBook) };
             let come_contentType: { label: string, value: string } = { label: Localization[res.data.type], value: res.data.type };
             let book_type: any = (res.data.book as IBook).type;
-            if (book_type === 'Msd') {
+            if (book_type === BOOK_TYPES.Msd) {
                 this.setState({
                     ...this.state,
                     selectedBook: come_selectedBook,
@@ -242,7 +242,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     },
                 });
             }
-            if (book_type === 'Audio') {
+            if (book_type === BOOK_TYPES.Audio) {
                 this.setState({
                     ...this.state,
                     selectedBook: come_selectedBook,
@@ -257,7 +257,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     },
                 });
             }
-            if (book_type === 'Pdf') {
+            if (book_type === BOOK_TYPES.Pdf) {
                 this.setState({
                     ...this.state,
                     selectedBook: come_selectedBook,
@@ -272,7 +272,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                     },
                 });
             }
-            if (book_type === 'Epub') {
+            if (book_type === BOOK_TYPES.Epub) {
                 this.setState({
                     ...this.state,
                     selectedBook: come_selectedBook,
@@ -311,7 +311,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             return false;
         } else {
             const b_t: any = (this.state.selectedBook! as ICmp_select<IBook>).value.type;
-            if (b_t === 'Hard_Copy' || b_t === 'DVD') {
+            if (b_t === BOOK_TYPES.Hard_Copy || b_t === BOOK_TYPES.DVD) {
                 return false;
             } else {
                 return true;
@@ -333,7 +333,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     bookTitleSetter() {
-        if (this.state.selectedBookType === 'Msd') {
+        if (this.state.selectedBookType === BOOK_TYPES.Msd) {
             this.setState({
                 ...this.state,
                 Msd_book: {
@@ -342,7 +342,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         };
-        if (this.state.selectedBookType === 'Audio') {
+        if (this.state.selectedBookType === BOOK_TYPES.Audio) {
             this.setState({
                 ...this.state,
                 Audio_book: {
@@ -351,7 +351,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         };
-        if (this.state.selectedBookType === 'Pdf') {
+        if (this.state.selectedBookType === BOOK_TYPES.Pdf) {
             this.setState({
                 ...this.state,
                 Pdf_book: {
@@ -360,7 +360,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         };
-        if (this.state.selectedBookType === 'Epub') {
+        if (this.state.selectedBookType === BOOK_TYPES.Epub) {
             this.setState({
                 ...this.state,
                 Epub_book: {
@@ -433,8 +433,8 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start book content type selection func //////////////////
 
     contentOptions = [
-        { value: 'Original', label: Localization.Original },
-        { value: 'Brief', label: Localization.Brief },
+        { value: BOOK_CONTRNT_TYPE.Original, label: Localization.Original },
+        { value: BOOK_CONTRNT_TYPE.Brief, label: Localization.Brief },
     ];
 
     handleBookContentTypeChange(contentType: any) {
@@ -537,13 +537,13 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
             return
         }
-        if (this.state.selectedBookType === 'Audio') {
+        if (this.state.selectedBookType === BOOK_TYPES.Audio) {
             if (this.audio_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank, this.getNotifyConfig());
                 return;
             }
         }
-        if (this.state.selectedBookType === 'Msd') {
+        if (this.state.selectedBookType === BOOK_TYPES.Msd) {
             if (this.msd_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank, this.getNotifyConfig());
                 return;
@@ -560,7 +560,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             error_upload_modal: false,
             error_upload_modal_state: 0,
         });
-        if (this.state.selectedBookType === 'Msd') {
+        if (this.state.selectedBookType === BOOK_TYPES.Msd) {
             let res = await this._bookContentService.create(
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
                 (this.state.contentType! as { label: string, value: string }).value,
@@ -577,7 +577,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.apiSuccessNotify();
             }
         }
-        if (this.state.selectedBookType === 'Audio') {
+        if (this.state.selectedBookType === BOOK_TYPES.Audio) {
             const allBody: Book_body[] = await BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children, 'voice');
             const bodyShouldUpload: Book_body[] = await BGUtility.book_body_array_filter_by_file_type(allBody);
             if (bodyShouldUpload.length === 0) {
@@ -652,7 +652,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             }
         }
-        if (this.state.selectedBookType === 'Pdf') {
+        if (this.state.selectedBookType === BOOK_TYPES.Pdf) {
             this.getPdfUploadFileState();
             this.setState({ ...this.state, number_of_file_should_upload: 1, upload_modal: true });
             let uploadedAndThatsId: book_body_pdf[] = await BGUtility.upload_pdf_file_and_save_id((this.state.Pdf_book.children as Book_children[])[0].body);
@@ -714,7 +714,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.apiSuccessNotify();
             }
         };
-        if (this.state.selectedBookType === 'Epub') {
+        if (this.state.selectedBookType === BOOK_TYPES.Epub) {
             this.getEpubUploadFileState();
             this.setState({ ...this.state, number_of_file_should_upload: 1, upload_modal: true });
             let uploadedAndThatsId: book_body_epub[] = await BGUtility.upload_epub_file_and_save_id((this.state.Epub_book.children as Book_children[])[0].body);
@@ -790,13 +790,13 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBook === null || this.state.contentType === null) {
             return
         }
-        if (this.state.selectedBookType === 'Audio') {
+        if (this.state.selectedBookType === BOOK_TYPES.Audio) {
             if (this.audio_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank, this.getNotifyConfig());
                 return;
             }
         }
-        if (this.state.selectedBookType === 'Msd') {
+        if (this.state.selectedBookType === BOOK_TYPES.Msd) {
             if (this.msd_content_validation_check() === false) {
                 toast.error(Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank, this.getNotifyConfig());
                 return;
@@ -813,7 +813,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
             error_upload_modal: false,
             error_upload_modal_state: 0,
         });
-        if (this.state.selectedBookType === 'Msd') {
+        if (this.state.selectedBookType === BOOK_TYPES.Msd) {
             let res = await this._bookContentService.update(
                 this.book_generator_id!,
                 (this.state.selectedBook! as { label: string, value: IBook }).value.id,
@@ -832,7 +832,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 this.apiSuccessNotify();
             }
         }
-        if (this.state.selectedBookType === 'Audio') {
+        if (this.state.selectedBookType === BOOK_TYPES.Audio) {
             const allBody: Book_body[] = await BGUtility.book_children_array_filter_by_body_type(this.state.Audio_book.children, 'voice');
             const bodyShouldUpload: Book_body[] = await BGUtility.book_body_array_filter_by_file_type(allBody);
             if (bodyShouldUpload.length === 0) {
@@ -911,7 +911,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             }
         }
-        if (this.state.selectedBookType === 'Pdf') {
+        if (this.state.selectedBookType === BOOK_TYPES.Pdf) {
             if (typeof ((this.state.Pdf_book.children as Book_children[])[0].body as book_body_pdf[])[0].pdf === "string") {
                 let res = await this._bookContentService.update(
                     this.book_generator_id!,
@@ -995,7 +995,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             }
         };
-        if (this.state.selectedBookType === 'Epub') {
+        if (this.state.selectedBookType === BOOK_TYPES.Epub) {
             if (typeof ((this.state.Epub_book.children as Book_children[])[0].body as book_body_epub[])[0].epub === "string") {
                 let res = await this._bookContentService.update(
                     this.book_generator_id!,
@@ -1090,7 +1090,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (this.state.selectedBookType === undefined) {
             return
         }
-        if (this.state.selectedBookType === "Msd") {
+        if (this.state.selectedBookType === BOOK_TYPES.Msd) {
             this.setState({
                 ...this.state,
                 Msd_book: {
@@ -1099,7 +1099,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         }
-        if (this.state.selectedBookType === "Audio") {
+        if (this.state.selectedBookType === BOOK_TYPES.Audio) {
             this.setState({
                 ...this.state,
                 Audio_book: {
@@ -1108,7 +1108,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         }
-        if (this.state.selectedBookType === "Pdf") {
+        if (this.state.selectedBookType === BOOK_TYPES.Pdf) {
             this.setState({
                 ...this.state,
                 Pdf_book: {
@@ -1117,7 +1117,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 }
             })
         }
-        if (this.state.selectedBookType === "Epub") {
+        if (this.state.selectedBookType === BOOK_TYPES.Epub) {
             this.setState({
                 ...this.state,
                 Epub_book: {
@@ -1173,27 +1173,27 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
         if (type === undefined || this.state.selectedBook === null || this.state.contentType === null) {
             return <></>
         }
-        if (type === "Msd") {
+        if (type === BOOK_TYPES.Msd) {
             return <>
                 <ChapterGenerator
-                    bookType={'Msd'}
+                    bookType={BOOK_TYPES.Msd}
                     booktitle={(this.state.selectedBook! as ICmp_select<IBook>).value.title}
                     bookContent={this.state.Msd_book.children}
                     onChangeBook={(bookContent: Book_children[]) => this.onchange(bookContent)}
                 />
             </>
         }
-        if (type === "Audio") {
+        if (type === BOOK_TYPES.Audio) {
             return <>
                 <ChapterGenerator
-                    bookType={'Audio'}
+                    bookType={BOOK_TYPES.Audio}
                     booktitle={(this.state.selectedBook! as ICmp_select<IBook>).value.title}
                     bookContent={this.state.Audio_book.children}
                     onChangeBook={(bookContent: Book_children[]) => this.onchange(bookContent)}
                 />
             </>
         }
-        if (type === "Pdf") {
+        if (type === BOOK_TYPES.Pdf) {
             return <>
                 <PdfGenerator
                     body={this.state.Pdf_book.children.length !== 0 ? ((this.state.Pdf_book.children as Book_children[])[0].body as book_body_pdf[]) : []}
@@ -1201,7 +1201,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                 />
             </>
         }
-        if (type === "Epub") {
+        if (type === BOOK_TYPES.Epub) {
             return <>
                 <EpubGenerator
                     body={this.state.Epub_book.children.length !== 0 ? ((this.state.Epub_book.children as Book_children[])[0].body as book_body_epub[]) : []}
@@ -1218,18 +1218,18 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
 
     btn_disable_status(): boolean {
         if (this.state.selectedBook !== null && this.state.contentType !== null) {
-            if (this.state.selectedBookType === 'Msd' && this.state.Msd_book.children.length > 0) {
+            if (this.state.selectedBookType === BOOK_TYPES.Msd && this.state.Msd_book.children.length > 0) {
                 return false;
             }
-            if (this.state.selectedBookType === 'Audio' && this.state.Audio_book.children.length > 0) {
+            if (this.state.selectedBookType === BOOK_TYPES.Audio && this.state.Audio_book.children.length > 0) {
                 return false;
             }
-            if (this.state.selectedBookType === 'Pdf' && this.state.Pdf_book.children.length > 0) {
+            if (this.state.selectedBookType === BOOK_TYPES.Pdf && this.state.Pdf_book.children.length > 0) {
                 if (((this.state.Pdf_book.children as Book_children[])[0].body as book_body_pdf[])[0].pdf.length > 0) {
                     return false;
                 }
             }
-            if (this.state.selectedBookType === 'Epub' && this.state.Epub_book.children.length > 0) {
+            if (this.state.selectedBookType === BOOK_TYPES.Epub && this.state.Epub_book.children.length > 0) {
                 if (((this.state.Epub_book.children as Book_children[])[0].body as book_body_epub[])[0].epub.length > 0) {
                     return false;
                 }

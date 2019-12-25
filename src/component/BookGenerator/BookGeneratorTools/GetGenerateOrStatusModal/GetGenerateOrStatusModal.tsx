@@ -9,7 +9,7 @@ import { BookGeneratorService } from '../../../../service/service.bookGenerator'
 import { Localization } from '../../../../config/localization/localization';
 import { BtnLoader } from '../../../form/btn-loader/BtnLoader';
 import { IBook } from '../../../../model/model.book';
-import { BOOK_TYPES } from '../../../../enum/Book';
+import { BOOK_TYPES, BOOK_CONTENT_GENERATE_REQUEST_RESULT } from '../../../../enum/Book';
 
 interface IProps {
     internationalization: TInternationalization;
@@ -126,7 +126,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     ...this.state,
                     content_status_old_inquiry_id: res.data.inquiry_result,
                 })
-                if (res.data.inquiry_result === 'SUCCESS') {
+                if (res.data.inquiry_result === BOOK_CONTENT_GENERATE_REQUEST_RESULT.SUCCESS) {
                     this.clear_getFileStateBeforNewId();
                     this.setState({
                         ...this.state,
@@ -135,7 +135,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                         create_btn_disable_status: false,
                     })
                 };
-                if (res.data.inquiry_result === 'FAILURE') {
+                if (res.data.inquiry_result === BOOK_CONTENT_GENERATE_REQUEST_RESULT.FAILURE) {
                     this.clear_getFileStateBeforNewId();
                     this.setState({
                         ...this.state,
@@ -144,7 +144,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                         create_btn_disable_status: false,
                     })
                 };
-                if (res.data.inquiry_result === 'PENDING') {
+                if (res.data.inquiry_result === BOOK_CONTENT_GENERATE_REQUEST_RESULT.PENDING) {
                     this.setState({
                         ...this.state,
                         create_show: true,
@@ -157,7 +157,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                     ...this.state,
                     content_status_new_inquiry_id: res.data.inquiry_result,
                 })
-                if (res.data.inquiry_result === 'SUCCESS') {
+                if (res.data.inquiry_result === BOOK_CONTENT_GENERATE_REQUEST_RESULT.SUCCESS) {
                     this.clear_getFileStateAfterNewId();
                     this.setState({
                         ...this.state,
@@ -166,7 +166,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                         create_btn_disable_status: false,
                     })
                 };
-                if (res.data.inquiry_result === 'FAILURE') {
+                if (res.data.inquiry_result === BOOK_CONTENT_GENERATE_REQUEST_RESULT.FAILURE) {
                     this.clear_getFileStateAfterNewId();
                     this.setState({
                         ...this.state,
@@ -175,7 +175,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                         create_btn_disable_status: false,
                     })
                 };
-                if (res.data.inquiry_result === 'PENDING') {
+                if (res.data.inquiry_result === BOOK_CONTENT_GENERATE_REQUEST_RESULT.PENDING) {
                     this.setState({
                         ...this.state,
                         create_show: true,
@@ -211,7 +211,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
             this.fetchContentStatus(this.state.old_inquiry_id!);
 
             if (this.state.generete_func_btn_is_touch === false) {
-                if (this.state.content_status_old_inquiry_id === 'SUCCESS' || this.state.content_status_old_inquiry_id === 'FAILURE') {
+                if (this.state.content_status_old_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.SUCCESS || this.state.content_status_old_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.FAILURE) {
                     this.clear_getFileStateBeforNewId();
                 }
                 // if (this.state.content_status_old_inquiry_id === 'PENDING') {
@@ -234,7 +234,7 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
             this.fetchContentStatus(this.state.new_inquiry_id!);
 
             if (this.state.generete_func_btn_is_touch === true) {
-                if (this.state.content_status_new_inquiry_id === 'SUCCESS' || this.state.content_status_new_inquiry_id === 'FAILURE') {
+                if (this.state.content_status_new_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.SUCCESS || this.state.content_status_new_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.FAILURE) {
                     this.clear_getFileStateAfterNewId();
                 }
                 // if (this.state.content_status_old_inquiry_id === 'PENDING') {
@@ -280,28 +280,28 @@ class GetBookContentGenerateOrStatusModalComponent extends BaseComponent<IProps,
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.book_not_created, 1);
                 return Localization.msg.ui.admin_book_content_generate.book_not_created;
             };
-            if (this.state.content_status_old_inquiry_id === 'PENDING') {
+            if (this.state.content_status_old_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.PENDING) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.before_generate_request_result_pendding, 2);
                 return Localization.msg.ui.admin_book_content_generate.before_generate_request_result_pendding;
             };
-            if (this.state.content_status_old_inquiry_id === 'FAILURE') {
+            if (this.state.content_status_old_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.FAILURE) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.before_generate_request_result_fail, 3);
                 return Localization.msg.ui.admin_book_content_generate.before_generate_request_result_fail;
             };
-            if (this.state.content_status_old_inquiry_id === 'SUCCESS') {
+            if (this.state.content_status_old_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.SUCCESS) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.before_generate_request_result_success, 4);
                 return Localization.msg.ui.admin_book_content_generate.before_generate_request_result_success;
             };
         } else {
-            if (this.state.content_status_new_inquiry_id === 'PENDING') {
+            if (this.state.content_status_new_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.PENDING) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.after_generate_request_result_pendding, 22);
                 return Localization.msg.ui.admin_book_content_generate.after_generate_request_result_pendding;
             };
-            if (this.state.content_status_new_inquiry_id === 'FAILURE') {
+            if (this.state.content_status_new_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.FAILURE) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.after_generate_request_result_fail, 33);
                 return Localization.msg.ui.admin_book_content_generate.after_generate_request_result_fail;
             };
-            if (this.state.content_status_new_inquiry_id === 'SUCCESS') {
+            if (this.state.content_status_new_inquiry_id === BOOK_CONTENT_GENERATE_REQUEST_RESULT.SUCCESS) {
                 this.toster_msg_func(Localization.msg.ui.admin_book_content_generate.after_generate_request_result_success, 44);
                 return Localization.msg.ui.admin_book_content_generate.after_generate_request_result_success;
             };

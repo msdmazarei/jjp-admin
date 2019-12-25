@@ -12,6 +12,7 @@ import { MsdContentGenerator } from '../MsdContentGenerator/MsdContentGenerator'
 import { Dropdown } from 'react-bootstrap';
 import { Localization } from '../../../../config/localization/localization';
 import { AudioContentGenerator } from '../AudioContentGenerator/AudioContentGenerator';
+import { BOOK_TYPES } from '../../../../enum/Book';
 interface IProps {
     match?: any;
     history?: History;
@@ -93,7 +94,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addContent() {
         const newId: string = AppGuid.generate();
-        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Msd' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === BOOK_TYPES.Msd ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.push(newContent);
         this.setState({
             ...this.state,
@@ -106,7 +107,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         if (Obj === null) return;
         let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
-        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Msd' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === BOOK_TYPES.Msd ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.splice(index, 0, newContent);
         this.setState({
             ...this.state,
@@ -119,7 +120,7 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
         if (Obj === null) return;
         let index: number = this.body.indexOf(Obj)
         const newId: string = AppGuid.generate();
-        let newContent: Book_body_text | book_body_voice = this.props.bookType === 'Msd' ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
+        let newContent: Book_body_text | book_body_voice = this.props.bookType === BOOK_TYPES.Msd ? { type: 'text', text: '', front_id: newId } : {front_id: newId , type: 'voice', voice: '', name : '' };
         this.body.splice((index + 1), 0, newContent);
         this.setState({
             ...this.state,
@@ -231,10 +232,10 @@ class BodyGeneratorComponent extends BaseComponent<IProps, IState> {
     }
 
     returner_body_by_book_type() {
-        if (this.props.bookType === 'Msd') {
+        if (this.props.bookType === BOOK_TYPES.Msd) {
             return this.msd_body_contents_render()
         }
-        if (this.props.bookType === 'Audio') {
+        if (this.props.bookType === BOOK_TYPES.Audio) {
             return this.audio_body_contents_render()
         }
     }

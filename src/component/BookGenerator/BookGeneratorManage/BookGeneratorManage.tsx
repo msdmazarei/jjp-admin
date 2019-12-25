@@ -13,7 +13,7 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { BOOK_TYPES } from "../../../enum/Book";
+import { BOOK_TYPES, BOOK_CONTRNT_TYPE, BOOK_CONTENT_STATUS } from "../../../enum/Book";
 import Select from 'react-select';
 import 'moment/locale/fa';
 import 'moment/locale/ar';
@@ -109,12 +109,12 @@ interface IState {
 
 class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   contentTypeOptions = [
-    { value: 'Original', label: Localization.Original },
-    { value: 'Brief', label: Localization.Brief },
+    { value: BOOK_CONTRNT_TYPE.Original, label: Localization.Original },
+    { value: BOOK_CONTRNT_TYPE.Brief, label: Localization.Brief },
   ];
   isgeneratedOptions = [
-    { value: 'content_generated', label: Localization.content_generated },
-    { value: 'content_not_generated', label: Localization.content_not_generated },
+    { value: BOOK_CONTENT_STATUS.content_generated, label: Localization.content_generated },
+    { value: BOOK_CONTENT_STATUS.content_not_generated, label: Localization.content_not_generated },
   ];
   state = {
     content_table: {
@@ -398,7 +398,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
               if (row.book.duration === 'NaN') {
                 return ''
               }
-              if (row.book.type !== 'Audio') {
+              if (row.book.type !== BOOK_TYPES.Audio) {
                 return ''
               }
               let totalTime = Number(row.book.duration);
@@ -1127,7 +1127,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         filter_state: {
           ...this.state.filter_state, isgenerated: {
             value: status,
-            content_generated: status.value === 'content_generated' ? true : false,
+            content_generated: status.value === BOOK_CONTENT_STATUS.content_generated ? true : false,
             isValid: true
           }
         }

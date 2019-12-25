@@ -217,7 +217,7 @@ class ReportStoreCustomerPerformanceComponent extends BaseComponent<IProps, ISta
                 <div className="row chart">
                     <div className="col-12">
                         <div className="text-center font-weight-bold">
-                            {(Localization.count + " " + Localization.user + ":" + " " + this.state.number_of_member)}
+                            {Localization.number_of_users + ": "}<span>{this.state.number_of_member}</span>
                         </div>
                     </div>
                     {

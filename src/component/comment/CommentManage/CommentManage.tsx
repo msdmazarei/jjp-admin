@@ -28,6 +28,7 @@ import AsyncSelect from 'react-select/async';
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
+import { TPERMISSIONS } from "../../../enum/Permission";
 
 /// define props & state ///////
 export interface IProps {
@@ -506,7 +507,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   componentDidMount() {
     if (this.checkPageRenderAccess() === true) {
-      if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === true) {
+      if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -566,28 +567,28 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   checkPageRenderAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM']) === true) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.COMMENT_GET_PREMIUM]) === true) {
       return true;
     }
     return false;
   }
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess(['COMMENT_GET_PREMIUM', 'COMMENT_DELETE_PREMIUM']) === true) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.COMMENT_GET_PREMIUM, TPERMISSIONS.COMMENT_DELETE_PREMIUM]) === true) {
       return true;
     }
     return false;
   }
 
   checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_DELETE_PREMIUM) === true) {
       return true;
     }
     return false
   }
 
   checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === true) {
+    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true) {
       return true;
     }
     return false
@@ -615,7 +616,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // comment show modal function define
 
   onShowCommentModal(comment: IComment) {
-    if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
       return;
     }
     this.selectedComment = comment;
@@ -703,7 +704,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(comment: IComment) {
-    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_DELETE_PREMIUM) === false) {
       return;
     }
     this.selectedComment = comment;
@@ -716,7 +717,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveComment(comment_id: string) {
-    if (AccessService.checkAccess('COMMENT_DELETE_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_DELETE_PREMIUM) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -834,7 +835,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchComments() {
-    if (AccessService.checkAccess('COMMENT_GET_PREMIUM') === false) {
+    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -1264,7 +1265,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess('COMMENT_GET_PREMIUM') === true
+            AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true
               ?
               <>
                 {/* start search box */}

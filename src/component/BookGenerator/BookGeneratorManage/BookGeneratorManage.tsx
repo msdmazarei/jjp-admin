@@ -28,6 +28,7 @@ import { TABLE_SORT } from "../../table/tableSortHandler";
 import { AccessService } from "../../../service/service.access";
 import { Store2 } from "../../../redux/store";
 import { TPERMISSIONS } from "../../../enum/Permission";
+import { SORT } from "../../../enum/Sort";
 // import { AccessService } from "../../../service/service.access"
 
 
@@ -168,30 +169,30 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.type + " " + Localization.content}
               {
-                (this.is_this_sort_exsit_in_state("type+") === false && this.is_this_sort_exsit_in_state("type-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.type) === false && this.is_this_sort_exsit_in_state(SORT.type_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("type+", "type-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.type, SORT.type_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('type', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('type', false)}
                   >
                     <i className={this.state.sortShowStyle.type === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("type+") === true
+                  this.is_this_sort_exsit_in_state(SORT.type) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("type-", "type+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.type_, SORT.type, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('type', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('type', false)}>
                       <i className={this.state.sortShowStyle.type === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("type-") === true
+                    this.is_this_sort_exsit_in_state(SORT.type_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("type-", "type+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.type_, SORT.type, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('type', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('type', false)}>
                         <i className={this.state.sortShowStyle.type === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -214,29 +215,29 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.creator + " " + Localization.content}
               {
-                (this.is_this_sort_exsit_in_state("creator+") === false && this.is_this_sort_exsit_in_state("creator-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.creator) === false && this.is_this_sort_exsit_in_state(SORT.creator_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("creator+", "creator-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.creator, SORT.creator_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
                     <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("creator+") === true
+                  this.is_this_sort_exsit_in_state(SORT.creator) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("creator-", "creator+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.creator_, SORT.creator, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
                       <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("creator-") === true
+                    this.is_this_sort_exsit_in_state(SORT.creator_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("creator-", "creator+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.creator_, SORT.creator, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
                         <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -259,29 +260,29 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.creation_date + " " + Localization.content}
               {
-                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                     <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                  this.is_this_sort_exsit_in_state(SORT.creation_date) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                       <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                    this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                         <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -304,29 +305,29 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.modifier + " " + Localization.content}
               {
-                (this.is_this_sort_exsit_in_state("modifier+") === false && this.is_this_sort_exsit_in_state("modifier-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.modifier) === false && this.is_this_sort_exsit_in_state(SORT.modifier_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("modifier+", "modifier-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.modifier, SORT.modifier_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
                     <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("modifier+") === true
+                  this.is_this_sort_exsit_in_state(SORT.modifier) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("modifier-", "modifier+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.modifier_, SORT.modifier, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
                       <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("modifier-") === true
+                    this.is_this_sort_exsit_in_state(SORT.modifier_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("modifier-", "modifier+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.modifier_, SORT.modifier, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
                         <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -349,29 +350,29 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.modification_date + " " + Localization.content}
               {
-                (this.is_this_sort_exsit_in_state("modification_date+") === false && this.is_this_sort_exsit_in_state("modification_date-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.modification_date) === false && this.is_this_sort_exsit_in_state(SORT.modification_date_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("modification_date+", "modification_date-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.modification_date, SORT.modification_date_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
                     <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("modification_date+") === true
+                  this.is_this_sort_exsit_in_state(SORT.modification_date) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("modification_date-", "modification_date+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.modification_date_, SORT.modification_date, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
                       <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("modification_date-") === true
+                    this.is_this_sort_exsit_in_state(SORT.modification_date_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("modification_date-", "modification_date+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.modification_date_, SORT.modification_date, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
                         <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>

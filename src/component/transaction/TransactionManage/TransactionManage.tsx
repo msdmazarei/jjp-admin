@@ -22,6 +22,7 @@ import { TransactionService } from "../../../service/service.transaction";
 import Select from 'react-select';
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
+import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
 export interface IProps {
@@ -94,29 +95,29 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.creation_date}
               {
-                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                     <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                  this.is_this_sort_exsit_in_state(SORT.creation_date) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                       <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                    this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                         <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>

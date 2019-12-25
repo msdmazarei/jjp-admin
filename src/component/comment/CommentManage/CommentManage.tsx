@@ -29,6 +29,7 @@ import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
+import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
 export interface IProps {
@@ -116,29 +117,29 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.user}
               {
-                (this.is_this_sort_exsit_in_state("creator+") === false && this.is_this_sort_exsit_in_state("creator-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.creator) === false && this.is_this_sort_exsit_in_state(SORT.creator_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("creator+", "creator-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.creator, SORT.creator_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
                     <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("creator+") === true
+                  this.is_this_sort_exsit_in_state(SORT.creator) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("creator-", "creator+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.creator_, SORT.creator, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
                       <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("creator-") === true
+                    this.is_this_sort_exsit_in_state(SORT.creator_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("creator-", "creator+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.creator_, SORT.creator, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
                         <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -173,29 +174,29 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.comment}
               {
-                (this.is_this_sort_exsit_in_state("body+") === false && this.is_this_sort_exsit_in_state("body-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.body) === false && this.is_this_sort_exsit_in_state(SORT.body_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("body+", "body-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.body, SORT.body_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('body', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('body', false)}>
                     <i className={this.state.sortShowStyle.body === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("body+") === true
+                  this.is_this_sort_exsit_in_state(SORT.body) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("body-", "body+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.body_, SORT.body, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('body', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('body', false)}>
                       <i className={this.state.sortShowStyle.body === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("body-") === true
+                    this.is_this_sort_exsit_in_state(SORT.body_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("body-", "body+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.body_, SORT.body, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('body', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('body', false)}>
                         <i className={this.state.sortShowStyle.body === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -220,29 +221,29 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.creation_date}
               {
-                (this.is_this_sort_exsit_in_state("creation_date+") === false && this.is_this_sort_exsit_in_state("creation_date-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("creation_date+", "creation_date-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                     <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("creation_date+") === true
+                  this.is_this_sort_exsit_in_state(SORT.creation_date) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("creation_date-", "creation_date+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                       <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("creation_date-") === true
+                    this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("creation_date-", "creation_date+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
                         <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -275,29 +276,29 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.number_of_likes}
               {
-                (this.is_this_sort_exsit_in_state("likes+") === false && this.is_this_sort_exsit_in_state("likes-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.likes) === false && this.is_this_sort_exsit_in_state(SORT.likes_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("likes+", "likes-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.likes, SORT.likes_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('likes', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('likes', false)}>
                     <i className={this.state.sortShowStyle.likes === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("likes+") === true
+                  this.is_this_sort_exsit_in_state(SORT.likes) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("likes-", "likes+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.likes_, SORT.likes, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('likes', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('likes', false)}>
                       <i className={this.state.sortShowStyle.likes === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("likes-") === true
+                    this.is_this_sort_exsit_in_state(SORT.likes_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("likes-", "likes+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.likes_, SORT.likes, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('likes', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('likes', false)}>
                         <i className={this.state.sortShowStyle.likes === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
@@ -330,29 +331,29 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             return <>
               {Localization.number_of_reports}
               {
-                (this.is_this_sort_exsit_in_state("reports+") === false && this.is_this_sort_exsit_in_state("reports-") === false)
+                (this.is_this_sort_exsit_in_state(SORT.reports) === false && this.is_this_sort_exsit_in_state(SORT.reports_) === false)
                   ?
                   <span
                     className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                    onClick={() => this.sort_handler_func("reports+", "reports-", true, 1)}
+                    onClick={() => this.sort_handler_func(SORT.reports, SORT.reports_, true, 1)}
                     onMouseOver={() => this.sort_icon_change_on_mouse_over_out('reports', true)}
                     onMouseOut={() => this.sort_icon_change_on_mouse_over_out('reports', false)}>
                     <i className={this.state.sortShowStyle.reports === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                   </span>
                   :
-                  this.is_this_sort_exsit_in_state("reports+") === true
+                  this.is_this_sort_exsit_in_state(SORT.reports) === true
                     ?
                     <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                      onClick={() => this.sort_handler_func("reports-", "reports+", false, 0)}
+                      onClick={() => this.sort_handler_func(SORT.reports_, SORT.reports, false, 0)}
                       onMouseOver={() => this.sort_icon_change_on_mouse_over_out('reports', true)}
                       onMouseOut={() => this.sort_icon_change_on_mouse_over_out('reports', false)}>
                       <i className={this.state.sortShowStyle.reports === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                     </span>
                     :
-                    this.is_this_sort_exsit_in_state("reports-") === true
+                    this.is_this_sort_exsit_in_state(SORT.reports_) === true
                       ?
                       <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                        onClick={() => this.sort_handler_func("reports-", "reports+", true, 2)}
+                        onClick={() => this.sort_handler_func(SORT.reports_, SORT.reports, true, 2)}
                         onMouseOver={() => this.sort_icon_change_on_mouse_over_out('reports', true)}
                         onMouseOut={() => this.sort_icon_change_on_mouse_over_out('reports', false)}>
                         <i className={this.state.sortShowStyle.reports === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>

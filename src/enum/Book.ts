@@ -27,3 +27,19 @@ export enum BOOK_GENRE {
     Classic = 'Classic',
     Science = 'Science',
 }
+
+export enum BOOK_CONTRNT_TYPE {
+    Original = 'Original',
+    Brief = 'Brief',
+}
+
+export enum BOOK_CONTENT_STATUS {
+    content_generated = 'content_generated',
+    content_not_generated = 'content_not_generated',
+}
+
+export enum BOOK_CONTENT_GENERATE_REQUEST_RESULT {
+    SUCCESS = 'SUCCESS',
+    FAILURE = 'FAILURE',
+    PENDING = 'PENDING',
+}

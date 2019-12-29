@@ -606,6 +606,12 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { this.onShowPriceModal(row) },
           name: Localization.Pricing
         },
+        {
+          // access: (row: any) => { return this.checkPriceAddToolAccess() },
+          text: <i title={Localization.Pricing} className="fa fa-comment text-info"></i>,
+          ac_func: (row: any) => { this.onShowSelectedBookComments(row) },
+          name: Localization.comment
+        },
       ]
         :
         undefined
@@ -978,6 +984,12 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         </Modal>
       </>
     );
+  }
+
+  onShowSelectedBookComments(book : any){
+    let book_id : string = book.id;
+    if(book_id === null || book_id === undefined){return};
+    this.props.history.push(`/comment/${book_id}/wizard`);
   }
 
   private _searchFilter: any | undefined;

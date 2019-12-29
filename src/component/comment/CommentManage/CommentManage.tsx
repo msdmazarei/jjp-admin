@@ -33,6 +33,7 @@ import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
 export interface IProps {
+  match:any;
   history: History;
   internationalization: TInternationalization;
   // token: IToken;
@@ -103,6 +104,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortComment;
+  is_wizard : boolean;
 }
 
 // define class of Comment 
@@ -490,13 +492,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       creation_date: false,
       likes: false,
       reports: false,
-    }
+    },
+    is_wizard : false,
   }
 
   selectedComment: IComment | undefined;
   private _commentService = new CommentService();
   private _bookService = new BookService();
   private _personService = new PersonService();
+  private book_id : string | undefined;
 
   // constructor(props: IProps) {
   //   super(props);
@@ -507,7 +511,12 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // timestamp to date 
 
   componentDidMount() {
-    if (this.checkPageRenderAccess() === true) {
+    if(this.props.match.path.includes('/comment/:book_id/wizard')){
+      this.setState({...this.state, is_wizard: true, advance_search_box_show : true});
+      this.book_id = this.props.match.params.book_id;
+      if(this.book_id === undefined){return};
+      this.fetchBookById_wizard(this.book_id);
+    }else if (this.checkPageRenderAccess() === true) {
       if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true) {
         this.setState({
           ...this.state,
@@ -518,7 +527,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       }
     } else {
       this.noAccessRedirect(this.props.history);
-    }
+    };
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -593,6 +602,18 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       return true;
     }
     return false
+  }
+
+  async fetchBookById_wizard(id : string){
+    let res = await this._bookService.byId(id).catch(error => {
+      this.handleError({error: error.response, toastOptions: { toastId: 'onFetchBookById_wizard_error' }})
+    })
+    if(res){
+      let type : string = Localization.book_type_list[res.data.type as BOOK_TYPES];
+      let book_name_by_type : string = res.data.title + " - " + type;
+      const book : {label : string , value : IBook} = { label : book_name_by_type , value : res.data};
+      this.handleBookChange(book);
+    }
   }
 
 
@@ -981,9 +1002,9 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           isValid: false
         },
         book: {
-          value: null,
-          book_id: undefined,
-          is_valid: false,
+          value: this.state.is_wizard === false ? null : this.state.filter_state.book.value,
+          book_id: this.state.is_wizard === false ? undefined : this.state.filter_state.book.book_id,
+          is_valid: this.state.is_wizard === false ? false : this.state.filter_state.book.is_valid,
         },
         user: {
           value: undefined,
@@ -1027,9 +1048,9 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           isValid: false
         },
         book: {
-          value: null,
-          book_id: undefined,
-          is_valid: false,
+          value: this.state.is_wizard === false ? null : this.state.filter_state.book.value,
+          book_id: this.state.is_wizard === false ? undefined : this.state.filter_state.book.book_id,
+          is_valid: this.state.is_wizard === false ? false : this.state.filter_state.book.is_valid,
         },
         user: {
           value: undefined,
@@ -1078,7 +1099,17 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           is_valid: isValid,
         }
       }
-    })
+    },() => this.wizardHandler());
+  }
+
+  wizardHandler(){
+    if(this.state.is_wizard === false){
+      return;
+    }else if(this.state.is_wizard === true){
+      this.fetchComments();
+    }else{
+      return;
+    }
   }
 
   book_in_search_remover() {
@@ -1306,6 +1337,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                             onClick={() => this.book_in_search_remover()}
                           ></i>
                           <AsyncSelect
+                            isDisabled={this.state.is_wizard === true}
                             placeholder={Localization.book}
                             cacheOptions
                             defaultOptions

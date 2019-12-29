@@ -17,6 +17,8 @@ import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
 import { AccessService } from '../../../service/service.access';
 import { TPERMISSIONS } from '../../../enum/Permission';
+import { PersonSavePassToUserModal } from './PersonPassToUserCreateModal'
+import { IPerson } from '../../../model/model.person';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -62,6 +64,7 @@ interface IState {
     createLoader: boolean;
     updateLoader: boolean;
     saveBtnVisibility: boolean;
+    passerCreateToUserModal: boolean;
 }
 interface IProps {
     match: any;
@@ -109,11 +112,13 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         createLoader: false,
         updateLoader: false,
         saveBtnVisibility: false,
+        passerCreateToUserModal: false,
     }
 
     private _personService = new PersonService();
     private _uploadService = new UploadService();
     private person_id: string | undefined;
+    private resOfPersonCreate: IPerson | undefined;
 
     componentDidMount() {
         if (this.props.match.path.includes('/person/:person_id/edit')) {
@@ -253,6 +258,8 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
+            this.resOfPersonCreate = res.data;
+            this.setState({...this.state, passerCreateToUserModal : true})
         }
     }
 
@@ -293,7 +300,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM]) === false){
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM]) === false) {
             return;
         }
         this.gotoPersonManage();
@@ -414,6 +421,23 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
             isFormValid: false,
         })
     }
+
+
+    ///// start function onHide & onPass of personCreateToUserModal 
+
+    passerModal_onHide(){
+        this.resOfPersonCreate = undefined;
+        this.setState({... this.state, passerCreateToUserModal : false});
+    }
+
+    passerModal_onPass(id : string){
+        this.resOfPersonCreate = undefined;
+        this.setState({... this.state, passerCreateToUserModal : false});
+        if(id === undefined || id === null){return};
+        this.props.history.push(`/user/${id}/wizard`);
+    }
+
+    ///// end function onHide & onPass of personCreateToUserModal 
 
     ////// render ////////
     render() {
@@ -657,11 +681,22 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
+                {
+                    this.resOfPersonCreate === undefined
+                        ?
+                        undefined
+                        :
+                        <PersonSavePassToUserModal
+                            modalShow={this.state.passerCreateToUserModal}
+                            person={this.resOfPersonCreate}
+                            onHide={() => this.passerModal_onHide()}
+                            onPass={(id : string) => this.passerModal_onPass(id)}
+                        />
+                }
                 <ToastContainer {...this.getNotifyContainerConfig()} />
             </>
         )
     }
-
 }
 
 const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {

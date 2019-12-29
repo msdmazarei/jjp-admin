@@ -18,7 +18,9 @@ import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { AccessService } from '../../../service/service.access';
 import { TPERMISSIONS } from '../../../enum/Permission';
-
+import { AddOrRemoveGroupFromUserModal } from '../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal';
+import { UserSavePassToAddGroupModal } from './PasserCreatedUserForAddGroup';
+import { IUser } from '../../../model/model.user';
 enum SAVE_MODE {
     CREATE = 'CREATE',
     EDIT = 'EDIT',
@@ -55,6 +57,9 @@ interface IState {
     updateLoader: boolean;
     saveBtnVisibility: boolean;
     quickPersonModalStatus: boolean;
+    is_wizard: boolean;
+    passerModalShow: boolean;
+    addGroupModalShow: boolean;
 }
 interface IProps {
     match: any;
@@ -94,12 +99,16 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         updateLoader: false,
         saveBtnVisibility: false,
         quickPersonModalStatus: false,
+        is_wizard: false,
+        passerModalShow: false,
+        addGroupModalShow: false,
     }
 
     private _userService = new UserService();
-    private _uploadService = new UploadService();
-    private user_id: string | undefined;
     private _personService = new PersonService();
+    private user_id: string | undefined;
+    private person_id: string | undefined;
+    private createdUser: IUser | undefined;
 
     checkUserUpdateAccess(): boolean {
         if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === true) {
@@ -116,6 +125,13 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                 this.fetchUserById(this.props.match.params.user_id);
             } else {
                 this.noAccessRedirect(this.props.history);
+            }
+        }
+        if (this.props.match.path.includes('/user/:person_id/wizard')) {
+            this.setState({ ...this.state, is_wizard: true })
+            this.person_id = this.props.match.params.person_id;
+            if (this.person_id !== undefined) {
+                this.fetch_personOfUser(this.person_id);
             }
         }
     }
@@ -150,6 +166,16 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             })
         }
 
+    }
+
+    async fetch_personOfUser(id: string) {
+        let res = await this._personService.byId(id).catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPersonOfUserById_error' } })
+        })
+        if (res) {
+            const person: { label: string, value: IPerson } = { label: this.getPersonFullName(res.data), value: res.data };
+            this.handlePersonChange(person);
+        }
     }
     __waitOnMe() {
         return new Promise((res, rej) => {
@@ -244,6 +270,8 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
+            this.createdUser = res.data;
+            this.setState({...this.state, passerModalShow : true});
         }
     }
 
@@ -368,6 +396,25 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     ////////   end crate quick person  //////////
+
+
+    /// start group modal functions /////
+
+    passerModal_onhide() {
+        this.createdUser = undefined;
+        this.setState({ ...this.state, passerModalShow: false });
+    }
+
+    passerModal_onPass() {
+        this.setState({ ...this.state, passerModalShow: false, addGroupModalShow: true });
+    }
+
+    onHideAddGroupModal() {
+        this.createdUser = undefined;
+        this.setState({ ...this.state, addGroupModalShow: false });
+    }
+
+    /// start group modal functions /////
 
 
     // reset form /////////////
@@ -550,6 +597,30 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                         modalShow={this.state.quickPersonModalStatus}
                         onHide={() => this.quickpersonClose()}
                     ></QuickPerson>
+                }
+                {
+                    this.createdUser === undefined
+                        ?
+                        undefined
+                        :
+                        <UserSavePassToAddGroupModal
+                            modalShow={this.state.passerModalShow}
+                            user={this.createdUser}
+                            onHide={() => this.passerModal_onhide()}
+                            onPass={() => this.passerModal_onPass()}
+                        />
+                }
+                {
+                    this.createdUser === undefined
+                        ?
+                        undefined
+                        :
+                        <AddOrRemoveGroupFromUserModal
+                            onShow={this.state.addGroupModalShow}
+                            onHide={() => this.onHideAddGroupModal()}
+                            userName={this.createdUser.username}
+                            user_id={this.createdUser.id}
+                        />
                 }
             </>
         )

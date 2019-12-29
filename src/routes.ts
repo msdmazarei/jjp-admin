@@ -152,6 +152,15 @@ var routes = [
     brandName: ['user', 'edit'],
     PERMISSIONS: []
   },
+  {
+    path: "/user/:person_id/wizard",
+    name: Localization.create_user,
+    component: UserSave,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['user', 'wizard'],
+    PERMISSIONS: []
+  },
   // user end
   // comment start
   {

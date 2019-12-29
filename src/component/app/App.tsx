@@ -37,6 +37,7 @@ const appRoutes = (
             <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/user/create" render={props => <AdminLayout {...props} />} />
             <Route exact path="/user/:user_id/edit" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/user/:person_id/wizard" render={props => <AdminLayout {...props} />} />
             <Route exact path="/comment/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/order/manage" render={props => <AdminLayout {...props} />} />
             <Route exact path="/order/create" render={props => <AdminLayout {...props} />} />              

@@ -427,12 +427,12 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
 
     passerModal_onHide(){
         this.resOfPersonCreate = undefined;
-        this.setState({... this.state, passerCreateToUserModal : false});
+        this.setState({...this.state,passerCreateToUserModal:false});
     }
 
     passerModal_onPass(id : string){
         this.resOfPersonCreate = undefined;
-        this.setState({... this.state, passerCreateToUserModal : false});
+        this.setState({...this.state,passerCreateToUserModal:false});
         if(id === undefined || id === null){return};
         this.props.history.push(`/user/${id}/wizard`);
     }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input } from '../../form/input/Input';
 import { PersonService } from "../../../service/service.person";
-import { UploadService } from "../../../service/service.upload";
 import { History } from 'history';
 import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';

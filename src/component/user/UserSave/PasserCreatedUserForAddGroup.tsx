@@ -7,7 +7,6 @@ import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { Modal } from "react-bootstrap";
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
-import { IPerson } from '../../../model/model.person';
 import { IUser } from '../../../model/model.user';
 
 interface IState {

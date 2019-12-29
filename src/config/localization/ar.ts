@@ -29,6 +29,8 @@ export const ar = {
             do_you_want_create_this_book_content : 'آیا می خواهید محتوای این کتاب ساخته شود؟',
             at_least_two_publishers_must_be_selected_to_compare_publisher_sales : 'برای مقایسه فروش ناشرین باید حداقل دو ناشر انتخاب شود.',
             book_creation_successful_do_you_want_to_create_content_for_this_book : 'ایجاد کتاب با موفقیت انجام شد، آیا می خواهید برای این کتاب محتوا ایجاد کنید؟',
+            person_creation_successful_do_you_want_to_create_user_for_this_person : 'ایجاد شخص با موفقیت انجام شد، آیا می خواهید برای این شخص، کاربر ایجاد کنید؟',
+            user_creation_successful_do_you_want_to_add_group_for_this_user : 'ایجاد کاربر با موفقیت انجام شد، آیا می خواهید برای این کاربر گروه اضافه کنید؟',
             content_saved_successfully_do_you_want_to_make_the_book : 'ذخیره محتوا با موفقیت انجام شد، آیا می خواهید کتاب را بسازید؟',
             choose_the_type_of_book: 'نوع کتاب را انتخاب کنید:',
             there_is_no_access_for_you : 'برای شما امکان دسترسی وجود ندارد.',

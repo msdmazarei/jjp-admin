@@ -42,6 +42,8 @@ interface ILocalization extends LocalizedStringsMethods {
             do_you_want_create_this_book_content : string;
             at_least_two_publishers_must_be_selected_to_compare_publisher_sales : string;
             book_creation_successful_do_you_want_to_create_content_for_this_book : string;
+            person_creation_successful_do_you_want_to_create_user_for_this_person : string;
+            user_creation_successful_do_you_want_to_add_group_for_this_user : string;
             content_saved_successfully_do_you_want_to_make_the_book: string;
             choose_the_type_of_book: string;
             there_is_no_access_for_you : string;

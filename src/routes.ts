@@ -172,6 +172,15 @@ var routes = [
     sidebarIconVisibility: true,
     PERMISSIONS: ['COMMENT_GET_PREMIUM']
   },
+  {
+    path: "/comment/:book_id/wizard",
+    name: Localization.comment,
+    component: CommentManage,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['comment', 'wizard'],
+    PERMISSIONS: []
+  },
   // comment end
   // order start
   {

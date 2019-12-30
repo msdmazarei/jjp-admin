@@ -29,6 +29,7 @@ import { AccessService } from "../../../service/service.access";
 import { Store2 } from "../../../redux/store";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 // import { AccessService } from "../../../service/service.access"
 
 
@@ -104,6 +105,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortContent;
+  retryModal: boolean;
 }
 
 // define class of content 
@@ -517,7 +519,8 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
       creation_date: false,
       modifier: false,
       modification_date: false,
-    }
+    },
+    retryModal: false,
   }
 
   selectedContent: any | undefined;
@@ -737,6 +740,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal: true,
       });
     });
     if (res) {
@@ -1397,6 +1401,13 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
         }
         {this.render_delete_modal(this.selectedContent)}
         {/* {this.render_generate_modal(this.selectedContentGenerate)} */}
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchBooksContent(); this.setState({ ...this.state, retryModal: false }) }}
+          />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

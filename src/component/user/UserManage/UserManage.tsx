@@ -27,6 +27,7 @@ import { AccountService } from "../../../service/service.account";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 
 //// props & state define ////////
 export interface IProps {
@@ -88,6 +89,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortUser;
+  retryModal: boolean;
 }
 
 class UserManageComponent extends BaseComponent<IProps, IState>{
@@ -97,7 +99,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "username", title: Localization.username, 
+          field: "username", title: Localization.username,
           templateFunc: () => {
             return <>
               {Localization.username}
@@ -276,7 +278,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           name: Localization.group
         },
         {
-          access: (row : any ) => { return this.checkCreditToolAccess() },
+          access: (row: any) => { return this.checkCreditToolAccess() },
           text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
           ac_func: (row: any) => { (this.onShowCreditModal(row)) },
           name: Localization.credit_level
@@ -332,7 +334,8 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     sortShowStyle: {
       username: false,
       creation_date: false,
-    }
+    },
+    retryModal: false,
   }
 
   selectedUser: IUser | undefined;
@@ -357,13 +360,13 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       })
       TABLE_SORT.sortArrayReseter();
       this.fetchUsers();
-    }else{
+    } else {
       this.noAccessRedirect(this.props.history);
     }
   }
 
   checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.USER_DELETE_PREMIUM, TPERMISSIONS.USER_EDIT_PREMIUM,TPERMISSIONS.TRANSACTION_GET_PREMIUM]) === true) {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.USER_DELETE_PREMIUM, TPERMISSIONS.USER_EDIT_PREMIUM, TPERMISSIONS.TRANSACTION_GET_PREMIUM]) === true) {
       return true;
     }
     return false;
@@ -450,7 +453,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start define axios for give data for user table /////
 
   async fetchUsers() {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === false){
+    if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -467,6 +470,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal: true,
       });
     });
 
@@ -604,10 +608,11 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   onHideCreditModal() {
     this.selectedUserForCredit = undefined;
     this.selectedUserCreditData = undefined;
-    this.setState({ ...this.state, 
-      creditModalShow: false, 
-      creditRequest_retry_loader: false, 
-      creditRequest_has_error: null 
+    this.setState({
+      ...this.state,
+      creditModalShow: false,
+      creditRequest_retry_loader: false,
+      creditRequest_has_error: null
     });
   }
 
@@ -626,21 +631,21 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             </p>
             <p className="delete-modal-content">
               <span className="text-muted">{Localization.credit_level}:&nbsp;</span>
-            {
-              this.state.creditRequest_has_error === null
-              ?
-              Localization.msg.ui.admin_book_content_generate.Inquiring
-              :
-              this.state.creditRequest_has_error === true
-              ?
-              Localization.msg.ui.msg5
-              :
-              this.selectedUserCreditData !== undefined 
-              ?
-              this.selectedUserCreditData.value
-              :
-              Localization.no_credit_account_has_been_registered_for_this_person
-            }
+              {
+                this.state.creditRequest_has_error === null
+                  ?
+                  Localization.msg.ui.admin_book_content_generate.Inquiring
+                  :
+                  this.state.creditRequest_has_error === true
+                    ?
+                    Localization.msg.ui.msg5
+                    :
+                    this.selectedUserCreditData !== undefined
+                      ?
+                      this.selectedUserCreditData.value
+                      :
+                      Localization.no_credit_account_has_been_registered_for_this_person
+              }
             </p>
           </Modal.Body>
           <Modal.Footer>
@@ -839,7 +844,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {this.fetchUsers()});
+    }, () => { this.fetchUsers() });
   }
 
   filter_state_reset() {
@@ -1157,6 +1162,13 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               userName={this.selectedUserForGroup.username}
               user_id={this.selectedUserForGroup.id}
             />
+        }
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchUsers(); this.setState({ ...this.state, retryModal: false }) }}
+          />
         }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>

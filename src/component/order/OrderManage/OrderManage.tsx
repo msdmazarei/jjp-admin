@@ -28,6 +28,7 @@ import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 
 /// define props & state ///////
 export interface IProps {
@@ -100,6 +101,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortOrder;
+  retryModal: boolean;
 }
 
 // define class of Order 
@@ -114,7 +116,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "creator", title: Localization.user, 
+          field: "creator", title: Localization.user,
           templateFunc: () => {
             return <>
               {Localization.user}
@@ -297,7 +299,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: any) => {
             if (row.status) {
               const o_status: string = (row.status === 'Created') ? Localization.order_status.Created : Localization.order_status.Invoiced;
@@ -309,7 +311,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "total_price", title: Localization.total_price, 
+          field: "total_price", title: Localization.total_price,
           templateFunc: () => {
             return <>
               {Localization.total_price}
@@ -345,7 +347,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: any) => {
             if (row.total_price) {
               return <div title={row.total_price} className="text-nowrap-ellipsis max-w-200px d-inline-block">
@@ -443,7 +445,8 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       modification_date: false,
       status: false,
       total_price: false,
-    }
+    },
+    retryModal: false,
   };
 
   order_id!: string;
@@ -616,6 +619,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal: true,
       });
     });
     if (res) {
@@ -1098,7 +1102,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoOrderCreate() {
-    if(AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === false){
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === false) {
       return;
     }
     this.props.history.push('/order/create'); // /admin
@@ -1168,7 +1172,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {this.fetchOrders()});
+    }, () => { this.fetchOrders() });
   }
 
 
@@ -1566,6 +1570,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         {this.render_delete_modal(this.selectedOrder)}
         {this.render_order_details_modal()}
         {this.render_order_GetInvoice()}
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchOrders(); this.setState({ ...this.state, retryModal: false }) }}
+          />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

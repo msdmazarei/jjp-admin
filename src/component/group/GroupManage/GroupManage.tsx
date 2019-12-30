@@ -24,6 +24,7 @@ import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { AddorRemovePermissionManage } from "../AddorRemovePermissionManage/AddorRemovePermissionManage"
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 // import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
@@ -92,6 +93,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortGroup;
+  retryModal: boolean;
 }
 
 //// end define IState ///
@@ -357,7 +359,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       creator: false,
       creation_date: false,
       modification_date: false,
-    }
+    },
+    retryModal: false,
   }
 
   selectedGroup: any | undefined;
@@ -454,6 +457,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal: true,
       });
     });
 
@@ -1077,6 +1081,13 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
               group_title={this.selectedGroupForPermission.title}
               group_id={this.selectedGroupForPermission.id}
             />
+        }
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchGroup(); this.setState({ ...this.state, retryModal: false }) }}
+          />
         }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>

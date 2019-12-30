@@ -33,6 +33,7 @@ import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 
 /// define props & state ///////
 export interface IProps {
@@ -129,6 +130,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortBook;
+  retryModal: boolean;
 }
 
 // define class of Book 
@@ -698,7 +700,8 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       modification_date: false,
       price: false,
       pub_year: false,
-    }
+    },
+    retryModal: false,
   }
 
   selectedBook: IBook | undefined;
@@ -894,13 +897,13 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     if (typeof book.price !== 'number') {
       if (AccessService.checkAllAccess([TPERMISSIONS.PRICE_ADD_PREMIUM, TPERMISSIONS.PRICE_EDIT_PREMIUM]) === false
         && AccessService.checkAllAccess([TPERMISSIONS.PRICE_ADD_PRESS, TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
-          toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
+        toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
     }
     if (typeof book.price === 'number') {
-      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PRICE_EDIT_PREMIUM,TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
-          toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
+      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PRICE_EDIT_PREMIUM, TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
+        toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
     }
@@ -986,9 +989,9 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-  onShowSelectedBookComments(book : any){
-    let book_id : string = book.id;
-    if(book_id === null || book_id === undefined){return};
+  onShowSelectedBookComments(book: any) {
+    let book_id: string = book.id;
+    if (book_id === null || book_id === undefined) { return };
     this.props.history.push(`/comment/${book_id}/wizard`);
   }
 
@@ -1124,6 +1127,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal: true,
       });
     });
     if (res) {
@@ -1728,6 +1732,13 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         </div>
         {this.render_delete_modal(this.selectedBook)}
         {this.render_price_modal(this.selectedBook)}
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchBooks(); this.setState({ ...this.state, retryModal: false }) }}
+          />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

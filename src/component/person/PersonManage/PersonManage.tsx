@@ -24,6 +24,7 @@ import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 
 //// props & state define ////////
 export interface IProps {
@@ -101,6 +102,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortPerson;
+  retryModal: boolean;
 }
 ///// define class of Person //////
 class PersonManageComponent extends BaseComponent<IProps, IState>{
@@ -473,7 +475,8 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       creation_date: false,
       cell_no: false,
       phone: false,
-    }
+    },
+    retryModal : false,
   }
 
   componentDidMount() {
@@ -688,6 +691,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal : true,
       });
     });
 
@@ -1218,6 +1222,13 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedPerson)}
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchPersons(); this.setState({ ...this.state, retryModal: false }) }}
+          />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

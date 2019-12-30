@@ -23,6 +23,7 @@ import Select from 'react-select';
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
+import { RetryModal } from "../../tool/retryModal/retryModal";
 
 /// define props & state ///////
 export interface IProps {
@@ -77,6 +78,7 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortTransaction;
+  retryModal: boolean;
 }
 
 // define class of Comment 
@@ -198,7 +200,8 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
     sort: [],
     sortShowStyle: {
       creation_date: false,
-    }
+    },
+    retryModal: false,
   }
 
   selectedTransaction: any | undefined;
@@ -234,8 +237,8 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
     return false;
   }
 
-  checkAllAccessForTools():boolean {
-    if(AccessService.checkOneOFAllAccess([TPERMISSIONS.TRANSACTION_DELETE_PREMIUM]) === true){
+  checkAllAccessForTools(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.TRANSACTION_DELETE_PREMIUM]) === true) {
       return true;
     }
     return false;
@@ -470,7 +473,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {this.fetchTransactions()});
+    }, () => { this.fetchTransactions() });
   }
 
   async fetchTransactions() {
@@ -488,6 +491,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
+        retryModal: true,
       });
     });
     if (res) {
@@ -877,6 +881,13 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedTransaction)}
+        {
+          <RetryModal
+            modalShow={this.state.retryModal}
+            onHide={() => this.setState({ ...this.state, retryModal: false })}
+            onRetry={() => { this.fetchTransactions(); this.setState({ ...this.state, retryModal: false }) }}
+          />
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

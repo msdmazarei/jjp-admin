@@ -860,9 +860,11 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchComments() {
-    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
-      return;
-    }
+    if(this.state.is_wizard === false){
+      if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
+        return;
+      }
+    };
     this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._commentService.search(
       this.state.pager_limit,
@@ -1301,7 +1303,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true
+            AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true || this.state.is_wizard === true
               ?
               <>
                 {/* start search box */}

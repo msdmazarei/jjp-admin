@@ -441,6 +441,81 @@ export const fa = {
     },
     permissions_list: {
         IS_OWNER : 'مالک',
+
+        REPORT_GET_PREMIUM: 'دسترسی به گزارشات بدون محدودیت',
+        REPORT_GET_PRESS: 'دسترسی به گزارشات ویژه ناشرین',
+
+        BOOK_ADD_PREMIUM : 'افزودن کتاب بدون محدودبت',
+        BOOK_ADD_PRESS : 'افزودن کتاب ویژه ناشرین',
+        BOOK_EDIT_PREMIUM : 'ویرایش کتاب بدون محدودبت',
+        BOOK_EDIT_PRESS : 'ویرایش کتاب ویژه ناشرین',
+        BOOK_DELETE_PREMIUM : 'حذف کتاب بدون محدودبت',
+        BOOK_DELETE_PRESS : 'حذف کتاب ویژه ناشرین',
+
+        BOOK_CONTENT_ADD_PREMIUM : 'افزودن محتوا بدون محدودیت',
+        BOOK_CONTENT_ADD_PRESS : 'افزودن محتوا ویژه ناشرین',
+        BOOK_CONTENT_GET_PREMIUM : 'دسترسی به لیست محتوا کتاب ها بدون محدودیت',
+        BOOK_CONTENT_GET_PRESS : 'دسترسی به لیست محتوا کتاب ها ویژه ناشرین',
+
+        PERSON_ADD_PREMIUM : 'افزودن شخص بدون محدودیت',
+        PERSON_EDIT_PREMIUM : 'ویرایش شخص بدون محدودیت',
+        PERSON_DELETE_PREMIUM : 'حذف شخص بدون محدودیت',
+        PERSON_GET_PREMIUM : 'دسترسی به لیست شخص ها بدون محدودیت',
+
+        USER_DELETE_PREMIUM : 'افزودن حساب کاربری بدون محدودیت',
+        USER_EDIT_PREMIUM : 'ویرایش حساب کاربری بدون محدودیت',
+        USER_GET_PREMIUM : 'دسترسی به لیست حساب کاربران',
+        USER_GET_PRESS : 'دسترسی به لیست حساب کاربران ویژه ناشرین',
+
+        COMMENT_ADD_PREMIUM : 'افزودن نظر بدون محدودیت',
+        COMMENT_EDIT_PREMIUM : 'ویرایش نظر بدون محدودیت',
+        COMMENT_GET_PREMIUM : 'دسترسی به لیست نظرات بدون محدودیت',
+        COMMENT_DELETE_PREMIUM : 'حذف نظر بدون محدودیت',
+        COMMENT_DELETE_PRESS : 'حذف نظر ویژه ناشرین',
+        COMMENT_ADD : 'افزودن نظر',
+        COMMENT_EDIT : 'ویرایش نظر',
+        COMMENT_DELETE : 'حذف نظر',
+        COMMENT_GET : 'دسترسی به نظرات',
+        COMMENT_ACTION_DELETE_PREMIUM : 'حذف پسندها و گزارشات نظر بدون محدودیت',
+        COMMENT_ACTION_DELETE_PRESS : 'حذف پسندها و گزارشات نظر ویژه ناشرین',
+
+        ORDER_ADD_PREMIUM : 'افزودن سفارش بدون محدودیت',
+        ORDER_ADD_PRESS : 'افزودن سفارش ویژه ناشرین',
+        ORDER_EDIT_PREMIUM : 'ویرایش سفارش بدون محدودیت',
+        ORDER_DELETE_PREMIUM : 'حذف سفارش بدون محدودیت',
+        ORDER_GET_PREMIUM : 'دسترسیبه لیست سفارشات بدون محدودیت',
+        ORDER_CHECKOUT_PREMIUM : 'تبدیل سفارش به فاکتور بدون محدودیت',
+        ORDER_ITEM_GET_PREMIUM : 'دسترسی به جزئیات سفارش بدون محدودیت',
+        ORDER_ITEM_EDIT_PREMIUM : 'ویرایش جزئیات سفارش بدون محدودیت',
+        ORDER_ITEM_DELETE_PREMIUM : 'حذف جزئیات سفارش بدون محدودیت',
+
+        PERMISSION_GROUP_ADD_PREMIUM : 'افزودن گروه بدون محدودیت',
+        PERMISSION_GROUP_ADD_PRESS : 'افزودن گروه ویژه ناشرین',
+        PERMISSION_GROUP_GET_PREMIUM : 'دسترسی به لیست گروه ها بدون محدودیت',
+        PERMISSION_GROUP_GET_PRESS : 'دسترسی به لیست گروه ها ویژه ناشرین',
+        PERMISSION_GROUP_EDIT_PREMIUM : 'ویرایش گروه بدون محدودیت',
+        PERMISSION_GROUP_EDIT_PRESS : 'ویرایش گروه ویژه ناشرین',
+        PERMISSION_GROUP_DELETE_PREMIUM : 'حذف گروه بدون محدودیت',
+        PERMISSION_GROUP_DELETE_PRESS : 'حذف گروه ویژه ناشرین',
+        PERMISSION_GROUP_USER_ADD_PREMIUM : 'افزودن کاربر به گروه بدون محدودیت',
+        PERMISSION_GROUP_USER_ADD_PRESS : 'افزودن کاربر به گروه ویژه ناشرین',
+        PERMISSION_GROUP_USER_DELETE_PREMIUM : 'حذف کاربر از گروه بدون محدودیت',
+        PERMISSION_GROUP_USER_DELETE_PRESS : 'حذف کاربر از گروه ویژه ناشرین',
+        PERMISSION_GROUP_USER_GET_PREMIUM : 'دسترسی به لیست کاربران گروه بدون محدویت',
+        PERMISSION_GROUP_USER_GET_PRESS : 'دسترسی به لیست کاربران گروه ویژه ناشرین',
+
+        TRANSACTION_ADD_PREMIUM : 'افزودن تراکنش بدون محدودیت',
+        TRANSACTION_DELETE_PREMIUM : 'حذف تراکنش بدون محدودیت',
+        TRANSACTION_GET_PREMIUM : 'دسترسی به لیست تراکنش ها بدون محدودیت',
+
+        PRICE_ADD_PREMIUM : 'افزودن قیمت بدون محدودیت',
+        PRICE_ADD_PRESS : 'افزودن قیمت ویژه ناشرین',
+        PRICE_EDIT_PREMIUM : 'ویرایش قیمت بدون محدودیت',
+        PRICE_EDIT_PRESS : 'ویرایش قیمت ویژه ناشرین',
+        PRICE_DELETE_PREMIUM : 'حذف قیمت بدون محدودیت',
+        PRICE_DELETE_PRESS : 'حذف قیمت ویژه ناشرین',
+        PRICE_GET_PREMIUM : 'دسترسی به لیست قیمت ها بدون محدودیت',
+
         ACCOUNT_ADD_PREMIUM : 'افزودن حساب اعتباری بدون محدودیت',
         ACCOUNT_EDIT_PREMIUM : 'ویرایش حساب اعتباری بدون محدودیت',
         ACCOUNT_DELETE_PREMIUM : 'حذف حساب اعتباری بدون محدودیت',
@@ -454,78 +529,22 @@ export const fa = {
         RATE_DELETE_PREMIUM : 'حذف رتبه بدون محدودیت',
         RATE_EDIT_PREMIUM : 'ویرایش رتبه بدون محدودیت',
     
-        BOOK_ADD_PREMIUM : 'افزودن کتاب بدون محدودبت',
-        BOOK_EDIT_PREMIUM : 'ویرایش کتاب بدون محدودبت',
-        BOOK_DELETE_PREMIUM : 'حذف کتاب بدون محدودبت',
-        BOOK_ADD_PRESS : 'افزودن کتاب ویژه ناشرین',
-        BOOK_EDIT_PRESS : 'ویرایش کتاب ویژه ناشرین',
-        BOOK_DELETE_PRESS : 'حذف کتاب ویژه ناشرین',
-        BOOK_CONTENT_ADD_PREMIUM : 'افزودن محتوا بدون محدودیت',
-        BOOK_CONTENT_ADD_PRESS : 'افزودن محتوا ویژه ناشرین',
-        BOOK_CONTENT_GET_PREMIUM : 'دسترسی به لیست محتوا کتاب ها بدون محدودیت',
-        BOOK_CONTENT_GET_PRESS : 'دسترسی به لیست محتوا کتاب ها ویژه ناشرین',
-    
-        COMMENT_ADD_PREMIUM : 'افزودن نظر بدون محدودیت',
-        COMMENT_EDIT_PREMIUM : 'ویرایش نظر بدون محدودیت',
-        COMMENT_DELETE_PREMIUM : 'حذف نظر بدون محدودیت',
-        COMMENT_GET_PREMIUM : 'دسترسی به لیست نظرات بدون محدودیت',
-        COMMENT_ADD : 'افزودن نظر',
-        COMMENT_EDIT : 'ویرایش نظر',
-        COMMENT_DELETE : 'حذف نظر',
-        COMMENT_GET : 'دسترسی به نظرات',
-        COMMENT_DELETE_PRESS : 'حذف نظر ویژه ناشرین',
-    
-        TRANSACTION_ADD_PREMIUM : 'افزودن تراکنش بدون محدودیت',
-        TRANSACTION_DELETE_PREMIUM : 'حذف تراکنش بدون محدودیت',
-        TRANSACTION_GET_PREMIUM : 'دسترسی به لیست تراکنش ها بدون محدودیت',
-    
-        COMMENT_ACTION_DELETE_PREMIUM : 'حذف پسندها و گزارشات نظر بدون محدودیت',
-        COMMENT_ACTION_DELETE_PRESS : 'حذف پسندها و گزارشات نظر ویژه ناشرین',
-    
-        FOLLOW_DELETE_PREMIUM : 'حذف دنبال کردن بدون محدودیت',
-    
-        ORDER_CHECKOUT_PREMIUM : 'تبدیل سفارش به فاکتور بدون محدودیت',
-        ORDER_ADD_PREMIUM : 'افزودن سفارش بدون محدودیت',
-        ORDER_ADD_PRESS : 'افزودن سفارش ویژه ناشرین',
-        ORDER_GET_PREMIUM : 'دسترسیبه لیست سفارشات بدون محدودیت',
-        ORDER_EDIT_PREMIUM : 'ویرایش سفارش بدون محدودیت',
-        ORDER_DELETE_PREMIUM : 'حذف سفارش بدون محدودیت',
-    
-        ORDER_ITEM_GET_PREMIUM : 'دسترسی به جزئیات سفارش بدون محدودیت',
-        ORDER_ITEM_EDIT_PREMIUM : 'ویرایش جزئیات سفارش بدون محدودیت',
-        ORDER_ITEM_DELETE_PREMIUM : 'حذف جزئیات سفارش بدون محدودیت',
-    
-        PRICE_ADD_PREMIUM : 'افزودن قیمت بدون محدودیت',
-        PRICE_GET_PREMIUM : 'دسترسی به لیست قیمت ها بدون محدودیت',
-        PRICE_EDIT_PREMIUM : 'ویرایش قیمت بدون محدودیت',
-        PRICE_DELETE_PREMIUM : 'حذف قیمت بدون محدودیت',
-        PRICE_ADD_PRESS : 'افزودن قیمت ویژه ناشرین',
-        PRICE_EDIT_PRESS : 'ویرایش قیمت ویژه ناشرین',
-        PRICE_DELETE_PRESS : 'حذف قیمت ویژه ناشرین',
-    
-        PERSON_ADD_PREMIUM : 'افزودن شخص بدون محدودیت',
-        PERSON_EDIT_PREMIUM : 'ویرایش شخص بدون محدودیت',
-        PERSON_DELETE_PREMIUM : 'حذف شخص بدون محدودیت',
-        PERSON_GET_PREMIUM : 'دسترسی به لیست شخص ها بدون محدودیت',
-    
-        USER_DELETE_PREMIUM : 'افزودن حساب کاربری بدون محدودیت',
-        USER_GET_PREMIUM : 'دسترسی به لیست حساب کاربران',
-        USER_EDIT_PREMIUM : 'ویرایش حساب کاربری بدون محدودیت',
-    
-        DISCUSSION_GROUP_PREMIUM : 'دسترسی به تمام فعالیت ها در مدیریت گروههای چت بدون محدودیت',
+        DISCUSSION_GROUP_PREMIUM : 'دسترسی به تمام فعالیت ها در مدیریت گروه های چت بدون محدودیت',
         DISCUSSION_MEMBER_PREMIUM : 'دسترسی به تمام فعالیت ها در مورد اعضای گروه های چت بدون محدودیت',
-    
+
         CHAT_DELETE_PREMIUM : 'حذف گفتگو بدون محدودیت',
         CHAT_GET_PREMIUM : 'دسترسی به لیست گفتگو ها بدون محدودیت',
         CHAT_EDIT_PREMIUM : 'ویرایش گفتگو بدون محدودیت',
-    
+
         PAYMENT_ADD_PREMIUM : 'پرداخت بدون محدودیت',
         PAYMENT_ADD_PRESS : 'پرداخت ویژه ناشرین',
         PAYMENT_GET_PREMIUM : 'دسترسی به لیست پرداخت ها بدون محدودیت',
-    
+
         DEVICE_KEY_ADD_PREMIUM : 'افزودن دستگاه بدون محدودیت',
         DEVICE_KEY_GET_PREMIUM : 'دسترسی به لیست دستگاه ها بدون محدودیت',
         DEVICE_KEY_DELETE_PREMIUM : 'حذف دستگاه بدون محدودیت',
+
+        FOLLOW_DELETE_PREMIUM : 'حذف دنبال کردن بدون محدودیت',
     
         PREPARE_BOOK_PREMIUM : 'آماده سازی کتاب بدون محدودیت',
     },

@@ -102,6 +102,9 @@ export const ar = {
             used_somewhere :'ردیف به دلیل استفاده قابل حذف نمی باشد.',
             deleting_the_item_encountered_a_problem : 'ردیف به دلیل استفاده قابل حذف نمی باشد.',
             cell_no_exists : 'فیلد تلفن همراه نمی تواند خالی باشد.',
+            legal_user_restriction : 'شخص حقوقی نمی تواند بیش از یک حساب کاربری داشته باشد.',
+            person_is_not_legal : 'شخص انتخاب شذه شخص حقوقی نیست.',
+            person_must_have_user : 'شخص انتخاب شده باید حساب کاربری داشته باشد.',
         }
     },
     validation: {

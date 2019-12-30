@@ -116,6 +116,9 @@ interface ILocalization extends LocalizedStringsMethods {
             used_somewhere : string;
             deleting_the_item_encountered_a_problem : string;
             cell_no_exists : string;
+            legal_user_restriction : string;
+            person_is_not_legal : string;
+            person_must_have_user : string;
         }
     };
     validation: {

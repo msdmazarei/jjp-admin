@@ -102,6 +102,9 @@ export const en = {
             used_somewhere: 'the row cannot be deleted due to use.',
             deleting_the_item_encountered_a_problem: 'the row cannot be deleted due to use.',
             cell_no_exists: 'the mobile field cannot be empty.',
+            legal_user_restriction : 'legal person can not have more than one account.',
+            person_is_not_legal : 'the person selected is not a legal person',
+            person_must_have_user : 'the person selected must be an account.',
         }
     },
     validation: {

@@ -3,20 +3,16 @@ import { BaseService, IAPI_Response, IAPI_ResponseList } from "./service.base";
 export class GroupService extends BaseService {
 
     search(limit: number, skip: number, filter?: Object, sort?: string[]): Promise<IAPI_ResponseList<any>>{
-        // return this.axiosTokenInstance.post(`/groups/_search`,{ limit, skip, filter });
         return this.axiosTokenInstance.post(`/groups/_search`,{limit,skip,filter, sort});
     }
-
 
     create(group: object) {
         return this.axiosTokenInstance.post('/groups',group);
     }
 
-    
     update(group:object , group_id: string) {
         return this.axiosTokenInstance.put(`/groups/${group_id}`,group);
     }
-
 
     remove(group_id: string) {
         return this.axiosTokenInstance.delete(`/groups/${group_id}`);
@@ -37,6 +33,10 @@ export class GroupService extends BaseService {
 
     fetchUserGroups(user_id: string): Promise<IAPI_ResponseList<any>> {
         return this.axiosTokenInstance.get(`/group-users/user/${user_id}`);
+    }
+
+    fetchGroupUsers(group_id: string): Promise<IAPI_ResponseList<any>> {
+        return this.axiosTokenInstance.get(`/group-users/group/${group_id}`);
     }
 
     addPermissionToGroup(permission: object) {

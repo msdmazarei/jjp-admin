@@ -22,6 +22,7 @@ import { PersonService } from "../../../service/service.person";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { AddorRemovePermissionManage } from "../AddorRemovePermissionManage/AddorRemovePermissionManage"
+import { AddOrRemoveUsersFromGrpoup } from '../AddorRemoveGroupUsersModal/AddorRemoveGroupUsersModal';
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
@@ -82,6 +83,7 @@ interface IState {
   pager_limit: number;
   removeModalShow: boolean;
   addPermissionModalShow: boolean;
+  addOrremoveUserFromGroupModalShow: boolean;
   prevBtnLoader: boolean;
   nextBtnLoader: boolean;
   setRemoveLoader: boolean;
@@ -308,6 +310,11 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
+        {
+          text: <i title={Localization.user} className="fa fa-users text-primary"></i>,
+          ac_func: (row: any) => { this.onShowAddOrRemoveUserFromGroupModal(row) },
+          name: Localization.user
+        },
       ]
     },
     UserError: undefined,
@@ -317,6 +324,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     nextBtnLoader: false,
     removeModalShow: false,
     addPermissionModalShow: false,
+    addOrremoveUserFromGroupModalShow: false,
     setRemoveLoader: false,
     setAddPermissionLoader: false,
     isSearch: false,
@@ -365,6 +373,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   selectedGroup: any | undefined;
   selectedGroupForPermission: any | undefined;
+  selectedGroupForAddOrRemoveUser: any | undefined;
 
   private _groupService = new GroupService();
   private _personService = new PersonService();
@@ -553,6 +562,26 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     this.setState({
       ...this.state,
       addPermissionModalShow: false
+    });
+  }
+
+  // end add permission modal function define ////////
+
+  // start add permission modal function define ////////
+
+  onShowAddOrRemoveUserFromGroupModal(group: any) {
+    this.selectedGroupForAddOrRemoveUser = group;
+    this.setState({
+      ...this.state,
+      addOrremoveUserFromGroupModalShow: true
+    });
+  }
+
+  onHideAddOrRemoveUserFromGroupModal() {
+    this.selectedGroupForAddOrRemoveUser = undefined;
+    this.setState({
+      ...this.state,
+      addOrremoveUserFromGroupModalShow: false
     });
   }
 
@@ -1080,6 +1109,18 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
               onHide={() => this.onHideAddPermissionModal()}
               group_title={this.selectedGroupForPermission.title}
               group_id={this.selectedGroupForPermission.id}
+            />
+        }
+        {
+          this.selectedGroupForAddOrRemoveUser === undefined
+            ?
+            undefined
+            :
+            <AddOrRemoveUsersFromGrpoup
+              onShow={this.state.addOrremoveUserFromGroupModalShow}
+              onHide={() => this.onHideAddOrRemoveUserFromGroupModal()}
+              groupName={this.selectedGroupForAddOrRemoveUser.title}
+              group_id={this.selectedGroupForAddOrRemoveUser.id}
             />
         }
         {

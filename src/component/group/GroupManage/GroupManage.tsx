@@ -26,6 +26,10 @@ import { AddOrRemoveUsersFromGrpoup } from '../AddorRemoveGroupUsersModal/AddorR
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { AccessService } from "../../../service/service.access";
+import { TPERMISSIONS } from "../../../enum/Permission";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE } from "../../../enum/T_ITEM_NAME";
 // import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
@@ -384,12 +388,16 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    TABLE_SORT.sortArrayReseter();
-    this.fetchGroup();
+    if(permissionChecker.is_allow_item_render(T_ITEM_NAME.groupManage,CHECKTYPE.ONE_OF_ALL) === true){
+      this.setState({
+        ...this.state,
+        tableProcessLoader: true
+      });
+      TABLE_SORT.sortArrayReseter();
+      this.fetchGroup();
+    }else{
+      this.noAccessRedirect(this.props.history);
+    };
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {

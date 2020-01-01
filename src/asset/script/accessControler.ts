@@ -1,4 +1,4 @@
-import { T_ITEM_NAME } from '../../enum/T_ITEM_NAME';
+import { T_ITEM_NAME, CONDITION_COMBINE, EXTERA_FUN_NAME } from '../../enum/T_ITEM_NAME';
 import { CHECKTYPE } from '../../enum/T_ITEM_NAME';
 import { AccessService } from '../../service/service.access';
 import { TPERMISSIONS } from '../../enum/Permission';
@@ -7,7 +7,7 @@ export abstract class permissionChecker {
 
     private static permissions_by_item: { item: string, permissions: string[] }[] =
         [
-            { item: T_ITEM_NAME.dashboard, permissions: [TPERMISSIONS.REPORT_GET_PREMIUM,TPERMISSIONS.REPORT_GET_PRESS] },
+            { item: T_ITEM_NAME.dashboard, permissions: [TPERMISSIONS.REPORT_GET_PREMIUM, TPERMISSIONS.REPORT_GET_PRESS] },
             { item: T_ITEM_NAME.bookManage, permissions: [] },
             { item: T_ITEM_NAME.bookSave, permissions: [] },
             { item: T_ITEM_NAME.bookEdit, permissions: [] },
@@ -39,7 +39,7 @@ export abstract class permissionChecker {
         return null;
     };
 
-    static is_allow_item_render(item: T_ITEM_NAME, check: CHECKTYPE): boolean {
+    static is_allow(item: T_ITEM_NAME, check: CHECKTYPE): boolean {
         const selectedItemPermissions: string[] | null = permissionChecker.permission_detect_by_selected_item(item);
 
         if (selectedItemPermissions === null) {
@@ -60,4 +60,138 @@ export abstract class permissionChecker {
             return false;
         };
     };
+
+    static is_allow_item_render(item: T_ITEM_NAME[], check: CHECKTYPE, condition_combine: CONDITION_COMBINE, func?: EXTERA_FUN_NAME, data?: any): boolean {
+        if (condition_combine === CONDITION_COMBINE.DOSE_NOT_HAVE) {
+            if (item.length === 0) {
+                return true;
+            } else if (item.length === 1) {
+                let newCheck: CHECKTYPE = check;
+                if (check === CHECKTYPE.ONE_OF_ITEM_ALL) {
+                    newCheck = CHECKTYPE.ALL;
+                };
+                return permissionChecker.is_allow(item[0], newCheck);
+            } else {
+                let result: boolean = false;
+                for (let i = 0; i < item.length; i++) {
+                    result = permissionChecker.is_allow(item[i], CHECKTYPE.ALL);
+                    if (result === true) {
+                        break;
+                    }
+                };
+                return result;
+            }
+        } else if (condition_combine === CONDITION_COMBINE.OR) {
+            if (func === undefined) {
+                if (item.length === 0) {
+                    return true;
+                } else if (item.length === 1) {
+                    let newCheck: CHECKTYPE = check;
+                    if (check === CHECKTYPE.ONE_OF_ITEM_ALL) {
+                        newCheck = CHECKTYPE.ALL;
+                    };
+                    return permissionChecker.is_allow(item[0], newCheck);
+                } else {
+                    let result: boolean = false;
+                    for (let i = 0; i < item.length; i++) {
+                        result = permissionChecker.is_allow(item[i], CHECKTYPE.ALL);
+                        if (result === true) {
+                            break;
+                        }
+                    };
+                    return result;
+                }
+            } else {
+                let or_result: boolean = permissionChecker.function_result_returner(func, data);
+                if (or_result === true) {
+                    return or_result;
+                } else {
+                    if (item.length === 0) {
+                        return true;
+                    } else if (item.length === 1) {
+                        let newCheck: CHECKTYPE = check;
+                        if (check === CHECKTYPE.ONE_OF_ITEM_ALL) {
+                            newCheck = CHECKTYPE.ALL;
+                        };
+                        return permissionChecker.is_allow(item[0], newCheck);
+                    } else {
+                        let result: boolean = false;
+                        for (let i = 0; i < item.length; i++) {
+                            result = permissionChecker.is_allow(item[i], CHECKTYPE.ALL);
+                            if (result === true) {
+                                break;
+                            }
+                        };
+                        return result;
+                    }
+                }
+            }
+        } else {
+            if (func === undefined) {
+                if (item.length === 0) {
+                    return true;
+                } else if (item.length === 1) {
+                    let newCheck: CHECKTYPE = check;
+                    if (check === CHECKTYPE.ONE_OF_ITEM_ALL) {
+                        newCheck = CHECKTYPE.ALL;
+                    };
+                    return permissionChecker.is_allow(item[0], newCheck);
+                } else {
+                    let result: boolean = false;
+                    for (let i = 0; i < item.length; i++) {
+                        result = permissionChecker.is_allow(item[i], CHECKTYPE.ALL);
+                        if (result === true) {
+                            break;
+                        }
+                    };
+                    return result;
+                }
+            } else {
+                let and_result: boolean = permissionChecker.function_result_returner(func, data);
+                if (and_result === false) {
+                    return and_result;
+                } else {
+                    if (item.length === 0) {
+                        return true && and_result;
+                    } else if (item.length === 1) {
+                        let newCheck: CHECKTYPE = check;
+                        if (check === CHECKTYPE.ONE_OF_ITEM_ALL) {
+                            newCheck = CHECKTYPE.ALL;
+                        };
+                        return permissionChecker.is_allow(item[0], newCheck) && and_result;
+                    } else {
+                        let result: boolean = false;
+                        for (let i = 0; i < item.length; i++) {
+                            result = permissionChecker.is_allow(item[i], CHECKTYPE.ALL);
+                            if (result === true) {
+                                break;
+                            }
+                        };
+                        return result && and_result;
+                    }
+                }
+            }
+        }
+    }
+
+    static function_result_returner(func: EXTERA_FUN_NAME, data?: any): boolean {
+        if (func === EXTERA_FUN_NAME.orderCheckoutAccess) {
+            permissionChecker.orderCheckoutAccess(data);
+        }
+        return true;
+    }
+
+    //// start extera access function check without permissiom ////
+
+    static orderCheckoutAccess(data?: any): boolean {
+        if(data === undefined){
+            return false;
+        }
+        if (data.status === "Invoiced") {
+            return false;
+        }
+        return true;
+    }
+
+    //// end extera access function check without permissiom ////
 }

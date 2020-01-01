@@ -350,7 +350,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                     ...this.state.book,
                     edition: { ...this.state.book.edition, value: res.data.edition, isValid: true },
                     language: { ...this.state.book.language, value: Language!, isValid: true },
-                    pub_year: { ...this.state.book.pub_year, value: res.data.pub_year === null ? undefined : res.data.pub_year, isValid: true },
+                    pub_year: { ...this.state.book.pub_year, value: res.data.pub_year === null ? undefined : Number(res.data.pub_year), isValid: true },
                     title: { ...this.state.book.title, value: res.data.title, isValid: true },
                     isben: { ...this.state.book.isben, value: res.data.isben, isValid: true },
                     pages: { ...this.state.book.pages, value: res.data.pages, isValid: true },
@@ -543,19 +543,19 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let roleList = (this.state.book.roles.value || []).map((item: any) => { return { role: item.role, person: { id: item.person.id } } });
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         let roleListWithPress = roleList;
-        let press = { role: BOOK_ROLES.Press, person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
+        let press = { role: BOOK_ROLES.Press, person: {id : (this.state.book_roll_press! as ICmp_select<IPerson>).value.id} }
         roleListWithPress.push(press);
         const newBook = {
             edition: this.state.book.edition.value,
             language: this.state.book.language.value.value,
-            pub_year: this.state.book.pub_year.value,
+            pub_year: (this.state.book.pub_year.value === undefined ) ? null : (this.state.book.pub_year.value as any).toString(),
             title: this.state.book.title.value,
             isben: this.state.book.isben.value,
             pages: this.state.book.pages.value,
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            price: this.state.book.price.value === '' ? null : this.state.book.price.value,
+            price: this.state.book.price.value === '' ? null : (Number(this.state.book.price.value)),
             genre: genreList,
             types: typeList,
             roles: roleListWithPress,
@@ -617,19 +617,19 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         // let imagesList = (this.state.book.images.value || []).map((list: { label: string; value: string }) => list.value);
         let roleListWithPress = roleList;
-        let press = { role: BOOK_ROLES.Press, person: (this.state.book_roll_press! as ICmp_select<IPerson>).value }
+        let press = { role: BOOK_ROLES.Press, person:{id:(this.state.book_roll_press! as ICmp_select<IPerson>).value.id} }
         roleListWithPress.push(press);
 
         const newBook = {
             edition: this.state.book.edition.value,
             language: this.state.book.language.value.value,
-            pub_year: this.state.book.pub_year.value || null,
+            pub_year: (this.state.book.pub_year.value === undefined ) ? null : (this.state.book.pub_year.value as any).toString(),
             isben: this.state.book.isben.value,
             pages: this.state.book.pages.value,
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            price: this.state.book.price.value === '' ? null : this.state.book.price.value,
+            price: this.state.book.price.value === '' ? null : (Number(this.state.book.price.value)),
             genre: genreList,
             roles: roleListWithPress,
             images: imgUrls,
@@ -732,7 +732,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 from_editor: { value: undefined, isValid: true },
                 description: { value: undefined, isValid: true },
                 genre: { value: null, isValid: true },
-                roles: { value: undefined, isValid: false },
+                roles: { value: undefined, isValid: true },
                 type: { value: null, isValid: false },
                 price: { value: undefined, isValid: true },
                 images: { value: undefined, isValid: true },

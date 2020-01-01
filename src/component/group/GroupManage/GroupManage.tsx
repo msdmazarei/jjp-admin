@@ -27,7 +27,7 @@ import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
-import { T_ITEM_NAME, CHECKTYPE } from "../../../enum/T_ITEM_NAME";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 // import { AccessService } from "../../../service/service.access";
 // import { TPERMISSIONS } from "../../../enum/Permission";
 // import { PERMISSIONS } from "../../../enum/Permission";
@@ -388,7 +388,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if(permissionChecker.is_allow_item_render(T_ITEM_NAME.groupManage,CHECKTYPE.ONE_OF_ALL) === true){
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
       this.setState({
         ...this.state,
         tableProcessLoader: true
@@ -397,7 +397,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
       this.fetchGroup();
     }else{
       this.noAccessRedirect(this.props.history);
-    };
+    }
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {

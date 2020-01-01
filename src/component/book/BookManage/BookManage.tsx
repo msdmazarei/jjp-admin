@@ -929,7 +929,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     };
     if (!this.state.price.isValid) return;
     this.setState({ ...this.state, setPriceLoader: true });
-    let res = await this._priceService.price(book_id, this.state.price.value!).catch(error => {
+    let res = await this._priceService.price(book_id, Number(this.state.price.value!)).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onPriceBook_error' } });
       this.setState({ ...this.state, setPriceLoader: false });
     });

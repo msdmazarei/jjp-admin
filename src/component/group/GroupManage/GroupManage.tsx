@@ -26,10 +26,10 @@ import { AddOrRemoveUsersFromGrpoup } from '../AddorRemoveGroupUsersModal/AddorR
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
-import { permissionChecker } from "../../../asset/script/accessControler";
-import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
-// import { AccessService } from "../../../service/service.access";
-// import { TPERMISSIONS } from "../../../enum/Permission";
+import { AccessService } from "../../../service/service.access";
+import { TPERMISSIONS } from "../../../enum/Permission";
+// import { permissionChecker } from "../../../asset/script/accessControler";
+// import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 // import { PERMISSIONS } from "../../../enum/Permission";
 
 //// start define IProps ///
@@ -298,28 +298,34 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: [
+      actions: this.checkAllAccess() === true ? [
         {
+          access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
+          access: (row: any) => { return this.checkAddPermissionToolAccess() },
           text: <i title={Localization.permission} className="fa fa-universal-access text-info"></i>,
           ac_func: (row: any) => { this.onShowAddPermissionModal(row) },
           name: Localization.permission
         },
         {
+          access: (row: any) => { return this.checkUpdateToolAccess() },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
+          access: (row: any) => { return this.checkAddUserToolAccess() },
           text: <i title={Localization.user} className="fa fa-users text-primary"></i>,
           ac_func: (row: any) => { this.onShowAddOrRemoveUserFromGroupModal(row) },
           name: Localization.user
         },
       ]
+        :
+        undefined
     },
     UserError: undefined,
     pager_offset: 0,
@@ -388,16 +394,60 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
-      this.setState({
-        ...this.state,
-        tableProcessLoader: true
-      });
-      TABLE_SORT.sortArrayReseter();
-      this.fetchGroup();
-    }else{
+    if (this.checkGroupManagePageRender() === true) {
+      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS]) === true) {
+        this.setState({
+          ...this.state,
+          tableProcessLoader: true
+        });
+        TABLE_SORT.sortArrayReseter();
+        this.fetchGroup();
+      }
+    } else {
       this.noAccessRedirect(this.props.history);
     }
+  }
+
+  checkGroupManagePageRender(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS])) {
+      return true;
+    }
+    return false
+  }
+
+  checkAllAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_DELETE_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_DELETE_PRESS, TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS])) {
+      return true;
+    }
+    return false;
+  }
+
+  checkDeleteToolAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_DELETE_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_DELETE_PRESS])) {
+      return true;
+    }
+    return false
+  }
+
+  checkAddPermissionToolAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS])) {
+      return true;
+    }
+    return false
+  }
+
+  checkUpdateToolAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS])) {
+      return true;
+    }
+    return false
+  }
+
+  checkAddUserToolAccess(): boolean {
+    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS])) {
+      return true;
+    }
+    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -448,10 +498,16 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   /// start navigation function for create ant update ///
   gotoGroupCreate() {
+    if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS]) === false){
+      return;
+    }
     this.props.history.push('/group/create');
   }
 
   updateRow(group_id: any) {
+    if(this.checkUpdateToolAccess() === false){
+      return;
+    }
     this.props.history.push(`/group/${group_id.id}/edit`);
   }
 
@@ -493,6 +549,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveGroup(group_id: string) {
+    if(this.checkDeleteToolAccess() === false){
+      return;
+    }
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._groupService.remove(group_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveGroup_error' } });
@@ -558,6 +617,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // start add permission modal function define ////////
 
   onShowAddPermissionModal(group: any) {
+    if(this.checkAddPermissionToolAccess() === false){
+      return;
+    }
     this.selectedGroupForPermission = group;
     this.setState({
       ...this.state,
@@ -578,6 +640,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // start add permission modal function define ////////
 
   onShowAddOrRemoveUserFromGroupModal(group: any) {
+    if(this.checkAddUserToolAccess() === false){
+      return;
+    }
     this.selectedGroupForAddOrRemoveUser = group;
     this.setState({
       ...this.state,
@@ -988,123 +1053,137 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.group}</h2>
-              <BtnLoader
-                loading={false}
-                disabled={false}
-                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                onClick={() => this.gotoGroupCreate()}
-              >
-                {Localization.new}
-              </BtnLoader>
+              {
+                AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PRESS])
+                  ?
+                  <BtnLoader
+                    loading={false}
+                    disabled={false}
+                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                    onClick={() => this.gotoGroupCreate()}
+                  >
+                    {Localization.new}
+                  </BtnLoader>
+                  :
+                  undefined
+              }
             </div>
           </div>
-          {/* start search box */}
-          <div className="row">
-            <div className="col-12">
-              <div className="template-box mb-4">
-                <div className="d-flex justify-content-center mb-1">
-                  {
-                    this.state.advance_search_box_show === false
-                      ?
-                      <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
-                        <span className="mx-2">{Localization.advanced_search}</span>
-                        <i className="fa fa-angle-down mx-2"></i>
+          {
+            AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS])
+              ?
+              <>
+                {/* start search box */}
+                <div className="row">
+                  <div className="col-12">
+                    <div className="template-box mb-4">
+                      <div className="d-flex justify-content-center mb-1">
+                        {
+                          this.state.advance_search_box_show === false
+                            ?
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-down mx-2"></i>
+                            </div>
+                            :
+                            <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
+                              <span className="mx-2">{Localization.advanced_search}</span>
+                              <i className="fa fa-angle-up mx-2"></i>
+                            </div>
+                        }
                       </div>
-                      :
-                      <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
-                        <span className="mx-2">{Localization.advanced_search}</span>
-                        <i className="fa fa-angle-up mx-2"></i>
+                      {/* start search box inputs */}
+                      <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'title')}
+                            label={Localization.title}
+                            placeholder={Localization.title}
+                            defaultValue={this.state.filter_state.title.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <Input
+                            onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
+                            label={Localization.creator}
+                            placeholder={Localization.creator}
+                            defaultValue={this.state.filter_state.creator.value}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <label >{Localization.person}</label>
+                          <i
+                            title={Localization.reset}
+                            className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
+                            onClick={() => this.person_in_search_remover()}
+                          ></i>
+                          <AsyncSelect
+                            placeholder={Localization.person}
+                            cacheOptions
+                            defaultOptions
+                            value={this.state.filter_state.person.value}
+                            loadOptions={(inputValue, callback) => this.debounce_300_person_serch(inputValue, callback)}
+                            noOptionsMessage={(obj) => this.select_noOptionsMessage_person_serch(obj)}
+                            onChange={(selectedPerson: any) => this.handlePersonChange_person_serch(selectedPerson)}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.creation_date}
+                            from={this.state.filter_state.cr_date.from}
+                            to={this.state.filter_state.cr_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
+                          />
+                        </div>
+                        <div className="col-md-3 col-sm-6">
+                          <AppRangePicker
+                            label={Localization.modification_date}
+                            from={this.state.filter_state.mo_date.from}
+                            to={this.state.filter_state.mo_date.to}
+                            onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
+                          />
+                        </div>
                       </div>
-                  }
-                </div>
-                {/* start search box inputs */}
-                <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
-                  <div className="col-md-3 col-sm-6">
-                    <Input
-                      onChange={(value, isValid) => this.handleInputChange(value, 'title')}
-                      label={Localization.title}
-                      placeholder={Localization.title}
-                      defaultValue={this.state.filter_state.title.value}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <Input
-                      onChange={(value, isValid) => this.handleInputChange(value, 'creator')}
-                      label={Localization.creator}
-                      placeholder={Localization.creator}
-                      defaultValue={this.state.filter_state.creator.value}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <label >{Localization.person}</label>
-                    <i
-                      title={Localization.reset}
-                      className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
-                      onClick={() => this.person_in_search_remover()}
-                    ></i>
-                    <AsyncSelect
-                      placeholder={Localization.person}
-                      cacheOptions
-                      defaultOptions
-                      value={this.state.filter_state.person.value}
-                      loadOptions={(inputValue, callback) => this.debounce_300_person_serch(inputValue, callback)}
-                      noOptionsMessage={(obj) => this.select_noOptionsMessage_person_serch(obj)}
-                      onChange={(selectedPerson: any) => this.handlePersonChange_person_serch(selectedPerson)}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <AppRangePicker
-                      label={Localization.creation_date}
-                      from={this.state.filter_state.cr_date.from}
-                      to={this.state.filter_state.cr_date.to}
-                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'cr_date')}
-                    />
-                  </div>
-                  <div className="col-md-3 col-sm-6">
-                    <AppRangePicker
-                      label={Localization.modification_date}
-                      from={this.state.filter_state.mo_date.from}
-                      to={this.state.filter_state.mo_date.to}
-                      onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'mo_date')}
-                    />
+                      {/* end search box inputs */}
+                      {/* start search btns box */}
+                      <div className="row mt-1">
+                        <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
+                          <BtnLoader
+                            disabled={this.state.tableProcessLoader}
+                            loading={this.state.filterSearchBtnLoader}
+                            btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
+                            onClick={() => this.filterSearch()}
+                          >
+                            {Localization.search}
+                          </BtnLoader>
+                          <BtnLoader
+                            // disabled={this.state.tableProcessLoader}
+                            loading={false}
+                            btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
+                            onClick={() => this.filter_state_reset()}
+                          >
+                            {Localization.reset}
+                          </BtnLoader>
+                        </div>
+                      </div>
+                      {/* end search btns box */}
+                    </div>
                   </div>
                 </div>
-                {/* end search box inputs */}
-                {/* start search btns box */}
-                <div className="row mt-1">
-                  <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
-                    <BtnLoader
-                      disabled={this.state.tableProcessLoader}
-                      loading={this.state.filterSearchBtnLoader}
-                      btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
-                      onClick={() => this.filterSearch()}
-                    >
-                      {Localization.search}
-                    </BtnLoader>
-                    <BtnLoader
-                      // disabled={this.state.tableProcessLoader}
-                      loading={false}
-                      btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                      onClick={() => this.filter_state_reset()}
-                    >
-                      {Localization.reset}
-                    </BtnLoader>
+                {/* end search  box */}
+                <div className="row">
+                  <div className="col-12">
+                    <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
+                    <div>
+                      {this.pager_previous_btn_render()}
+                      {this.pager_next_btn_render()}
+                    </div>
                   </div>
                 </div>
-                {/* end search btns box */}
-              </div>
-            </div>
-          </div>
-          {/* end search  box */}
-          <div className="row">
-            <div className="col-12">
-              <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.user_table.list} colHeaders={this.state.user_table.colHeaders} actions={this.state.user_table.actions}></Table>
-              <div>
-                {this.pager_previous_btn_render()}
-                {this.pager_next_btn_render()}
-              </div>
-            </div>
-          </div>
+              </>
+              :
+              undefined
+          }
         </div>
         {this.render_delete_modal(this.selectedGroup)}
         {

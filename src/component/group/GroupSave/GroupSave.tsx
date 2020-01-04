@@ -90,18 +90,25 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     private group_id: string | undefined;
 
     componentDidMount() {
-        // this._groupService.setToken(this.props.token);
-        // this._personService.setToken(this.props.token);
-
         if (this.props.match.path.includes('/group/:group_id/edit')) {
-            console.log('fired')
-            this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
-            this.group_id = this.props.match.params.group_id;
-            this.fetchGroupById(this.props.match.params.group_id);
+            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS]) === true) {
+                this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
+                this.group_id = this.props.match.params.group_id;
+                this.fetchGroupById(this.props.match.params.group_id);
+            } else {
+                this.noAccessRedirect(this.props.history);
+            }
+        } else {
+            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS]) === false) {
+                this.noAccessRedirect(this.props.history);
+            }
         }
     }
 
     backTO() {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS]) === false) {
+            return;
+        }
         this.gotoGroupManage();
     }
 
@@ -110,6 +117,9 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async create() {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS]) === false) {
+            return;
+        }
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, createLoader: true });
 
@@ -140,6 +150,9 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
+        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS]) === false) {
+            return;
+        }
         if (!this.state.isFormValid) return;
         this.setState({ ...this.state, updateLoader: true });
 
@@ -422,7 +435,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                 <div className="d-flex justify-content-between mt-4">
                                     <div className="mr-0 pr-0">
                                         {
-                                            this.state.saveMode === SAVE_MODE.CREATE
+                                            this.state.saveMode === SAVE_MODE.CREATE && AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS])
                                                 ?
                                                 <>
                                                     <BtnLoader
@@ -445,7 +458,8 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        this.state.saveBtnVisibility ?
+                                                        this.state.saveBtnVisibility && AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS])
+                                                            ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
                                                                 loading={this.state.updateLoader}
@@ -454,20 +468,27 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                                             >
                                                                 {Localization.update}
                                                             </BtnLoader>
-                                                            : ''
+                                                            :
+                                                            ''
                                                     }
                                                 </>
 
                                         }
                                     </div>
-                                    <BtnLoader
-                                        btnClassName="btn btn-primary shadow-default shadow-hover"
-                                        loading={false}
-                                        onClick={() => this.backTO()}
-                                        disabled={false}
-                                    >
-                                        {Localization.back}
-                                    </BtnLoader>
+                                    {
+                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS])
+                                            ?
+                                            <BtnLoader
+                                                btnClassName="btn btn-primary shadow-default shadow-hover"
+                                                loading={false}
+                                                onClick={() => this.backTO()}
+                                                disabled={false}
+                                            >
+                                                {Localization.back}
+                                            </BtnLoader>
+                                            :
+                                            undefined
+                                    }
                                 </div>
                             </div>
                         </div>

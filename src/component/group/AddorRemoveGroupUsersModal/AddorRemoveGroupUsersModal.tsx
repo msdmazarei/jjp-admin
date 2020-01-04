@@ -11,6 +11,9 @@ import { Localization } from "../../../config/localization/localization";
 import AsyncSelect from 'react-select/async';
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { UserService } from "../../../service/service.user";
+import { AccessService } from "../../../service/service.access";
+import { TPERMISSIONS } from "../../../enum/Permission";
+import { toast } from "react-toastify";
 
 
 //// start define IProps ///
@@ -152,6 +155,11 @@ class AddOrRemoveUsersFromGrpoupComponent extends BaseComponent<IProps, IState>{
 
     async onAddGroupToUser(newValue: any[], group_id: string) {
 
+        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PRESS]) === false){
+            toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig());
+            return;
+        }
+
         if (this.state.user.value === null) {
             if (newValue === null) {
                 return;
@@ -202,6 +210,11 @@ class AddOrRemoveUsersFromGrpoupComponent extends BaseComponent<IProps, IState>{
     }
 
     async onRemoveGroupFromUser(newValue: any[], group_id: string) {
+
+        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PRESS]) === false){
+            toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig());
+            return;
+        }
 
         if (newValue === null) {
 

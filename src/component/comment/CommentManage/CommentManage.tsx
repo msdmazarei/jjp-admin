@@ -34,7 +34,7 @@ import { RetryModal } from "../../tool/retryModal/retryModal";
 
 /// define props & state ///////
 export interface IProps {
-  match:any;
+  match: any;
   history: History;
   internationalization: TInternationalization;
   // token: IToken;
@@ -105,8 +105,8 @@ interface IState {
   advance_search_box_show: boolean;
   sort: string[];
   sortShowStyle: ISortComment;
-  is_wizard : boolean;
-  retryModal : boolean;
+  is_wizard: boolean;
+  retryModal: boolean;
 }
 
 // define class of Comment 
@@ -116,7 +116,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       list: [],
       colHeaders: [
         {
-          field: "creator", title: Localization.user, 
+          field: "creator", title: Localization.user,
           templateFunc: () => {
             return <>
               {Localization.user}
@@ -173,7 +173,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "body", title: Localization.comment, 
+          field: "body", title: Localization.comment,
           templateFunc: () => {
             return <>
               {Localization.comment}
@@ -275,7 +275,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "likes", title: Localization.number_of_likes, 
+          field: "likes", title: Localization.number_of_likes,
           templateFunc: () => {
             return <>
               {Localization.number_of_likes}
@@ -330,7 +330,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "reports", title: Localization.number_of_reports, 
+          field: "reports", title: Localization.number_of_reports,
           templateFunc: () => {
             return <>
               {Localization.number_of_reports}
@@ -495,15 +495,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       likes: false,
       reports: false,
     },
-    is_wizard : false,
-    retryModal : false,
+    is_wizard: false,
+    retryModal: false,
   }
 
   selectedComment: IComment | undefined;
   private _commentService = new CommentService();
   private _bookService = new BookService();
   private _personService = new PersonService();
-  private book_id : string | undefined;
+  private book_id: string | undefined;
 
   // constructor(props: IProps) {
   //   super(props);
@@ -514,12 +514,12 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // timestamp to date 
 
   componentDidMount() {
-    if(this.props.match.path.includes('/comment/:book_id/wizard')){
-      this.setState({...this.state, is_wizard: true, advance_search_box_show : true});
+    if (this.props.match.path.includes('/comment/:book_id/wizard')) {
+      this.setState({ ...this.state, is_wizard: true, advance_search_box_show: true });
       this.book_id = this.props.match.params.book_id;
-      if(this.book_id === undefined){return};
+      if (this.book_id === undefined) { return };
       this.fetchBookById_wizard(this.book_id);
-    }else if (this.checkPageRenderAccess() === true) {
+    } else if (this.checkPageRenderAccess() === true) {
       if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true) {
         this.setState({
           ...this.state,
@@ -607,14 +607,14 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     return false
   }
 
-  async fetchBookById_wizard(id : string){
+  async fetchBookById_wizard(id: string) {
     let res = await this._bookService.byId(id).catch(error => {
-      this.handleError({error: error.response, toastOptions: { toastId: 'onFetchBookById_wizard_error' }})
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onFetchBookById_wizard_error' } })
     })
-    if(res){
-      let type : string = Localization.book_type_list[res.data.type as BOOK_TYPES];
-      let book_name_by_type : string = res.data.title + " - " + type;
-      const book : {label : string , value : IBook} = { label : book_name_by_type , value : res.data};
+    if (res) {
+      let type: string = Localization.book_type_list[res.data.type as BOOK_TYPES];
+      let book_name_by_type: string = res.data.title + " - " + type;
+      const book: { label: string, value: IBook } = { label: book_name_by_type, value: res.data };
       this.handleBookChange(book);
     }
   }
@@ -856,11 +856,11 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {this.fetchComments()});
+    }, () => { this.fetchComments() });
   }
 
   async fetchComments() {
-    if(this.state.is_wizard === false){
+    if (this.state.is_wizard === false) {
       if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
         return;
       }
@@ -879,7 +879,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
-        retryModal : true,
+        retryModal: true,
       });
     });
     if (res) {
@@ -1105,15 +1105,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           is_valid: isValid,
         }
       }
-    },() => this.wizardHandler());
+    }, () => this.wizardHandler());
   }
 
-  wizardHandler(){
-    if(this.state.is_wizard === false){
+  wizardHandler() {
+    if (this.state.is_wizard === false) {
       return;
-    }else if(this.state.is_wizard === true){
+    } else if (this.state.is_wizard === true) {
       this.fetchComments();
-    }else{
+    } else {
       return;
     }
   }
@@ -1202,7 +1202,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   private bookRequstError_txt: string = Localization.no_item_found;
 
   async promiseOptions2_book_search(inputValue: any, callBack: any) {
-    
+
     let res: any = await this._bookService.searchWithPress(10, 0, inputValue).catch(err => {
       let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'bookSearch_in_comment_error' } });
       this.bookRequstError_txt = err_msg.body;
@@ -1337,11 +1337,17 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
                         </div>
                         <div className="col-md-3 col-sm-6">
                           <label >{Localization.book}</label>
-                          <i
-                            title={Localization.reset}
-                            className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
-                            onClick={() => this.book_in_search_remover()}
-                          ></i>
+                          {
+                            this.state.is_wizard === true
+                              ?
+                              undefined
+                              :
+                              <i
+                                title={Localization.reset}
+                                className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
+                                onClick={() => this.book_in_search_remover()}
+                              ></i>
+                          }
                           <AsyncSelect
                             isDisabled={this.state.is_wizard === true}
                             placeholder={Localization.book}

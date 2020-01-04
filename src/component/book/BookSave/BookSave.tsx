@@ -15,7 +15,6 @@ import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
-// import { IToken } from '../../../model/model.token';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
@@ -29,6 +28,7 @@ import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
 import { IBook } from '../../../model/model.book';
 import { BookSavePassToContentModal } from './BookSavePassToContentModal';
 import { TPERMISSIONS } from '../../../enum/Permission';
+// import { IToken } from '../../../model/model.token';
 
 interface ICmp_select<T> {
     label: string;
@@ -546,21 +546,21 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let press = { role: BOOK_ROLES.Press, person: {id : (this.state.book_roll_press! as ICmp_select<IPerson>).value.id} }
         roleListWithPress.push(press);
         const newBook = {
+            title: this.state.book.title.value,
             edition: this.state.book.edition.value,
             language: this.state.book.language.value.value,
-            pub_year: (this.state.book.pub_year.value === undefined ) ? null : (this.state.book.pub_year.value as any).toString(),
-            title: this.state.book.title.value,
+            pub_year: (this.state.book.pub_year.value === undefined ) ? undefined : (this.state.book.pub_year.value as any).toString(),
             isben: this.state.book.isben.value,
             pages: this.state.book.pages.value,
             duration: this.state.book.duration.value,
+            types: typeList,
+            price: (this.state.book.price.value === '' || this.state.book.price.value === undefined) ? undefined : (Number(this.state.book.price.value)),
+            genre: genreList,
+            tags: tagList,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            price: this.state.book.price.value === '' ? null : (Number(this.state.book.price.value)),
-            genre: genreList,
-            types: typeList,
             roles: roleListWithPress,
             images: imgUrls,
-            tags: tagList
         }
         let res = await this._bookService.create(newBook).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'bookCreate_error' } });

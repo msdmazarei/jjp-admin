@@ -17,6 +17,7 @@ import { BookGeneratorManage } from './component/BookGenerator/BookGeneratorMana
 import { BookGenerator } from './component/BookGenerator/BookGenerator/BookGenerator';
 import { TransactionManage } from './component/transaction/TransactionManage/TransactionManage';
 import { Localization } from "./config/localization/localization";
+import { TPERMISSIONS } from "./enum/Permission";
 
 
 var routes = [
@@ -38,7 +39,7 @@ var routes = [
     component: BookManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['BOOK_ADD_PREMIUM','BOOK_EDIT_PREMIUM','BOOK_DELETE_PREMIUM','BOOK_ADD_PRESS','BOOK_EDIT_PRESS','BOOK_DELETE_PRESS']
+    PERMISSIONS: []
   },
   {
     path: "/book/create",
@@ -47,7 +48,7 @@ var routes = [
     component: BookSave,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['BOOK_ADD_PREMIUM', 'BOOK_ADD_PRESS']
+    PERMISSIONS: [TPERMISSIONS.BOOK_ADD_PREMIUM, TPERMISSIONS.BOOK_ADD_PRESS]
   },
   {
     path: "/book/:book_id/edit",
@@ -67,7 +68,7 @@ var routes = [
     component: BookGeneratorManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['BOOK_CONTENT_ADD_PREMIUM','BOOK_CONTENT_ADD_PRESS','BOOK_CONTENT_GET_PREMIUM','BOOK_CONTENT_GET_PRESS',]
+    PERMISSIONS: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM,TPERMISSIONS.BOOK_CONTENT_ADD_PRESS,TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM,TPERMISSIONS.BOOK_CONTENT_GET_PRESS]
   },
   {
     path: "/book_generator/create",
@@ -105,7 +106,7 @@ var routes = [
     component: PersonManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['PERSON_ADD_PREMIUM', 'PERSON_GET_PREMIUM']
+    PERMISSIONS: [TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM]
   },
   {
     path: "/person/create",
@@ -133,7 +134,7 @@ var routes = [
     component: UserManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['USER_GET_PREMIUM']
+    PERMISSIONS: [TPERMISSIONS.USER_GET_PREMIUM]
   },
   {
     path: "/user/create",
@@ -170,7 +171,7 @@ var routes = [
     component: CommentManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['COMMENT_GET_PREMIUM']
+    PERMISSIONS: [TPERMISSIONS.COMMENT_GET_PREMIUM]
   },
   {
     path: "/comment/:book_id/wizard",
@@ -190,7 +191,7 @@ var routes = [
     component: OrderManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: ['ORDER_ADD_PREMIUM', 'ORDER_ADD_PRESS', 'ORDER_GET_PREMIUM']
+    PERMISSIONS: [TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]
   },
   {
     path: "/order/create",
@@ -218,7 +219,7 @@ var routes = [
     component: GroupManage,
     layout: "/admin",
     sidebarIconVisibility: true,
-    PERMISSIONS: []
+    PERMISSIONS: [TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS,TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_GET_PRESS]
   },
   {
     path: "/group/create",
@@ -286,7 +287,7 @@ var routes = [
     layout: "/admin",
     sidebarIconVisibility: true,
     brandName: ['transaction', 'edit'],
-    PERMISSIONS: ['TRANSACTION_GET_PREMIUM']
+    PERMISSIONS: [TPERMISSIONS.TRANSACTION_GET_PREMIUM]
   },
   // transaction end
 ];

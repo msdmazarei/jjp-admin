@@ -13,7 +13,6 @@ export abstract class R_1_CUtility {
                 value: report[i].count,
             }
             R_1_CUtility.result.push(obj);
-
         }
 
         let rtArray : { name: string, value: number }[] = R_1_CUtility.result;

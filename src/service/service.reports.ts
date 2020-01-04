@@ -1,5 +1,8 @@
 // import Axios from "axios";
 import { IAPI_ResponseList, BaseService } from "./service.base";
+import { AccessService } from "./service.access";
+import { TPERMISSIONS } from "../enum/Permission";
+import { Store2 } from "../redux/store";
 
 export class ReportService extends BaseService {
 
@@ -20,8 +23,17 @@ export class ReportService extends BaseService {
     };
     
     last_sell_by_book_type(selectedType : string): Promise<IAPI_ResponseList<any>>{ 
-        let typeObj : object = {type : selectedType}
-        return this.axiosTokenInstance.post(`/reports/book-by-type`, typeObj);
+        let obj : any = {} ;
+        obj['type'] = selectedType;
+        // let typeObj : object = {type : selectedType}
+        if(AccessService.checkAccess(TPERMISSIONS.REPORT_GET_PREMIUM) === false){
+            let persons_of_press: string[];
+            persons_of_press = [];
+            const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
+            persons_of_press = [...wrapper];
+            obj['press'] = { $in: persons_of_press }
+        }
+        return this.axiosTokenInstance.post(`/reports/book-by-type`, obj);
     };
 
     income_by_time_period(){

@@ -369,6 +369,11 @@ export const ar = {
     no_credit_account_has_been_registered_for_this_person : 'حساب اعتباری برای این شخص ثبت نشده است.',
     none : 'هیچکدام',
     number_of_users : 'تعداد کاربر',
+    total_crediting : 'کل بستانکاری',
+    total_receipt : 'کل دریافتی ها',
+    balance_crediting : 'مانده بستانکاری',
+    record_pay : 'ثبت پرداخت',
+    receipts_list : 'لیست دریافتی ها',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

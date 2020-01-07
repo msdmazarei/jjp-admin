@@ -384,6 +384,11 @@ interface ILocalization extends LocalizedStringsMethods {
     no_credit_account_has_been_registered_for_this_person : string;
     none : string;
     number_of_users: string;
+    total_crediting : string;
+    total_receipt : string;
+    balance_crediting : string;
+    record_pay : string;
+    receipts_list : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

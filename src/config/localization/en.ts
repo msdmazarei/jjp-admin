@@ -369,6 +369,11 @@ export const en = {
     no_credit_account_has_been_registered_for_this_person: 'no credit account has been registered for this person.',
     none: 'none',
     number_of_users: 'number of users',
+    total_crediting : 'total of crediting',
+    total_receipt : 'total of receipt',
+    balance_crediting : 'balance of crediting',
+    record_pay : 'record pay',
+    receipts_list : 'list of receipts',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

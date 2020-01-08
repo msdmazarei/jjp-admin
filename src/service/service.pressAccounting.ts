@@ -4,18 +4,18 @@ import { IAPI_Response, IAPI_ResponseList, BaseService } from "./service.base";
 export class PressAccountingService extends BaseService {
 
     search(limit: number, skip: number, filter?: Object , sort?: string[]): Promise<IAPI_ResponseList<any>> { 
-        return this.axiosTokenInstance.post(``, { limit, skip, filter, sort });
+        return this.axiosTokenInstance.post(`add_path`, { limit, skip, filter, sort });
     } 
-
-    remove(bookId: string) {
-        return this.axiosTokenInstance.delete(`${bookId}`);
+    
+    pressAccountingListFetchById(press_id: string): Promise<IAPI_Response<any>> {
+        return this.axiosTokenInstance.get(`add_path${press_id}`);
     }
 
-    byId(book_id: string): Promise<IAPI_Response<any>> {
-        return this.axiosTokenInstance.get(`${book_id}`);
+    removeFieldOfPressAccountList(field_id: string) {
+        return this.axiosTokenInstance.delete(`add_path${field_id}`);
     }
 
-    update(book: any, id: string) {
-        return this.axiosTokenInstance.put(`${id}`, book);
+    updateFieldOfPressAccountList(field: any, id: string) {
+        return this.axiosTokenInstance.put(`add_path${id}`, field);
     }
 }

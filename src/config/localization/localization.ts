@@ -389,6 +389,9 @@ interface ILocalization extends LocalizedStringsMethods {
     balance_crediting : string;
     record_pay : string;
     receipts_list : string;
+    Publishers_bills : string;
+    Amount_of_payment : string;
+    pay_time : string;
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

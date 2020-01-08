@@ -374,6 +374,9 @@ export const en = {
     balance_crediting : 'balance of crediting',
     record_pay : 'record pay',
     receipts_list : 'list of receipts',
+    Publishers_bills : "Publishers' bills",
+    Amount_of_payment : 'amount of payment',
+    pay_time : 'pay time',
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

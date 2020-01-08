@@ -377,6 +377,9 @@ export const fa = {
     balance_crediting : 'مانده بستانکاری',
     record_pay : 'ثبت پرداخت',
     receipts_list : 'لیست دریافتی ها',
+    Publishers_bills : 'صورتحساب ناشرین',
+    Amount_of_payment : 'میزان پرداخت',
+    pay_time : 'زمان پرداخت',
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

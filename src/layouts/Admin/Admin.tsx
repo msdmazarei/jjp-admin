@@ -106,7 +106,7 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
       if (this.props.logged_in_user) {
         this.getUpdateUserPermissions();
       }
-    }, 1800000);
+    }, 60000);
   }
 
   stopUpdateUserPermissions() {
@@ -137,6 +137,7 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
 
 
   // this function opens and closes the sidebar on small devices
+  
   toggleSidebar = () => {
     document.documentElement.classList.toggle("nav-open");
     this.setState({ sidebarOpened: !this.state.sidebarOpened });

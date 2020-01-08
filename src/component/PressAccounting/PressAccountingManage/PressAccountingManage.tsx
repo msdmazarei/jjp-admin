@@ -13,8 +13,8 @@ import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
-import moment from 'moment';
-import moment_jalaali from 'moment-jalaali';
+// import moment from 'moment';
+// import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
@@ -24,7 +24,8 @@ import { IPerson } from "../../../model/model.person";
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { PressAccountingService } from "../../../service/service.pressAccounting";
-import { SORT } from "../../../enum/Sort";
+import { FixNumber } from "../../form/fix-number/FixNumber";
+// import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
 export interface IProps {
@@ -71,16 +72,21 @@ interface IState {
     pager_offset: number;
     pager_limit: number;
     payRecordModalShow: boolean;
+    setAddPayModalLoader: boolean;
     prevBtnLoader: boolean;
     nextBtnLoader: boolean;
     filterSearchBtnLoader: boolean;
     tableProcessLoader: boolean;
-    setAddPayModalLoader: boolean;
     filter_state: IFilterPressAccounting;
     advance_search_box_show: boolean;
     sort: string[];
     sortShowStyle: ISortTransaction;
     retryModal: boolean;
+    addPayToPress: {
+        press_id: string | undefined;
+        amount: number | null;
+        isValid: boolean;
+    }
 }
 
 // define class of Comment 
@@ -129,7 +135,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     },
                     cellTemplateFunc: (row: any) => {
                         if (row) {
-                            return <div title={this._getTimestampToDate(row)}>{this.getPersonFullName(row)}</div>
+                            return <div title={this.getPersonFullName(row)}>{this.getPersonFullName(row)}</div>
                         }
                         return '';
                     }
@@ -330,6 +336,11 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
             creation_date: false,
         },
         retryModal: false,
+        addPayToPress: {
+            press_id: undefined,
+            amount: null,
+            isValid: false,
+        }
     }
 
     selectedPressForAddPay: any | undefined;
@@ -427,37 +438,57 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         }
     }
 
-    getTimestampToDate(timestamp: number) {
-        if (this.props.internationalization.flag === "fa") {
-            return moment_jalaali(timestamp * 1000).format('HH:mm:ss - jYYYY/jMM/jD');
-        }
-        else {
-            return moment(timestamp * 1000).locale("en").format('HH:mm:ss - YYYY/MM/DD');
-        }
-    }
-
-    _getTimestampToDate(timestamp: number) {
-        if (this.props.internationalization.flag === "fa") {
-            return this.getFromNowDate(timestamp);
-        }
-        else {
-            return this.getFromNowDate(timestamp);
-        }
-    }
-
     /// start add pay to press account modal /////
 
-    on_show_record_pay_modal(perss: any) {
+    on_show_record_pay_modal(press: any) {
         if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
             return;
         }
-        this.selectedPressForAddPay = perss;
-        this.setState({ ...this.state, payRecordModalShow: true, })
+        this.selectedPressForAddPay = press;
+        this.setState({ 
+            ...this.state, 
+            payRecordModalShow: true,
+            addPayToPress : {
+                ...this.state.addPayToPress,
+                press_id : press.id  /* requierd to modifiction */ 
+            }
+        })
     }
 
     on_hide_record_pay_modal() {
         this.selectedPressForAddPay = undefined;
-        this.setState({ ...this.state, payRecordModalShow: false, })
+        this.setState({ ...this.state, 
+            payRecordModalShow: false,
+            addPayToPress : {
+                ...this.state.addPayToPress,
+                press_id : undefined,
+                amount : null,
+                isValid : false,
+            }
+        });
+    }
+
+    handleAddPayToPress(value: any) {
+        let amount: any = Number(value);
+        if (isNaN(amount) === true || amount === 0) {
+            this.setState({
+                ...this.state,
+                addPayToPress: {
+                    ...this.state.addPayToPress,
+                    amount: null,
+                    isValid: false,
+                }
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                addPayToPress: {
+                    ...this.state.addPayToPress,
+                    amount: amount,
+                    isValid: true,
+                }
+            });
+        }
     }
 
     async onAddPayToSelectedPress(transaction_id: string) {
@@ -465,7 +496,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
             return;
         }
         this.setState({ ...this.state, setAddPayModalLoader: true });
-        let res;  /// define request
+        let res;  /// define request ////////////////////////////
         if (res) {
             this.setState({ ...this.state, setAddPayModalLoader: false });
             this.apiSuccessNotify();
@@ -474,65 +505,32 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         }
     }
 
-    render_delete_modal(selectedTransaction: any) {
+    render_record_pay_modal(selectedPressForAddPay: any) {
         if (!this.selectedPressForAddPay || !this.selectedPressForAddPay.id) return;
         return (
             <>
                 <Modal show={this.state.payRecordModalShow} onHide={() => this.on_hide_record_pay_modal()}>
                     <Modal.Body>
-                        <p className="delete-modal-content">
+                        <p className="delete-modal-content py-1">
                             <span className="text-muted">
-                                {Localization.type + " " + Localization.transaction}:&nbsp;</span>
-                            {
-                                (selectedTransaction.credit === 0 && selectedTransaction.debit === 0)
-                                    ?
-                                    "---"
-                                    :
-                                    selectedTransaction.credit > 0
-                                        ?
-                                        Localization.increase_credit
-                                        :
-                                        selectedTransaction.debit > 0
-                                            ?
-                                            Localization.reduce_credit
-                                            :
-                                            undefined
-                            }
+                                {Localization.role_type_list.Press}:&nbsp;</span>{/* press name of row */}
                         </p>
-                        <p className="delete-modal-content">
-                            <span className="text-muted">
-                                {Localization.transaction_amount}:&nbsp;</span>
-                            {
-                                (selectedTransaction.credit === 0 && selectedTransaction.debit === 0)
-                                    ?
-                                    0
-                                    :
-                                    selectedTransaction.credit > 0
-                                        ?
-                                        selectedTransaction.credit
-                                        :
-                                        selectedTransaction.debit > 0
-                                            ?
-                                            selectedTransaction.debit
-                                            :
-                                            undefined
-                            }
-                        </p>
-                        <p className="delete-modal-content">
-                            <span className="text-muted">
-                                {Localization.creation_date}:&nbsp;</span>
-                            {this.getTimestampToDate(selectedTransaction.creation_date)}
-                        </p>
-                        <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
+                        <FixNumber
+                            onChange={(value, isValid) => this.handleAddPayToPress(value)}
+                            label={Localization.Amount_of_payment}
+                            placeholder={Localization.Amount_of_payment}
+                            defaultValue={this.state.addPayToPress.amount}
+                        />
                     </Modal.Body>
                     <Modal.Footer>
                         <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.on_hide_record_pay_modal()}>{Localization.close}</button>
                         <BtnLoader
                             btnClassName="btn btn-danger shadow-default shadow-hover"
-                            onClick={() => this.onAddPayToSelectedPress(selectedTransaction.id)}
+                            onClick={() => this.onAddPayToSelectedPress(selectedPressForAddPay.id)}
                             loading={this.state.setAddPayModalLoader}
+                            disabled={this.state.addPayToPress.isValid === true ? false : true}
                         >
-                            {Localization.remove}
+                            {Localization.record_pay}
                         </BtnLoader>
                     </Modal.Footer>
                 </Modal>
@@ -571,11 +569,11 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
 
         if (this.state.filter_state.total_crediting.is_valid === true) {
             if (this.state.filter_state.total_crediting.from_isValid === true && this.state.filter_state.total_crediting.to_isValid === true) {
-                obj['secound_field'] = { $gte: this.state.filter_state.total_crediting.from, $lte: (this.state.filter_state.total_crediting.to! + 86400) }
+                obj['second_field'] = { $gte: this.state.filter_state.total_crediting.from, $lte: (this.state.filter_state.total_crediting.to! + 86400) }
             } else if (this.state.filter_state.total_crediting.from_isValid === true && this.state.filter_state.total_crediting.to_isValid === false) {
-                obj['secound_field'] = { $gte: this.state.filter_state.total_crediting.from }
+                obj['second_field'] = { $gte: this.state.filter_state.total_crediting.from }
             } else if (this.state.filter_state.total_crediting.from_isValid === false && this.state.filter_state.total_crediting.to_isValid === true) {
-                obj['secound_field'] = { $lte: this.state.filter_state.total_crediting.to }
+                obj['second_field'] = { $lte: this.state.filter_state.total_crediting.to }
             }
         }
 
@@ -786,6 +784,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
 
     ///////////// end request for options person of press in filter ////////////////////////
 
+
     /////  start onChange & search & reset function for search box ///////////
 
     filter_state_reset() {
@@ -901,40 +900,6 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         })
     }
 
-    handleInputChange(value: any, inputType: any, Validation: boolean = true) {
-        let isValid;
-        if (value === undefined || value === '') {
-            isValid = false;
-        } else {
-            isValid = true;
-        }
-
-        this.setState({
-            ...this.state,
-            filter_state: {
-                ...this.state.filter_state, [inputType]: { value: value, isValid: isValid }
-            }
-        })
-    }
-
-    handleSelectInputChange(type: { value: string, label: string } | null, inputType: any) {
-        if (type === null) {
-            this.setState({
-                ...this.state,
-                filter_state: {
-                    ...this.state.filter_state, [inputType]: { value: type, type: null, isValid: false }
-                }
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                filter_state: {
-                    ...this.state.filter_state, [inputType]: { value: type, type: type.value, isValid: true }
-                }
-            })
-        }
-    }
-
     /////  end onChange & search & reset function for search box ///////////
 
 
@@ -960,7 +925,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                 <div className="content">
                     <div className="row">
                         <div className="col-12">
-                            <h2 className="text-bold text-dark pl-3">{Localization.transaction}</h2>
+                            <h2 className="text-bold text-dark pl-3">{Localization.Publishers_bills}</h2>
                         </div>
                     </div>
                     {
@@ -1059,10 +1024,6 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                 {/* end search  box */}
                                 <div className="row">
                                     <div className="col-12">
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-12">
                                         <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.pressAccounting_table.list} colHeaders={this.state.pressAccounting_table.colHeaders} actions={this.state.pressAccounting_table.actions}></Table>
                                         <div>
                                             {this.pager_previous_btn_render()}
@@ -1075,7 +1036,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                             undefined
                     }
                 </div>
-                {this.render_delete_modal(this.selectedPressForAddPay)}
+                {this.render_record_pay_modal(this.selectedPressForAddPay)}
                 {
                     <RetryModal
                         modalShow={this.state.retryModal}

@@ -16,9 +16,10 @@ import { Profile } from './component/profile/Profile';
 import { BookGeneratorManage } from './component/BookGenerator/BookGeneratorManage/BookGeneratorManage';
 import { BookGenerator } from './component/BookGenerator/BookGenerator/BookGenerator';
 import { TransactionManage } from './component/transaction/TransactionManage/TransactionManage';
+import { PressAccountingManage } from "./component/PressAccounting/PressAccountingManage/PressAccountingManage"
+import { PressAccountList } from "./component/PressAccounting/PressAccountList/PressAccountList"
 import { Localization } from "./config/localization/localization";
 import { TPERMISSIONS } from "./enum/Permission";
-
 
 var routes = [
   {
@@ -290,5 +291,25 @@ var routes = [
     PERMISSIONS: [TPERMISSIONS.TRANSACTION_GET_PREMIUM]
   },
   // transaction end
+  // pressAccounting start
+  {
+    path: "/press_accounts/manage",
+    name: Localization.Publishers_bills,
+    icon: "fa fa-money",
+    component: PressAccountingManage,
+    layout: "/admin",
+    sidebarIconVisibility: true,
+    PERMISSIONS: []
+  },
+  {
+    path: "/press_account_list/:press_id/manage",
+    name: Localization.receipts_list,
+    component: PressAccountList,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['press_account_list', 'manage'],
+    PERMISSIONS: []
+  },
+  // pressAccounting end
 ];
 export default routes;

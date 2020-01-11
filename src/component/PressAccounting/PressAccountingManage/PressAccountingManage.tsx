@@ -278,13 +278,13 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
             ],
             actions: this.checkAllAccessForTools() ? [
                 {
-                    // access: (row: any) => { return this.checkDeleteToolAccess() },
+                    access: (row: any) => { return this.checkRecordPayToolAccess() },
                     text: <i title={Localization.record_pay} className="fa fa-money text-success"></i>,
                     ac_func: (row: any) => { this.on_show_record_pay_modal(row) },
                     name: Localization.record_pay
                 },
                 {
-                    // access: (row: any) => { return this.checkDeleteToolAccess() },
+                    access: (row: any) => { return this.checkShowReceiptListToolAccess() },
                     text: <i title={Localization.receipts_list} className="fa fa-list-ol text-info"></i>,
                     ac_func: (row: any) => { this.on_pass_to_show_selected_press_receipt_list(row) },
                     name: Localization.receipts_list
@@ -358,7 +358,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
 
     componentDidMount() {
         if (this.checkPageRenderAccess() === true) {
-            if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
+            if (AccessService.checkAccess('') === true) {
                 this.setState({
                     ...this.state,
                     tableProcessLoader: true
@@ -372,21 +372,28 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     }
 
     checkPageRenderAccess(): boolean {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
+        if (AccessService.checkAccess('') === true) {
             return true;
         }
         return false;
     }
 
     checkAllAccessForTools(): boolean {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.TRANSACTION_DELETE_PREMIUM]) === true) {
+        if (AccessService.checkOneOFAllAccess(['']) === true) {
             return true;
         }
         return false;
     }
 
-    checkDeleteToolAccess(): boolean {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === true) {
+    checkRecordPayToolAccess(): boolean {
+        if (AccessService.checkAccess('') === true) {
+            return true;
+        }
+        return false
+    }
+
+    checkShowReceiptListToolAccess(): boolean {
+        if (AccessService.checkAccess('') === true) {
             return true;
         }
         return false
@@ -441,7 +448,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     /// start add pay to press account modal /////
 
     on_show_record_pay_modal(press: any) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+        if (AccessService.checkAccess('') === false) {
             return;
         }
         this.selectedPressForAddPay = press;
@@ -544,10 +551,11 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     /// start add pay to press account modal /////
 
     on_pass_to_show_selected_press_receipt_list(perss: any) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+        if (AccessService.checkAccess('') === false) {
             return;
         }
         this.selectedPressForShowReceiptList = perss;
+        this.props.history.push('/press_account_list/:press_id/manage');
     }
 
     /// start add pay to press account modal /////

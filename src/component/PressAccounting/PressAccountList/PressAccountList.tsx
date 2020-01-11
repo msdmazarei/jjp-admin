@@ -8,7 +8,6 @@ import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
 import { BaseComponent } from "../../_base/BaseComponent";
 import { TInternationalization } from "../../../config/setup";
-// import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import 'moment/locale/fa';
@@ -25,6 +24,7 @@ import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { PressAccountingService } from "../../../service/service.pressAccounting";
 import { FixNumber } from "../../form/fix-number/FixNumber";
+// import { IToken } from "../../../model/model.token";
 // import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
@@ -190,13 +190,13 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
             ],
             actions: this.checkAllAccessForTools() ? [
                 {
-                    // access: (row: any) => { return this.checkDeleteToolAccess() },
+                    access: (row: any) => { return this.checkDeleteToolAccess() },
                     text: <i title={Localization.record_pay} className="fa fa-trash text-danger"></i>,
                     ac_func: (row: any) => { this.on_show_delete_receipt_modal(row) },
                     name: Localization.record_pay
                 },
                 {
-                    // access: (row: any) => { return this.checkDeleteToolAccess() },
+                    access: (row: any) => { return this.checkEditToolAccess() },
                     text: <i title={Localization.receipts_list} className="fa fa-pencil-square-o text-primary"></i>,
                     ac_func: (row: any) => { this.on_show_edit_receipt_modal(row) },
                     name: Localization.receipts_list
@@ -272,7 +272,7 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
 
     componentDidMount() {
         if (this.checkPageRenderAccess() === true) {
-            if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
+            if (AccessService.checkAccess('permission add after') === true) {
                 this.setState({
                     ...this.state,
                     tableProcessLoader: true
@@ -286,21 +286,28 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     }
 
     checkPageRenderAccess(): boolean {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
+        if (AccessService.checkAccess('permission add after') === true) {
             return true;
         }
         return false;
     }
 
     checkAllAccessForTools(): boolean {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.TRANSACTION_DELETE_PREMIUM]) === true) {
+        if (AccessService.checkOneOFAllAccess(['permission add after']) === true) {
             return true;
         }
         return false;
     }
 
     checkDeleteToolAccess(): boolean {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === true) {
+        if (AccessService.checkAccess('permission add after') === true) {
+            return true;
+        }
+        return false
+    }
+
+    checkEditToolAccess(): boolean {
+        if (AccessService.checkAccess('permission add after') === true) {
             return true;
         }
         return false
@@ -379,7 +386,7 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     /// start delete receipt from press account modal /////
 
     on_show_delete_receipt_modal(press: any) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+        if (this.checkDeleteToolAccess() === false) {
             return;
         }
         this.selectedReceiptForDelete = press;
@@ -392,7 +399,7 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     }
 
     async on_delete_selected_receipt(receipt_id: string) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+        if (this.checkDeleteToolAccess() === false) {
             return;
         }
         this.setState({ ...this.state, setRecordedReceiptDeleteModalLoader: true });
@@ -440,7 +447,7 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     /// start edit receipt of press account modal /////
 
     on_show_edit_receipt_modal(receipt: any) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+        if (this.checkEditToolAccess() === false) {
             return;
         }
         this.selectedReceiptForEdit = receipt;
@@ -495,7 +502,7 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     }
 
     async onEditReceipt(transaction_id: string) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+        if (this.checkEditToolAccess() === false) {
             return;
         }
         this.setState({ ...this.state, setRecordedReceiptEditModalLoader: true });

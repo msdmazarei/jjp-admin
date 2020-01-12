@@ -7,6 +7,7 @@ export enum T_ITEM_NAME {
     // end book
     // start book content
     bookContentManage = 'bookContentManage',
+    bookManageAllTools = 'bookManageAllTools',
     bookContentSave = 'bookContentSave',
     bookContentEdit = 'bookContentEdit',
     // end book content

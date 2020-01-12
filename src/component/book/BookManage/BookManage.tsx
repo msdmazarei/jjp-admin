@@ -22,7 +22,7 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { FixNumber } from "../../form/fix-number/FixNumber";
-import { AccessService } from "../../../service/service.access"
+import { AccessService } from "../../../service/service.access";
 import Select from 'react-select';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { IPerson } from "../../../model/model.person";
@@ -34,6 +34,8 @@ import { TABLE_SORT } from "../../table/tableSortHandler";
 import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 /// define props & state ///////
 export interface IProps {
@@ -589,7 +591,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
           access: (row: any) => { return this.checkDeleteToolAccess() },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
@@ -710,23 +712,27 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   private _personService = new PersonService();
 
   componentDidMount() {
-    moment.locale("en");
-    this.setState({
-      ...this.state,
-      tableProcessLoader: true
-    })
-    TABLE_SORT.sortArrayReseter();
-    this.fetchBooks();
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      moment.locale("en");
+      this.setState({
+        ...this.state,
+        tableProcessLoader: true
+      })
+      TABLE_SORT.sortArrayReseter();
+      this.fetchBooks();
+    } else {
+      this.noAccessRedirect(this.props.history);
+    }
   }
 
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PREMIUM, TPERMISSIONS.BOOK_EDIT_PREMIUM, TPERMISSIONS.PRICE_GET_PREMIUM])
-      || AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PRESS, TPERMISSIONS.BOOK_EDIT_PRESS, TPERMISSIONS.PRICE_GET_PREMIUM])
-    ) {
-      return true;
-    }
-    return false;
-  }
+  // checkAllAccess(): boolean {
+  //   if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PREMIUM, TPERMISSIONS.BOOK_EDIT_PREMIUM, TPERMISSIONS.PRICE_GET_PREMIUM])
+  //     || AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PRESS, TPERMISSIONS.BOOK_EDIT_PRESS, TPERMISSIONS.PRICE_GET_PREMIUM])
+  //   ) {
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
   checkDeleteToolAccess(): boolean {
     if (AccessService.checkAccess(TPERMISSIONS.BOOK_DELETE_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_DELETE_PRESS)) {

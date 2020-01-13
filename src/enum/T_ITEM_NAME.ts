@@ -2,12 +2,22 @@ export enum T_ITEM_NAME {
     dashboard = 'dashboard',
     // start book
     bookManage = 'bookManage',
+    bookManageAllTools = 'bookManageAllTools',
+    bookManageDeleteTool = 'bookManageDeleteTool',
+    bookManageUpdateTool = 'bookManageUpdateTool',
+    bookManagePriceFieldInGridAndTool = 'bookManagePriceFieldInGridAndTool',
+    bookManagePriceAddAndEditSuperAdmin = 'bookManagePriceAddAndEditSuperAdmin',
+    bookManagePriceAddAndEditPress = 'bookManagePriceAddAndEditPress',
+    bookManagePriceEditSuperAdmin = 'bookManagePriceEditSuperAdmin',
+    bookManagePriceEditPress = 'bookManagePriceEditPress',
+    bookManageAddBook = 'bookManageAddBook',
+    bookManageAddBookSuperAdmin = 'bookManageAddBookSuperAdmin',
+    bookManageAddBookPress = 'bookManageAddBookPress',
     bookSave = 'bookSave',
     bookEdit = 'bookEdit',
     // end book
     // start book content
     bookContentManage = 'bookContentManage',
-    bookManageAllTools = 'bookManageAllTools',
     bookContentSave = 'bookContentSave',
     bookContentEdit = 'bookContentEdit',
     // end book content

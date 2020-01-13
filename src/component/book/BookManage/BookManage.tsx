@@ -1,48 +1,39 @@
 import React from "react";
-import { Table, IProps_table } from "../../table/table";
-import { Input } from '../../form/input/Input';
-import { BookService } from "../../../service/service.book";
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
-import { IBook } from "../../../model/model.book";
-import { ToastContainer, toast } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
 import { redux_state } from "../../../redux/app_state";
-import { BaseComponent } from "../../_base/BaseComponent";
+import { Store2 } from "../../../redux/store";
 import { TInternationalization } from "../../../config/setup";
-// import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
-import { BtnLoader } from "../../form/btn-loader/BtnLoader";
+import { ToastContainer, toast } from "react-toastify";
+import { BaseComponent } from "../../_base/BaseComponent";
+import { IBook } from "../../../model/model.book";
+import { IPerson } from "../../../model/model.person";
 import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
 import { AppRegex } from "../../../config/regex";
+import { BookService } from "../../../service/service.book";
+import { PersonService } from "../../../service/service.person";
 import { PriceService } from "../../../service/service.price";
+import { Table, IProps_table } from "../../table/table";
+import { TABLE_SORT } from "../../table/tableSortHandler";
+import { SORT } from "../../../enum/Sort";
+import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
+import { Input } from '../../form/input/Input';
+import { FixNumber } from "../../form/fix-number/FixNumber";
+import { Modal } from "react-bootstrap";
+import { RetryModal } from "../../tool/retryModal/retryModal";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
+import { BtnLoader } from "../../form/btn-loader/BtnLoader";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { FixNumber } from "../../form/fix-number/FixNumber";
-import { AccessService } from "../../../service/service.access";
-import Select from 'react-select';
-import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
-import { IPerson } from "../../../model/model.person";
-import AsyncSelect from 'react-select/async';
-import { PersonService } from "../../../service/service.person";
-import { Store2 } from "../../../redux/store";
-import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
-import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
-import { SORT } from "../../../enum/Sort";
-import { RetryModal } from "../../tool/retryModal/retryModal";
-import { permissionChecker } from "../../../asset/script/accessControler";
-import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
-
-/// define props & state ///////
-export interface IProps {
-  history: History;
-  internationalization: TInternationalization;
-  // token: IToken;
-}
+// import { IToken } from "../../../model/model.token";
 
 interface IFilterBook {
   title: {
@@ -110,6 +101,15 @@ interface ISortBook {
   price: boolean;
   pub_year: boolean;
 }
+
+/// define props & state ///////
+
+export interface IProps {
+  history: History;
+  internationalization: TInternationalization;
+  // token: IToken;
+}
+
 interface IState {
   book_table: IProps_table;
   BookError: string | undefined;
@@ -459,7 +459,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "price", title: Localization.price,
           cellTemplateFunc: (row: IBook) => {
-            if (AccessService.checkAccess(TPERMISSIONS.PRICE_GET_PREMIUM) === false) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
               return <div className="text-danger text-center">---</div>;
             } else if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>
@@ -593,19 +593,19 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       ],
       actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return this.checkUpdateToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return this.checkPriceAddToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.Pricing} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.onShowPriceModal(row) },
           name: Localization.Pricing
@@ -725,36 +725,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  // checkAllAccess(): boolean {
-  //   if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PREMIUM, TPERMISSIONS.BOOK_EDIT_PREMIUM, TPERMISSIONS.PRICE_GET_PREMIUM])
-  //     || AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_DELETE_PRESS, TPERMISSIONS.BOOK_EDIT_PRESS, TPERMISSIONS.PRICE_GET_PREMIUM])
-  //   ) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_DELETE_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_DELETE_PRESS)) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_EDIT_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_EDIT_PRESS)) {
-      return true;
-    }
-    return false
-  }
-
-  checkPriceAddToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.PRICE_GET_PREMIUM)) {
-      return true;
-    }
-    return false
-  }
-
   // constructor(props: IProps) {
   //   super(props);
   //   // this._bookService.setToken(this.props.token)
@@ -807,13 +777,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  updateRow(book_id: any) {
-    if (this.checkUpdateToolAccess() === false) {
-      return;
-    }
-    this.props.history.push(`/book/${book_id.id}/edit`);
-  }
-
   // timestamp to date 
 
   getTimestampToDate(timestamp: number) {
@@ -837,7 +800,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(book: IBook) {
-    if (this.checkDeleteToolAccess() === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedBook = book;
@@ -850,7 +813,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveBook(book_id: string) {
-    if (this.checkDeleteToolAccess() === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -895,20 +858,27 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
+  updateRow(book_id: any) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
+    this.props.history.push(`/book/${book_id.id}/edit`);
+  }
+
   onShowPriceModal(book: IBook) {
-    if (this.checkPriceAddToolAccess() === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedBook = book;
     if (typeof book.price !== 'number') {
-      if (AccessService.checkAllAccess([TPERMISSIONS.PRICE_ADD_PREMIUM, TPERMISSIONS.PRICE_EDIT_PREMIUM]) === false
-        && AccessService.checkAllAccess([TPERMISSIONS.PRICE_ADD_PRESS, TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceAddAndEditSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false
+        && permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceAddAndEditPress],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
         toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
     }
     if (typeof book.price === 'number') {
-      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PRICE_EDIT_PREMIUM, TPERMISSIONS.PRICE_EDIT_PRESS]) === false) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceEditSuperAdmin,T_ITEM_NAME.bookManagePriceEditPress],CHECKTYPE.ONE_OF_ITEM_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
         toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
@@ -930,7 +900,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onPriceBook(book_id: string) {
-    if (this.checkPriceAddToolAccess() === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     if (!this.state.price.isValid) return;
@@ -1026,15 +996,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === true && this.state.filter_state.press.is_valid === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false && this.state.filter_state.press.is_valid === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false && this.state.filter_state.press.is_valid === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false && this.state.filter_state.press.is_valid === false) {
       persons_of_press = [...wrapper];
       obj['press'] = { $in: persons_of_press };
     }
@@ -1252,7 +1222,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookCreate() {
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PREMIUM) === false && AccessService.checkAccess(TPERMISSIONS.BOOK_ADD_PRESS) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBook],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.props.history.push('/book/create'); // /admin
@@ -1556,7 +1526,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
               {
-                AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_ADD_PREMIUM, TPERMISSIONS.BOOK_ADD_PRESS])
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBook],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}

@@ -8,6 +8,7 @@ export abstract class permissionChecker {
     private static permissions_by_item: { item: string, permissions: string[] }[] =
         [
             { item: T_ITEM_NAME.dashboard, permissions: [TPERMISSIONS.REPORT_GET_PREMIUM, TPERMISSIONS.REPORT_GET_PRESS] },
+            
             { item: T_ITEM_NAME.bookManage, permissions: [] },
             { item: T_ITEM_NAME.bookManageAllTools, permissions: [TPERMISSIONS.BOOK_DELETE_PREMIUM, TPERMISSIONS.BOOK_EDIT_PREMIUM,TPERMISSIONS.BOOK_DELETE_PRESS, TPERMISSIONS.BOOK_EDIT_PRESS, TPERMISSIONS.PRICE_GET_PREMIUM]},
             { item: T_ITEM_NAME.bookManageDeleteTool, permissions: [TPERMISSIONS.BOOK_DELETE_PREMIUM,TPERMISSIONS.BOOK_DELETE_PRESS]},
@@ -20,24 +21,50 @@ export abstract class permissionChecker {
             { item: T_ITEM_NAME.bookManageAddBook, permissions: [TPERMISSIONS.BOOK_ADD_PREMIUM,TPERMISSIONS.BOOK_ADD_PRESS]},
             { item: T_ITEM_NAME.bookManageAddBookSuperAdmin, permissions: [TPERMISSIONS.BOOK_ADD_PREMIUM]},
             { item: T_ITEM_NAME.bookManageAddBookPress, permissions: [TPERMISSIONS.BOOK_ADD_PRESS]},
-            { item: T_ITEM_NAME.bookSave, permissions: [] },
-            { item: T_ITEM_NAME.bookEdit, permissions: [] },
-            { item: T_ITEM_NAME.bookContentManage, permissions: [] },
-            { item: T_ITEM_NAME.bookContentSave, permissions: [] },
-            { item: T_ITEM_NAME.bookContentEdit, permissions: [] },
+            { item: T_ITEM_NAME.bookSave, permissions: [TPERMISSIONS.BOOK_ADD_PREMIUM, TPERMISSIONS.BOOK_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookSavePriceAdd, permissions: [TPERMISSIONS.PRICE_ADD_PREMIUM, TPERMISSIONS.PRICE_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookEdit, permissions: [TPERMISSIONS.BOOK_EDIT_PREMIUM, TPERMISSIONS.BOOK_EDIT_PRESS] },
+            { item: T_ITEM_NAME.bookEditPriceEdit, permissions: [TPERMISSIONS.PRICE_EDIT_PREMIUM, TPERMISSIONS.PRICE_EDIT_PRESS] },
+            
+            { item: T_ITEM_NAME.bookContentManage, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS, TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS] },
+            { item: T_ITEM_NAME.bookContentManageGetGrid, permissions: [TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS] },
+            { item: T_ITEM_NAME.bookContentManageGetGridSuperAdmin, permissions: [TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM] },
+            { item: T_ITEM_NAME.bookContentManageAllTools, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookContentManageDeleteTool, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookContentManageUpdateTool, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookContentManageGenerateTool, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookContentSave, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
+            { item: T_ITEM_NAME.bookContentEdit, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
+
             { item: T_ITEM_NAME.personManage, permissions: [] },
             { item: T_ITEM_NAME.personSave, permissions: [] },
             { item: T_ITEM_NAME.personEdit, permissions: [] },
+            { item: T_ITEM_NAME.quickPersonSave, permissions: [TPERMISSIONS.PERSON_ADD_PREMIUM] },
+
             { item: T_ITEM_NAME.userManage, permissions: [] },
             { item: T_ITEM_NAME.userSave, permissions: [] },
             { item: T_ITEM_NAME.userEdit, permissions: [] },
-            { item: T_ITEM_NAME.commentManage, permissions: [] },
-            { item: T_ITEM_NAME.orderManage, permissions: [] },
-            { item: T_ITEM_NAME.orderSave, permissions: [] },
-            { item: T_ITEM_NAME.orderEdit, permissions: [] },
+
+            { item: T_ITEM_NAME.commentManage, permissions: [TPERMISSIONS.COMMENT_GET_PREMIUM] },
+            { item: T_ITEM_NAME.commentManageGetGrid, permissions: [TPERMISSIONS.COMMENT_GET_PREMIUM] },
+            { item: T_ITEM_NAME.commentManageAllTools, permissions: [TPERMISSIONS.COMMENT_GET_PREMIUM,TPERMISSIONS.COMMENT_DELETE_PREMIUM,TPERMISSIONS.COMMENT_DELETE_PRESS] },
+            { item: T_ITEM_NAME.commentManageDeleteTool, permissions: [TPERMISSIONS.COMMENT_DELETE_PREMIUM,TPERMISSIONS.COMMENT_DELETE_PRESS] },
+            { item: T_ITEM_NAME.commentManageShowCommentTool, permissions: [TPERMISSIONS.COMMENT_GET_PREMIUM] },
+
+            { item: T_ITEM_NAME.orderManage, permissions: [TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM] },
+            { item: T_ITEM_NAME.orderManageGetGird, permissions: [TPERMISSIONS.ORDER_GET_PREMIUM] },
+            { item: T_ITEM_NAME.orderManageAllTools, permissions: [TPERMISSIONS.ORDER_DELETE_PREMIUM, TPERMISSIONS.ORDER_EDIT_PREMIUM, TPERMISSIONS.ORDER_ITEM_GET_PREMIUM,TPERMISSIONS.ORDER_CHECKOUT_PREMIUM] },
+            { item: T_ITEM_NAME.orderManageDeleteTool, permissions: [TPERMISSIONS.ORDER_DELETE_PREMIUM] },
+            { item: T_ITEM_NAME.orderManageUpdateTool, permissions: [TPERMISSIONS.ORDER_EDIT_PREMIUM] },
+            { item: T_ITEM_NAME.orderManageShowOrderTool, permissions: [TPERMISSIONS.ORDER_ITEM_GET_PREMIUM] },
+            { item: T_ITEM_NAME.orderManageGetInvoiceTool, permissions: [TPERMISSIONS.ORDER_CHECKOUT_PREMIUM] },
+            { item: T_ITEM_NAME.orderSave, permissions: [TPERMISSIONS.ORDER_ADD_PREMIUM,TPERMISSIONS.ORDER_ADD_PRESS] },
+            { item: T_ITEM_NAME.orderEdit, permissions: [TPERMISSIONS.ORDER_EDIT_PREMIUM] },
+
             { item: T_ITEM_NAME.groupManage, permissions: [] },
             { item: T_ITEM_NAME.groupSave, permissions: [] },
             { item: T_ITEM_NAME.groupEdit, permissions: [] },
+
             { item: T_ITEM_NAME.transactionManage, permissions: [] },
         ];
 

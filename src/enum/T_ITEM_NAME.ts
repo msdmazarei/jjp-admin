@@ -14,10 +14,18 @@ export enum T_ITEM_NAME {
     bookManageAddBookSuperAdmin = 'bookManageAddBookSuperAdmin',
     bookManageAddBookPress = 'bookManageAddBookPress',
     bookSave = 'bookSave',
+    bookSavePriceAdd = 'bookSavePriceAdd',
     bookEdit = 'bookEdit',
+    bookEditPriceEdit = 'bookEditPriceEdit',
     // end book
     // start book content
     bookContentManage = 'bookContentManage',
+    bookContentManageAllTools = 'bookContentManageAllTools',
+    bookContentManageDeleteTool = 'bookContentManageDeleteTool',
+    bookContentManageUpdateTool = 'bookContentManageUpdateTool',
+    bookContentManageGenerateTool = 'bookContentManageGenerateTool',
+    bookContentManageGetGrid = 'bookContentManageGetGrid',
+    bookContentManageGetGridSuperAdmin = 'bookContentManageGetGridSuperAdmin',
     bookContentSave = 'bookContentSave',
     bookContentEdit = 'bookContentEdit',
     // end book content
@@ -25,6 +33,7 @@ export enum T_ITEM_NAME {
     personManage = 'personManage',
     personSave = 'personSave',
     personEdit = 'personEdit',
+    quickPersonSave = 'quickPersonSave',
     // end person
     // start user
     userManage = 'userManage',
@@ -33,9 +42,19 @@ export enum T_ITEM_NAME {
     // end user
     // start comment
     commentManage = 'commentManage',
+    commentManageGetGrid = 'commentManageGetGrid',
+    commentManageAllTools = 'commentManageAllTools',
+    commentManageDeleteTool = 'commentManageDeleteTool',
+    commentManageShowCommentTool = 'commentManageShowCommentTool',
     // end comment
     // start order
     orderManage = 'orderManage',
+    orderManageGetGird = 'orderManageGetGird',
+    orderManageAllTools = 'orderManageAllTools',
+    orderManageDeleteTool = 'orderManageDeleteTool',
+    orderManageUpdateTool = 'orderManageUpdateTool',
+    orderManageShowOrderTool = 'orderManageShowOrderTool',
+    orderManageGetInvoiceTool = 'orderManageGetInvoiceTool',
     orderSave = 'orderSave',
     orderEdit = 'orderEdit',
     // end order

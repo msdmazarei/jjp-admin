@@ -19,7 +19,6 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { AccessService } from "../../../service/service.access";
 import { IPerson } from "../../../model/model.person";
 import { IBook } from "../../../model/model.book";
 import { BookService } from "../../../service/service.book";
@@ -28,9 +27,10 @@ import AsyncSelect from 'react-select/async';
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 /// define props & state ///////
 export interface IProps {
@@ -418,15 +418,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return this.checkShowToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageShowCommentTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
           ac_func: (row: any) => { this.onShowCommentModal(row) },
           name: Localization.show_comment
@@ -519,15 +519,13 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       this.book_id = this.props.match.params.book_id;
       if (this.book_id === undefined) { return };
       this.fetchBookById_wizard(this.book_id);
-    } else if (this.checkPageRenderAccess() === true) {
-      if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true) {
+    } else if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
         })
         TABLE_SORT.sortArrayReseter();
         this.fetchComments();
-      }
     } else {
       this.noAccessRedirect(this.props.history);
     };
@@ -579,34 +577,6 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  checkPageRenderAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.COMMENT_GET_PREMIUM]) === true) {
-      return true;
-    }
-    return false;
-  }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.COMMENT_GET_PREMIUM, TPERMISSIONS.COMMENT_DELETE_PREMIUM]) === true) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_DELETE_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
   async fetchBookById_wizard(id: string) {
     let res = await this._bookService.byId(id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onFetchBookById_wizard_error' } })
@@ -641,7 +611,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // comment show modal function define
 
   onShowCommentModal(comment: IComment) {
-    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageShowCommentTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedComment = comment;
@@ -729,7 +699,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(comment: IComment) {
-    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedComment = comment;
@@ -742,7 +712,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveComment(comment_id: string) {
-    if (AccessService.checkAccess(TPERMISSIONS.COMMENT_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -861,7 +831,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   async fetchComments() {
     if (this.state.is_wizard === false) {
-      if (AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === false) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
         return;
       }
     };
@@ -1303,7 +1273,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess(TPERMISSIONS.COMMENT_GET_PREMIUM) === true || this.state.is_wizard === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true || this.state.is_wizard === true
               ?
               <>
                 {/* start search box */}

@@ -4,7 +4,6 @@ import { IPerson } from '../../../model/model.person';
 import { BOOK_ROLES } from '../../../enum/Book';
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
-// import { IToken } from '../../../model/model.token';
 import { connect, MapDispatchToProps } from 'react-redux';
 import { redux_state } from '../../../redux/app_state';
 import { Dispatch } from 'redux';
@@ -13,8 +12,9 @@ import { BaseComponent } from '../../_base/BaseComponent';
 import { TInternationalization } from '../../../config/setup';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
+// import { IToken } from '../../../model/model.token';
 
 
 interface IRoleRow {
@@ -57,10 +57,10 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
         errorTxt: ''
     }
     roleOptions = [
+        // { value: BOOK_ROLES.Press, label: Localization.role_type_list.Press },
         { value: BOOK_ROLES.Author, label: Localization.role_type_list.Author },
         { value: BOOK_ROLES.Writer, label: Localization.role_type_list.Writer },
         { value: BOOK_ROLES.Translator, label: Localization.role_type_list.Translator },
-        // { value: BOOK_ROLES.Press, label: Localization.role_type_list.Press },
         { value: BOOK_ROLES.Contributer, label: Localization.role_type_list.Contributer },
         { value: BOOK_ROLES.Designer, label: Localization.role_type_list.Designer },
         { value: BOOK_ROLES.Narrator, label: Localization.role_type_list.Narrator },
@@ -302,7 +302,7 @@ class BookRoleComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-5">
                                         <label htmlFor="">{Localization.person}</label>
                                         {
-                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
+                                            permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}

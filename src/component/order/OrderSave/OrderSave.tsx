@@ -17,8 +17,8 @@ import { OrderService } from '../../../service/service.order';
 import { IBook } from '../../../model/model.book';
 import { PriceService } from '../../../service/service.price';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -91,7 +91,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         if (this.props.match.path.includes('/order/:order_id/edit')) {
-            if (this.checkOrderUpdateAccess() === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.order_id = this.props.match.params.order_id;
                 this.fetchOrderById(this.props.match.params.order_id);
@@ -99,28 +99,14 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         } else {
-            if (this.checkOrderAddAccess() === false) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
     }
 
-    checkOrderAddAccess(): boolean {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === true) {
-            return true;
-        }
-        return false
-    }
-
-    checkOrderUpdateAccess(): boolean {
-        if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === true) {
-            return true;
-        }
-        return false
-    }
-
     async fetchOrderById(order_id: string) {
-        if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -225,7 +211,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     // add order function 
 
     async create() {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -254,7 +240,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         this.setState({ ...this.state, updateLoader: true });
@@ -286,7 +272,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]) === false){
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
             return;
         }
         this.gotoOrderManage();
@@ -455,7 +441,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-6 col-sm-12">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         {
-                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
+                                            permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}
@@ -523,7 +509,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === true
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-success shadow-default shadow-hover"
@@ -548,7 +534,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) && this.state.saveBtnVisibility)
+                                                        (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) && this.state.saveBtnVisibility)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
@@ -566,7 +552,7 @@ class OrderSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]) === true
+                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

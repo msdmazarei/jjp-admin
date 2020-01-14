@@ -20,15 +20,15 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { AccessService } from "../../../service/service.access";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE, EXTERA_FUN_NAME } from "../../../enum/T_ITEM_NAME";
 
 /// define props & state ///////
 export interface IProps {
@@ -349,8 +349,11 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </>
           },
           cellTemplateFunc: (row: any) => {
+            if(typeof row.total_price === 'number' && row.total_price === 0){
+              return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">0</div>
+            }
             if (row.total_price) {
-              return <div title={row.total_price} className="text-nowrap-ellipsis max-w-200px d-inline-block">
+              return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">
                 {row.total_price}
               </div>
             }
@@ -358,27 +361,27 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true ? [
         {
-          access: (row: any) => { return (this.orderCheckoutAccess(row) && this.checkDeleteToolAccess()) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.AND,EXTERA_FUN_NAME.orderCheckoutAccess,row) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return (this.orderCheckoutAccess(row) && this.checkUpdateToolAccess()) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.AND,EXTERA_FUN_NAME.orderCheckoutAccess,row) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>
           , ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return this.checkShowToolAccess() }, ///
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.show_order} className="fa fa-eye text-info"></i>,
           ac_func: (row: any) => { this.fetchOrderById(row.id) },
           name: Localization.show_order
         },
         {
-          access: (row: any) => { return (this.orderCheckoutAccess(row) && this.checkGetInvoiceToolAccess()) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.AND,EXTERA_FUN_NAME.orderCheckoutAccess,row) },
           text: <i title={Localization.invoice} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
           name: Localization.invoice
@@ -473,8 +476,8 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (this.checkPageRenderAccess() === true) {
-      if (AccessService.checkAccess(TPERMISSIONS.ORDER_GET_PREMIUM) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetGird], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -485,55 +488,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
-  }
-
-  checkPageRenderAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS, TPERMISSIONS.ORDER_GET_PREMIUM]) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_DELETE_PREMIUM, TPERMISSIONS.ORDER_EDIT_PREMIUM, TPERMISSIONS.ORDER_ITEM_GET_PREMIUM]) === true || this.checkGetInvoiceToolAccess() === true) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_DELETE_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkShowToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_ITEM_GET_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkGetInvoiceToolAccess(): boolean {
-    if (AccessService.checkAllAccess([TPERMISSIONS.ORDER_ITEM_GET_PREMIUM, TPERMISSIONS.ORDER_CHECKOUT_PREMIUM]) === true) {
-      return true;
-    }
-    return false
-  }
-
-  orderCheckoutAccess(row: any): boolean {
-    if (row.status === "Invoiced") {
-      return false;
-    }
-    return true;
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -642,7 +596,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   /////  start for update row function  /////////
 
   updateRow(order_id: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_EDIT_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/order/${order_id.id}/edit`);
@@ -654,7 +608,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ////// start delete modal function define  //////
 
   onShowRemoveModal(order: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedOrder = order;
@@ -667,7 +621,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveOrder(order_id: string) {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -730,7 +684,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById(order_id: string) {
-    if (AccessService.checkAccess(TPERMISSIONS.ORDER_ITEM_GET_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -858,7 +812,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById_GetInvoice(order_id: string) {
-    if (AccessService.checkAllAccess([TPERMISSIONS.ORDER_ITEM_GET_PREMIUM, TPERMISSIONS.ORDER_CHECKOUT_PREMIUM]) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -936,30 +890,36 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
                 {this.selectedOrderList !== undefined
                   ?
                   <div className="white-content">
-                    <table className="table table-hover table-sm table-bordered bg-white text-dark">
-                      <thead className="thead-light">
-                        <tr className="thead-light">
-                          <th className="font-weight-bold" scope="col">{Localization.title}</th>
-                          <th className="font-weight-bold" scope="col">{Localization.count}</th>
-                          <th className="font-weight-bold" scope="col">{Localization.price}</th>
-                          <th className="font-weight-bold" scope="col">{Localization.total_price}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {this.selectedOrderList.items.map((item, index) => (
-                          <Fragment key={index}>
-                            {
-                              <tr>
-                                <td className="text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
-                                <td className="">{item.count}</td>
-                                <td className="">{item.book.price}</td>
-                                <td className="">{item.book.price! * item.count}</td>
-                              </tr>
-                            }
-                          </Fragment>
-                        ))}
-                      </tbody>
-                    </table>
+                    {
+                      permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                        ?
+                        <table className="table table-hover table-sm table-bordered bg-white text-dark">
+                          <thead className="thead-light">
+                            <tr className="thead-light">
+                              <th className="font-weight-bold" scope="col">{Localization.title}</th>
+                              <th className="font-weight-bold" scope="col">{Localization.count}</th>
+                              <th className="font-weight-bold" scope="col">{Localization.price}</th>
+                              <th className="font-weight-bold" scope="col">{Localization.total_price}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {this.selectedOrderList.items.map((item, index) => (
+                              <Fragment key={index}>
+                                {
+                                  <tr>
+                                    <td className="text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
+                                    <td className="">{item.count}</td>
+                                    <td className="">{item.book.price}</td>
+                                    <td className="">{item.book.price! * item.count}</td>
+                                  </tr>
+                                }
+                              </Fragment>
+                            ))}
+                          </tbody>
+                        </table>
+                        :
+                        undefined
+                    }
                     <p className="pull-right">
                       {Localization.Total_purchase}:&nbsp;
                       <span>{this.selectedOrderList.total_price}</span>
@@ -1102,7 +1062,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoOrderCreate() {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push('/order/create'); // /admin
@@ -1420,7 +1380,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.order}</h2>
               {
-                AccessService.checkOneOFAllAccess([TPERMISSIONS.ORDER_ADD_PREMIUM, TPERMISSIONS.ORDER_ADD_PRESS]) === true
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1436,7 +1396,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess(TPERMISSIONS.ORDER_GET_PREMIUM) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetGird],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}

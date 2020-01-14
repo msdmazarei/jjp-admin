@@ -24,8 +24,8 @@ import { AppGuid } from '../../../asset/script/guid';
 import { EpubGenerator } from '../BookGeneratorTools/EpubGenerator/EpubGenerator';
 import { GetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/GetGenerateOrStatusModal/GetGenerateOrStatusModal';
 import { PreGetBookContentGenerateOrStatusModal } from '../BookGeneratorTools/PreGetGenerateOrStatusModal/PreGetGenerateOrStatusModal';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
 interface ICmp_select<T> {
     label: string;
     value: T
@@ -171,7 +171,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     //// start navigation for back to BookGeneratorManage /////
 
     backTO() {
-        if( AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === true){
+        if( permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
             this.gotoBookGeneratorManage();
         }else {
             this.noAccessRedirect(this.props.history);
@@ -191,7 +191,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     bookForGenerate: any;
 
     componentDidMount() {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS]) === true) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
             if (this.props.match.path.includes('/book_generator/:book_generator_id/edit')) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.book_generator_id = this.props.match.params.book_generator_id;
@@ -531,7 +531,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start create btn function ////////////////////
 
     async create() {
-        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS]) === false){
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
             return;
         }
         if (this.state.selectedBook === null || this.state.contentType === null || this.state.selectedBookType === undefined) {
@@ -784,7 +784,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
     ////////////   start update btn function ////////////////////
 
     async update() {
-        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS]) === false){
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
             return;
         }
         if (this.state.selectedBook === null || this.state.contentType === null) {
@@ -1496,7 +1496,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS]) === true
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                             ?
                                                             <BtnLoader
                                                                 loading={this.state.create_update_loading}
@@ -1520,7 +1520,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS]) === true
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                             ?
                                                             <BtnLoader
                                                                 loading={this.state.create_update_loading}
@@ -1537,7 +1537,7 @@ class BookGeneratorComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === true
+                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

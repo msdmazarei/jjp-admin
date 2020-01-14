@@ -25,12 +25,11 @@ import { BookService } from "../../../service/service.book";
 import AsyncSelect from 'react-select/async';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { AccessService } from "../../../service/service.access";
 import { Store2 } from "../../../redux/store";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
-// import { AccessService } from "../../../service/service.access"
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 
 /// define props & state ///////
@@ -443,23 +442,28 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
+          access: (row : any) => {return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)},
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
+          access: (row : any) => {return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)},
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
+          access: (row : any) => {return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGenerateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)},
           text: <i title={Localization.create} className="fa fa-wrench text-dark"></i>,
           ac_func: (row: any) => { this.getGenerateRow(row) },
           name: Localization.create + " " + Localization.content
         },
       ]
+      :
+      undefined
     },
     contentError: undefined,
     pager_offset: 0,
@@ -529,9 +533,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   private _bookService = new BookService();
 
   componentDidMount() {
-    if (this.checkBookContentManagePageRender() === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
       moment.locale("en");
-      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -542,13 +546,6 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
-  }
-
-  checkBookContentManagePageRender(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS, TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS])) {
-      return true;
-    }
-    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -606,7 +603,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
 
   updateRow(book_generator_id: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM) === false && AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PRESS) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
@@ -635,9 +632,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(content: any) {
-    // if (this.checkDeleteToolAccess() === false) {
-    //   return;
-    // }
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
     this.selectedContent = content;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -648,9 +645,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveContent(content_id: string) {
-    // if (this.checkDeleteToolAccess() === false) {
-    //   return;
-    // };
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
     this.setState({ ...this.state, setRemoveLoader: true });
     let res = await this._bookContentService.remove(content_id).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveContent_error' } });
@@ -711,6 +708,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // generate modal function define
 
   getGenerateRow(content: any) {
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGenerateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+      return;
+    }
     this.selectedContentGenerate = content;
     this.setState({ ...this.state, generateModalShow: true });
   }
@@ -723,7 +723,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchBooksContent() {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true })
@@ -862,7 +862,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookContentCreate() {
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM) === false && AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PRESS) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push('/book_generator/create');
@@ -880,7 +880,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGridSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       persons_of_press = [...wrapper];
       obj['book_press'] = { $in: persons_of_press };
     }
@@ -933,7 +933,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   filterSearch() {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({
@@ -1223,7 +1223,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
               {
-                AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM) || AccessService.checkAccess(TPERMISSIONS.BOOK_CONTENT_ADD_PRESS)
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1239,7 +1239,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkOneOFAllAccess([TPERMISSIONS.BOOK_CONTENT_GET_PREMIUM, TPERMISSIONS.BOOK_CONTENT_GET_PRESS]) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}

@@ -31,12 +31,24 @@ export enum T_ITEM_NAME {
     // end book content
     // start person
     personManage = 'personManage',
+    personManageGetGrid = 'personManage',
+    personManageAllTools = 'personManage',
+    personManageDeleteTool = 'personManage',
+    personManageUpdateTool = 'personManage',
     personSave = 'personSave',
     personEdit = 'personEdit',
     quickPersonSave = 'quickPersonSave',
     // end person
     // start user
     userManage = 'userManage',
+    userManageGetGrid = 'userManageGetGrid',
+    userManageAllTools = 'userManageAllTools',
+    userManageDeleteTool = 'userManageDeleteTool',
+    userManageUpdateTool = 'userManageUpdateTool',
+    userManageAddGroupTool = 'userManageAddGroupTool',
+    userManageGetUserCreditTool = 'userManageGetUserCreditTool',
+    userManageJustAddGroupToUser = 'userManageJustAddGroupToUser',
+    userManageJustDeleteGroupFromUser = 'userManageJustDeleteGroupFromUser',
     userSave = 'userSave',
     userEdit = 'userEdit',
     // end user
@@ -60,11 +72,21 @@ export enum T_ITEM_NAME {
     // end order
     // start group
     groupManage = 'groupManage',
+    groupManageGetGrid = 'groupManageGetGrid',
+    groupManageAllTools = 'groupManageAllTools',
+    groupManageDeleteTool = 'groupManageDeleteTool',
+    groupManageAddPermissionTool = 'groupManageAddPermissionTool',
+    groupManageAddUserTool = 'groupManageAddUserTool',
+    groupManageJustAddUserToGroup = 'groupManageJustAddUserToGroup',
+    groupManageJustDeleteUserFromGroup = 'groupManageJustDeleteUserFromGroup',
     groupSave = 'groupSave',
     groupEdit = 'groupEdit',
     // end group
     // start transaction
     transactionManage = 'transactionManage',
+    transactionManageGetGrid = 'transactionManageGetGrid',
+    transactionManageAllTools = 'transactionManageAllTools',
+    transactionManageDeleteTool = 'transactionManageDeleteTool',
     // end transaction
 }
 

@@ -17,14 +17,14 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { AccessService } from "../../../service/service.access";
 import { Input } from "../../form/input/Input";
 import Select from 'react-select';
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 //// props & state define ////////
 export interface IProps {
@@ -389,15 +389,15 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return this.checkUpdateToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
@@ -480,8 +480,8 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   componentDidMount() {
-    if (this.checkPersonManagePageRender() === true) {
-      if (AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM)) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -492,35 +492,6 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
-  }
-
-  checkPersonManagePageRender(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_GET_PREMIUM, TPERMISSIONS.PERSON_ADD_PREMIUM])) {
-      return true;
-    }
-    return false
-  }
-
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_DELETE_PREMIUM, TPERMISSIONS.PERSON_EDIT_PREMIUM])) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_DELETE_PREMIUM)) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM)) {
-      return true;
-    }
-    return false
   }
 
   selectedPerson: IPerson | undefined;
@@ -579,7 +550,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(person_id: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/person/${person_id.id}/edit`);
@@ -610,7 +581,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   /////// delete modal function define ////////
 
   onShowRemoveModal(person: IPerson) {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.selectedPerson = person;
@@ -624,7 +595,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemovePerson(person_id: string) {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -674,7 +645,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchPersons() {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -817,7 +788,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   //// navigation function //////
 
   gotoPersonCreate() {
-    if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.props.history.push('/person/create');
@@ -1067,7 +1038,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
               {
-                AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1083,7 +1054,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}

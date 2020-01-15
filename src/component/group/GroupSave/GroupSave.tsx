@@ -15,8 +15,8 @@ import { IPerson } from '../../../model/model.person';
 import { PersonService } from '../../../service/service.person';
 import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -91,7 +91,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         if (this.props.match.path.includes('/group/:group_id/edit')) {
-            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS]) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.group_id = this.props.match.params.group_id;
                 this.fetchGroupById(this.props.match.params.group_id);
@@ -99,14 +99,14 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         } else {
-            if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS]) === false) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
     }
 
     backTO() {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS]) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         this.gotoGroupManage();
@@ -117,7 +117,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async create() {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS]) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -150,7 +150,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS]) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -410,7 +410,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}</label>
                                         {
-                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === true
+                                            permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}
@@ -435,7 +435,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                 <div className="d-flex justify-content-between mt-4">
                                     <div className="mr-0 pr-0">
                                         {
-                                            this.state.saveMode === SAVE_MODE.CREATE && AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS])
+                                            this.state.saveMode === SAVE_MODE.CREATE && permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)
                                                 ?
                                                 <>
                                                     <BtnLoader
@@ -458,7 +458,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        this.state.saveBtnVisibility && AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS])
+                                                        this.state.saveBtnVisibility && permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
@@ -476,7 +476,7 @@ class GroupSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS])
+                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

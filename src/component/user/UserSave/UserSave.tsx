@@ -15,11 +15,12 @@ import { UserService } from '../../../service/service.user';
 import { IPerson } from '../../../model/model.person';
 import AsyncSelect from 'react-select/async';
 import { QuickPerson } from '../../person/QuickPerson/QuickPerson';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
 import { AddOrRemoveGroupFromUserModal } from '../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal';
 import { UserSavePassToAddGroupModal } from './PasserCreatedUserForAddGroup';
 import { IUser } from '../../../model/model.user';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
+
 enum SAVE_MODE {
     CREATE = 'CREATE',
     EDIT = 'EDIT',
@@ -109,34 +110,32 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     private person_id: string | undefined;
     private createdUser: IUser | undefined;
 
-    checkUserUpdateAccess(): boolean {
-        if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === true) {
-            return true;
-        }
-        return false;
-    }
-
     componentDidMount() {
         if (this.props.match.path.includes('/user/:user_id/edit')) {
-            if (this.checkUserUpdateAccess() === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.user_id = this.props.match.params.user_id;
                 this.fetchUserById(this.props.match.params.user_id);
             } else {
                 this.noAccessRedirect(this.props.history);
             }
-        }
-        if (this.props.match.path.includes('/user/:person_id/wizard')) {
-            this.setState({ ...this.state, is_wizard: true })
-            this.person_id = this.props.match.params.person_id;
-            if (this.person_id !== undefined) {
-                this.fetch_personOfUser(this.person_id);
+        } else {
+            if (this.props.match.path.includes('/user/:person_id/wizard')) {
+                this.setState({ ...this.state, is_wizard: true })
+                this.person_id = this.props.match.params.person_id;
+                if (this.person_id !== undefined) {
+                    this.fetch_personOfUser(this.person_id);
+                }
+            } else {
+                if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+                    this.noAccessRedirect(this.props.history);
+                }
             }
         }
     }
 
     async fetchUserById(user_id: string) {
-        if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         let res = await this._userService.byId(user_id).catch(error => {
@@ -252,6 +251,9 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     // add user function 
 
     async create() {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         if (!this.state.isFormValid || this.state.user.password.value !== this.state.user.confirm_pass.value) return;
         this.setState({ ...this.state, createLoader: true });
 
@@ -270,12 +272,12 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
             this.apiSuccessNotify();
             this.resetForm();
             this.createdUser = res.data;
-            this.setState({...this.state, passerModalShow : true});
+            this.setState({ ...this.state, passerModalShow: true });
         }
     }
 
     async update() {
-        if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -299,7 +301,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         this.gotoUserManage();
@@ -504,7 +506,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                     <div className="col-md-3 col-sm-6">
                                         <label >{Localization.person}{<span className="text-danger">*</span>}</label>
                                         {
-                                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === true
+                                            permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                 ?
                                                 <i
                                                     title={Localization.Quick_person_creation}
@@ -532,14 +534,20 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                             this.state.saveMode === SAVE_MODE.CREATE
                                                 ?
                                                 <>
-                                                    <BtnLoader
-                                                        btnClassName="btn btn-success shadow-default shadow-hover"
-                                                        loading={this.state.createLoader}
-                                                        onClick={() => this.create()}
-                                                        disabled={!this.state.isFormValid}
-                                                    >
-                                                        {Localization.create}
-                                                    </BtnLoader>
+                                                    {
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.userSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                                                            ?
+                                                            <BtnLoader
+                                                                btnClassName="btn btn-success shadow-default shadow-hover"
+                                                                loading={this.state.createLoader}
+                                                                onClick={() => this.create()}
+                                                                disabled={!this.state.isFormValid}
+                                                            >
+                                                                {Localization.create}
+                                                            </BtnLoader>
+                                                            :
+                                                            undefined
+                                                    }
                                                     <BtnLoader
                                                         btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                                         loading={false}
@@ -552,7 +560,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        (this.checkUserUpdateAccess() && this.state.saveBtnVisibility)
+                                                        (permissionChecker.is_allow_item_render([T_ITEM_NAME.userEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) && this.state.saveBtnVisibility)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
@@ -570,7 +578,7 @@ class UserSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === true
+                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.userManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

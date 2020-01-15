@@ -26,11 +26,8 @@ import { AddOrRemoveUsersFromGrpoup } from '../AddorRemoveGroupUsersModal/AddorR
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
-import { AccessService } from "../../../service/service.access";
-import { TPERMISSIONS } from "../../../enum/Permission";
-// import { permissionChecker } from "../../../asset/script/accessControler";
-// import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
-// import { PERMISSIONS } from "../../../enum/Permission";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 //// start define IProps ///
 
@@ -298,27 +295,27 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() === true ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true ? [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return this.checkAddPermissionToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddPermissionTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.permission} className="fa fa-universal-access text-info"></i>,
           ac_func: (row: any) => { this.onShowAddPermissionModal(row) },
           name: Localization.permission
         },
         {
-          access: (row: any) => { return this.checkUpdateToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return this.checkAddUserToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddUserTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.user} className="fa fa-users text-primary"></i>,
           ac_func: (row: any) => { this.onShowAddOrRemoveUserFromGroupModal(row) },
           name: Localization.user
@@ -394,8 +391,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (this.checkGroupManagePageRender() === true) {
-      if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS]) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -406,48 +403,6 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
-  }
-
-  checkGroupManagePageRender(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS])) {
-      return true;
-    }
-    return false
-  }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_DELETE_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_DELETE_PRESS, TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS])) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_DELETE_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_DELETE_PRESS])) {
-      return true;
-    }
-    return false
-  }
-
-  checkAddPermissionToolAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS])) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS])) {
-      return true;
-    }
-    return false
-  }
-
-  checkAddUserToolAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS])) {
-      return true;
-    }
-    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -498,14 +453,14 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   /// start navigation function for create ant update ///
   gotoGroupCreate() {
-    if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS]) === false){
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
       return;
     }
     this.props.history.push('/group/create');
   }
 
   updateRow(group_id: any) {
-    if(this.checkUpdateToolAccess() === false){
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
       return;
     }
     this.props.history.push(`/group/${group_id.id}/edit`);
@@ -516,6 +471,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   /// start for all function for request ///
 
   async fetchGroup() {
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+      return;
+    }
     this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._groupService.search(
       this.state.pager_limit,
@@ -549,7 +507,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveGroup(group_id: string) {
-    if(this.checkDeleteToolAccess() === false){
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -571,6 +529,9 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   /// start remove functions and render ///
 
   onShowRemoveModal(group: any) {
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+      return;
+    }
     this.selectedGroup = group;
     this.setState({ ...this.state, removeModalShow: true });
   }
@@ -617,7 +578,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // start add permission modal function define ////////
 
   onShowAddPermissionModal(group: any) {
-    if(this.checkAddPermissionToolAccess() === false){
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddPermissionTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
       return;
     }
     this.selectedGroupForPermission = group;
@@ -640,7 +601,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // start add permission modal function define ////////
 
   onShowAddOrRemoveUserFromGroupModal(group: any) {
-    if(this.checkAddUserToolAccess() === false){
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddUserTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
       return;
     }
     this.selectedGroupForAddOrRemoveUser = group;
@@ -1054,7 +1015,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.group}</h2>
               {
-                AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PRESS])
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1070,7 +1031,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS])
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)
               ?
               <>
                 {/* start search box */}

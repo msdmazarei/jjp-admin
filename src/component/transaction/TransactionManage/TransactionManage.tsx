@@ -15,15 +15,15 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
-import { AccessService } from "../../../service/service.access";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { TransactionService } from "../../../service/service.transaction";
 import Select from 'react-select';
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 /// define props & state ///////
 export interface IProps {
@@ -150,9 +150,9 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccessForTools() ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.remove_transaction(row) },
           name: Localization.remove
@@ -216,8 +216,8 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   // timestamp to date 
 
   componentDidMount() {
-    if (this.checkPageRenderAccess() === true) {
-      if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -228,27 +228,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
-  }
-
-  checkPageRenderAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
-      return true;
-    }
-    return false;
-  }
-
-  checkAllAccessForTools(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.TRANSACTION_DELETE_PREMIUM]) === true) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === true) {
-      return true;
-    }
-    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -318,7 +297,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   /// start delete modal /////
 
   remove_transaction(transaction: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedTransaction = transaction;
@@ -331,7 +310,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveTransaction(transaction_id: string) {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -477,6 +456,9 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchTransactions() {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
     this.setState({ ...this.state, tableProcessLoader: true });
     let res = await this._transactionService.search(
       this.state.pager_limit,
@@ -772,7 +754,7 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM)
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.transactionManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}

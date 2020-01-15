@@ -18,16 +18,16 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import AsyncSelect from 'react-select/async';
-import { AccessService } from "../../../service/service.access";
 import { IPerson } from "../../../model/model.person";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { PersonService } from "../../../service/service.person";
 import { AddOrRemoveGroupFromUserModal } from "../AddOrRemoveGroupFromUserModal/AddOrRemoveGroupFromUserModal";
 import { AccountService } from "../../../service/service.account";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 //// props & state define ////////
 export interface IProps {
@@ -259,26 +259,27 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: this.checkAllAccess() ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return this.checkDeleteToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return this.checkUpdateToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageAddGroupTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.group} className="fa fa-users text-info"></i>,
           ac_func: (row: any) => { (this.onShowAddGroupModal(row)) },
           name: Localization.group
         },
         {
-          access: (row: any) => { return this.checkCreditToolAccess() },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetUserCreditTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.credit_level} className="fa fa-usd text-success"></i>,
           ac_func: (row: any) => { (this.onShowCreditModal(row)) },
           name: Localization.credit_level
@@ -353,7 +354,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
       this.setState({
         ...this.state,
         tableProcessLoader: true
@@ -363,34 +364,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     } else {
       this.noAccessRedirect(this.props.history);
     }
-  }
-
-  checkAllAccess(): boolean {
-    if (AccessService.checkOneOFAllAccess([TPERMISSIONS.USER_DELETE_PREMIUM, TPERMISSIONS.USER_EDIT_PREMIUM, TPERMISSIONS.TRANSACTION_GET_PREMIUM]) === true) {
-      return true;
-    }
-    return false;
-  }
-
-  checkDeleteToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_DELETE_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkUpdateToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === true) {
-      return true;
-    }
-    return false
-  }
-
-  checkCreditToolAccess(): boolean {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === true) {
-      return true;
-    }
-    return false
   }
 
   sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -444,7 +417,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(user_id: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_EDIT_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/user/${user_id.id}/edit`);
@@ -453,7 +426,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start define axios for give data for user table /////
 
   async fetchUsers() {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -517,7 +490,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start delete modal function define ////////
 
   onShowRemoveModal(user: IUser) {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedUser = user;
@@ -531,7 +504,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveUser(user_id: string) {
-    if (AccessService.checkAccess(TPERMISSIONS.USER_DELETE_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -582,7 +555,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start Credit modal function define ////////
 
   onShowCreditModal(user: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetUserCreditTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedUserForCredit = user;
@@ -591,7 +564,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchCreditOfSelectedUser(id: string) {
-    if (AccessService.checkAccess('TRANSACTION_GET_PREMIUM') === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetUserCreditTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, creditRequest_retry_loader: true })
@@ -617,7 +590,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   }
 
   render_credit_modal(userData: any, userCreditData: any) {
-    if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetUserCreditTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     if (this.selectedUserForCredit === undefined) return;
@@ -675,6 +648,9 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
   // start add group modal function define ////////
 
   onShowAddGroupModal(user: IUser) {
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageAddGroupTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+      return;
+    }
     this.selectedUserForGroup = user;
     this.setState({
       ...this.state,
@@ -1042,7 +1018,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            AccessService.checkAccess(TPERMISSIONS.USER_GET_PREMIUM) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}

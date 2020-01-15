@@ -16,8 +16,8 @@ import Dropzone from 'react-dropzone';
 import { AppRegex } from '../../../config/regex';
 import { IPerson } from '../../../model/model.person';
 import { FixNumber } from '../../form/fix-number/FixNumber';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
+import { permissionChecker } from '../../../asset/script/accessControler';
 
 interface IState {
     person: {
@@ -159,7 +159,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
 
 
     async quickAddPerson() {
-        if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false){
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
             return;
         } 
         if (!this.state.isFormValid) return;
@@ -508,7 +508,7 @@ class QuickPersonComponent extends BaseComponent<IProps, IState> {
                     <Modal.Footer>
                         <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.is_legalChangeFalseOnHideBtn()}>{Localization.close}</button>
                         {
-                            AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
+                            permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                 ?
                                 <BtnLoader
                                     loading={this.state.quickPersonAddBtnLoader}

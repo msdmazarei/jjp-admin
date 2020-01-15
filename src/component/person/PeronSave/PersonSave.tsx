@@ -15,10 +15,10 @@ import { Localization } from '../../../config/localization/localization';
 import { ToastContainer, toast } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
-import { AccessService } from '../../../service/service.access';
-import { TPERMISSIONS } from '../../../enum/Permission';
 import { PersonSavePassToUserModal } from './PersonPassToUserCreateModal'
 import { IPerson } from '../../../model/model.person';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
@@ -122,7 +122,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         if (this.props.match.path.includes('/person/:person_id/edit')) {
-            if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.person_id = this.props.match.params.person_id;
                 this.fetchPersonById(this.props.match.params.person_id);
@@ -130,14 +130,14 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         } else {
-            if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
     }
 
     async fetchPersonById(person_id: string) {
-        if (AccessService.checkAccess(TPERMISSIONS.PERSON_GET_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         let res = await this._personService.byId(person_id).catch(error => {
@@ -228,7 +228,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     // add person function 
 
     async create() {
-        if (AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -264,7 +264,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         if (!this.state.isFormValid) return;
@@ -300,7 +300,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
     ////////// navigation function //////////////////
 
     backTO() {
-        if (AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM]) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         this.gotoPersonManage();
@@ -620,7 +620,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        AccessService.checkAccess(TPERMISSIONS.PERSON_ADD_PREMIUM)
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-success shadow-default shadow-hover"
@@ -645,7 +645,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        (AccessService.checkAccess(TPERMISSIONS.PERSON_EDIT_PREMIUM) && this.state.saveBtnVisibility)
+                                                        (permissionChecker.is_allow_item_render([T_ITEM_NAME.personEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) && this.state.saveBtnVisibility)
                                                             ?
                                                             <BtnLoader
                                                                 btnClassName="btn btn-info shadow-default shadow-hover"
@@ -663,7 +663,7 @@ class PersonSaveComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </div>
                                     {
-                                        AccessService.checkOneOFAllAccess([TPERMISSIONS.PERSON_ADD_PREMIUM, TPERMISSIONS.PERSON_GET_PREMIUM])
+                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.personManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                             ?
                                             <BtnLoader
                                                 btnClassName="btn btn-primary shadow-default shadow-hover"

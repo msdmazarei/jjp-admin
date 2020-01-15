@@ -36,14 +36,26 @@ export abstract class permissionChecker {
             { item: T_ITEM_NAME.bookContentSave, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
             { item: T_ITEM_NAME.bookContentEdit, permissions: [TPERMISSIONS.BOOK_CONTENT_ADD_PREMIUM, TPERMISSIONS.BOOK_CONTENT_ADD_PRESS] },
 
-            { item: T_ITEM_NAME.personManage, permissions: [] },
-            { item: T_ITEM_NAME.personSave, permissions: [] },
-            { item: T_ITEM_NAME.personEdit, permissions: [] },
+            { item: T_ITEM_NAME.personManage, permissions: [TPERMISSIONS.PERSON_GET_PREMIUM, TPERMISSIONS.PERSON_ADD_PREMIUM] },
+            { item: T_ITEM_NAME.personManageGetGrid, permissions: [TPERMISSIONS.PERSON_GET_PREMIUM] },
+            { item: T_ITEM_NAME.personManageAllTools, permissions: [TPERMISSIONS.PERSON_DELETE_PREMIUM, TPERMISSIONS.PERSON_EDIT_PREMIUM] },
+            { item: T_ITEM_NAME.personManageDeleteTool, permissions: [TPERMISSIONS.PERSON_DELETE_PREMIUM] },
+            { item: T_ITEM_NAME.personManageUpdateTool, permissions: [TPERMISSIONS.PERSON_EDIT_PREMIUM] },
+            { item: T_ITEM_NAME.personSave, permissions: [TPERMISSIONS.PERSON_ADD_PREMIUM] },
+            { item: T_ITEM_NAME.personEdit, permissions: [TPERMISSIONS.PERSON_EDIT_PREMIUM] },
             { item: T_ITEM_NAME.quickPersonSave, permissions: [TPERMISSIONS.PERSON_ADD_PREMIUM] },
 
-            { item: T_ITEM_NAME.userManage, permissions: [] },
+            { item: T_ITEM_NAME.userManage, permissions: [TPERMISSIONS.USER_GET_PREMIUM,TPERMISSIONS.USER_GET_PRESS] },
+            { item: T_ITEM_NAME.userManageGetGrid, permissions: [TPERMISSIONS.USER_GET_PREMIUM,TPERMISSIONS.USER_GET_PRESS] },
+            { item: T_ITEM_NAME.userManageAllTools, permissions: [TPERMISSIONS.USER_DELETE_PREMIUM, TPERMISSIONS.USER_EDIT_PREMIUM, TPERMISSIONS.TRANSACTION_GET_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS] },
+            { item: T_ITEM_NAME.userManageDeleteTool, permissions: [TPERMISSIONS.USER_DELETE_PREMIUM] },
+            { item: T_ITEM_NAME.userManageUpdateTool, permissions: [TPERMISSIONS.USER_EDIT_PREMIUM] },
+            { item: T_ITEM_NAME.userManageAddGroupTool, permissions: [TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS] },
+            { item: T_ITEM_NAME.userManageGetUserCreditTool, permissions: [TPERMISSIONS.TRANSACTION_GET_PREMIUM] },
+            { item: T_ITEM_NAME.userManageJustAddGroupToUser, permissions: [TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PRESS] },
+            { item: T_ITEM_NAME.userManageJustDeleteGroupFromUser, permissions: [TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PRESS] },
             { item: T_ITEM_NAME.userSave, permissions: [] },
-            { item: T_ITEM_NAME.userEdit, permissions: [] },
+            { item: T_ITEM_NAME.userEdit, permissions: [TPERMISSIONS.USER_EDIT_PREMIUM] },
 
             { item: T_ITEM_NAME.commentManage, permissions: [TPERMISSIONS.COMMENT_GET_PREMIUM] },
             { item: T_ITEM_NAME.commentManageGetGrid, permissions: [TPERMISSIONS.COMMENT_GET_PREMIUM] },
@@ -61,11 +73,21 @@ export abstract class permissionChecker {
             { item: T_ITEM_NAME.orderSave, permissions: [TPERMISSIONS.ORDER_ADD_PREMIUM,TPERMISSIONS.ORDER_ADD_PRESS] },
             { item: T_ITEM_NAME.orderEdit, permissions: [TPERMISSIONS.ORDER_EDIT_PREMIUM] },
 
-            { item: T_ITEM_NAME.groupManage, permissions: [] },
-            { item: T_ITEM_NAME.groupSave, permissions: [] },
-            { item: T_ITEM_NAME.groupEdit, permissions: [] },
+            { item: T_ITEM_NAME.groupManage, permissions: [TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS] },
+            { item: T_ITEM_NAME.groupManageGetGrid, permissions: [TPERMISSIONS.PERMISSION_GROUP_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_GET_PRESS] },
+            { item: T_ITEM_NAME.groupManageAllTools, permissions: [TPERMISSIONS.PERMISSION_GROUP_DELETE_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_DELETE_PRESS, TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS, TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS] },
+            { item: T_ITEM_NAME.groupManageDeleteTool, permissions: [TPERMISSIONS.PERMISSION_GROUP_DELETE_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_DELETE_PRESS] },
+            { item: T_ITEM_NAME.groupManageAddPermissionTool, permissions: [TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS] },
+            { item: T_ITEM_NAME.groupManageAddUserTool, permissions: [TPERMISSIONS.PERMISSION_GROUP_USER_GET_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_USER_GET_PRESS] },
+            { item: T_ITEM_NAME.groupManageJustAddUserToGroup, permissions: [TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PRESS] },
+            { item: T_ITEM_NAME.groupManageJustDeleteUserFromGroup, permissions: [TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PRESS] },
+            { item: T_ITEM_NAME.groupSave, permissions: [TPERMISSIONS.PERMISSION_GROUP_ADD_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_ADD_PRESS] },
+            { item: T_ITEM_NAME.groupEdit, permissions: [TPERMISSIONS.PERMISSION_GROUP_EDIT_PREMIUM, TPERMISSIONS.PERMISSION_GROUP_EDIT_PRESS] },
 
-            { item: T_ITEM_NAME.transactionManage, permissions: [] },
+            { item: T_ITEM_NAME.transactionManage, permissions: [TPERMISSIONS.TRANSACTION_GET_PREMIUM] },
+            { item: T_ITEM_NAME.transactionManageGetGrid, permissions: [TPERMISSIONS.TRANSACTION_GET_PREMIUM] },
+            { item: T_ITEM_NAME.transactionManageAllTools, permissions: [TPERMISSIONS.TRANSACTION_DELETE_PREMIUM] },
+            { item: T_ITEM_NAME.transactionManageDeleteTool, permissions: [TPERMISSIONS.TRANSACTION_DELETE_PREMIUM] },
         ];
 
     static permission_detect_by_selected_item(item: T_ITEM_NAME): string[] | null {
@@ -137,10 +159,13 @@ export abstract class permissionChecker {
         if (data === undefined) {
             return false;
         }
-        if (data.status === "Invoiced") {
-            return false;
+        if(data.status){
+            if (data.status === "Invoiced") {
+                return false;
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     //// end extera access function check without permissiom ////

@@ -10,6 +10,9 @@ import { Modal } from "react-bootstrap";
 import { Localization } from "../../../config/localization/localization";
 import AsyncSelect from 'react-select/async';
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { toast } from "react-toastify";
 
 
 //// start define IProps ///
@@ -150,6 +153,11 @@ class AddOrRemoveGroupFromUserModalComponent extends BaseComponent<IProps, IStat
 
     async onAddGroupToUser(newValue: any[], user_id: string) {
 
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageJustAddGroupToUser],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+            toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig());
+            return;
+        }
+
         if (this.state.group.value === null) {
             if (newValue === null) {
                 return;
@@ -200,6 +208,11 @@ class AddOrRemoveGroupFromUserModalComponent extends BaseComponent<IProps, IStat
     }
 
     async onRemoveGroupFromUser(newValue: any[], user_id: string) {
+
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageJustDeleteGroupFromUser],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+            toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig());
+            return;
+        }
 
         if (newValue === null) {
 

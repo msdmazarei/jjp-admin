@@ -11,9 +11,9 @@ import { Localization } from "../../../config/localization/localization";
 import AsyncSelect from 'react-select/async';
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import { UserService } from "../../../service/service.user";
-import { AccessService } from "../../../service/service.access";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { toast } from "react-toastify";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 
 
 //// start define IProps ///
@@ -131,31 +131,31 @@ class AddOrRemoveUsersFromGrpoupComponent extends BaseComponent<IProps, IState>{
     handleMultiSelectInputChange(newValue: any[]) {
         const user_id: string = this.props.group_id;
         if (this.state.user.value === null) {
-            this.onAddGroupToUser(newValue, user_id);
+            this.onAddUserToGroup(newValue, user_id);
             return;
         }
 
         if (newValue === null) {
-            this.onRemoveGroupFromUser(newValue, user_id);
+            this.onRemoveUserFromGroup(newValue, user_id);
             return;
         }
 
         const before: any[] = this.state.user.value!
 
         if (newValue.length > before.length) {
-            this.onAddGroupToUser(newValue, user_id);
+            this.onAddUserToGroup(newValue, user_id);
             return;
         }
 
         if (newValue.length < before.length) {
-            this.onRemoveGroupFromUser(newValue, user_id);
+            this.onRemoveUserFromGroup(newValue, user_id);
             return;
         }
     }
 
-    async onAddGroupToUser(newValue: any[], group_id: string) {
+    async onAddUserToGroup(newValue: any[], group_id: string) {
 
-        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_ADD_PRESS]) === false){
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageJustAddUserToGroup],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
             toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig());
             return;
         }
@@ -209,9 +209,9 @@ class AddOrRemoveUsersFromGrpoupComponent extends BaseComponent<IProps, IState>{
         }
     }
 
-    async onRemoveGroupFromUser(newValue: any[], group_id: string) {
+    async onRemoveUserFromGroup(newValue: any[], group_id: string) {
 
-        if(AccessService.checkOneOFAllAccess([TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PREMIUM,TPERMISSIONS.PERMISSION_GROUP_USER_DELETE_PRESS]) === false){
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageJustDeleteUserFromGroup],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
             toast.warn(Localization.msg.ui.there_is_no_access_for_you , this.getNotifyConfig());
             return;
         }

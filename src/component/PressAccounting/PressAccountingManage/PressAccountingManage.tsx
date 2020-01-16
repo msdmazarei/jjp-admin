@@ -1,7 +1,6 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -11,6 +10,7 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
+import { Modal } from "react-bootstrap";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 // import moment from 'moment';

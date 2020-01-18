@@ -11,6 +11,8 @@ import { AppWidgets } from "../tool/appWidgets/appWidgets";
 import { TReport, reportListMapCmp } from "../tool/reports/ReportUtils";
 import { DashboardReportsManageModal } from "./DashboardReportsManage"
 import { ToastContainer } from "react-toastify";
+import { permissionChecker } from "../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../enum/T_ITEM_NAME";
 
 export interface IProps {
   history: History;
@@ -120,26 +122,40 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
   render() {
     return (
       <div className="content">
-        <div
-          className='bg-dark p-1 dashboard-report-manage-btn-wraper'
-        >
-          <i
-            title={Localization.settings}
-            className="fa fa-cog fa-2x dashboard-report-manage-btn"
-            onClick={() => this.reportManagerModalShow_handler()}
-          ></i>
-        </div>
+        {
+          permissionChecker.is_allow_item_render([T_ITEM_NAME.dashboard], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+            ?
+            <div
+              className='bg-dark p-1 dashboard-report-manage-btn-wraper'
+            >
+              <i
+                title={Localization.settings}
+                className="fa fa-cog fa-2x dashboard-report-manage-btn"
+                onClick={() => this.reportManagerModalShow_handler()}
+              ></i>
+            </div>
+            :
+            undefined
+        }
         <div className="row">
           <div className="col-12">
             <h2>{Localization.dashboard}</h2>
           </div>
         </div>
-        {this.render_reports_func()}
-        <DashboardReportsManageModal
-          modalShow={this.state.reportManagerModalShow}
-          firstList={this.state.report_cmp_status}
-          onHide={(newList) => this.reportManagerModal_seter(newList)}
-        />
+        {
+          permissionChecker.is_allow_item_render([T_ITEM_NAME.dashboard], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+            ?
+            <>
+              {this.render_reports_func()}
+              <DashboardReportsManageModal
+                modalShow={this.state.reportManagerModalShow}
+                firstList={this.state.report_cmp_status}
+                onHide={(newList) => this.reportManagerModal_seter(newList)}
+              />
+            </>
+            :
+            undefined
+        }
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </div>
     );

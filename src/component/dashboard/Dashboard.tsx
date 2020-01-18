@@ -72,7 +72,6 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
         this.state.report_cmp_list.map((report: TReport, r_index: number) => {
           const Cmpname = reportListMapCmp[report];
           const status: string = this.state.report_cmp_status[r_index];
-          // if (status === 'true') {
           return (
             <Fragment key={r_index}>
               <div className={"col-12 col-xl-6 mb-3 widget-wrapper " + (status === 'false' ? 'd-none' : '')}>
@@ -85,19 +84,6 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
               </div>
             </Fragment>
           )
-          // } if (status === 'false') {
-          //   return (
-          //     <Fragment key={r_index}>
-          //       <div className="col-12 col-xl-6 mb-3 widget-wrapper d-none">
-          //         <AppWidgets
-          //           onClose={() => this.reports_status_handler(r_index)}
-          //         >
-          //           <Cmpname />
-          //         </AppWidgets>
-          //       </div>
-          //     </Fragment>
-          //   )
-          // }
         })
       }
     </div>

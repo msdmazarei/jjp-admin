@@ -62,7 +62,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
         barChart: true,
         pieChart: false,
         sale_array: [],
-        current_month: 0,
+        current_month: this.props.internationalization.flag === 'fa' ? (moment_jalaali().jMonth() + 1) : (moment().month() + 1),
         is_request_success: null,
     }
     /// end of state
@@ -75,17 +75,6 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
     // }
 
     componentDidMount() {
-        if (this.props.internationalization.flag === 'fa') {
-            this.setState({
-                ...this.state,
-                current_month: (moment_jalaali().jMonth() + 1),
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                current_month: (moment().month() + 1),
-            })
-        }
         this.fetch_income_data();
         this.init_title();
         this.init_tools();
@@ -260,7 +249,7 @@ class ReportYearSellChartComponent extends BaseComponent<IProps, IState> {
         const summer = yearly.length >= 7 ? yearly.slice(3, 6) : yearly.slice(3, yearly.length);
         const fall = yearly.length >= 10 ? yearly.slice(6, 9) : yearly.slice(6, yearly.length);
         const winter = yearly.length >= 12 ? yearly.slice(9, 12) : yearly.slice(9, yearly.length);
-
+        
         if (value === "yearly") {
             return yearly;
         };

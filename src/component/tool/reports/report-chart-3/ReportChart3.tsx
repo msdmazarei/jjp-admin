@@ -77,7 +77,7 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
         perss_id_array: [],
         back_data: [],
         chart_data: [],
-        current_month: 0,
+        current_month: this.props.internationalization.flag === 'fa' ? (moment_jalaali().jMonth() + 1) : (moment().month() + 1),
         barChart: false,
         lineChart: true,
     }
@@ -94,17 +94,6 @@ class ReportPublisherSellsCompareComponent extends BaseComponent<IProps, IState>
     // }
 
     componentDidMount() {
-        if (this.props.internationalization.flag === 'fa') {
-            this.setState({
-                ...this.state,
-                current_month: (moment_jalaali().jMonth() + 1),
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                current_month: (moment().month() + 1),
-            })
-        }
         this.request();
         this.init_title();
         this.init_tools();

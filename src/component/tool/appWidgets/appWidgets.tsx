@@ -42,9 +42,6 @@ class AppWidgetsComponent extends BaseComponent<IProps, IState> {
     }
 
     minimizeFunction() {
-        // if (!this.state.restore) {
-        //     return;
-        // }
         if (this.state.minimize) {
             if (!this.state.restore) {
                 document.body.classList.remove("widget-minimize");

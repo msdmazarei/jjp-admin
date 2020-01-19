@@ -57,6 +57,34 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     })
   }
 
+  is_allow_render_report(r_name: TReport): boolean {
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.dashboard],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+      return false;
+    }
+    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.advancedDashboard],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
+      return true
+    }
+    if (r_name === 'newst_comment') {
+      return false;
+    }
+    if (r_name === 'best_sells_chart' ) {
+      return true;
+    }
+    if (r_name === 'last_sell_with_type') {
+      return true;
+    }
+    if (r_name === 'year_sell_with_month') {
+      return true;
+    }
+    if (r_name === 'Compear_publisher_sells') {
+      return true;
+    }
+    if (r_name === 'store_customer_performance') {
+      return false; 
+    }
+    return false;
+  }
+
   reports_status_handler(index: number) {
     const array: string[] = this.state.report_cmp_status;
     array[index] = 'false';
@@ -70,20 +98,24 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     return <div className="row">
       {
         this.state.report_cmp_list.map((report: TReport, r_index: number) => {
-          const Cmpname = reportListMapCmp[report];
-          const status: string = this.state.report_cmp_status[r_index];
-          return (
-            <Fragment key={r_index}>
-              <div className={"col-12 col-xl-6 mb-3 widget-wrapper " + (status === 'false' ? 'd-none' : '')}>
-                <AppWidgets
-                  reShow={status ? true : false}
-                  onClose={() => this.reports_status_handler(r_index)}
-                >
-                  <Cmpname />
-                </AppWidgets>
-              </div>
-            </Fragment>
-          )
+          if(this.is_allow_render_report(report) === true){
+            const Cmpname = reportListMapCmp[report];
+            const status: string = this.state.report_cmp_status[r_index];
+            return (
+              <Fragment key={r_index}>
+                <div className={"col-12 col-xl-6 mb-3 widget-wrapper " + (status === 'false' ? 'd-none' : '')}>
+                  <AppWidgets
+                    reShow={status ? true : false}
+                    onClose={() => this.reports_status_handler(r_index)}
+                  >
+                    <Cmpname />
+                  </AppWidgets>
+                </div>
+              </Fragment>
+            )
+          }else{
+            undefined
+          }
         })
       }
     </div>

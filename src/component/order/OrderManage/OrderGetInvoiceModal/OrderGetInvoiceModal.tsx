@@ -18,9 +18,12 @@ interface IProps {
     modalShow: boolean;
     onHide: () => void;
     order_id: string;
+    call_back_function: () => void;
 }
 
 interface IState {
+    order_id: string | undefined;
+    person_id: string | undefined;
     selectedOrderList: {
         total_price: number;
         person: {
@@ -34,34 +37,40 @@ interface IState {
     } | undefined;
     fetchOrderById_request_has_error: boolean;
     reTryBtnLoader: boolean;
+    get_invoice_reguest_has_error: boolean | undefined;
+    getInvoiceLoader: boolean;
 }
 
 
-class OrderItemsGetShowModalComponent extends BaseComponent<IProps, IState> {
+class OrderGetInvoiceModalComponent extends BaseComponent<IProps, IState> {
     state = {
+        order_id: undefined,
+        person_id: undefined,
         selectedOrderList: undefined,
         fetchOrderById_request_has_error: false,
-        reTryBtnLoader: false
+        reTryBtnLoader: false,
+        get_invoice_reguest_has_error: undefined,
+        getInvoiceLoader: false,
     }
 
     private _orderService = new OrderService();
 
     componentDidMount() {
-        this.setState({ ...this.state, selectedOrderList: undefined }, () => this.fetchOrderById(this.props.order_id));
+        this.setState({ ...this.state, order_id: undefined, person_id: undefined, selectedOrderList: undefined }, () => this.fetchOrderById_GetInvoice(this.props.order_id));
     }
 
     componentWillUnmount() {
-        this.setState({ ...this.state, selectedOrderList: undefined })
+        this.setState({ ...this.state, order_id: undefined, person_id: undefined, selectedOrderList: undefined })
     }
 
-    async fetchOrderById(order_id: string) {
-        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    async fetchOrderById_GetInvoice(order_id: string) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         this.setState({ ...this.state, reTryBtnLoader: true });
         let res = await this._orderService.getOrder_items(order_id).catch(error => {
             this.setState({ ...this.state, fetchOrderById_request_has_error: true, reTryBtnLoader: false });
-            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_error' } });
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_GetInvoice_error' } });
         });
 
         if (res) {
@@ -74,7 +83,8 @@ class OrderItemsGetShowModalComponent extends BaseComponent<IProps, IState> {
                     count: item.count
                 });
             });
-
+            const _order_id: string = list[0].order_id;
+            const _person_id: string = list[0].order.person_id;
             const order: {
                 total_price: number;
                 person: {
@@ -94,7 +104,21 @@ class OrderItemsGetShowModalComponent extends BaseComponent<IProps, IState> {
                 items: order_items
             }
 
-            this.setState({ ...this.state, selectedOrderList: order, fetchOrderById_request_has_error: false, reTryBtnLoader: false });
+            this.setState({ ...this.state, order_id: _order_id, person_id: _person_id, selectedOrderList: order, fetchOrderById_request_has_error: false, reTryBtnLoader: false })
+        }
+    }
+
+    async getInvoice(order_id: string, person_id: string) {
+        this.setState({ ...this.state, get_invoice_reguest_has_error: undefined, getInvoiceLoader: true });
+        let res = await this._orderService.checkout(order_id, person_id).catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'getInvoice_error' } });
+            this.setState({ ...this.state, get_invoice_reguest_has_error: true, getInvoiceLoader: false });
+        });
+        if (res) {
+            this.setState({ ...this.state, get_invoice_reguest_has_error: false, getInvoiceLoader: false });
+            this.apiSuccessNotify();
+            this.props.call_back_function();
+            this.props.onHide();
         }
     }
 
@@ -102,7 +126,7 @@ class OrderItemsGetShowModalComponent extends BaseComponent<IProps, IState> {
         return (
             <>
                 {
-                    order_data !== undefined
+                    order_data !== undefined && this.state.order_id !== undefined && this.state.person_id !== undefined
                         ?
                         <Modal show={this.props.modalShow} onHide={() => this.props.onHide()}>
                             <Modal.Body>
@@ -145,9 +169,25 @@ class OrderItemsGetShowModalComponent extends BaseComponent<IProps, IState> {
                                         }
                                     </p>
                                 </p>
+                                {
+                                    this.state.get_invoice_reguest_has_error === true
+                                        ?
+                                        <div className="text-center text-danger my-2">
+                                            {Localization.msg.ui.msg5}
+                                        </div>
+                                        :
+                                        undefined
+                                }
                             </Modal.Body>
                             <Modal.Footer>
                                 <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.props.onHide()}>{Localization.close}</button>
+                                <BtnLoader
+                                    btnClassName="btn btn-primary shadow-default shadow-hover"
+                                    onClick={() => this.getInvoice(this.state.order_id!, this.state.person_id!)}
+                                    loading={this.state.getInvoiceLoader}
+                                >
+                                    {Localization.invoice}
+                                </BtnLoader>
                             </Modal.Footer>
                         </Modal>
                         :
@@ -177,7 +217,7 @@ class OrderItemsGetShowModalComponent extends BaseComponent<IProps, IState> {
                                     <BtnLoader
                                         loading={this.state.reTryBtnLoader}
                                         btnClassName="btn btn-system shadow-default shadow-hover"
-                                        onClick={() => this.fetchOrderById(this.props.order_id)}
+                                        onClick={() => this.fetchOrderById_GetInvoice(this.props.order_id)}
                                     >
                                         {Localization.retry}
                                     </BtnLoader>
@@ -225,7 +265,7 @@ const state2props = (state: redux_state) => {
     };
 };
 
-export const OrderItemsGetShowModal = connect(
+export const OrderGetInvoiceModal = connect(
     state2props,
     dispatch2props
-)(OrderItemsGetShowModalComponent);
+)(OrderGetInvoiceModalComponent);

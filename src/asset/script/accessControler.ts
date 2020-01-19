@@ -8,6 +8,7 @@ export abstract class permissionChecker {
     private static permissions_by_item: { item: string, permissions: string[] }[] =
         [
             { item: T_ITEM_NAME.dashboard, permissions: [TPERMISSIONS.REPORT_GET_PREMIUM, TPERMISSIONS.REPORT_GET_PRESS] },
+            { item: T_ITEM_NAME.advancedDashboard, permissions: [TPERMISSIONS.REPORT_GET_PREMIUM] },
             
             { item: T_ITEM_NAME.bookManage, permissions: [] },
             { item: T_ITEM_NAME.bookManageAllTools, permissions: [TPERMISSIONS.BOOK_DELETE_PREMIUM, TPERMISSIONS.BOOK_EDIT_PREMIUM,TPERMISSIONS.BOOK_DELETE_PRESS, TPERMISSIONS.BOOK_EDIT_PRESS, TPERMISSIONS.PRICE_GET_PREMIUM]},

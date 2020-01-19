@@ -27,6 +27,7 @@ import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
+import { OrderItemsGetShowModal } from './orderItemsGetShowModal/orderItemsGetShowModal';
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE, EXTERA_FUN_NAME } from "../../../enum/T_ITEM_NAME";
 
@@ -349,7 +350,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </>
           },
           cellTemplateFunc: (row: any) => {
-            if(typeof row.total_price === 'number' && row.total_price === 0){
+            if (typeof row.total_price === 'number' && row.total_price === 0) {
               return <div className="text-nowrap-ellipsis max-w-200px d-inline-block">0</div>
             }
             if (row.total_price) {
@@ -363,25 +364,25 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       ],
       actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true ? [
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.AND,EXTERA_FUN_NAME.orderCheckoutAccess,row) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.AND, EXTERA_FUN_NAME.orderCheckoutAccess, row) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.AND,EXTERA_FUN_NAME.orderCheckoutAccess,row) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.AND, EXTERA_FUN_NAME.orderCheckoutAccess, row) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>
           , ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.show_order} className="fa fa-eye text-info"></i>,
-          ac_func: (row: any) => { this.fetchOrderById(row.id) },
+          ac_func: (row: any) => { this.onShowOrderDetailsModal(row.id) },
           name: Localization.show_order
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.AND,EXTERA_FUN_NAME.orderCheckoutAccess,row) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.AND, EXTERA_FUN_NAME.orderCheckoutAccess, row) },
           text: <i title={Localization.invoice} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
           name: Localization.invoice
@@ -455,6 +456,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   order_id!: string;
   person_id!: string;
   selectedOrder: any;
+  selectrd_order_for_show_items_id: string | undefined;
   selectedOrderList: {
     total_price: number;
     person: {
@@ -596,7 +598,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   /////  start for update row function  /////////
 
   updateRow(order_id: any) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/order/${order_id.id}/edit`);
@@ -608,7 +610,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ////// start delete modal function define  //////
 
   onShowRemoveModal(order: any) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedOrder = order;
@@ -621,7 +623,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveOrder(order_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -671,123 +673,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   /////  start show details of order by user function define  /////////
 
-  onShowOrderDetailsModal(order: { total_price: number; person: { label: string; value: IPerson; }; items: { count: number; book: IBook; }[] }) {
-    this.selectedOrderList = order;
+  onShowOrderDetailsModal(order_id: string) {
+    this.selectrd_order_for_show_items_id = order_id;
     this.setState({ ...this.state, orderDetailsModalShow: true });
   }
   onHideOrderDetailsModal() {
-    this.selectedOrder = undefined;
-    this.setState({
-      ...this.state,
-      orderDetailsModalShow: false
-    });
-  }
-
-  async fetchOrderById(order_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
-      return;
-    }
-    let res = await this._orderService.getOrder_items(order_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_error' } });
-    });
-
-    if (res) {
-      let list = res.data.result;
-
-      const order_items: { count: number, book: IBook }[] = [];
-      list.forEach((item: any) => {
-        order_items.push({
-          book: item.book,
-          count: item.count
-        });
-      });
-
-      const order: {
-        total_price: number;
-        person: {
-          label: string;
-          value: IPerson;
-        };
-        items: {
-          count: number;
-          book: IBook;
-        }[];
-      } = {
-        total_price: list[0].order.total_price,
-        person: {
-          label: this.getUserFullName(list[0].order.person),
-          value: list[0].order.person,
-        },
-        items: order_items
-      }
-
-      this.onShowOrderDetailsModal(order);
-    }
-  }
-
-
-  render_order_details_modal() {
-    return (
-      <>
-        <Modal show={this.state.orderDetailsModalShow} onHide={() => this.onHideOrderDetailsModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.Customer_Specifications}:&nbsp;
-              </span>
-              <p>
-                {this.selectedOrderList !== undefined
-                  ?
-                  Localization.full_name + ": " + this.selectedOrderList.person.label
-                  :
-                  ""
-                }
-              </p>
-              <p>
-                {this.selectedOrderList !== undefined
-                  ?
-                  <div className="white-content">
-                    <table className="table table-hover table-sm table-bordered bg-white text-dark">
-                      <thead className="thead-light">
-                        <tr className="table-light">
-                          <th className="font-weight-bold" scope="col">{Localization.title}</th>
-                          <th className="font-weight-bold" scope="col">{Localization.count}</th>
-                          <th className="font-weight-bold" scope="col">{Localization.price}</th>
-                          <th className="font-weight-bold" scope="col">{Localization.total_price}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {this.selectedOrderList.items.map((item, index) => (
-                          <Fragment key={index}>
-                            {
-                              <tr>
-                                <td className="text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
-                                <td className="">{item.count}</td>
-                                <td className="">{item.book.price}</td>
-                                <td className="">{item.book.price! * item.count}</td>
-                              </tr>
-                            }
-                          </Fragment>
-                        ))}
-                      </tbody>
-                    </table>
-                    <p className="pull-right">
-                      {Localization.Total_purchase}:&nbsp;
-                      <span>{this.selectedOrderList.total_price}</span>
-                    </p>
-                  </div>
-                  :
-                  ""
-                }
-              </p>
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideOrderDetailsModal()}>{Localization.close}</button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
+    this.selectrd_order_for_show_items_id = undefined;
+    this.setState({ ...this.state, orderDetailsModalShow: false });
   }
 
   /////  end show details of order by user function define  ////////
@@ -812,7 +704,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async fetchOrderById_GetInvoice(order_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     let res = await this._orderService.getOrder_items(order_id).catch(error => {
@@ -1062,7 +954,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoOrderCreate() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push('/order/create'); // /admin
@@ -1380,7 +1272,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.order}</h2>
               {
-                permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.orderSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1396,7 +1288,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetGird],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetGird], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}
@@ -1528,8 +1420,18 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedOrder)}
-        {this.render_order_details_modal()}
         {this.render_order_GetInvoice()}
+        {
+          this.selectrd_order_for_show_items_id === undefined
+            ?
+            undefined
+            :
+            <OrderItemsGetShowModal
+              modalShow={this.state.orderDetailsModalShow}
+              onHide={() => this.onHideOrderDetailsModal()}
+              order_id={this.selectrd_order_for_show_items_id}
+            />
+        }
         {
           <RetryModal
             modalShow={this.state.retryModal}

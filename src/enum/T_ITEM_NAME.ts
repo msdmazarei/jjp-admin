@@ -1,5 +1,6 @@
 export enum T_ITEM_NAME {
     dashboard = 'dashboard',
+    advancedDashboard = 'advancedDashboard',
     // start book
     bookManage = 'bookManage',
     bookManageAllTools = 'bookManageAllTools',

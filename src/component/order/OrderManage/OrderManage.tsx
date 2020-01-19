@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
@@ -15,7 +15,6 @@ import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import Select from 'react-select';
 import { OrderService } from "../../../service/service.order";
 import { IPerson } from "../../../model/model.person";
-import { IBook } from "../../../model/model.book";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
@@ -27,9 +26,10 @@ import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
 import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
-import { OrderItemsGetShowModal } from './orderItemsGetShowModal/orderItemsGetShowModal';
+import { OrderItemsGetShowModal } from "./OrderItemsGetShowModal/OrderItemsGetShowModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE, EXTERA_FUN_NAME } from "../../../enum/T_ITEM_NAME";
+import { OrderGetInvoiceModal } from "./OrderGetInvoiceModal/OrderGetInvoiceModal";
 
 /// define props & state ///////
 export interface IProps {
@@ -384,7 +384,7 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
         {
           access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.AND, EXTERA_FUN_NAME.orderCheckoutAccess, row) },
           text: <i title={Localization.invoice} className="fa fa-money text-success"></i>,
-          ac_func: (row: any) => { this.fetchOrderById_GetInvoice(row.id) },
+          ac_func: (row: any) => { this.onShowOrderGetInvoice(row.id) },
           name: Localization.invoice
         },
       ]
@@ -453,21 +453,11 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
     retryModal: false,
   };
 
-  order_id!: string;
-  person_id!: string;
+
   selectedOrder: any;
   selectrd_order_for_show_items_id: string | undefined;
-  selectedOrderList: {
-    total_price: number;
-    person: {
-      label: string;
-      value: IPerson;
-    };
-    items: {
-      count: number;
-      book: IBook;
-    }[];
-  } | undefined;
+  selectrd_order_for_get_invoice: string | undefined;
+
 
   private _orderService = new OrderService();
   private _personService = new PersonService();
@@ -687,155 +677,13 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
 
   /////  start get invoice of order by user function define  /////////
 
-  onShowOrderGetInvoice(order: { total_price: number; person: { label: string; value: IPerson; }; items: { count: number; book: IBook; }[] }, order_id: string, person_id: string) {
-    this.order_id = order_id;
-    this.person_id = person_id;
-    this.selectedOrderList = order;
+  onShowOrderGetInvoice(order_id: string) {
+    this.selectrd_order_for_get_invoice = order_id;
     this.setState({ ...this.state, GetInvoiceModalShow: true });
   }
   onHideOrderGetInvoice() {
-    this.order_id = "";
-    this.person_id = "";
-    this.selectedOrder = undefined;
-    this.setState({
-      ...this.state,
-      GetInvoiceModalShow: false
-    });
-  }
-
-  async fetchOrderById_GetInvoice(order_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageGetInvoiceTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
-      return;
-    }
-    let res = await this._orderService.getOrder_items(order_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'fetchOrderById_GetInvoice_error' } });
-    });
-
-    if (res) {
-      let list = res.data.result;
-
-      const order_items: { count: number, book: IBook }[] = [];
-      list.forEach((item: any) => {
-        order_items.push({
-          book: item.book,
-          count: item.count
-        });
-      });
-      const order_id: string = list[0].order_id;
-      const person_id: string = list[0].order.person_id;
-      const order: {
-        total_price: number;
-        person: {
-          label: string;
-          value: IPerson;
-        };
-        items: {
-          count: number;
-          book: IBook;
-        }[];
-      } = {
-        total_price: list[0].order.total_price,
-        person: {
-          label: this.getUserFullName(list[0].order.person),
-          value: list[0].order.person,
-        },
-        items: order_items
-      }
-
-      this.onShowOrderGetInvoice(order, order_id, person_id);
-    }
-  }
-
-  async getInvoice(order_id: string, person_id: string) {
-    this.setState({ ...this.state, setGetInvoiceLoader: true });
-    let res = await this._orderService.checkout(order_id, person_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'getInvoice_error' } });
-      this.setState({ ...this.state, setGetInvoiceLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setGetInvoiceLoader: false });
-      this.apiSuccessNotify();
-      this.fetchOrders();
-      this.onHideRemoveModal();
-    }
-  }
-
-
-  render_order_GetInvoice() {
-    return (
-      <>
-        <Modal show={this.state.GetInvoiceModalShow} onHide={() => this.onHideOrderGetInvoice()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.Customer_Specifications}:&nbsp;
-              </span>
-              <p>
-                {this.selectedOrderList !== undefined
-                  ?
-                  Localization.full_name + ": " + this.selectedOrderList.person.label
-                  :
-                  ""
-                }
-              </p>
-              <p>
-                {this.selectedOrderList !== undefined
-                  ?
-                  <div className="white-content">
-                    {
-                      permissionChecker.is_allow_item_render([T_ITEM_NAME.orderManageShowOrderTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
-                        ?
-                        <table className="table table-hover table-sm table-bordered bg-white text-dark">
-                          <thead className="thead-light">
-                            <tr className="thead-light">
-                              <th className="font-weight-bold" scope="col">{Localization.title}</th>
-                              <th className="font-weight-bold" scope="col">{Localization.count}</th>
-                              <th className="font-weight-bold" scope="col">{Localization.price}</th>
-                              <th className="font-weight-bold" scope="col">{Localization.total_price}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {this.selectedOrderList.items.map((item, index) => (
-                              <Fragment key={index}>
-                                {
-                                  <tr>
-                                    <td className="text-nowrap-ellipsis max-w-100px">{item.book.title}</td>
-                                    <td className="">{item.count}</td>
-                                    <td className="">{item.book.price}</td>
-                                    <td className="">{item.book.price! * item.count}</td>
-                                  </tr>
-                                }
-                              </Fragment>
-                            ))}
-                          </tbody>
-                        </table>
-                        :
-                        undefined
-                    }
-                    <p className="pull-right">
-                      {Localization.Total_purchase}:&nbsp;
-                      <span>{this.selectedOrderList.total_price}</span>
-                    </p>
-                  </div>
-                  :
-                  ""
-                }
-              </p>
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideOrderGetInvoice()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-primary shadow-default shadow-hover"
-              onClick={() => this.getInvoice(this.order_id, this.person_id)}
-              loading={this.state.setGetInvoiceLoader}
-            >
-              {Localization.invoice}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
+    this.selectrd_order_for_get_invoice = undefined;
+    this.setState({ ...this.state, GetInvoiceModalShow: false });
   }
 
   /////  end get invoice of order by user function define  /////////
@@ -1420,7 +1268,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
           }
         </div>
         {this.render_delete_modal(this.selectedOrder)}
-        {this.render_order_GetInvoice()}
         {
           this.selectrd_order_for_show_items_id === undefined
             ?
@@ -1430,6 +1277,18 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               modalShow={this.state.orderDetailsModalShow}
               onHide={() => this.onHideOrderDetailsModal()}
               order_id={this.selectrd_order_for_show_items_id}
+            />
+        }
+        {
+          this.selectrd_order_for_get_invoice === undefined
+            ?
+            undefined
+            :
+            <OrderGetInvoiceModal
+              modalShow={this.state.GetInvoiceModalShow}
+              onHide={() => this.onHideOrderGetInvoice()}
+              order_id={this.selectrd_order_for_get_invoice}
+              call_back_function={() => this.fetchOrders()}
             />
         }
         {

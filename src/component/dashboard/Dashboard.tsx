@@ -114,7 +114,9 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
               </Fragment>
             )
           }else{
-            undefined
+            return (
+              undefined
+            )
           }
         })
       }

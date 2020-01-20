@@ -49,7 +49,6 @@ interface IProps {
 }
 
 interface IState {
-    // book: any;//IBook | undefined;
     book: {
         title: {
             value: string | undefined,
@@ -60,7 +59,7 @@ interface IState {
             isValid: boolean;
         };
         language: {
-            value: { value: LANGUAGES, label: string };
+            value: ICmp_select<LANGUAGES>;
             isValid: boolean;
         };
         pub_year: {
@@ -123,7 +122,6 @@ interface IState {
     tags_inputValue: string;
     isBookTypeInputTouch: boolean;
     isBookPressInputTouch: boolean;
-    isBookLanguageInputTouch: boolean;
     quickPersonModalStatus: boolean;
     passToContentModalStatus: boolean;
     passedBookToContent: IBook[] | null;
@@ -154,10 +152,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         { value: BOOK_TYPES.Msd, label: Localization.book_type_list.Msd },
     ];
 
-    private languages_opts: { value: LANGUAGES, label: string }[] = this._languages_opts();
-    private _languages_opts(): { value: LANGUAGES, label: string }[] {
+    private languages_opts: ICmp_select<LANGUAGES>[] = this._languages_opts();
+    private _languages_opts(): ICmp_select<LANGUAGES>[] {
         const languageObj = Localization.languages_list
-        const languagesOptions: { value: LANGUAGES, label: string }[] = []
+        const languagesOptions: ICmp_select<LANGUAGES>[] = []
         for (let key in languageObj) {
             languagesOptions.push({ value: key as LANGUAGES, label: Localization.languages_list[key as LANGUAGES] })
         }
@@ -248,13 +246,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         tags_inputValue: '',
         isBookTypeInputTouch: false,
         isBookPressInputTouch: false,
-        isBookLanguageInputTouch: false,
         quickPersonModalStatus: false,
         passToContentModalStatus: false,
         passedBookToContent: null,
         passerModalBookTypeOption: null,
     }
-
 
     private _bookService = new BookService();
     private _uploadService = new UploadService();
@@ -443,25 +439,6 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 book_roll_press: selectedPerson,
                 isFormValid: this.checkFormValidate(true, 'book_roll_press'),
             });
-        };
-    }
-
-    pressCheckValidation(list: any[]) {
-
-        let pressCounter: number = 0;
-
-        list.map((item: { role: string, person: IPerson }) =>
-            item.role === BOOK_ROLES.Press
-                ?
-                pressCounter++
-                :
-                undefined
-        );
-
-        if (pressCounter === 1) {
-            return true;
-        } else {
-            return false;
         };
     }
 
@@ -752,10 +729,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     };
 
     typeInputTouch_handler() {
-        this.setState({
-            ...this.state,
-            isBookTypeInputTouch: true,
-        })
+        this.setState({...this.state,isBookTypeInputTouch: true})
     }
 
     typeInvalidFeedback() {
@@ -771,20 +745,17 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     pressInputTouch_handler() {
-        this.setState({
-            ...this.state,
-            isBookPressInputTouch: true,
-        })
+        this.setState({...this.state,isBookPressInputTouch: true})
     }
 
     pressInvalidFeedback() {
         if (!this.state.isBookPressInputTouch) {
             return
         };
-        if (this.state.isBookPressInputTouch && this.state.book.roles.isValid) {
+        if (this.state.isBookPressInputTouch && this.state.book.book_roll_press.isValid) {
             return
         }
-        if (this.state.isBookPressInputTouch && !this.state.book.roles.isValid) {
+        if (this.state.isBookPressInputTouch && !this.state.book.book_roll_press.isValid) {
             return <div className="select-feedback">{Localization.required_field}</div>
         }
     }
@@ -960,13 +931,10 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             <label htmlFor="">{Localization.language} <span className="text-danger">*</span></label>
                                             <Select
                                                 onChange={(value: any) => this.handleSelectLanguageChange(value)}
-                                                // onBlur={() => this.typeInputTouch_handler()}
                                                 options={this.languages_opts}
                                                 value={this.state.book.language.value}
                                                 placeholder={Localization.language}
-                                            // isDisabled={this.state.saveMode === SAVE_MODE.EDIT}
                                             />
-                                            {/* {this.typeInvalidFeedback()} */}
                                         </div>
                                     </div>
                                     <div className="col-md-4 col-sm-6">
@@ -1014,7 +982,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                             <Select
                                                 isMulti
                                                 onChange={(value: any) => this.handleSelectInputChange(value, "type")}
-                                                onBlur={() => this.typeInputTouch_handler()}
+                                                onMenuOpen={() => this.typeInputTouch_handler()}
                                                 options={this.typeOptions}
                                                 value={this.state.book.type.value}
                                                 placeholder={Localization.type}
@@ -1059,7 +1027,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 cacheOptions
                                                 defaultOptions
                                                 value={this.state.book_roll_press}
-                                                onBlur={() => this.pressInputTouch_handler()}
+                                                onMenuOpen={() => this.pressInputTouch_handler()}
                                                 loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                                 noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
                                                 onChange={(selectedPerson: any) => this.bookPressChange(selectedPerson)}

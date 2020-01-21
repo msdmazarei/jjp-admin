@@ -493,7 +493,17 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             return '';
           }
         },
-        { field: "pages", title: Localization.pages },
+        { 
+          field: "pages", title: Localization.pages,
+          cellTemplateFunc: (row: IBook) => {
+            if (row.pages) {
+              return <div title={row.pages} className="text-right d-inline-block text-nowrap-ellipsis max-w-35px">
+                {row.pages}
+              </div>
+            }
+            return '';
+          }
+        },
         {
           field: "duration", title: Localization.duration,
           cellTemplateFunc: (row: IBook) => {

@@ -32,6 +32,8 @@ import { action_remove_authentication } from "../../redux/action/authentication"
 import { Localization } from '../../config/localization/localization';
 import { BaseComponent } from "../_base/BaseComponent";
 import { BaseService } from "../../service/service.base";
+import { ChangePassword } from "../changePasswordModal/ChangePasswordModal";
+import { Store2 } from "../../redux/store";
 // import { IPerson } from "../../model/model.person";
 // import { any } from "prop-types";
 
@@ -57,9 +59,11 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
     this.state = {
       collapseOpen: false,
       modalSearch: false,
+      ChangePasswordModalShow: false,
       color: "navbar-transparent"
     };
   }
+
   log_out() {
     this.props.do_logout && this.props.do_logout();
     this.props.remove_token && this.props.remove_token();
@@ -139,12 +143,26 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
       return fullname;
     }
 
-      return ;
+    return;
 
   }
 
   getLogInPersonEdit() {
     this.props.history.push(`/profile`);
+  }
+
+  change_password_modal_toggle() {
+    if (this.state.ChangePasswordModalShow === false) {
+      this.setState({
+        ...this.state,
+        ChangePasswordModalShow: true,
+      })
+    } else {
+      this.setState({
+        ...this.state,
+        ChangePasswordModalShow: false,
+      })
+    }
   }
 
 
@@ -221,20 +239,20 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
                   </DropdownToggle>
                   <DropdownMenu className="dropdown-navbar" right tag="ul">
                     <NavLink tag="li">
-                      <DropdownItem className="nav-item d-none">{Localization.profile}</DropdownItem>
-                    </NavLink>
-                    {/* setting item commented in jame-jam project */}
-                    {/* <NavLink tag="li">
-                      <DropdownItem className="nav-item">Settings</DropdownItem>
-                    </NavLink> */}
-                    {/* <DropdownItem divider tag="li" /> */}
-                    <NavLink tag="li">
                       <DropdownItem
                         className="nav-item"
                         onClick={() => this.getLogInPersonEdit()}
                       >
                         <span className="d-inline-block">{this.getLogInUserName()}</span>
                         <small className="d-inline-block">({this.getLogInUserFullName()})</small>
+                      </DropdownItem>
+                    </NavLink>
+                    <NavLink tag="li">
+                      <DropdownItem
+                        className="nav-item"
+                        onClick={() => this.change_password_modal_toggle()}
+                      >
+                        {Localization.password_change.change_password}
                       </DropdownItem>
                     </NavLink>
                     <NavLink tag="li">
@@ -252,6 +270,10 @@ class AdminNavbarComponent extends BaseComponent<IProps, any> {
             </Collapse>
           </Container>
         </Navbar>
+        <ChangePassword
+          show={this.state.ChangePasswordModalShow}
+          onHide={() => this.change_password_modal_toggle()}
+        />
         <Modal
           modalClassName="modal-search"
           isOpen={this.state.modalSearch}

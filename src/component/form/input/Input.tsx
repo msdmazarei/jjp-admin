@@ -3,7 +3,7 @@ import { Localization } from '../../../config/localization/localization';
 
 interface InputProps {
     defaultValue?: any;
-    onChange: (value: any, isValid: boolean) => void;
+    onChange?: (value: any, isValid: boolean) => void;
     elRef?: (elName: HTMLInputElement | HTMLTextAreaElement) => void;
     pattern?: RegExp;
     patternName?: 'password' | 'number' | 'email';
@@ -12,24 +12,16 @@ interface InputProps {
     required?: boolean;
     validationFunc?: (value: any) => boolean;
     placeholder?: string;
-
     type?: 'text' | 'password';
     is_textarea?: boolean;
     textarea_rows?: number;
-
     readOnly?: boolean;
     disabled?: boolean;
+    hideError?: boolean;
+    hideErrorMsg?: boolean;
+    className?: string;
+    onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
-/* interface IProps_input extends InputProps {
-    type?: 'text' | 'password';
-    elRef?: (elName: HTMLInputElement) => void;
-}
-interface IProps_textarea extends InputProps {
-    is_textarea?: boolean;
-    textarea_rows?: number;
-    elRef?: (elName: HTMLTextAreaElement) => void;
-}
-type IProps = IProps_input | IProps_textarea; */
 
 interface InputState {
     invalid?: boolean;
@@ -55,32 +47,23 @@ class Input extends React.Component<InputProps, InputState> {
         this.setValidate(this.props.defaultValue);
     }
     componentWillReceiveProps(props: InputProps) {
-        // this.setValidate(props.defaultValue);
-
-        // if (this.handleValidate(props.defaultValue) !== this.handleValidate(this.props.defaultValue)) {
         if (
             (this.handleValidate(props.defaultValue) !== !this.state.invalid)
             &&
             (!this.isEmpty(this.props.defaultValue) || !this.isEmpty(props.defaultValue))
         ) {
             this.setValidate(props.defaultValue);
-            this.props.onChange(props.defaultValue, this.handleValidate(props.defaultValue));
+            this.props.onChange && this.props.onChange(props.defaultValue, this.handleValidate(props.defaultValue));
         }
-
-        /* if (this.handleValidate(props.defaultValue) !== this.handleValidate(this.props.defaultValue)) {
-            this.setValidate(props.defaultValue);
-        }
-        if (props.defaultValue !== this.props.defaultValue) {
-            this.props.onChange(props.defaultValue, this.handleValidate(props.defaultValue));
-        } */
     }
     isEmpty(val: any): boolean {
         if (val || val === 0) { return false }
         return true;
     }
     handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        this.setValidate(event.target.value);
-        this.props.onChange(event.target.value, this.handleValidate(event.target.value));
+        const e_target_value = event.target.value;
+        this.setValidate(e_target_value);
+        this.props.onChange && this.props.onChange(e_target_value, this.handleValidate(e_target_value));
     }
     onBlur() {
         this.setState({ ...this.state, touched: true });
@@ -108,7 +91,7 @@ class Input extends React.Component<InputProps, InputState> {
             invalidMsg = this.props.patternError;
         }
 
-        if (!this.state.invalid) { return; }
+        if (!this.state.invalid || this.props.hideErrorMsg) { return; }
 
         return (
             <div className="invalid-feedback">
@@ -124,7 +107,12 @@ class Input extends React.Component<InputProps, InputState> {
     }
     render() {
         return (
-            <div className={"form-group " + (this.props.readOnly ? 'input-readonly' : '')}>
+            <div className={
+                "app-input form-group "
+                + (this.props.readOnly ? 'input-readonly' : '')
+                + ' '
+                + (this.props.className ? this.props.className : '')
+            }>
                 {
                     this.props.label &&
                     <label htmlFor={this.id}>
@@ -142,7 +130,14 @@ class Input extends React.Component<InputProps, InputState> {
                         <input
                             id={this.id}
                             type={this.props.type}
-                            className={`form-control ${this.state.invalid && this.state.touched ? 'is-invalid' : ''}`}
+                            className={
+                                `form-control ${
+                                (this.state.invalid && this.state.touched && !this.props.hideError)
+                                    ?
+                                    'is-invalid' : ''
+                                }`
+                            }
+                            // value={this.props.defaultValue || ''}
                             value={(this.props.defaultValue || this.props.defaultValue === 0) ? this.props.defaultValue : ''}
                             // defaultValue={this.props.defaultValue}
                             onChange={e => this.handleChange(e)}
@@ -152,11 +147,18 @@ class Input extends React.Component<InputProps, InputState> {
                             placeholder={this.props.placeholder}
                             readOnly={this.props.readOnly}
                             disabled={this.props.disabled}
+                            onKeyUp={(e) => this.props.onKeyUp && this.props.onKeyUp(e)}
                         />
                         :
                         <textarea
                             id={this.id}
-                            className={`form-control ${this.state.invalid && this.state.touched ? 'is-invalid' : ''}`}
+                            className={
+                                `form-control ${
+                                (this.state.invalid && this.state.touched && !this.props.hideError)
+                                    ?
+                                    'is-invalid' : ''
+                                }`
+                            }
                             rows={this.props.textarea_rows || 4}
 
                             // defaultValue={this.props.defaultValue}

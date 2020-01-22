@@ -515,7 +515,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: (this.state.book.duration.value === '' || this.state.book.duration.value === undefined) ? undefined : this.state.book.duration.value,
             types: typeList,
             price: (this.state.book.price.value === '' || this.state.book.price.value === undefined) ? undefined : (Number(this.state.book.price.value)),
-            genre: genreList,
+            genre: genreList.length === 0 ? undefined : genreList,
             tags: tagList,
             from_editor: (this.state.book.from_editor.value === '' || this.state.book.from_editor.value === undefined) ? undefined : this.state.book.from_editor.value,
             description: (this.state.book.description.value === '' || this.state.book.description.value === undefined) ? undefined : this.state.book.description.value,
@@ -590,7 +590,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
             price: this.state.book.price.value === undefined ? undefined : this.state.book.price.value === '' ?  null : (Number(this.state.book.price.value)),
-            genre: genreList,
+            genre: genreList.length === 0 ? null : genreList,
             roles: roleListWithPress,
             images: imgUrls,
             tags: tagList

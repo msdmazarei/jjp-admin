@@ -105,6 +105,7 @@ export const en = {
             legal_user_restriction : 'legal person can not have more than one account.',
             person_is_not_legal : 'the person selected is not a legal person',
             person_must_have_user : 'the person selected must be an account.',
+            invalid_password : 'old password invalid',
         }
     },
     validation: {
@@ -377,6 +378,12 @@ export const en = {
     Publishers_bills : "Publishers' bills",
     Amount_of_payment : 'amount of payment',
     pay_time : 'pay time',
+    password_change:{
+        change_password : 'change password',
+        old_password : 'old password',
+        new_password : 'new password',
+        confirm_new_password : 'confirm new password',
+    },
     type_of_report: {
         Reporting_Period: "Reporting Period",
         monthly: "monthly",

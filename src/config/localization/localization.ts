@@ -119,6 +119,7 @@ interface ILocalization extends LocalizedStringsMethods {
             legal_user_restriction : string;
             person_is_not_legal : string;
             person_must_have_user : string;
+            invalid_password : string;
         }
     };
     validation: {
@@ -392,6 +393,12 @@ interface ILocalization extends LocalizedStringsMethods {
     Publishers_bills : string;
     Amount_of_payment : string;
     pay_time : string;
+    password_change:{
+        change_password : string;
+        old_password : string;
+        new_password : string;
+        confirm_new_password : string;
+    };
     type_of_report: {
         Reporting_Period: string;
         monthly: string;

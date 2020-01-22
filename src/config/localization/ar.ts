@@ -105,6 +105,7 @@ export const ar = {
             legal_user_restriction : 'شخص حقوقی نمی تواند بیش از یک حساب کاربری داشته باشد.',
             person_is_not_legal : 'شخص انتخاب شذه شخص حقوقی نیست.',
             person_must_have_user : 'شخص انتخاب شده باید حساب کاربری داشته باشد.',
+            invalid_password : 'رمز عبور قبلی نامعتبر است',
         }
     },
     validation: {
@@ -377,6 +378,12 @@ export const ar = {
     Publishers_bills : 'صورتحساب ناشرین',
     Amount_of_payment : 'میزان پرداخت',
     pay_time : 'زمان پرداخت',
+    password_change:{
+        change_password : 'تغییر رمز عبور',
+        old_password : 'رمز عبور قبلی',
+        new_password : 'رمز عبور جدید',
+        confirm_new_password : 'تائید رمز عبور جدید',
+    },
     type_of_report:{
         Reporting_Period:"دوره زمانی گزارش",
         monthly:"ماهانه",

@@ -28,8 +28,8 @@ export class UserService extends BaseService {
         return this.axiosTokenInstance.put(`/users/${id}`, user);
     }
 
-
-
-
+    changePassword(old_password: string, new_password: string, user_id: string): Promise<any> {
+        return this.axiosTokenInstance.put(`/users/${user_id}`, { old_password, password: new_password });
+    }
 
 }

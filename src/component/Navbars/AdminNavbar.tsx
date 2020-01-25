@@ -33,7 +33,7 @@ import { Localization } from '../../config/localization/localization';
 import { BaseComponent } from "../_base/BaseComponent";
 import { BaseService } from "../../service/service.base";
 import { ChangePassword } from "../changePasswordModal/ChangePasswordModal";
-import { Store2 } from "../../redux/store";
+// import { Store2 } from "../../redux/store";
 // import { IPerson } from "../../model/model.person";
 // import { any } from "prop-types";
 

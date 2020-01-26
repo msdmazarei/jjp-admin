@@ -1,7 +1,6 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -28,6 +27,7 @@ import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 
 //// start define IProps ///
 
@@ -295,27 +295,27 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true ? [
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddPermissionTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddPermissionTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.permission} className="fa fa-universal-access text-info"></i>,
           ac_func: (row: any) => { this.onShowAddPermissionModal(row) },
           name: Localization.permission
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddUserTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddUserTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.user} className="fa fa-users text-primary"></i>,
           ac_func: (row: any) => { this.onShowAddOrRemoveUserFromGroupModal(row) },
           name: Localization.user
@@ -391,8 +391,8 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // }
 
   componentDidMount() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
-      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -453,14 +453,14 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
 
   /// start navigation function for create ant update ///
   gotoGroupCreate() {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push('/group/create');
   }
 
   updateRow(group_id: any) {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/group/${group_id.id}/edit`);
@@ -471,7 +471,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   /// start for all function for request ///
 
   async fetchGroup() {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -506,8 +506,27 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
+  /// end for all function for request ///
+
+
+  /// start remove functions and render ///
+
+  onShowRemoveModal(group: any) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
+    this.selectedGroup = group;
+    this.setState({ ...this.state, removeModalShow: true });
+  }
+
+  onHideRemoveModal() {
+    this.selectedGroup = undefined;
+    this.setState({ ...this.state, removeModalShow: false });
+
+  }
+
   async onRemoveGroup(group_id: string) {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -523,62 +542,13 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  /// end for all function for request ///
-
-
-  /// start remove functions and render ///
-
-  onShowRemoveModal(group: any) {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
-      return;
-    }
-    this.selectedGroup = group;
-    this.setState({ ...this.state, removeModalShow: true });
-  }
-
-  onHideRemoveModal() {
-    this.selectedGroup = undefined;
-    this.setState({ ...this.state, removeModalShow: false });
-
-  }
-
-  render_delete_modal(selectedGroup: any) {
-    if (!this.selectedGroup || !this.selectedGroup.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.name}{" "}{Localization.group}:&nbsp;
-            </span>
-              {this.selectedGroup.title}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveGroup(selectedGroup.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
   /// end remove functions and render ///
 
 
   // start add permission modal function define ////////
 
   onShowAddPermissionModal(group: any) {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddPermissionTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddPermissionTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedGroupForPermission = group;
@@ -601,7 +571,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
   // start add permission modal function define ////////
 
   onShowAddOrRemoveUserFromGroupModal(group: any) {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddUserTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageAddUserTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedGroupForAddOrRemoveUser = group;
@@ -1015,7 +985,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.group}</h2>
               {
-                permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.groupSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1031,7 +1001,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE)
               ?
               <>
                 {/* start search box */}
@@ -1146,7 +1116,21 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
               undefined
           }
         </div>
-        {this.render_delete_modal(this.selectedGroup)}
+        {
+          this.selectedGroup === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.group}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={{ [Localization.group]: this.selectedGroup.title }}
+              rowId={this.selectedGroup.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveGroup(rowId)}
+            />
+        }
         {
           this.selectedGroupForPermission === undefined
             ?

@@ -1,7 +1,6 @@
 import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -24,6 +23,7 @@ import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 
 /// define props & state ///////
 export interface IProps {
@@ -324,75 +324,6 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
       this.fetchTransactions();
       this.onHideRemoveModal();
     }
-  }
-
-  render_delete_modal(selectedTransaction: any) {
-    if (!this.selectedTransaction || !this.selectedTransaction.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.type + " " + Localization.transaction}:&nbsp;
-            </span>
-              {
-                (selectedTransaction.credit === 0 && selectedTransaction.debit === 0)
-                  ?
-                  "---"
-                  :
-                  selectedTransaction.credit > 0
-                    ?
-                    Localization.increase_credit
-                    :
-                    selectedTransaction.debit > 0
-                      ?
-                      Localization.reduce_credit
-                      :
-                      undefined
-              }
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.transaction_amount}:&nbsp;
-            </span>
-              {
-                (selectedTransaction.credit === 0 && selectedTransaction.debit === 0)
-                  ?
-                  0
-                  :
-                  selectedTransaction.credit > 0
-                    ?
-                    selectedTransaction.credit
-                    :
-                    selectedTransaction.debit > 0
-                      ?
-                      selectedTransaction.debit
-                      :
-                      undefined
-              }
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.creation_date}:&nbsp;
-            </span>
-              {this.getTimestampToDate(selectedTransaction.creation_date)}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveTransaction(selectedTransaction.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   /// end delete modal /////
@@ -862,7 +793,27 @@ class TransactionManageComponent extends BaseComponent<IProps, IState>{
               undefined
           }
         </div>
-        {this.render_delete_modal(this.selectedTransaction)}
+        {
+          this.selectedTransaction === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.transaction}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={
+                {
+                  [Localization.transactionType]: (this.selectedTransaction.credit === 0 && this.selectedTransaction.debit === 0) ? "---" : this.selectedTransaction.credit > 0 ? Localization.increase_credit : this.selectedTransaction.debit > 0 ? Localization.reduce_credit : undefined,
+                  [Localization.transaction_amount] : (this.selectedTransaction.credit === 0 && this.selectedTransaction.debit === 0) ? 0 : this.selectedTransaction.credit > 0 ? this.selectedTransaction.credit : this.selectedTransaction.debit > 0 ? this.selectedTransaction.debit : undefined,
+                  [Localization.creation_date] : this.getTimestampToDate(this.selectedTransaction.creation_date)
+                }
+              }
+              rowId={this.selectedTransaction.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveTransaction(rowId)}
+            />
+        }
         {
           <RetryModal
             modalShow={this.state.retryModal}

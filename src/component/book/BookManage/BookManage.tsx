@@ -33,6 +33,7 @@ import 'moment/locale/fa';
 import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 // import { IToken } from "../../../model/model.token";
 
 interface IFilterBook {
@@ -837,35 +838,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       this.fetchBooks();
       this.onHideRemoveModal();
     }
-  }
-
-  render_delete_modal(selectedBook: any) {
-    if (!this.selectedBook || !this.selectedBook.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.title}:&nbsp;
-            </span>
-              {this.selectedBook.title}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveBook(selectedBook.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   updateRow(book_id: any) {
@@ -1716,7 +1688,21 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
         </div>
-        {this.render_delete_modal(this.selectedBook)}
+        {
+          this.selectedBook === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.book}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={{ [Localization.title]: this.selectedBook.title }}
+              rowId={this.selectedBook.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveBook(rowId)}
+            />
+        }
         {this.render_price_modal(this.selectedBook)}
         {
           <RetryModal

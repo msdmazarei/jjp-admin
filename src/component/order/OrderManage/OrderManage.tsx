@@ -2,7 +2,6 @@ import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
 import { Dispatch } from "redux";
@@ -30,6 +29,7 @@ import { OrderItemsGetShowModal } from "./OrderItemsGetShowModal/OrderItemsGetSh
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE, EXTERA_FUN_NAME } from "../../../enum/T_ITEM_NAME";
 import { OrderGetInvoiceModal } from "./OrderGetInvoiceModal/OrderGetInvoiceModal";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 
 /// define props & state ///////
 export interface IProps {
@@ -627,35 +627,6 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
       this.fetchOrders();
       this.onHideRemoveModal();
     }
-  }
-
-  render_delete_modal(selectedOrder: any) {
-    if (!this.selectedOrder || !this.selectedOrder.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.order}:&nbsp;
-            </span>
-              {this.selectedOrder.creator}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveOrder(selectedOrder.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   ////// end delete modal function define  ///////
@@ -1267,7 +1238,21 @@ class OrderManageComponent extends BaseComponent<IProps, IState>{
               undefined
           }
         </div>
-        {this.render_delete_modal(this.selectedOrder)}
+        {
+          this.selectedOrder === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.order}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={{ [Localization.order]: this.selectedOrder.creator }}
+              rowId={this.selectedOrder.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveOrder(rowId)}
+            />
+        }
         {
           this.selectrd_order_for_show_items_id === undefined
             ?

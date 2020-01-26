@@ -2,7 +2,6 @@ import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { Input } from '../../form/input/Input';
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
 import { IBook } from "../../../model/model.book";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
@@ -30,6 +29,7 @@ import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 
 
 /// define props & state ///////
@@ -442,28 +442,28 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row : any) => {return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)},
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row : any) => {return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)},
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row : any) => {return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGenerateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE)},
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGenerateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.create} className="fa fa-wrench text-dark"></i>,
           ac_func: (row: any) => { this.getGenerateRow(row) },
           name: Localization.create + " " + Localization.content
         },
       ]
-      :
-      undefined
+        :
+        undefined
     },
     contentError: undefined,
     pager_offset: 0,
@@ -533,9 +533,9 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   private _bookService = new BookService();
 
   componentDidMount() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
       moment.locale("en");
-      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -603,7 +603,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
 
 
   updateRow(book_generator_id: any) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/book_generator/${book_generator_id.id}/edit`);
@@ -632,7 +632,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(content: any) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedContent = content;
@@ -645,7 +645,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveContent(content_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -661,54 +661,10 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  render_delete_modal(selectedContent: any) {
-    if (!this.selectedContent || !this.selectedContent.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content text-center text-danger">
-              {Localization.remove + " " + Localization.content}
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.title}:&nbsp;
-            </span>
-              {(this.selectedContent.book as IBook).title}
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.type + " " + Localization.book}:&nbsp;
-            </span>
-              {Localization.book_type_list[((this.selectedContent.book as IBook).type as BOOK_TYPES)]}
-            </p>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.type + " " + Localization.content}:&nbsp;
-            </span>
-              {Localization[this.selectedContent.type]}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveContent(selectedContent.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
   // generate modal function define
 
   getGenerateRow(content: any) {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGenerateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGenerateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedContentGenerate = content;
@@ -723,7 +679,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   // define axios for give data
 
   async fetchBooksContent() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true })
@@ -862,7 +818,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookContentCreate() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push('/book_generator/create');
@@ -880,7 +836,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGridSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGridSuperAdmin], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       persons_of_press = [...wrapper];
       obj['book_press'] = { $in: persons_of_press };
     }
@@ -933,7 +889,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
   }
 
   filterSearch() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({
@@ -1223,7 +1179,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.content}</h2>
               {
-                permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1239,7 +1195,7 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}
@@ -1399,7 +1355,27 @@ class BookGeneratorManageComponent extends BaseComponent<IProps, IState>{
               onHide={() => this.onHideGenerateModal()}
             />
         }
-        {this.render_delete_modal(this.selectedContent)}
+        {
+          this.selectedContent === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.content}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={
+                {
+                  [Localization.title]: (this.selectedContent.book as IBook).title,
+                  [Localization.bookType] : Localization.book_type_list[((this.selectedContent.book as IBook).type as BOOK_TYPES)],
+                  [Localization.contentType] : Localization[this.selectedContent.type]
+                }
+              }
+              rowId={this.selectedContent.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveContent(rowId)}
+            />
+        }
         {/* {this.render_generate_modal(this.selectedContentGenerate)} */}
         {
           <RetryModal

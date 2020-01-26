@@ -31,6 +31,8 @@ import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
+
 
 /// define props & state ///////
 export interface IProps {
@@ -418,15 +420,15 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageShowCommentTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageShowCommentTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.show_comment} className="fa fa-eye text-info"></i>,
           ac_func: (row: any) => { this.onShowCommentModal(row) },
           name: Localization.show_comment
@@ -519,13 +521,13 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
       this.book_id = this.props.match.params.book_id;
       if (this.book_id === undefined) { return };
       this.fetchBookById_wizard(this.book_id);
-    } else if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
-        this.setState({
-          ...this.state,
-          tableProcessLoader: true
-        })
-        TABLE_SORT.sortArrayReseter();
-        this.fetchComments();
+    } else if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      this.setState({
+        ...this.state,
+        tableProcessLoader: true
+      })
+      TABLE_SORT.sortArrayReseter();
+      this.fetchComments();
     } else {
       this.noAccessRedirect(this.props.history);
     };
@@ -608,10 +610,42 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
+  // delete modal function define
+
+  onShowRemoveModal(comment: IComment) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
+    this.selectedComment = comment;
+    this.setState({ ...this.state, removeModalShow: true });
+  }
+
+  onHideRemoveModal() {
+    this.selectedComment = undefined;
+    this.setState({ ...this.state, removeModalShow: false });
+  }
+
+  async onRemoveComment(comment_id: string) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      return;
+    }
+    this.setState({ ...this.state, setRemoveLoader: true });
+    let res = await this._commentService.remove(comment_id).catch(error => {
+      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveComment_error' } });
+      this.setState({ ...this.state, setRemoveLoader: false });
+    });
+    if (res) {
+      this.setState({ ...this.state, setRemoveLoader: false });
+      this.apiSuccessNotify();
+      this.fetchComments();
+      this.onHideRemoveModal();
+    }
+  }
+
   // comment show modal function define
 
   onShowCommentModal(comment: IComment) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageShowCommentTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageShowCommentTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedComment = comment;
@@ -695,68 +729,6 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
     );
   }
 
-
-  // delete modal function define
-
-  onShowRemoveModal(comment: IComment) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
-      return;
-    }
-    this.selectedComment = comment;
-    this.setState({ ...this.state, removeModalShow: true });
-  }
-
-  onHideRemoveModal() {
-    this.selectedComment = undefined;
-    this.setState({ ...this.state, removeModalShow: false });
-  }
-
-  async onRemoveComment(comment_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
-      return;
-    }
-    this.setState({ ...this.state, setRemoveLoader: true });
-    let res = await this._commentService.remove(comment_id).catch(error => {
-      this.handleError({ error: error.response, toastOptions: { toastId: 'onRemoveComment_error' } });
-      this.setState({ ...this.state, setRemoveLoader: false });
-    });
-    if (res) {
-      this.setState({ ...this.state, setRemoveLoader: false });
-      this.apiSuccessNotify();
-      this.fetchComments();
-      this.onHideRemoveModal();
-    }
-  }
-
-  render_delete_modal(selectedComment: any) {
-    if (!this.selectedComment || !this.selectedComment.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content" >
-              <span className="text-muted">
-                {Localization.comment}:&nbsp;
-            </span>
-              {this.selectedComment.body}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveComment(selectedComment.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
   // define axios for give data
 
   private _searchFilter: any | undefined;
@@ -831,7 +803,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
 
   async fetchComments() {
     if (this.state.is_wizard === false) {
-      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
         return;
       }
     };
@@ -1273,7 +1245,7 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true || this.state.is_wizard === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.commentManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true || this.state.is_wizard === true
               ?
               <>
                 {/* start search box */}
@@ -1420,15 +1392,27 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
               undefined
           }
         </div>
-        {this.render_delete_modal(this.selectedComment)}
-        {this.render_comment_show_modal(this.selectedComment)}
         {
-          <RetryModal
-            modalShow={this.state.retryModal}
-            onHide={() => this.setState({ ...this.state, retryModal: false })}
-            onRetry={() => { this.fetchComments(); this.setState({ ...this.state, retryModal: false }) }}
-          />
+          this.selectedComment === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.comment}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={{ [Localization.comment]: this.selectedComment.body }}
+              rowId={this.selectedComment.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveComment(rowId)}
+            />
         }
+        {this.render_comment_show_modal(this.selectedComment)}
+        <RetryModal
+          modalShow={this.state.retryModal}
+          onHide={() => this.setState({ ...this.state, retryModal: false })}
+          onRetry={() => { this.fetchComments(); this.setState({ ...this.state, retryModal: false }) }}
+        />
         <ToastContainer {...this.getNotifyContainerConfig()} />
       </>
     );

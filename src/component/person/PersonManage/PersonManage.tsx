@@ -2,7 +2,6 @@ import React from "react";
 import { Table, IProps_table } from "../../table/table";
 import { PersonService } from "../../../service/service.person";
 import { History } from 'history';
-import { Modal } from "react-bootstrap";
 import { IPerson } from "../../../model/model.person";
 import { ToastContainer } from "react-toastify";
 import { MapDispatchToProps, connect } from "react-redux";
@@ -25,6 +24,7 @@ import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 
 //// props & state define ////////
 export interface IProps {
@@ -152,7 +152,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: IPerson) => {
             if (row.name) {
               return <div title={this.getPersonFullName(row)} className="text-nowrap-ellipsis max-w-200px d-inline-block">
@@ -181,7 +181,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "type", title: Localization.type, 
+          field: "type", title: Localization.type,
           templateFunc: () => {
             return <>
               {Localization.type}
@@ -217,7 +217,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: IPerson) => {
             if (row.is_legal) {
               return <div className="text-nowrap-ellipsis max-w-100px d-inline-block">
@@ -266,7 +266,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: IPerson) => {
             if (row.creation_date) {
               return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
@@ -275,7 +275,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "cell_no", title: Localization.cell_no, 
+          field: "cell_no", title: Localization.cell_no,
           templateFunc: () => {
             return <>
               {Localization.cell_no}
@@ -311,7 +311,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: IPerson) => {
             if (row.cell_no) {
               return <div title={row.cell_no} className="text-nowrap-ellipsis max-w-150px d-inline-block">
@@ -332,7 +332,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
         {
-          field: "phone", title: Localization.phone, 
+          field: "phone", title: Localization.phone,
           templateFunc: () => {
             return <>
               {Localization.phone}
@@ -368,7 +368,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                       undefined
               }
             </>
-          }, 
+          },
           cellTemplateFunc: (row: IPerson) => {
             if (row.phone) {
               return <div title={row.phone} className="text-nowrap-ellipsis max-w-150px d-inline-block">
@@ -389,15 +389,15 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
@@ -476,12 +476,12 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       cell_no: false,
       phone: false,
     },
-    retryModal : false,
+    retryModal: false,
   }
 
   componentDidMount() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManage],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
-      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
         this.setState({
           ...this.state,
           tableProcessLoader: true
@@ -550,7 +550,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(person_id: any) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/person/${person_id.id}/edit`);
@@ -576,12 +576,10 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-
-
   /////// delete modal function define ////////
 
   onShowRemoveModal(person: IPerson) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.selectedPerson = person;
@@ -595,7 +593,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemovePerson(person_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -611,41 +609,10 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     }
   }
 
-  render_delete_modal(selectedPerson: any) {
-    if (!this.selectedPerson || !this.selectedPerson.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content" >
-              <span className="text-muted">
-                {Localization.full_name}:&nbsp;
-            </span>
-              {this.selectedPerson.name} {this.selectedPerson.last_name}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemovePerson(selectedPerson.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
-  }
-
-
   // define axios for give data
 
   async fetchPersons() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.setState({ ...this.state, tableProcessLoader: true });
@@ -662,7 +629,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
         nextBtnLoader: false,
         tableProcessLoader: false,
         filterSearchBtnLoader: false,
-        retryModal : true,
+        retryModal: true,
       });
     });
 
@@ -788,7 +755,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
   //// navigation function //////
 
   gotoPersonCreate() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.props.history.push('/person/create');
@@ -854,7 +821,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
       filterSearchBtnLoader: true,
       tableProcessLoader: true,
       pager_offset: 0
-    }, () => {this.fetchPersons()});
+    }, () => { this.fetchPersons() });
   }
 
   /////  start onChange & search & reset function for search box ///////////
@@ -1038,7 +1005,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
               {
-                permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.personSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1054,7 +1021,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             </div>
           </div>
           {
-            permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+            permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?
               <>
                 {/* start search box */}
@@ -1192,7 +1159,21 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
               undefined
           }
         </div>
-        {this.render_delete_modal(this.selectedPerson)}
+        {
+          this.selectedPerson === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.person}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={{ [Localization.full_name]: this.getPersonFullName(this.selectedPerson)}}
+              rowId={this.selectedPerson.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemovePerson(rowId)}
+            />
+        }
         {
           <RetryModal
             modalShow={this.state.retryModal}

@@ -28,6 +28,7 @@ import { SORT } from "../../../enum/Sort";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 
 //// props & state define ////////
 export interface IProps {
@@ -518,36 +519,6 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
       this.fetchUsers();
       this.onHideRemoveModal();
     }
-  }
-
-  render_delete_modal(selectedUser: any) {
-    if (!this.selectedUser || !this.selectedUser.id) return;
-    return (
-      <>
-        <Modal show={this.state.removeModalShow} onHide={() => this.onHideRemoveModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.username}:&nbsp;
-            </span>
-              {this.selectedUser.name} {this.selectedUser.username}
-            </p>
-            <p className="text-danger">{Localization.msg.ui.item_will_be_removed_continue}</p>
-
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideRemoveModal()}>{Localization.close}</button>
-            <BtnLoader
-              btnClassName="btn btn-danger shadow-default shadow-hover"
-              onClick={() => this.onRemoveUser(selectedUser.id)}
-              loading={this.state.setRemoveLoader}
-            >
-              {Localization.remove}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   // end delete modal function define ////////
@@ -1125,7 +1096,21 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
               undefined
           }
         </div>
-        {this.render_delete_modal(this.selectedUser)}
+        {
+          this.selectedUser === undefined
+            ?
+            undefined
+            :
+            <DeleteModal
+              crud_name={Localization.user}
+              modalShow={this.state.removeModalShow}
+              deleteBtnLoader={this.state.setRemoveLoader}
+              rowData={{ [Localization.username]: this.selectedUser.username }}
+              rowId={this.selectedUser.id}
+              onHide={() => this.onHideRemoveModal()}
+              onDelete={(rowId: string) => this.onRemoveUser(rowId)}
+            />
+        }
         {this.render_credit_modal(this.selectedUserForCredit, this.selectedUserCreditData)}
         {
           this.selectedUserForGroup === undefined

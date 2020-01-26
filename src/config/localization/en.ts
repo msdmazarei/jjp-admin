@@ -378,6 +378,9 @@ export const en = {
     Publishers_bills : "Publishers' bills",
     Amount_of_payment : 'amount of payment',
     pay_time : 'pay time',
+    bookType : 'book type',
+    contentType : 'content type',
+    transactionType : 'transaction type',
     password_change:{
         change_password : 'change password',
         old_password : 'old password',

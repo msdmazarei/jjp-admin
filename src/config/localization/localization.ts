@@ -393,6 +393,9 @@ interface ILocalization extends LocalizedStringsMethods {
     Publishers_bills : string;
     Amount_of_payment : string;
     pay_time : string;
+    bookType : string;
+    contentType : string;
+    transactionType : string;
     password_change:{
         change_password : string;
         old_password : string;

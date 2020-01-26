@@ -381,6 +381,9 @@ export const fa = {
     Publishers_bills : 'صورتحساب ناشرین',
     Amount_of_payment : 'میزان پرداخت',
     pay_time : 'زمان پرداخت',
+    bookType : 'نوع کتاب',
+    contentType : 'نوع محتوا',
+    transactionType : 'نوع تراکنش',
     password_change:{
         change_password : 'تغییر رمز عبور',
         old_password : 'رمز عبور قبلی',

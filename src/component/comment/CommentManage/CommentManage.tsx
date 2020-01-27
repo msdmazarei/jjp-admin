@@ -32,6 +32,7 @@ import { RetryModal } from "../../tool/retryModal/retryModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 import { DeleteModal } from "../../tool/deleteModal/deleteModal";
+import { CommentShowModal } from "../CommentShowModal/CommentShowModal";
 
 
 /// define props & state ///////
@@ -655,78 +656,6 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
   onHideCommentModal() {
     this.selectedComment = undefined;
     this.setState({ ...this.state, commentModalShow: false });
-  }
-
-  render_comment_show_modal(selectedComment: any) {
-    if (!this.selectedComment || !this.selectedComment.id) return;
-    return (
-      <>
-        <Modal show={this.state.commentModalShow} onHide={() => this.onHideCommentModal()}>
-          <Modal.Body>
-            <p className="show-modal-content-wrapper" >
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.user}:&nbsp;</span>{this.selectedComment.creator}
-                </span>
-              </div>
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.full_name}:&nbsp;</span>{this.getUserFullName(this.selectedComment.person)}
-                </span>
-              </div>
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.book_title}:&nbsp;</span><span>{(this.selectedComment.book! || {}).title}</span>
-                </span>
-              </div>
-              <span className="text-muted">
-                {Localization.comment}:&nbsp;
-              </span>
-              <p className="border border-dark rounded show-modal-content p-2">
-                {this.selectedComment.body}
-              </p>
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.number_of_likes}:&nbsp;</span><span className="text-success">{this.selectedComment.likes}</span>
-                </span>
-              </div>
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.number_of_reports}:&nbsp;</span><span className="text-danger">{this.selectedComment.reports}</span>
-                </span>
-              </div>
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.liked_by_user}:&nbsp;</span>
-                  {
-                    this.selectedComment.liked_by_user
-                      ?
-                      <i title={Localization.liked_by_user} className="fa fa-check text-success"></i>
-                      :
-                      ""
-                  }
-                </span>
-              </div>
-              <div>
-                <span>
-                  <span className="text-muted">{Localization.reported_by_user}:&nbsp;</span>
-                  {
-                    this.selectedComment.reported_by_user
-                      ?
-                      <i title={Localization.liked_by_user} className="fa fa-check text-danger"></i>
-                      :
-                      ""
-                  }
-                </span>
-              </div>
-            </p>
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHideCommentModal()}>{Localization.close}</button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   // define axios for give data
@@ -1407,7 +1336,17 @@ class CommentManageComponent extends BaseComponent<IProps, IState>{
               onDelete={(rowId: string) => this.onRemoveComment(rowId)}
             />
         }
-        {this.render_comment_show_modal(this.selectedComment)}
+        {
+          this.selectedComment === undefined
+            ?
+            undefined
+            :
+            <CommentShowModal
+              modalShow={this.state.commentModalShow}
+              rowData={this.selectedComment}
+              onHide={() => this.onHideCommentModal()}
+            />
+        }
         <RetryModal
           modalShow={this.state.retryModal}
           onHide={() => this.setState({ ...this.state, retryModal: false })}

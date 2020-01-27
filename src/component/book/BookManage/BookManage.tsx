@@ -11,7 +11,6 @@ import { BaseComponent } from "../../_base/BaseComponent";
 import { IBook } from "../../../model/model.book";
 import { IPerson } from "../../../model/model.person";
 import { BOOK_TYPES, BOOK_GENRE } from "../../../enum/Book";
-import { AppRegex } from "../../../config/regex";
 import { BookService } from "../../../service/service.book";
 import { PersonService } from "../../../service/service.person";
 import { PriceService } from "../../../service/service.price";
@@ -21,8 +20,6 @@ import { SORT } from "../../../enum/Sort";
 import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import { Input } from '../../form/input/Input';
-import { FixNumber } from "../../form/fix-number/FixNumber";
-import { Modal } from "react-bootstrap";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
@@ -34,6 +31,7 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { DeleteModal } from "../../tool/deleteModal/deleteModal";
+import { PriceAddToBookModal } from "../PriceAddToBookModal/PriceAddToBookModal";
 // import { IToken } from "../../../model/model.token";
 
 interface IFilterBook {
@@ -460,7 +458,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
         {
           field: "price", title: Localization.price,
           cellTemplateFunc: (row: IBook) => {
-            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
               return <div className="text-danger text-center">---</div>;
             } else if (row.price) {
               return <div className="text-info text-center">{row.price.toLocaleString()}</div>
@@ -494,7 +492,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             return '';
           }
         },
-        { 
+        {
           field: "pages", title: Localization.pages,
           cellTemplateFunc: (row: IBook) => {
             if (row.pages) {
@@ -602,21 +600,21 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
           }
         },
       ],
-      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
+      actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) ? [
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
           ac_func: (row: any) => { this.onShowRemoveModal(row) },
           name: Localization.remove
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
           ac_func: (row: any) => { this.updateRow(row) },
           name: Localization.update
         },
         {
-          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) },
+          access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
           text: <i title={Localization.Pricing} className="fa fa-money text-success"></i>,
           ac_func: (row: any) => { this.onShowPriceModal(row) },
           name: Localization.Pricing
@@ -811,7 +809,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   // delete modal function define
 
   onShowRemoveModal(book: IBook) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.selectedBook = book;
@@ -824,7 +822,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   async onRemoveBook(book_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.setState({ ...this.state, setRemoveLoader: true });
@@ -841,39 +839,31 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   }
 
   updateRow(book_id: any) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageUpdateTool],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
     this.props.history.push(`/book/${book_id.id}/edit`);
   }
 
   onShowPriceModal(book: IBook) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     }
-    this.selectedBook = book;
     if (typeof book.price !== 'number') {
-      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceAddAndEditSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false
-        && permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceAddAndEditPress],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceAddAndEditSuperAdmin], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false
+        && permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceAddAndEditPress], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
         toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
     }
     if (typeof book.price === 'number') {
-      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceEditSuperAdmin,T_ITEM_NAME.bookManagePriceEditPress],CHECKTYPE.ONE_OF_ITEM_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+      if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceEditSuperAdmin, T_ITEM_NAME.bookManagePriceEditPress], CHECKTYPE.ONE_OF_ITEM_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
         toast.error(Localization.msg.ui.there_is_no_access_for_you, this.getNotifyConfig());
         return;
       }
     }
-
-    this.setState({
-      ...this.state,
-      priceModalShow: true,
-      price: {
-        isValid: (book.price || book.price === 0) ? true : false,
-        value: book.price
-      }
-    });
+    this.selectedBook = book;
+    this.setState({...this.state, priceModalShow : true});
   }
 
   onHidePriceModal() {
@@ -881,13 +871,12 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     this.setState({ ...this.state, priceModalShow: false });
   }
 
-  async onPriceBook(book_id: string) {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+  async onPriceBook(book_id: string, price: number) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManagePriceFieldInGridAndTool], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
-    if (!this.state.price.isValid) return;
     this.setState({ ...this.state, setPriceLoader: true });
-    let res = await this._priceService.price(book_id, Number(this.state.price.value!)).catch(error => {
+    let res = await this._priceService.price(book_id, Number(price)).catch(error => {
       this.handleError({ error: error.response, toastOptions: { toastId: 'onPriceBook_error' } });
       this.setState({ ...this.state, setPriceLoader: false });
     });
@@ -897,54 +886,6 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
       this.fetchBooks(); // todo update selected book & do not request
       this.onHidePriceModal();
     }
-  }
-
-  handlePriceInputChange(value: number, isValid: boolean) {
-    this.setState({
-      ...this.state,
-      price: {
-        value,
-        isValid,
-      }
-    })
-  }
-
-  render_price_modal(selectedBook: any) {
-    if (!this.selectedBook || !this.selectedBook.id) return;
-    return (
-      <>
-        <Modal show={this.state.priceModalShow} onHide={() => this.onHidePriceModal()}>
-          <Modal.Body>
-            <p className="delete-modal-content">
-              <span className="text-muted">
-                {Localization.title}:
-              </span>
-              {this.selectedBook.title}
-            </p>
-            <FixNumber
-              onChange={(value, isValid) => this.handlePriceInputChange(value, isValid)}
-              label={Localization.Pricing}
-              placeholder={Localization.price}
-              defaultValue={this.state.price.value}
-              pattern={AppRegex.number}
-              patternError={Localization.Justـenterـtheـnumericـvalue}
-              required
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.onHidePriceModal()}>{Localization.close}</button>
-            <BtnLoader
-              loading={this.state.setPriceLoader}
-              btnClassName="btn btn-system shadow-default shadow-hover"
-              onClick={() => this.onPriceBook(selectedBook.id)}
-              disabled={!this.state.price.isValid}
-            >
-              {Localization.Add_price}
-            </BtnLoader>
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
   }
 
   onShowSelectedBookComments(book: any) {
@@ -978,15 +919,15 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     let persons_of_press: string[];
     persons_of_press = [];
     const wrapper = Store2.getState().logged_in_user!.permission_groups || [];
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true && this.state.filter_state.press.is_valid === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false && this.state.filter_state.press.is_valid === true) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false && this.state.filter_state.press.is_valid === true) {
       persons_of_press.push(this.state.filter_state.press.person_id!);
       obj['press'] = { $in: persons_of_press };
     }
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false && this.state.filter_state.press.is_valid === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBookSuperAdmin], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false && this.state.filter_state.press.is_valid === false) {
       persons_of_press = [...wrapper];
       obj['press'] = { $in: persons_of_press };
     }
@@ -1204,7 +1145,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
   ///// navigation function //////
 
   gotoBookCreate() {
-    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBook],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBook], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return;
     };
     this.props.history.push('/book/create'); // /admin
@@ -1508,7 +1449,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
               {
-                permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBook],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                permissionChecker.is_allow_item_render([T_ITEM_NAME.bookManageAddBook], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                   ?
                   <BtnLoader
                     loading={false}
@@ -1703,7 +1644,19 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
               onDelete={(rowId: string) => this.onRemoveBook(rowId)}
             />
         }
-        {this.render_price_modal(this.selectedBook)}
+        {
+          this.selectedBook === undefined
+            ?
+            undefined
+            :
+            <PriceAddToBookModal
+              modal_show={this.state.priceModalShow}
+              book={this.selectedBook}
+              btnLoader={this.state.setPriceLoader}
+              onchange={(book_id: string, price: number) => this.onPriceBook(book_id, price)}
+              onHide={() => this.onHidePriceModal()}
+            />
+        }
         {
           <RetryModal
             modalShow={this.state.retryModal}

@@ -35,8 +35,7 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
     super(props);
     this.state = {
       backgroundColor: "blue",
-      sidebarOpened:
-        document.documentElement.className.indexOf("nav-open") !== -1
+      sidebarOpened: document.documentElement.className.indexOf("nav-open") !== -1
     };
   }
 
@@ -116,7 +115,7 @@ class AdminComponent/* <IAdmin_p extends IProps> */ extends React.Component<IPro
   async fetchLogedinUserPermissions() {
 
     let res_user = await this._loginService.profile().catch((error) => {
-      this.fetchLogedinUserPermissions()
+      // this.fetchLogedinUserPermissions()
     });
 
     if (res_user) {

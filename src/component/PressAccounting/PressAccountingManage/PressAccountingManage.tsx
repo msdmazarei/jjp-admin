@@ -357,18 +357,18 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     // timestamp to date 
 
     componentDidMount() {
-        if (this.checkPageRenderAccess() === true) {
-            if (AccessService.checkAccess('') === true) {
-                this.setState({
-                    ...this.state,
-                    tableProcessLoader: true
-                })
+        // if (this.checkPageRenderAccess() === true) {
+            // if (AccessService.checkAccess('') === true) {
+            //     this.setState({
+            //         ...this.state,
+            //         tableProcessLoader: true
+            //     })
                 TABLE_SORT.sortArrayReseter();
                 this.fetchPressAccounting();
-            }
-        } else {
-            this.noAccessRedirect(this.props.history);
-        }
+        //     }
+        // } else {
+        //     this.noAccessRedirect(this.props.history);
+        // }
     }
 
     checkPageRenderAccess(): boolean {

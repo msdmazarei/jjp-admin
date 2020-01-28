@@ -4,8 +4,12 @@ import { IAPI_Response, IAPI_ResponseList, BaseService } from "./service.base";
 export class PressAccountingService extends BaseService {
 
     search(limit: number, skip: number, filter?: Object , sort?: string[]): Promise<IAPI_ResponseList<any>> { 
-        return this.axiosTokenInstance.post(`add_path`, { limit, skip, filter, sort });
+        return this.axiosTokenInstance.post(`/payment-press-checkout/_search`, { limit, skip, filter, sort });
     } 
+
+    addPaymentToEachPressAccount(payment_data : { payer_id : string , receiver_id : string , amount : number}): Promise<IAPI_ResponseList<any>> { 
+        return this.axiosTokenInstance.post(`/payment-press-checkout`, payment_data);
+    }
     
     pressAccountingListFetchById(press_id: string): Promise<IAPI_Response<any>> {
         return this.axiosTokenInstance.get(`add_path${press_id}`);

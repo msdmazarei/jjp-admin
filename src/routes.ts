@@ -20,6 +20,7 @@ import { PressAccountingManage } from "./component/PressAccounting/PressAccounti
 import { PressAccountList } from "./component/PressAccounting/PressAccountList/PressAccountList"
 import { Localization } from "./config/localization/localization";
 import { TPERMISSIONS } from "./enum/Permission";
+import { RecordNewPayment } from "./component/PressAccounting/RecordNewPayment/RecordNewPayment";
 
 var routes = [
   {
@@ -310,6 +311,50 @@ var routes = [
     brandName: ['press_account_list', 'manage'],
     PERMISSIONS: []
   },
+  {
+    path: "/record_new_payment",
+    name: 'record new payment',  // to da add localization in en & fa & ar
+    component: RecordNewPayment,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['record_new_payment', 'manage'],
+    PERMISSIONS: []
+  },
+  {
+    path: "/record_new_payment_manage_wizard/:press_id",
+    name: 'record new payment',   // to da add localization in en & fa & ar
+    component: RecordNewPayment,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['record_new_payment_manage_wizard', 'manage'],
+    PERMISSIONS: []
+  },
+  {
+    path: "/record_new_payment_press_list_wizard/:press_id",
+    name: 'record new payment',   // to da add localization in en & fa & ar
+    component: RecordNewPayment,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['record_new_payment_press_list_wizard', 'manage'],
+    PERMISSIONS: []
+  },
   // pressAccounting end
 ];
 export default routes;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

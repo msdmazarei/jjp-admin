@@ -16,6 +16,7 @@ import { PersonService } from '../../../service/service.person';
 import { PressAccountingService } from '../../../service/service.pressAccounting';
 import { Store2 } from '../../../redux/store';
 import { RetryModal } from '../../tool/retryModal/retryModal';
+import { IUser } from '../../../model/model.user';
 // import { IToken } from '../../../model/model.token';
 
 interface ICmp_select<T> {
@@ -58,7 +59,7 @@ interface IState {
     retryModal: boolean;
 }
 
-class BookSaveComponent extends BaseComponent<IProps, IState> {
+class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
     /////////// end of Select's options define
 
@@ -86,30 +87,34 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
     private _pressAccounting = new PressAccountingService();
     private _personService = new PersonService();
+    
 
     componentDidMount() {
         this.payer_id_set_in_state();
-        if (this.props.match.path.includes()) {
+        if (this.props.match.path.includes('/record_new_payment_manage_wizard/:press_id')) {
             this.setState({
                 ...this.state,
                 saveMode: SAVE_MODE.MAINLISTWIZARD
             }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
         }
-        if (this.props.match.path.includes()) {
+        if (this.props.match.path.includes('/record_new_payment_press_list_wizard/:press_id')) {
             this.setState({
                 ...this.state,
-                saveMode: SAVE_MODE.PRESSLISTWIZARD
+                saveMode: SAVE_MODE.PRESSLISTWIZARD,
             }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
         }
     }
 
     payer_id_set_in_state() {
+        if(Store2.getState().logged_in_user === null){
+            return;
+        }
         this.setState({
             ...this.state,
             payment_data: {
                 ...this.state.payment_data,
                 payer_id: {
-                    id: Store2.getState().logged_in_user?.person.id,
+                    id: (Store2.getState().logged_in_user as IUser).person.id,
                     isValid: true,
                 }
             }
@@ -210,11 +215,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     gotoMainList() {
-        this.props.history.push('');
+        this.props.history.push(`/press_accounts/manage`);
     }
 
     gotoPressList() {
-        this.props.history.push('');
+        this.props.history.push(`/press_account_list/${this.props.match.params.press_id}/manage`);
     }
 
     async create() {
@@ -405,7 +410,7 @@ const state2props = (state: redux_state) => {
     };
 };
 
-export const BookSave = connect(
+export const RecordNewPayment = connect(
     state2props,
     dispatch2props
-)(BookSaveComponent);
+)(RecordNewPaymentComponent);

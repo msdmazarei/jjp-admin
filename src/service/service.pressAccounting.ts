@@ -15,11 +15,15 @@ export class PressAccountingService extends BaseService {
         return this.axiosTokenInstance.get(`/payment-press-checkout/total-paid/${press_id}`);
     }
 
-    removeFieldOfPressAccountList(field_id: string) {
-        return this.axiosTokenInstance.delete(`add_path${field_id}`);
+    getFieldOfPressAccountList(field_id: string) {
+        return this.axiosTokenInstance.get(`/payment-press-checkout/${field_id}`);
     }
 
-    updateFieldOfPressAccountList(field: any, id: string) {
-        return this.axiosTokenInstance.put(`add_path${id}`, field);
+    removeFieldOfPressAccountList(field_id: string) {
+        return this.axiosTokenInstance.delete(`/payment-press-checkout/${field_id}`);
+    }
+
+    updateFieldOfPressAccountList(field: { payer_id : string , receiver_id : string , amount : number} , field_id: string) {
+        return this.axiosTokenInstance.put(`/payment-press-checkout/${field_id}`, field);
     }
 }

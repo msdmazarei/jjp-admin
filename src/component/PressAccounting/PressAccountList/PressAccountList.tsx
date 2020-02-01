@@ -15,12 +15,8 @@ import 'moment/locale/ar';
 import moment from 'moment';
 import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
-import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { RetryModal } from "../../tool/retryModal/retryModal";
-import { IPerson } from "../../../model/model.person";
-import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { PressAccountingService } from "../../../service/service.pressAccounting";
 import { FixNumber } from "../../form/fix-number/FixNumber";
@@ -29,60 +25,23 @@ import { FixNumber } from "../../form/fix-number/FixNumber";
 
 /// define props & state ///////
 export interface IProps {
+    match: any;
     history: History;
     internationalization: TInternationalization;
     // token: IToken;
 }
 
-interface IFilterPressAccountList {
-    press: {
-        value: { label: string, value: IPerson } | null;
-        person_id: string | undefined;
-        is_valid: boolean,
-    };
-    total_crediting: {
-        from: number | undefined,
-        from_isValid: boolean,
-        to: number | undefined,
-        to_isValid: boolean,
-        is_valid: boolean,
-    };
-    total_receipt: {
-        from: number | undefined,
-        from_isValid: boolean,
-        to: number | undefined,
-        to_isValid: boolean,
-        is_valid: boolean,
-    };
-    balance_of_crediting: {
-        from: number | undefined,
-        from_isValid: boolean,
-        to: number | undefined,
-        to_isValid: boolean,
-        is_valid: boolean,
-    };
-}
-
-interface ISortTransaction {
-}
 
 interface IState {
     pressAccountList_table: IProps_table;
     PressAccountListError: string | undefined;
-    pager_offset: number;
-    pager_limit: number;
     recordedReceiptEditModalShow: boolean;
     setRecordedReceiptEditModalLoader: boolean;
     recordedReceiptDeleteModalShow: boolean;
     setRecordedReceiptDeleteModalLoader: boolean;
-    prevBtnLoader: boolean;
-    nextBtnLoader: boolean;
-    filterSearchBtnLoader: boolean;
     tableProcessLoader: boolean;
-    filter_state: IFilterPressAccountList;
     advance_search_box_show: boolean;
     sort: string[];
-    sortShowStyle: ISortTransaction;
     retryModal: boolean;
     receipt_data_for_update: {
         receipt_id: string | undefined;
@@ -271,18 +230,18 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     // timestamp to date 
 
     componentDidMount() {
-        if (this.checkPageRenderAccess() === true) {
-            if (AccessService.checkAccess('permission add after') === true) {
-                this.setState({
-                    ...this.state,
-                    tableProcessLoader: true
-                })
-                TABLE_SORT.sortArrayReseter();
-                this.fetchPressAccounting();
-            }
-        } else {
-            this.noAccessRedirect(this.props.history);
-        }
+        // if (this.checkPageRenderAccess() === true) {
+        //     if (AccessService.checkAccess('permission add after') === true) {
+        //         this.setState({
+        //             ...this.state,
+        //             tableProcessLoader: true
+        //         })
+        TABLE_SORT.sortArrayReseter();
+        this.fetchPressAccounting();
+        //     }
+        // } else {
+        //     this.noAccessRedirect(this.props.history);
+        // }
     }
 
     checkPageRenderAccess(): boolean {
@@ -333,25 +292,6 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
         }
     }
 
-    sort_icon_change_on_mouse_over_out(sort: string, isOver: boolean) {
-        if (isOver === true) {
-            this.setState({
-                ...this.state,
-                sortShowStyle: {
-                    ...this.state.sortShowStyle,
-                    [sort]: true,
-                }
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                sortShowStyle: {
-                    ...this.state.sortShowStyle,
-                    [sort]: false,
-                }
-            })
-        }
-    }
 
     returner_sort_array_to_fetch_func() {
         if (this.state.sort.length > 0) {
@@ -602,30 +542,13 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
         }
     }
 
-    filterSearch() {
-        this.setState({
-            ...this.state,
-            filterSearchBtnLoader: true,
-            tableProcessLoader: true,
-            pager_offset: 0
-        }, () => { this.fetchPressAccounting() });
-    }
-
     async fetchPressAccounting() {
         this.setState({ ...this.state, tableProcessLoader: true });
-        let res = await this._pressAccountingService.search(
-            this.state.pager_limit,
-            this.state.pager_offset,
-            this.get_searchFilter(),
-            this.returner_sort_array_to_fetch_func(),
-        ).catch(error => {
+        let res = await this._pressAccountingService.pressAccountingListFetchById(this.props.match.params.press_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPressAccountingList_error' } });
             this.setState({
                 ...this.state,
-                prevBtnLoader: false,
-                nextBtnLoader: false,
                 tableProcessLoader: false,
-                filterSearchBtnLoader: false,
                 retryModal: true,
             });
         });
@@ -635,283 +558,8 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                     ...this.state.pressAccountList_table,
                     list: res.data.result
                 },
-                prevBtnLoader: false,
-                nextBtnLoader: false,
                 tableProcessLoader: false,
-                filterSearchBtnLoader: false,
             });
-        }
-    }
-
-    // previous button create
-
-    pager_previous_btn_render() {
-        if (this.state.pressAccountList_table.list && (this.state.pressAccountList_table.list! || []).length) {
-            return (
-                <>
-                    {
-                        this.state.pager_offset > 0 &&
-                        <BtnLoader
-                            disabled={this.state.tableProcessLoader}
-                            loading={this.state.prevBtnLoader}
-                            btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
-                            onClick={() => this.onPreviousClick()}
-                        >
-                            {Localization.previous}
-                        </BtnLoader>
-                    }
-                </>
-            );
-        } else if (this.state.pressAccountList_table.list && !(this.state.pressAccountList_table.list! || []).length) {
-            return (
-                <>
-                    {
-                        this.state.pager_offset > 0 &&
-                        <BtnLoader
-                            disabled={this.state.tableProcessLoader}
-                            loading={this.state.prevBtnLoader}
-                            btnClassName="btn btn-outline-info pull-left shadow-default shadow-hover"
-                            onClick={() => this.onPreviousClick()}
-                        >
-                            {Localization.previous}
-                        </BtnLoader>
-                    }
-                </>
-            );
-
-        } else if (this.state.PressAccountListError) {
-            return;
-        } else {
-            return;
-        }
-    }
-
-    // next button create
-
-    pager_next_btn_render() {
-        if (this.state.pressAccountList_table.list && (this.state.pressAccountList_table.list! || []).length) {
-            return (
-                <>
-                    {
-                        !(this.state.pager_limit > (this.state.pressAccountList_table.list! || []).length) &&
-                        <BtnLoader
-                            disabled={this.state.tableProcessLoader}
-                            loading={this.state.nextBtnLoader}
-                            btnClassName="btn btn-outline-info pull-right shadow-default shadow-hover"
-                            onClick={() => this.onNextClick()}
-                        >
-                            {Localization.next}
-                        </BtnLoader>
-                    }
-                </>
-            );
-        } else if (this.state.pressAccountList_table.list && !(this.state.pressAccountList_table.list! || []).length) {
-            return;
-        } else if (this.state.pressAccountList_table.list) {
-            return;
-        } else {
-            return;
-        }
-    }
-
-
-    // on previous click
-
-    onPreviousClick() {
-        this.setState({
-            ...this.state,
-            pager_offset: this.state.pager_offset - this.state.pager_limit,
-            prevBtnLoader: true,
-            tableProcessLoader: true,
-
-        }, () => {
-            this.gotoTop();
-            this.fetchPressAccounting()
-        });
-    }
-
-    // on next click
-
-    onNextClick() {
-        this.setState({
-            ...this.state,
-            pager_offset: this.state.pager_offset + this.state.pager_limit,
-            nextBtnLoader: true,
-            tableProcessLoader: true,
-        }, () => {
-            this.gotoTop();
-            this.fetchPressAccounting()
-        });
-    }
-
-    ////// start request for options person of press in filter  ////////
-
-    private personRequstError_txt: string = Localization.no_item_found;
-
-    async promiseOptions2(inputValue: any, callBack: any) {
-
-        let res: any = await this._personService.searchPress(10, 0, inputValue).catch(err => {
-            let err_msg = this.handleError({ error: err.response, notify: false, toastOptions: { toastId: 'promiseOptions2GroupAddOrRemove_error' } });
-            this.personRequstError_txt = err_msg.body;
-        });
-
-        if (res) {
-            let persons = res.data.result.map((ps: any) => {
-                return { label: this.getPersonFullName(ps), value: ps }
-            });
-            this.personRequstError_txt = Localization.no_item_found;
-            callBack(persons);
-        } else {
-            callBack();
-        }
-    }
-
-    private setTimeout_person_val: any;
-    debounce_300(inputValue: any, callBack: any) {
-        if (this.setTimeout_person_val) {
-            clearTimeout(this.setTimeout_person_val);
-        }
-        this.setTimeout_person_val = setTimeout(() => {
-            this.promiseOptions2(inputValue, callBack);
-        }, 1000);
-    }
-
-    select_noOptionsMessage(obj: { inputValue: string }) {
-        return this.personRequstError_txt;
-    }
-
-    ///////////// end request for options person of press in filter ////////////////////////
-
-
-    /////  start onChange & search & reset function for search box ///////////
-
-    filter_state_reset() {
-        this.setState({
-            ...this.state,
-            filter_state: {
-                press: {
-                    value: null,
-                    person_id: undefined,
-                    is_valid: false,
-                },
-                total_crediting: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
-                    is_valid: false,
-                },
-                total_receipt: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
-                    is_valid: false,
-                },
-                balance_of_crediting: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
-                    is_valid: false,
-                },
-            }
-        }, () => this.repetReset())
-    }
-    repetReset() {
-        this.setState({
-            ...this.state,
-            filter_state: {
-                press: {
-                    value: null,
-                    person_id: undefined,
-                    is_valid: false,
-                },
-                total_crediting: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
-                    is_valid: false,
-                },
-                total_receipt: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
-                    is_valid: false,
-                },
-                balance_of_crediting: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
-                    is_valid: false,
-                },
-            }
-        })
-    }
-
-    person_of_press_in_search_remover() {
-        this.setState({
-            ...this.state,
-            filter_state: {
-                ...this.state.filter_state,
-                press: {
-                    value: null,
-                    person_id: undefined,
-                    is_valid: false,
-                }
-            }
-        })
-    }
-
-    handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
-        let newperson = { ...selectedPerson };
-        let isValid = true;      // newperson = selectedPerson;
-        this.setState({
-            ...this.state,
-            filter_state: {
-                ...this.state.filter_state,
-                press: {
-                    value: newperson,
-                    person_id: newperson.value.id,
-                    is_valid: isValid,
-                }
-            }
-        })
-    }
-
-    range_picker_onChange(from: number | undefined, from_isValid: boolean, to: number | undefined, to_isValid: boolean, isValid: boolean, inputType: any) {
-        this.setState({
-            ...this.state,
-            filter_state: {
-                ...this.state.filter_state,
-                [inputType]: {
-                    from: from,
-                    from_isValid: from_isValid,
-                    to: to,
-                    to_isValid: to_isValid,
-                    is_valid: isValid,
-                }
-            }
-        })
-    }
-
-    /////  end onChange & search & reset function for search box ///////////
-
-
-    advanceSearchBoxShowHideManager() {
-        if (this.state.advance_search_box_show === false) {
-            this.setState({
-                ...this.state,
-                advance_search_box_show: true,
-            })
-        } else {
-            this.setState({
-                ...this.state,
-                advance_search_box_show: false,
-            })
         }
     }
 
@@ -926,116 +574,12 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                             <h2 className="text-bold text-dark pl-3">{Localization.Publishers_bills}</h2>
                         </div>
                     </div>
-                    {
-                        AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM)
-                            ?
-                            <>
-                                {/* start search box */}
-                                <div className="row">
-                                    <div className="col-12">
-                                        <div className="template-box mb-4">
-                                            <div className="d-flex justify-content-center mb-1">
-                                                {
-                                                    this.state.advance_search_box_show === false
-                                                        ?
-                                                        <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
-                                                            <span className="mx-2">{Localization.advanced_search}</span>
-                                                            <i className="fa fa-angle-down mx-2"></i>
-                                                        </div>
-                                                        :
-                                                        <div className="cursor-pointer" onClick={() => this.advanceSearchBoxShowHideManager()}>
-                                                            <span className="mx-2">{Localization.advanced_search}</span>
-                                                            <i className="fa fa-angle-up mx-2"></i>
-                                                        </div>
-                                                }
-                                            </div>
-                                            {/* start search box inputs */}
-                                            <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <label >{Localization.role_type_list.Press}</label>
-                                                    <i
-                                                        title={Localization.reset}
-                                                        className="fa fa-times cursor-pointer remover-in_box-async text-danger mx-1"
-                                                        onClick={() => this.person_of_press_in_search_remover()}
-                                                    ></i>
-                                                    <AsyncSelect
-                                                        placeholder={Localization.role_type_list.Press}
-                                                        cacheOptions
-                                                        defaultOptions
-                                                        value={this.state.filter_state.press.value}
-                                                        loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
-                                                        noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                                        onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
-                                                    />
-                                                </div>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <AppNumberRange
-                                                        label={Localization.total_crediting}
-                                                        from={this.state.filter_state.total_crediting.from}
-                                                        to={this.state.filter_state.total_crediting.to}
-                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'total_crediting')}
-                                                    />
-                                                </div>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <AppNumberRange
-                                                        label={Localization.total_crediting}
-                                                        from={this.state.filter_state.total_receipt.from}
-                                                        to={this.state.filter_state.total_receipt.to}
-                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'total_receipt')}
-                                                    />
-                                                </div>
-                                                <div className="col-md-3 col-sm-6">
-                                                    <AppNumberRange
-                                                        label={Localization.total_crediting}
-                                                        from={this.state.filter_state.balance_of_crediting.from}
-                                                        to={this.state.filter_state.balance_of_crediting.to}
-                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'balance_of_crediting')}
-                                                    />
-                                                </div>
-                                            </div>
-                                            {/* end search box inputs */}
-                                            {/* start search btns box */}
-                                            <div className="row mt-1">
-                                                <div className={this.state.advance_search_box_show === false ? "col-12 d-none" : "col-12"}>
-                                                    <BtnLoader
-                                                        disabled={this.state.tableProcessLoader}
-                                                        loading={this.state.filterSearchBtnLoader}
-                                                        btnClassName="btn btn-info shadow-default shadow-hover pull-right ml-3"
-                                                        onClick={() => this.filterSearch()}
-                                                    >
-                                                        {Localization.search}
-                                                    </BtnLoader>
-                                                    <BtnLoader
-                                                        // disabled={this.state.tableProcessLoader}
-                                                        loading={false}
-                                                        btnClassName="btn btn-warning shadow-default shadow-hover pull-right"
-                                                        onClick={() => this.filter_state_reset()}
-                                                    >
-                                                        {Localization.reset}
-                                                    </BtnLoader>
-                                                </div>
-                                            </div>
-                                            {/* end search btns box */}
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* end search  box */}
-                                <div className="row">
-                                    <div className="col-12">
-                                        <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.pressAccountList_table.list} colHeaders={this.state.pressAccountList_table.colHeaders} actions={this.state.pressAccountList_table.actions}></Table>
-                                        <div>
-                                            {this.pager_previous_btn_render()}
-                                            {this.pager_next_btn_render()}
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                            :
-                            undefined
-                    }
+                    <div className="row">
+                        <div className="col-12">
+                            <Table row_offset_number={this.state.pager_offset} loading={this.state.tableProcessLoader} list={this.state.pressAccountList_table.list} colHeaders={this.state.pressAccountList_table.colHeaders} actions={this.state.pressAccountList_table.actions}></Table>
+                        </div>
+                    </div>
                 </div>
-                {this.render_delete_receipt_modal(this.selectedReceiptForDelete)}
-                {this.render_edit_receipt_modal()}
                 {
                     <RetryModal
                         modalShow={this.state.retryModal}

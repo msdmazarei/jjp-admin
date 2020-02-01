@@ -10,11 +10,8 @@ import { TInternationalization } from "../../../config/setup";
 // import { IToken } from "../../../model/model.token";
 import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
-import { Modal } from "react-bootstrap";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
-// import moment from 'moment';
-// import moment_jalaali from 'moment-jalaali';
 import { AccessService } from "../../../service/service.access";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
@@ -24,7 +21,8 @@ import { IPerson } from "../../../model/model.person";
 import AsyncSelect from 'react-select/async';
 import { PersonService } from "../../../service/service.person";
 import { PressAccountingService } from "../../../service/service.pressAccounting";
-import { FixNumber } from "../../form/fix-number/FixNumber";
+import moment from "moment";
+import moment_jalaali from 'moment-jalaali';
 // import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
@@ -35,32 +33,6 @@ export interface IProps {
 }
 
 interface IFilterPressAccounting {
-    press: {
-        value: { label: string, value: IPerson } | null;
-        person_id: string | undefined;
-        is_valid: boolean,
-    };
-    total_crediting: {
-        from: number | undefined,
-        from_isValid: boolean,
-        to: number | undefined,
-        to_isValid: boolean,
-        is_valid: boolean,
-    };
-    total_receipt: {
-        from: number | undefined,
-        from_isValid: boolean,
-        to: number | undefined,
-        to_isValid: boolean,
-        is_valid: boolean,
-    };
-    balance_of_crediting: {
-        from: number | undefined,
-        from_isValid: boolean,
-        to: number | undefined,
-        to_isValid: boolean,
-        is_valid: boolean,
-    };
 }
 
 interface ISortTransaction {
@@ -71,8 +43,6 @@ interface IState {
     PressAccountingError: string | undefined;
     pager_offset: number;
     pager_limit: number;
-    payRecordModalShow: boolean;
-    setAddPayModalLoader: boolean;
     prevBtnLoader: boolean;
     nextBtnLoader: boolean;
     filterSearchBtnLoader: boolean;
@@ -82,11 +52,6 @@ interface IState {
     sort: string[];
     sortShowStyle: ISortTransaction;
     retryModal: boolean;
-    addPayToPress: {
-        press_id: string | undefined;
-        amount: number | null;
-        isValid: boolean;
-    }
 }
 
 // define class of Comment 
@@ -96,10 +61,10 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
             list: [],
             colHeaders: [
                 {
-                    field: "press", title: Localization.role_type_list.Press,
+                    field: "payer", title: Localization.payer,
                     templateFunc: () => {
                         return <>
-                            {Localization.role_type_list.Press}
+                            {Localization.payer}
                             {/* {
                                 (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                                     ?
@@ -134,17 +99,17 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row) {
-                            return <div title={this.getPersonFullName(row)}>{this.getPersonFullName(row)}</div>
+                        if (row.creator) {
+                            return <div title={row.creator}>{row.creator}</div>
                         }
                         return '';
                     }
                 },
                 {
-                    field: "total_crediting", title: Localization.total_crediting,
+                    field: "receiver_press", title: Localization.receiver_press,
                     templateFunc: () => {
                         return <>
-                            {Localization.total_crediting}
+                            {Localization.receiver_press}
                             {/* {
                                 (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                                     ?
@@ -179,17 +144,17 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row) {
-                            return <div title={row}>{row}</div>
+                        if (row.receiver) {
+                            return <div title={this.getPersonFullName(row.receiver)}>{this.getPersonFullName(row.receiver)}</div>
                         }
                         return '';
                     }
                 },
                 {
-                    field: "total_receipt", title: Localization.total_receipt,
+                    field: "amount", title: Localization.Amount_of_payment,
                     templateFunc: () => {
                         return <>
-                            {Localization.total_receipt}
+                            {Localization.Amount_of_payment}
                             {/* {
                                 (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                                     ?
@@ -224,17 +189,20 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row) {
-                            return <div title={row}>{row}</div>
+                        if (row.amount === 0 || row.amount === undefined || row.amount === null) {
+                            return <div title={'0'}>{0}</div>
+                        }
+                        if (row.amount) {
+                            return <div title={row.amount}>{row.amount}</div>
                         }
                         return '';
                     }
                 },
                 {
-                    field: "balance_crediting", title: Localization.balance_crediting,
+                    field: "pay_time", title: Localization.pay_time,
                     templateFunc: () => {
                         return <>
-                            {Localization.balance_crediting}
+                            {Localization.pay_time}
                             {/* {
                                 (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                                     ?
@@ -269,29 +237,115 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row) {
-                            return <div title={row}>{row}</div>
+                        if (row.creation_date) {
+                            return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
                         }
                         return '';
                     }
-                }
+                },
+                {
+                    field: "modifier", title: Localization.modifier,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.modifier}
+                            {/* {
+                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                                    ?
+                                    <span
+                                        className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                    </span>
+                                    :
+                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                        ?
+                                        <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                        </span>
+                                        :
+                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                            ?
+                                            <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                            </span>
+                                            :
+                                            undefined
+                            } */}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.modifier) {
+                            return <div title={row.modifier}>{row.modifier}</div>
+                        }
+                        return '';
+                    }
+                },
+                {
+                    field: "modification_date", title: Localization.modification_date,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.modification_date}
+                            {/* {
+                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                                    ?
+                                    <span
+                                        className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                    </span>
+                                    :
+                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                        ?
+                                        <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                        </span>
+                                        :
+                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                            ?
+                                            <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
+                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                            </span>
+                                            :
+                                            undefined
+                            } */}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.modification_date) {
+                            return <div title={this._getTimestampToDate(row.modification_date)}>{this.getTimestampToDate(row.modification_date)}</div>
+                        }
+                        return '';
+                    }
+                },
             ],
-            actions: this.checkAllAccessForTools() ? [
+            actions: [
                 {
-                    access: (row: any) => { return this.checkRecordPayToolAccess() },
                     text: <i title={Localization.record_pay} className="fa fa-money text-success"></i>,
-                    ac_func: (row: any) => { this.on_show_record_pay_modal(row) },
+                    ac_func: (row: any) => { this.record_new_payment_manage_wizard(row) },
                     name: Localization.record_pay
                 },
                 {
-                    access: (row: any) => { return this.checkShowReceiptListToolAccess() },
-                    text: <i title={Localization.receipts_list} className="fa fa-list-ol text-info"></i>,
+                    text: <i title={Localization.view_publisher_received_list} className="fa fa-list-ol text-info"></i>,
                     ac_func: (row: any) => { this.on_pass_to_show_selected_press_receipt_list(row) },
                     name: Localization.receipts_list
                 },
             ]
-                :
-                undefined
         },
         PressAccountingError: undefined,
         pager_offset: 0,
@@ -357,18 +411,30 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     // timestamp to date 
 
     componentDidMount() {
-        // if (this.checkPageRenderAccess() === true) {
-            // if (AccessService.checkAccess('') === true) {
-            //     this.setState({
-            //         ...this.state,
-            //         tableProcessLoader: true
-            //     })
-                TABLE_SORT.sortArrayReseter();
-                this.fetchPressAccounting();
-        //     }
-        // } else {
-        //     this.noAccessRedirect(this.props.history);
-        // }
+        TABLE_SORT.sortArrayReseter();
+        this.fetchPressAccounting();
+    }
+
+    goRecordNewPayment() {
+        this.props.history.push('/record_new_payment')
+    }
+
+    getTimestampToDate(timestamp: number) {
+        if (this.props.internationalization.flag === "fa") {
+            return moment_jalaali(timestamp * 1000).format('jYYYY/jM/jD');
+        }
+        else {
+            return moment(timestamp * 1000).locale("en").format('YYYY/MM/DD');
+        }
+    }
+
+    _getTimestampToDate(timestamp: number) {
+        if (this.props.internationalization.flag === "fa") {
+            return this.getFromNowDate(timestamp);
+        }
+        else {
+            return this.getFromNowDate(timestamp);
+        }
     }
 
     checkPageRenderAccess(): boolean {
@@ -445,121 +511,13 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         }
     }
 
-    /// start add pay to press account modal /////
-
-    on_show_record_pay_modal(press: any) {
-        if (AccessService.checkAccess('') === false) {
-            return;
-        }
-        this.selectedPressForAddPay = press;
-        this.setState({ 
-            ...this.state, 
-            payRecordModalShow: true,
-            addPayToPress : {
-                ...this.state.addPayToPress,
-                press_id : press.id  /* requierd to modifiction */ 
-            }
-        })
+    record_new_payment_manage_wizard(row: any) {
+        this.props.history.push(`/record_new_payment_manage_wizard/${row.receiver_id}`);
     }
 
-    on_hide_record_pay_modal() {
-        this.selectedPressForAddPay = undefined;
-        this.setState({ ...this.state, 
-            payRecordModalShow: false,
-            addPayToPress : {
-                ...this.state.addPayToPress,
-                press_id : undefined,
-                amount : null,
-                isValid : false,
-            }
-        });
+    on_pass_to_show_selected_press_receipt_list(row: any) {
+        this.props.history.push(`/press_account_list/${row.receiver_id}/manage`);
     }
-
-    handleAddPayToPress(value: any) {
-        let amount: any = Number(value);
-        if (isNaN(amount) === true || amount === 0) {
-            this.setState({
-                ...this.state,
-                addPayToPress: {
-                    ...this.state.addPayToPress,
-                    amount: null,
-                    isValid: false,
-                }
-            });
-        } else {
-            this.setState({
-                ...this.state,
-                addPayToPress: {
-                    ...this.state.addPayToPress,
-                    amount: amount,
-                    isValid: true,
-                }
-            });
-        }
-    }
-
-    async onAddPayToSelectedPress(transaction_id: string) {
-        if (AccessService.checkAccess(TPERMISSIONS.TRANSACTION_DELETE_PREMIUM) === false) {
-            return;
-        }
-        this.setState({ ...this.state, setAddPayModalLoader: true });
-        let res;  /// define request ////////////////////////////
-        if (res) {
-            this.setState({ ...this.state, setAddPayModalLoader: false });
-            this.apiSuccessNotify();
-            this.fetchPressAccounting();
-            this.on_hide_record_pay_modal();
-        }
-    }
-
-    render_record_pay_modal(selectedPressForAddPay: any) {
-        if (!this.selectedPressForAddPay || !this.selectedPressForAddPay.id) return;
-        return (
-            <>
-                <Modal show={this.state.payRecordModalShow} onHide={() => this.on_hide_record_pay_modal()}>
-                    <Modal.Body>
-                        <p className="delete-modal-content py-1">
-                            <span className="text-muted">
-                                {Localization.role_type_list.Press}:&nbsp;</span>{/* press name of row */}
-                        </p>
-                        <FixNumber
-                            onChange={(value, isValid) => this.handleAddPayToPress(value)}
-                            label={Localization.Amount_of_payment}
-                            placeholder={Localization.Amount_of_payment}
-                            defaultValue={this.state.addPayToPress.amount}
-                        />
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <button className="btn btn-light shadow-default shadow-hover" onClick={() => this.on_hide_record_pay_modal()}>{Localization.close}</button>
-                        <BtnLoader
-                            btnClassName="btn btn-danger shadow-default shadow-hover"
-                            onClick={() => this.onAddPayToSelectedPress(selectedPressForAddPay.id)}
-                            loading={this.state.setAddPayModalLoader}
-                            disabled={this.state.addPayToPress.isValid === true ? false : true}
-                        >
-                            {Localization.record_pay}
-                        </BtnLoader>
-                    </Modal.Footer>
-                </Modal>
-            </>
-        );
-    }
-
-    /// end add pay to press account modal /////
-
-
-    /// start add pay to press account modal /////
-
-    on_pass_to_show_selected_press_receipt_list(perss: any) {
-        if (AccessService.checkAccess('') === false) {
-            return;
-        }
-        this.selectedPressForShowReceiptList = perss;
-        this.props.history.push('/press_account_list/:press_id/manage');
-    }
-
-    /// start add pay to press account modal /////
-
 
     // define axios for give data
 
@@ -933,7 +891,15 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                 <div className="content">
                     <div className="row">
                         <div className="col-12">
-                            <h2 className="text-bold text-dark pl-3">{Localization.Publishers_bills}</h2>
+                            <h2 className="text-bold text-dark pl-3">{Localization.payment_list}</h2>
+                            <BtnLoader
+                                loading={false}
+                                disabled={false}
+                                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                                onClick={() => this.goRecordNewPayment()}
+                            >
+                                {Localization.record_pay}
+                            </BtnLoader>
                         </div>
                     </div>
                     {
@@ -1044,7 +1010,6 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                             undefined
                     }
                 </div>
-                {this.render_record_pay_modal(this.selectedPressForAddPay)}
                 {
                     <RetryModal
                         modalShow={this.state.retryModal}

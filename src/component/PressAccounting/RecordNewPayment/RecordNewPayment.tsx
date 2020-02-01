@@ -87,7 +87,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
     private _pressAccounting = new PressAccountingService();
     private _personService = new PersonService();
-    
+
 
     componentDidMount() {
         this.payer_id_set_in_state();
@@ -106,7 +106,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     payer_id_set_in_state() {
-        if(Store2.getState().logged_in_user === null){
+        if (Store2.getState().logged_in_user === null) {
             return;
         }
         this.setState({
@@ -207,9 +207,9 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     ////////////////// navigatin func ///////////////////////
 
     backTO() {
-        if(this.state.saveMode === SAVE_MODE.PRESSLISTWIZARD){
+        if (this.state.saveMode === SAVE_MODE.PRESSLISTWIZARD) {
             this.gotoPressList();
-        }else{
+        } else {
             this.gotoMainList();
         }
     }
@@ -223,13 +223,14 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     async create() {
-        if (this.state.isFormValid === false) {
-            return;
-        }
+        // if (this.state.isFormValid === false) {
+        //     return;
+        // }
         const created_payment_data: { payer_id: string, receiver_id: string, amount: number } = {
             payer_id: this.state.payment_data.payer_id.id!,
-            receiver_id: (this.state.payment_data.receiver_id.press as any).id,
-            amount: this.state.payment_data.amount.value!
+            // receiver_id: (this.state.payment_data.receiver_id.press as any).id,
+            receiver_id: "68f2780e-52ae-4666-80a4-7af7631829ba",
+            amount: Number(this.state.payment_data.amount.value!)
         };
         this.setState({ ...this.state, createLoader: true });
         let res = await this._pressAccounting.addPaymentToEachPressAccount(created_payment_data).catch(error => {
@@ -316,13 +317,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                         <div className="col-12">
                             <div className="template-box">
                                 <div className="">
-                                    {
-                                        this.state.saveMode === SAVE_MODE.CREATE
-                                            ?
-                                            <h2 className="text-bold text-dark">{Localization.create_book}</h2>
-                                            :
-                                            <h2 className="text-bold text-dark">{Localization.book_update}</h2>
-                                    }
+                                    <h2 className="text-bold text-dark">{Localization.record_pay}</h2>
                                 </div>
                                 {/* start give data by inputs */}
                                 <div className="row">
@@ -360,7 +355,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                             btnClassName="btn btn-success shadow-default shadow-hover"
                                             loading={this.state.createLoader}
                                             onClick={() => this.create()}
-                                            disabled={!this.state.isFormValid}
+                                        // disabled={!this.state.isFormValid}
                                         >
                                             {Localization.create}
                                         </BtnLoader>

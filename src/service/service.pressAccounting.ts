@@ -12,7 +12,7 @@ export class PressAccountingService extends BaseService {
     }
     
     pressAccountingListFetchById(press_id: string): Promise<IAPI_Response<any>> {
-        return this.axiosTokenInstance.get(`add_path${press_id}`);
+        return this.axiosTokenInstance.get(`/payment-press-checkout/total-paid/${press_id}`);
     }
 
     removeFieldOfPressAccountList(field_id: string) {

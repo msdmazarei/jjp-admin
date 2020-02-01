@@ -388,11 +388,17 @@ interface ILocalization extends LocalizedStringsMethods {
     total_crediting : string;
     total_receipt : string;
     balance_crediting : string;
+    pay : string;
     record_pay : string;
     receipts_list : string;
+    payment_list : string;
     Publishers_bills : string;
     Amount_of_payment : string;
     pay_time : string;
+    number_of_pay : string;
+    payer : string;
+    receiver_press : string;
+    view_publisher_received_list : string;
     bookType : string;
     contentType : string;
     transactionType : string;

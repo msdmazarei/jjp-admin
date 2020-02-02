@@ -313,7 +313,7 @@ var routes = [
   },
   {
     path: "/record_new_payment",
-    name: 'record new payment',  // to da add localization in en & fa & ar
+    name: Localization.record_pay,
     component: RecordNewPayment,
     layout: "/admin",
     sidebarIconVisibility: false,
@@ -322,7 +322,7 @@ var routes = [
   },
   {
     path: "/record_new_payment_manage_wizard/:press_id",
-    name: 'record new payment',   // to da add localization in en & fa & ar
+    name: Localization.record_pay,
     component: RecordNewPayment,
     layout: "/admin",
     sidebarIconVisibility: false,
@@ -331,7 +331,7 @@ var routes = [
   },
   {
     path: "/record_new_payment_press_list_wizard/:press_id",
-    name: 'record new payment',   // to da add localization in en & fa & ar
+    name: Localization.record_pay,
     component: RecordNewPayment,
     layout: "/admin",
     sidebarIconVisibility: false,

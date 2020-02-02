@@ -223,13 +223,12 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     async create() {
-        // if (this.state.isFormValid === false) {
-        //     return;
-        // }
+        if (this.state.isFormValid === false) {
+            return;
+        }
         const created_payment_data: { payer_id: string, receiver_id: string, amount: number } = {
             payer_id: this.state.payment_data.payer_id.id!,
-            // receiver_id: (this.state.payment_data.receiver_id.press as any).id,
-            receiver_id: "68f2780e-52ae-4666-80a4-7af7631829ba",
+            receiver_id: (this.state.payment_data.receiver_id.press as any).id,
             amount: Number(this.state.payment_data.amount.value!)
         };
         this.setState({ ...this.state, createLoader: true });
@@ -355,7 +354,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                             btnClassName="btn btn-success shadow-default shadow-hover"
                                             loading={this.state.createLoader}
                                             onClick={() => this.create()}
-                                        // disabled={!this.state.isFormValid}
+                                            disabled={!this.state.isFormValid}
                                         >
                                             {Localization.create}
                                         </BtnLoader>

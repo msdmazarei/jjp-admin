@@ -275,6 +275,10 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
         this.props.history.push(`/record_new_payment_press_list_wizard/${this.props.match.params.press_id}`);
     }
 
+    back(){
+        this.props.history.push(`/press_accounts/manage`);
+    }
+
     //////render call Table component //////
 
     render() {
@@ -292,14 +296,24 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                             <h5 className="text-bold text-dark pl-3">
                                 <span className="text-muted">{Localization.number_of_pay}:&nbsp;</span>{this.state.count}
                             </h5>
-                            <BtnLoader
-                                loading={false}
-                                disabled={false}
-                                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                                onClick={() => this.record_new_payment_press_list_wizard()}
-                            >
-                                {Localization.record_pay}
-                            </BtnLoader>
+                            <div className="d-flex justify-content-between">
+                                <BtnLoader
+                                    loading={false}
+                                    disabled={false}
+                                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                                    onClick={() => this.record_new_payment_press_list_wizard()}
+                                >
+                                    {Localization.record_pay}
+                                </BtnLoader>
+                                <BtnLoader
+                                    loading={false} 
+                                    disabled={false}
+                                    btnClassName="btn btn-primary shadow-default shadow-hover mb-4"
+                                    onClick={() => this.back()}
+                                >
+                                    {Localization.back}
+                                </BtnLoader>
+                            </div>
                         </div>
                     </div>
                     <div className="row">

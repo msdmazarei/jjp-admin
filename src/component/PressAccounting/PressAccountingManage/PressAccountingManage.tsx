@@ -23,6 +23,9 @@ import { PersonService } from "../../../service/service.person";
 import { PressAccountingService } from "../../../service/service.pressAccounting";
 import moment from "moment";
 import moment_jalaali from 'moment-jalaali';
+import { Input } from "../../form/input/Input";
+import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
+import { SORT } from "../../../enum/Sort";
 // import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
@@ -32,10 +35,55 @@ export interface IProps {
     // token: IToken;
 }
 
+interface ICmp_select<T> {
+    label: string;
+    value: T;
+}
+
 interface IFilterPressAccounting {
+    creator: {
+        value: string | undefined;
+        is_valid: boolean;
+    };
+    receiver_id: {
+        value: ICmp_select<IPerson> | null;
+        id: string | undefined;
+        is_valid: boolean;
+    };
+    amount: {
+        from: number | undefined;
+        to: number | undefined;
+        from_isValid: boolean;
+        to_isValid: boolean;
+        is_valid: boolean;
+    };
+    creation_date: {
+        from: number | undefined;
+        to: number | undefined;
+        from_isValid: boolean;
+        to_isValid: boolean;
+        is_valid: boolean;
+    };
+    modifier: {
+        value: string | undefined;
+        is_valid: boolean;
+    };
+    modification_date: {
+        from: number | undefined;
+        to: number | undefined;
+        from_isValid: boolean;
+        to_isValid: boolean;
+        is_valid: boolean;
+    };
 }
 
 interface ISortTransaction {
+    creator: boolean;
+    receiver_id: boolean;
+    amount: boolean;
+    creation_date: boolean;
+    modifier: boolean;
+    modification_date: boolean;
 }
 
 interface IState {
@@ -65,37 +113,37 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     templateFunc: () => {
                         return <>
                             {Localization.payer}
-                            {/* {
-                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                            {
+                                (this.is_this_sort_exsit_in_state(SORT.creator) === false && this.is_this_sort_exsit_in_state(SORT.creator_) === false)
                                     ?
                                     <span
                                         className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                        onClick={() => this.sort_handler_func(SORT.creator, SORT.creator_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                                        <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                                     </span>
                                     :
-                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                    this.is_this_sort_exsit_in_state(SORT.creator) === true
                                         ?
                                         <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                            onClick={() => this.sort_handler_func(SORT.creator_, SORT.creator, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                                            <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                                         </span>
                                         :
-                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                        this.is_this_sort_exsit_in_state(SORT.creator_) === true
                                             ?
                                             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                                onClick={() => this.sort_handler_func(SORT.creator_, SORT.creator, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creator', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creator', false)}>
+                                                <i className={this.state.sortShowStyle.creator === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
                                             </span>
                                             :
                                             undefined
-                            } */}
+                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
@@ -110,37 +158,37 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     templateFunc: () => {
                         return <>
                             {Localization.receiver_press}
-                            {/* {
-                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                            {
+                                (this.is_this_sort_exsit_in_state(SORT.receiver_id) === false && this.is_this_sort_exsit_in_state(SORT.receiver_id_) === false)
                                     ?
                                     <span
                                         className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                        onClick={() => this.sort_handler_func(SORT.receiver_id, SORT.receiver_id_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('receiver_id', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('receiver_id', false)}>
+                                        <i className={this.state.sortShowStyle.receiver_id === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                                     </span>
                                     :
-                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                    this.is_this_sort_exsit_in_state(SORT.receiver_id) === true
                                         ?
                                         <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                            onClick={() => this.sort_handler_func(SORT.receiver_id_, SORT.receiver_id, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('receiver_id', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('receiver_id', false)}>
+                                            <i className={this.state.sortShowStyle.receiver_id === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                                         </span>
                                         :
-                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                        this.is_this_sort_exsit_in_state(SORT.receiver_id_) === true
                                             ?
                                             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                                onClick={() => this.sort_handler_func(SORT.receiver_id_, SORT.receiver_id, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('receiver_id', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('receiver_id', false)}>
+                                                <i className={this.state.sortShowStyle.receiver_id === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
                                             </span>
                                             :
                                             undefined
-                            } */}
+                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
@@ -155,37 +203,37 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     templateFunc: () => {
                         return <>
                             {Localization.Amount_of_payment}
-                            {/* {
-                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                            {
+                                (this.is_this_sort_exsit_in_state(SORT.amount) === false && this.is_this_sort_exsit_in_state(SORT.amount_) === false)
                                     ?
                                     <span
                                         className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                        onClick={() => this.sort_handler_func(SORT.amount, SORT.amount_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('amount', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('amount', false)}>
+                                        <i className={this.state.sortShowStyle.amount === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                                     </span>
                                     :
-                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                    this.is_this_sort_exsit_in_state(SORT.amount) === true
                                         ?
                                         <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                            onClick={() => this.sort_handler_func(SORT.amount_, SORT.amount, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('amount', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('amount', false)}>
+                                            <i className={this.state.sortShowStyle.amount === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                                         </span>
                                         :
-                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                        this.is_this_sort_exsit_in_state(SORT.amount_) === true
                                             ?
                                             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                                onClick={() => this.sort_handler_func(SORT.amount_, SORT.amount, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('amount', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('amount', false)}>
+                                                <i className={this.state.sortShowStyle.amount === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
                                             </span>
                                             :
                                             undefined
-                            } */}
+                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
@@ -203,7 +251,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     templateFunc: () => {
                         return <>
                             {Localization.pay_time}
-                            {/* {
+                            {
                                 (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                                     ?
                                     <span
@@ -233,7 +281,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                             </span>
                                             :
                                             undefined
-                            } */}
+                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
@@ -248,37 +296,37 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     templateFunc: () => {
                         return <>
                             {Localization.modifier}
-                            {/* {
-                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                            {
+                                (this.is_this_sort_exsit_in_state(SORT.modifier) === false && this.is_this_sort_exsit_in_state(SORT.modifier_) === false)
                                     ?
                                     <span
                                         className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                        onClick={() => this.sort_handler_func(SORT.modifier, SORT.modifier_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
+                                        <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                                     </span>
                                     :
-                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                    this.is_this_sort_exsit_in_state(SORT.modifier) === true
                                         ?
                                         <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                            onClick={() => this.sort_handler_func(SORT.modifier_, SORT.modifier, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
+                                            <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                                         </span>
                                         :
-                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                        this.is_this_sort_exsit_in_state(SORT.modifier_) === true
                                             ?
                                             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                                onClick={() => this.sort_handler_func(SORT.modifier_, SORT.modifier, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modifier', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modifier', false)}>
+                                                <i className={this.state.sortShowStyle.modifier === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
                                             </span>
                                             :
                                             undefined
-                            } */}
+                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
@@ -293,37 +341,37 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     templateFunc: () => {
                         return <>
                             {Localization.modification_date}
-                            {/* {
-                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
+                            {
+                                (this.is_this_sort_exsit_in_state(SORT.modification_date) === false && this.is_this_sort_exsit_in_state(SORT.modification_date_) === false)
                                     ?
                                     <span
                                         className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                        onClick={() => this.sort_handler_func(SORT.modification_date, SORT.modification_date_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                                        <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                                     </span>
                                     :
-                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
+                                    this.is_this_sort_exsit_in_state(SORT.modification_date) === true
                                         ?
                                         <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                            onClick={() => this.sort_handler_func(SORT.modification_date_, SORT.modification_date, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                                            <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                                         </span>
                                         :
-                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
+                                        this.is_this_sort_exsit_in_state(SORT.modification_date_) === true
                                             ?
                                             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                                onClick={() => this.sort_handler_func(SORT.modification_date_, SORT.modification_date, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('modification_date', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('modification_date', false)}>
+                                                <i className={this.state.sortShowStyle.modification_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
                                             </span>
                                             :
                                             undefined
-                            } */}
+                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
@@ -357,37 +405,50 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         payRecordModalShow: false,
         setAddPayModalLoader: false,
         filter_state: {
-            press: {
+            creator: {
+                value: undefined,
+                is_valid: false,
+            },
+            receiver_id: {
                 value: null,
-                person_id: undefined,
-                is_valid: false,
+                id: undefined,
+                is_valid: false
             },
-            total_crediting: {
+            amount: {
                 from: undefined,
-                from_isValid: false,
                 to: undefined,
+                from_isValid: false,
                 to_isValid: false,
                 is_valid: false,
             },
-            total_receipt: {
+            creation_date: {
                 from: undefined,
-                from_isValid: false,
                 to: undefined,
+                from_isValid: false,
                 to_isValid: false,
                 is_valid: false,
             },
-            balance_of_crediting: {
-                from: undefined,
-                from_isValid: false,
-                to: undefined,
-                to_isValid: false,
+            modifier: {
+                value: undefined,
                 is_valid: false,
             },
+            modification_date: {
+                from: undefined,
+                to: undefined,
+                from_isValid: false,
+                to_isValid: false,
+                is_valid: false,
+            }
         },
         advance_search_box_show: false,
         sort: [],
         sortShowStyle: {
+            creator: false,
+            receiver_id: false,
+            amount: false,
             creation_date: false,
+            modifier: false,
+            modification_date: false,
         },
         retryModal: false,
         addPayToPress: {
@@ -529,37 +590,45 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     private set_searchFilter() {
         const obj: any = {};
 
-        if (this.state.filter_state.press.is_valid === true) {
-            obj['first_field'] = { $in: [this.state.filter_state.press.person_id] };
+        if (this.state.filter_state.creator.is_valid === true) {
+            obj['creator'] = { $eq: this.state.filter_state.creator.value };
         }
 
-        if (this.state.filter_state.total_crediting.is_valid === true) {
-            if (this.state.filter_state.total_crediting.from_isValid === true && this.state.filter_state.total_crediting.to_isValid === true) {
-                obj['second_field'] = { $gte: this.state.filter_state.total_crediting.from, $lte: (this.state.filter_state.total_crediting.to! + 86400) }
-            } else if (this.state.filter_state.total_crediting.from_isValid === true && this.state.filter_state.total_crediting.to_isValid === false) {
-                obj['second_field'] = { $gte: this.state.filter_state.total_crediting.from }
-            } else if (this.state.filter_state.total_crediting.from_isValid === false && this.state.filter_state.total_crediting.to_isValid === true) {
-                obj['second_field'] = { $lte: this.state.filter_state.total_crediting.to }
+        if (this.state.filter_state.receiver_id.is_valid === true) {
+            obj['receiver_id'] = { $eq: this.state.filter_state.receiver_id.id };
+        }
+
+        if (this.state.filter_state.amount.is_valid === true) {
+            if (this.state.filter_state.amount.from_isValid === true && this.state.filter_state.amount.to_isValid === true) {
+                obj['amount'] = { $gte: this.state.filter_state.amount.from, $lte: this.state.filter_state.amount.to }
+            } else if (this.state.filter_state.amount.from_isValid === true && this.state.filter_state.amount.to_isValid === false) {
+                obj['amount'] = { $gte: this.state.filter_state.amount.from }
+            } else if (this.state.filter_state.amount.from_isValid === false && this.state.filter_state.amount.to_isValid === true) {
+                obj['amount'] = { $lte: this.state.filter_state.amount.to }
             }
         }
 
-        if (this.state.filter_state.total_receipt.is_valid === true) {
-            if (this.state.filter_state.total_receipt.from_isValid === true && this.state.filter_state.total_receipt.to_isValid === true) {
-                obj['third_field'] = { $gte: this.state.filter_state.total_receipt.from, $lte: (this.state.filter_state.total_receipt.to! + 86400) }
-            } else if (this.state.filter_state.total_receipt.from_isValid === true && this.state.filter_state.total_receipt.to_isValid === false) {
-                obj['third_field'] = { $gte: this.state.filter_state.total_receipt.from }
-            } else if (this.state.filter_state.total_receipt.from_isValid === false && this.state.filter_state.total_receipt.to_isValid === true) {
-                obj['third_field'] = { $lte: this.state.filter_state.total_receipt.to }
+        if (this.state.filter_state.creation_date.is_valid === true) {
+            if (this.state.filter_state.creation_date.from_isValid === true && this.state.filter_state.creation_date.to_isValid === true) {
+                obj['creation_date'] = { $gte: this.state.filter_state.creation_date.from, $lte: (this.state.filter_state.creation_date.to! + 86400) }
+            } else if (this.state.filter_state.creation_date.from_isValid === true && this.state.filter_state.creation_date.to_isValid === false) {
+                obj['creation_date'] = { $gte: this.state.filter_state.creation_date.from }
+            } else if (this.state.filter_state.creation_date.from_isValid === false && this.state.filter_state.creation_date.to_isValid === true) {
+                obj['creation_date'] = { $lte: this.state.filter_state.creation_date.to }
             }
         }
 
-        if (this.state.filter_state.balance_of_crediting.is_valid === true) {
-            if (this.state.filter_state.balance_of_crediting.from_isValid === true && this.state.filter_state.balance_of_crediting.to_isValid === true) {
-                obj['forth_field'] = { $gte: this.state.filter_state.balance_of_crediting.from, $lte: (this.state.filter_state.balance_of_crediting.to! + 86400) }
-            } else if (this.state.filter_state.balance_of_crediting.from_isValid === true && this.state.filter_state.balance_of_crediting.to_isValid === false) {
-                obj['forth_field'] = { $gte: this.state.filter_state.balance_of_crediting.from }
-            } else if (this.state.filter_state.balance_of_crediting.from_isValid === false && this.state.filter_state.balance_of_crediting.to_isValid === true) {
-                obj['forth_field'] = { $lte: this.state.filter_state.balance_of_crediting.to }
+        if (this.state.filter_state.modifier.is_valid === true) {
+            obj['modifier'] = { $eq: this.state.filter_state.modifier.value };
+        }
+
+        if (this.state.filter_state.modification_date.is_valid === true) {
+            if (this.state.filter_state.modification_date.from_isValid === true && this.state.filter_state.modification_date.to_isValid === true) {
+                obj['modification_date'] = { $gte: this.state.filter_state.modification_date.from, $lte: (this.state.filter_state.modification_date.to! + 86400) }
+            } else if (this.state.filter_state.modification_date.from_isValid === true && this.state.filter_state.modification_date.to_isValid === false) {
+                obj['modification_date'] = { $gte: this.state.filter_state.modification_date.from }
+            } else if (this.state.filter_state.modification_date.from_isValid === false && this.state.filter_state.modification_date.to_isValid === true) {
+                obj['modification_date'] = { $lte: this.state.filter_state.modification_date.to }
             }
         }
 
@@ -757,32 +826,40 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         this.setState({
             ...this.state,
             filter_state: {
-                press: {
+                creator: {
+                    value: undefined,
+                    is_valid: false,
+                },
+                receiver_id: {
                     value: null,
-                    person_id: undefined,
-                    is_valid: false,
+                    id: undefined,
+                    is_valid: false
                 },
-                total_crediting: {
+                amount: {
                     from: undefined,
-                    from_isValid: false,
                     to: undefined,
+                    from_isValid: false,
                     to_isValid: false,
                     is_valid: false,
                 },
-                total_receipt: {
+                creation_date: {
                     from: undefined,
-                    from_isValid: false,
                     to: undefined,
+                    from_isValid: false,
                     to_isValid: false,
                     is_valid: false,
                 },
-                balance_of_crediting: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
+                modifier: {
+                    value: undefined,
                     is_valid: false,
                 },
+                modification_date: {
+                    from: undefined,
+                    to: undefined,
+                    from_isValid: false,
+                    to_isValid: false,
+                    is_valid: false,
+                }
             }
         }, () => this.repetReset())
     }
@@ -790,32 +867,57 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         this.setState({
             ...this.state,
             filter_state: {
-                press: {
+                creator: {
+                    value: undefined,
+                    is_valid: false,
+                },
+                receiver_id: {
                     value: null,
-                    person_id: undefined,
-                    is_valid: false,
+                    id: undefined,
+                    is_valid: false
                 },
-                total_crediting: {
+                amount: {
                     from: undefined,
-                    from_isValid: false,
                     to: undefined,
+                    from_isValid: false,
                     to_isValid: false,
                     is_valid: false,
                 },
-                total_receipt: {
+                creation_date: {
                     from: undefined,
-                    from_isValid: false,
                     to: undefined,
+                    from_isValid: false,
                     to_isValid: false,
                     is_valid: false,
                 },
-                balance_of_crediting: {
-                    from: undefined,
-                    from_isValid: false,
-                    to: undefined,
-                    to_isValid: false,
+                modifier: {
+                    value: undefined,
                     is_valid: false,
                 },
+                modification_date: {
+                    from: undefined,
+                    to: undefined,
+                    from_isValid: false,
+                    to_isValid: false,
+                    is_valid: false,
+                }
+            }
+        })
+    }
+
+    handleInputChange(newvValue: string | undefined, isValid: boolean, inpuType: string) {
+        let valid: boolean = true;
+        if (newvValue === '' || newvValue === undefined || isValid === false) {
+            valid = false;
+        }
+        this.setState({
+            ...this.state,
+            filter_state: {
+                ...this.state.filter_state,
+                [inpuType]: {
+                    value: newvValue,
+                    is_valid: valid,
+                }
             }
         })
     }
@@ -825,9 +927,9 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
             ...this.state,
             filter_state: {
                 ...this.state.filter_state,
-                press: {
+                receiver_id: {
                     value: null,
-                    person_id: undefined,
+                    id: undefined,
                     is_valid: false,
                 }
             }
@@ -835,16 +937,16 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     }
 
     handlePersonChange = (selectedPerson: { label: string, value: IPerson }) => {
-        let newperson = { ...selectedPerson };
-        let isValid = true;      // newperson = selectedPerson;
+        let valid: boolean = true;
+        let newId: string = selectedPerson.value.id;
         this.setState({
             ...this.state,
             filter_state: {
                 ...this.state.filter_state,
-                press: {
-                    value: newperson,
-                    person_id: newperson.value.id,
-                    is_valid: isValid,
+                receiver_id: {
+                    value: selectedPerson,
+                    id: newId,
+                    is_valid: valid,
                 }
             }
         })
@@ -928,6 +1030,14 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                             {/* start search box inputs */}
                                             <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
                                                 <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, 'creator')}
+                                                        label={Localization.payer}
+                                                        placeholder={Localization.payer}
+                                                        defaultValue={this.state.filter_state.creator.value}
+                                                    />
+                                                </div>
+                                                <div className="col-md-3 col-sm-6">
                                                     <label >{Localization.role_type_list.Press}</label>
                                                     <i
                                                         title={Localization.reset}
@@ -938,34 +1048,42 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                                         placeholder={Localization.role_type_list.Press}
                                                         cacheOptions
                                                         defaultOptions
-                                                        value={this.state.filter_state.press.value}
+                                                        value={this.state.filter_state.receiver_id.value}
                                                         loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                                         noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                                        onChange={(selectedPerson: any) => this.handlePersonChange(selectedPerson)}
+                                                        onChange={(selectedPress: any) => this.handlePersonChange(selectedPress)}
                                                     />
                                                 </div>
                                                 <div className="col-md-3 col-sm-6">
                                                     <AppNumberRange
-                                                        label={Localization.total_crediting}
-                                                        from={this.state.filter_state.total_crediting.from}
-                                                        to={this.state.filter_state.total_crediting.to}
-                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'total_crediting')}
+                                                        label={Localization.Amount_of_payment}
+                                                        from={this.state.filter_state.amount.from}
+                                                        to={this.state.filter_state.amount.to}
+                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'amount')}
                                                     />
                                                 </div>
                                                 <div className="col-md-3 col-sm-6">
-                                                    <AppNumberRange
-                                                        label={Localization.total_crediting}
-                                                        from={this.state.filter_state.total_receipt.from}
-                                                        to={this.state.filter_state.total_receipt.to}
-                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'total_receipt')}
+                                                    <AppRangePicker
+                                                        label={Localization.pay_time}
+                                                        from={this.state.filter_state.creation_date.from}
+                                                        to={this.state.filter_state.creation_date.to}
+                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'creation_date')}
                                                     />
                                                 </div>
                                                 <div className="col-md-3 col-sm-6">
-                                                    <AppNumberRange
-                                                        label={Localization.total_crediting}
-                                                        from={this.state.filter_state.balance_of_crediting.from}
-                                                        to={this.state.filter_state.balance_of_crediting.to}
-                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'balance_of_crediting')}
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, 'modifier')}
+                                                        label={Localization.modifier}
+                                                        placeholder={Localization.modifier}
+                                                        defaultValue={this.state.filter_state.modifier.value}
+                                                    />
+                                                </div>
+                                                <div className="col-md-3 col-sm-6">
+                                                    <AppRangePicker
+                                                        label={Localization.modification_date}
+                                                        from={this.state.filter_state.modification_date.from}
+                                                        to={this.state.filter_state.modification_date.to}
+                                                        onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'modification_date')}
                                                     />
                                                 </div>
                                             </div>

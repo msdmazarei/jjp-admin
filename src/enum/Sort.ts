@@ -33,5 +33,9 @@ export enum SORT {
     status_ = 'status-',
     total_price = 'total_price+',
     total_price_ = 'total_price-',
+    receiver_id = 'receiver_id+',
+    receiver_id_ = 'receiver_id-',
+    amount = 'amount+',
+    amount_ = 'amount-',
 }
 

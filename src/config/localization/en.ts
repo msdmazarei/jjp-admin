@@ -384,6 +384,8 @@ export const en = {
     payer : 'payer',
     receiver_press : 'receiver (press)',
     view_publisher_received_list : 'view publisher received list',
+    payment_remove : 'remove payment',
+    payment_update : 'payment update',
     bookType : 'book type',
     contentType : 'content type',
     transactionType : 'transaction type',

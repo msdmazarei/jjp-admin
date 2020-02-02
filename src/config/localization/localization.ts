@@ -399,6 +399,8 @@ interface ILocalization extends LocalizedStringsMethods {
     payer : string;
     receiver_press : string;
     view_publisher_received_list : string;
+    payment_remove : string;
+    payment_update : string;
     bookType : string;
     contentType : string;
     transactionType : string;

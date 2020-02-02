@@ -384,6 +384,8 @@ export const ar = {
     payer : 'پرداخت کننده',
     receiver_press : 'دریافت کننده (ناشر)',
     view_publisher_received_list : 'مشاهده لیست دریافتی ناشر',
+    payment_remove : 'حذف پرداخت',
+    payment_update : 'بروزرسانی پرداخت',
     bookType : 'نوع کتاب',
     contentType : 'نوع محتوا',
     transactionType : 'نوع تراکنش',

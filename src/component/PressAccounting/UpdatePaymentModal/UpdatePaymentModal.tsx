@@ -76,6 +76,9 @@ class UpdatePaymentModalComponent extends BaseComponent<IProps, IState> {
             <>
                 <Modal show={this.props.modalShow} onHide={() => this.props.onHide()}>
                     <Modal.Body>
+                        <p className="delete-modal-content text-center text-success">
+                            {Localization.payment_update}
+                        </p>
                         <p className="delete-modal-content">
                             <span className="text-muted">{Localization.role_type_list.Press}:</span>{this.getUserFullName(this.props.rowData.receiver)}
                         </p>

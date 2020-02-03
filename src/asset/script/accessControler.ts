@@ -89,6 +89,18 @@ export abstract class permissionChecker {
             { item: T_ITEM_NAME.transactionManageGetGrid, permissions: [TPERMISSIONS.TRANSACTION_GET_PREMIUM] },
             { item: T_ITEM_NAME.transactionManageAllTools, permissions: [TPERMISSIONS.TRANSACTION_DELETE_PREMIUM] },
             { item: T_ITEM_NAME.transactionManageDeleteTool, permissions: [TPERMISSIONS.TRANSACTION_DELETE_PREMIUM] },
+
+            { item: T_ITEM_NAME.pressAccountingManage, permissions: []},
+            { item: T_ITEM_NAME.pressAccountingManageGrid, permissions: []},
+            { item: T_ITEM_NAME.pressAccountingManageAllTools, permissions: []},
+            { item: T_ITEM_NAME.pressAccountingManageRecordNewPaymentTool, permissions: []},
+            { item: T_ITEM_NAME.pressAccountingManagePressAccountListTool, permissions: []},
+            { item: T_ITEM_NAME.pressAccountingRecordNewPayment, permissions: []},
+            { item: T_ITEM_NAME.pressAccountList, permissions: []},
+            { item: T_ITEM_NAME.pressAccountListGrid, permissions: []},
+            { item: T_ITEM_NAME.pressAccountListTools, permissions: []},
+            { item: T_ITEM_NAME.pressAccountListDeleteTool, permissions: []},
+            { item: T_ITEM_NAME.pressAccountListUpdateTool, permissions: []},
         ];
 
     static permission_detect_by_selected_item(item: T_ITEM_NAME): string[] | null {

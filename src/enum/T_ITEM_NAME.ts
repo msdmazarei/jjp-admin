@@ -89,6 +89,19 @@ export enum T_ITEM_NAME {
     transactionManageAllTools = 'transactionManageAllTools',
     transactionManageDeleteTool = 'transactionManageDeleteTool',
     // end transaction
+    // start pressAccounting
+    pressAccountingManage = 'pressAccountingManage',
+    pressAccountingManageGrid = 'pressAccountingManageGrid',
+    pressAccountingManageAllTools = 'pressAccountingManageAllTools',
+    pressAccountingManageRecordNewPaymentTool = 'pressAccountingManageRecordNewPaymentTool',
+    pressAccountingManagePressAccountListTool = 'pressAccountingManagePressAccountListTool',
+    pressAccountingRecordNewPayment = 'pressAccountingRecordNewPayment',
+    pressAccountList = 'pressAccountList',
+    pressAccountListGrid = 'pressAccountListGrid',
+    pressAccountListTools = 'pressAccountListTools',
+    pressAccountListDeleteTool = 'pressAccountListDeleteTool',
+    pressAccountListUpdateTool = 'pressAccountListUpdateTool',
+    // end pressAccounting
 }
 
 export enum CHECKTYPE {

@@ -17,6 +17,8 @@ import { PressAccountingService } from '../../../service/service.pressAccounting
 import { Store2 } from '../../../redux/store';
 import { RetryModal } from '../../tool/retryModal/retryModal';
 import { IUser } from '../../../model/model.user';
+import { permissionChecker } from '../../../asset/script/accessControler';
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
 // import { IToken } from '../../../model/model.token';
 
 interface ICmp_select<T> {
@@ -90,18 +92,22 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
 
     componentDidMount() {
-        this.payer_id_set_in_state();
-        if (this.props.match.path.includes('/record_new_payment_manage_wizard/:press_id')) {
-            this.setState({
-                ...this.state,
-                saveMode: SAVE_MODE.MAINLISTWIZARD
-            }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
-        }
-        if (this.props.match.path.includes('/record_new_payment_press_list_wizard/:press_id')) {
-            this.setState({
-                ...this.state,
-                saveMode: SAVE_MODE.PRESSLISTWIZARD,
-            }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            this.payer_id_set_in_state();
+            if (this.props.match.path.includes('/record_new_payment_manage_wizard/:press_id')) {
+                this.setState({
+                    ...this.state,
+                    saveMode: SAVE_MODE.MAINLISTWIZARD
+                }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
+            }
+            if (this.props.match.path.includes('/record_new_payment_press_list_wizard/:press_id')) {
+                this.setState({
+                    ...this.state,
+                    saveMode: SAVE_MODE.PRESSLISTWIZARD,
+                }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
+            }
+        } else {
+            this.noAccessRedirect(this.props.history);
         }
     }
 
@@ -215,20 +221,31 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     gotoMainList() {
-        this.props.history.push(`/press_accounts/manage`);
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
+            this.props.history.push(`/press_accounts/manage`);
+        }else{
+            this.noAccessRedirect(this.props.history);
+        }
     }
 
     gotoPressList() {
-        this.props.history.push(`/press_account_list/${this.props.match.params.press_id}/manage`);
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountList], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
+            this.props.history.push(`/press_account_list/${this.props.match.params.press_id}/manage`);
+        }else{
+            this.noAccessRedirect(this.props.history);
+        }
     }
 
     async create() {
         if (this.state.isFormValid === false) {
             return;
         }
+        if (this.state.payment_data.receiver_id.press === null) {
+            return;
+        }
         const created_payment_data: { payer_id: string, receiver_id: string, amount: number } = {
             payer_id: this.state.payment_data.payer_id.id!,
-            receiver_id: (this.state.payment_data.receiver_id.press as any).id,
+            receiver_id: (this.state.payment_data.receiver_id.press as any).value.id,
             amount: Number(this.state.payment_data.amount.value!)
         };
         this.setState({ ...this.state, createLoader: true });

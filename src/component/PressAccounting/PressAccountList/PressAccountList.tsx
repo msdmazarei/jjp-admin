@@ -18,6 +18,8 @@ import { PersonService } from "../../../service/service.person";
 import { PressAccountingService } from "../../../service/service.pressAccounting";
 import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 import { UpdatePaymentModal } from "../UpdatePaymentModal/UpdatePaymentModal";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 // import { IToken } from "../../../model/model.token";
 // import { SORT } from "../../../enum/Sort";
 
@@ -127,18 +129,24 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                     }
                 },
             ],
-            actions: [
-                {
-                    text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
-                    ac_func: (row: any) => { this.deleteModalShow(row) },
-                    name: Localization.remove
-                },
-                {
-                    text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
-                    ac_func: (row: any) => { this.updateModalShow(row) },
-                    name: Localization.update
-                },
-            ]
+            actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                ?
+                [
+                    {
+                        access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
+                        text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+                        ac_func: (row: any) => { this.deleteModalShow(row) },
+                        name: Localization.remove
+                    },
+                    {
+                        access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
+                        text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+                        ac_func: (row: any) => { this.updateModalShow(row) },
+                        name: Localization.update
+                    },
+                ]
+                :
+                undefined
         },
         PressAccountListError: undefined,
         tableProcessLoader: false,
@@ -159,7 +167,13 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     // }
 
     componentDidMount() {
-        this.fetchPressAccounting();
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountList], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+                this.fetchPressAccounting();
+            }
+        } else {
+            this.noAccessRedirect(this.props.history);
+        }
     }
 
     // start functions for timestamp to date /////
@@ -187,6 +201,9 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     // define axios for give data
 
     async fetchPressAccounting() {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.setState({ ...this.state, tableProcessLoader: true });
         let res = await this._pressAccountingService.pressAccountingListFetchById(this.props.match.params.press_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetchPressAccountingList_error' } });
@@ -215,6 +232,9 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     // start delete modal functions show-hide-request
 
     deleteModalShow(row: any) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.selectedReceipt = row;
         this.setState({ ...this.state, deleteModalShow: true })
     }
@@ -225,6 +245,9 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     }
 
     async removeReceipt(id: string) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.setState({ ...this.state, deleteModalBtnLoader: true });
         let res = await this._pressAccountingService.removeFieldOfPressAccountList(id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'removeFieldOfPressAccountList' } });
@@ -245,6 +268,9 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     // start update modal functions show-hide-request
 
     updateModalShow(row: any) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.selectedReceipt = row;
         this.setState({ ...this.state, updateModalShow: true })
     }
@@ -255,6 +281,9 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     }
 
     async updateReceipt(field: { payer_id: string, receiver_id: string, amount: number }, field_id: string) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.setState({ ...this.state, updateModalBtnLoader: true });
         let res = await this._pressAccountingService.updateFieldOfPressAccountList(field, field_id).catch(error => {
             this.handleError({ error: error.response, toastOptions: { toastId: 'updateFieldOfPressAccountList' } });
@@ -272,10 +301,16 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
     // end update modal functions show-hide-request
 
     record_new_payment_press_list_wizard() {
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+            return;
+        }
         this.props.history.push(`/record_new_payment_press_list_wizard/${this.props.match.params.press_id}`);
     }
 
-    back(){
+    back() {
+        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+            return;
+        }
         this.props.history.push(`/press_accounts/manage`);
     }
 
@@ -297,30 +332,48 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                                 <span className="text-muted">{Localization.number_of_pay}:&nbsp;</span>{this.state.count}
                             </h5>
                             <div className="d-flex justify-content-between">
-                                <BtnLoader
-                                    loading={false}
-                                    disabled={false}
-                                    btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                                    onClick={() => this.record_new_payment_press_list_wizard()}
-                                >
-                                    {Localization.record_pay}
-                                </BtnLoader>
-                                <BtnLoader
-                                    loading={false} 
-                                    disabled={false}
-                                    btnClassName="btn btn-primary shadow-default shadow-hover mb-4"
-                                    onClick={() => this.back()}
-                                >
-                                    {Localization.back}
-                                </BtnLoader>
+                                {
+                                    permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                                        ?
+                                        <BtnLoader
+                                            loading={false}
+                                            disabled={false}
+                                            btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                                            onClick={() => this.record_new_payment_press_list_wizard()}
+                                        >
+                                            {Localization.record_pay}
+                                        </BtnLoader>
+                                        :
+                                        undefined
+                                }
+                                {
+                                    permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                                        ?
+                                        <BtnLoader
+                                            loading={false}
+                                            disabled={false}
+                                            btnClassName="btn btn-primary shadow-default shadow-hover mb-4"
+                                            onClick={() => this.back()}
+                                        >
+                                            {Localization.back}
+                                        </BtnLoader>
+                                        :
+                                        undefined
+                                }
                             </div>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-12">
-                            <Table row_offset_number={0} loading={this.state.tableProcessLoader} list={this.state.pressAccountList_table.list} colHeaders={this.state.pressAccountList_table.colHeaders} actions={this.state.pressAccountList_table.actions}></Table>
-                        </div>
-                    </div>
+                    {
+                        permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                            ?
+                            <div className="row">
+                                <div className="col-12">
+                                    <Table row_offset_number={0} loading={this.state.tableProcessLoader} list={this.state.pressAccountList_table.list} colHeaders={this.state.pressAccountList_table.colHeaders} actions={this.state.pressAccountList_table.actions}></Table>
+                                </div>
+                            </div>
+                            :
+                            undefined
+                    }
                 </div>
                 {
                     this.selectedReceipt === undefined

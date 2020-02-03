@@ -12,10 +12,8 @@ import { Localization } from "../../../config/localization/localization";
 import { BtnLoader } from "../../form/btn-loader/BtnLoader";
 import 'moment/locale/fa';
 import 'moment/locale/ar';
-import { AccessService } from "../../../service/service.access";
 import { AppNumberRange } from "../../form/app-numberRange/app-numberRange";
 import { TABLE_SORT } from "../../table/tableSortHandler";
-import { TPERMISSIONS } from "../../../enum/Permission";
 import { RetryModal } from "../../tool/retryModal/retryModal";
 import { IPerson } from "../../../model/model.person";
 import AsyncSelect from 'react-select/async';
@@ -26,6 +24,8 @@ import moment_jalaali from 'moment-jalaali';
 import { Input } from "../../form/input/Input";
 import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { SORT } from "../../../enum/Sort";
+import { permissionChecker } from "../../../asset/script/accessControler";
+import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 // import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
@@ -382,18 +382,24 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     }
                 },
             ],
-            actions: [
-                {
-                    text: <i title={Localization.record_pay} className="fa fa-money text-success"></i>,
-                    ac_func: (row: any) => { this.record_new_payment_manage_wizard(row) },
-                    name: Localization.record_pay
-                },
-                {
-                    text: <i title={Localization.view_publisher_received_list} className="fa fa-list-ol text-info"></i>,
-                    ac_func: (row: any) => { this.on_pass_to_show_selected_press_receipt_list(row) },
-                    name: Localization.receipts_list
-                },
-            ]
+            actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                ?
+                [
+                    {
+                        access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageRecordNewPaymentTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
+                        text: <i title={Localization.record_pay} className="fa fa-money text-success"></i>,
+                        ac_func: (row: any) => { this.record_new_payment_manage_wizard(row) },
+                        name: Localization.record_pay
+                    },
+                    {
+                        access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManagePressAccountListTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
+                        text: <i title={Localization.view_publisher_received_list} className="fa fa-list-ol text-info"></i>,
+                        ac_func: (row: any) => { this.on_pass_to_show_selected_press_receipt_list(row) },
+                        name: Localization.receipts_list
+                    },
+                ]
+                :
+                undefined
         },
         PressAccountingError: undefined,
         pager_offset: 0,
@@ -472,11 +478,20 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     // timestamp to date 
 
     componentDidMount() {
-        TABLE_SORT.sortArrayReseter();
-        this.fetchPressAccounting();
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+                TABLE_SORT.sortArrayReseter();
+                this.fetchPressAccounting();
+            }
+        } else {
+            this.noAccessRedirect(this.props.history);
+        }
     }
 
     goRecordNewPayment() {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.props.history.push('/record_new_payment')
     }
 
@@ -496,34 +511,6 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         else {
             return this.getFromNowDate(timestamp);
         }
-    }
-
-    checkPageRenderAccess(): boolean {
-        if (AccessService.checkAccess('') === true) {
-            return true;
-        }
-        return false;
-    }
-
-    checkAllAccessForTools(): boolean {
-        if (AccessService.checkOneOFAllAccess(['']) === true) {
-            return true;
-        }
-        return false;
-    }
-
-    checkRecordPayToolAccess(): boolean {
-        if (AccessService.checkAccess('') === true) {
-            return true;
-        }
-        return false
-    }
-
-    checkShowReceiptListToolAccess(): boolean {
-        if (AccessService.checkAccess('') === true) {
-            return true;
-        }
-        return false
     }
 
     sort_handler_func(comingType: string, reverseType: string, is_just_add_or_remove: boolean, typeOfSingleAction: number) {
@@ -573,10 +560,16 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     }
 
     record_new_payment_manage_wizard(row: any) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageRecordNewPaymentTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.props.history.push(`/record_new_payment_manage_wizard/${row.receiver_id}`);
     }
 
     on_pass_to_show_selected_press_receipt_list(row: any) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManagePressAccountListTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         this.props.history.push(`/press_account_list/${row.receiver_id}/manage`);
     }
 
@@ -649,6 +642,9 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     }
 
     async fetchPressAccounting() {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false ){
+            return;
+        }
         this.setState({ ...this.state, tableProcessLoader: true });
         let res = await this._pressAccountingService.search(
             this.state.pager_limit,
@@ -994,18 +990,24 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                     <div className="row">
                         <div className="col-12">
                             <h2 className="text-bold text-dark pl-3">{Localization.payment_list}</h2>
-                            <BtnLoader
-                                loading={false}
-                                disabled={false}
-                                btnClassName="btn btn-success shadow-default shadow-hover mb-4"
-                                onClick={() => this.goRecordNewPayment()}
-                            >
-                                {Localization.record_pay}
-                            </BtnLoader>
+                            {
+                                permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                                    ?
+                                    <BtnLoader
+                                        loading={false}
+                                        disabled={false}
+                                        btnClassName="btn btn-success shadow-default shadow-hover mb-4"
+                                        onClick={() => this.goRecordNewPayment()}
+                                    >
+                                        {Localization.record_pay}
+                                    </BtnLoader>
+                                    :
+                                    undefined
+                            }
                         </div>
                     </div>
                     {
-                        AccessService.checkAccess(TPERMISSIONS.TRANSACTION_GET_PREMIUM)
+                        permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                             ?
                             <>
                                 {/* start search box */}

@@ -512,7 +512,7 @@ export const fa = {
         ORDER_ADD_PRESS : 'افزودن سفارش ویژه ناشرین',
         ORDER_EDIT_PREMIUM : 'ویرایش سفارش بدون محدودیت',
         ORDER_DELETE_PREMIUM : 'حذف سفارش بدون محدودیت',
-        ORDER_GET_PREMIUM : 'دسترسیبه لیست سفارشات بدون محدودیت',
+        ORDER_GET_PREMIUM : 'دسترسی به لیست سفارشات بدون محدودیت',
         ORDER_CHECKOUT_PREMIUM : 'تبدیل سفارش به فاکتور بدون محدودیت',
         ORDER_ITEM_GET_PREMIUM : 'دسترسی به جزئیات سفارش بدون محدودیت',
         ORDER_ITEM_EDIT_PREMIUM : 'ویرایش جزئیات سفارش بدون محدودیت',

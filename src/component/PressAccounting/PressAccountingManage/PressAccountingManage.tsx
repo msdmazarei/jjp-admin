@@ -26,6 +26,8 @@ import { AppRangePicker } from "../../form/app-rangepicker/AppRangePicker";
 import { SORT } from "../../../enum/Sort";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { DeleteModal } from "../../tool/deleteModal/deleteModal";
+import { UpdatePaymentModal } from "../UpdatePaymentModal/UpdatePaymentModal";
 // import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
@@ -100,6 +102,10 @@ interface IState {
     sort: string[];
     sortShowStyle: ISortTransaction;
     retryModal: boolean;
+    updateModalShow: boolean;
+    updateModalBtnLoader: boolean;
+    deleteModalShow: boolean;
+    deleteModalBtnLoader: boolean;
 }
 
 // define class of Comment 
@@ -386,6 +392,18 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                 ?
                 [
                     {
+                        access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
+                        text: <i title={Localization.remove} className="fa fa-trash text-danger"></i>,
+                        ac_func: (row: any) => { this.deleteModalShow(row) },
+                        name: Localization.remove
+                    },
+                    {
+                        access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
+                        text: <i title={Localization.update} className="fa fa-pencil-square-o text-primary"></i>,
+                        ac_func: (row: any) => { this.updateModalShow(row) },
+                        name: Localization.update
+                    },
+                    {
                         access: (row: any) => { return permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageRecordNewPaymentTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) },
                         text: <i title={Localization.record_pay} className="fa fa-money text-success"></i>,
                         ac_func: (row: any) => { this.record_new_payment_manage_wizard(row) },
@@ -457,15 +475,16 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
             modification_date: false,
         },
         retryModal: false,
-        addPayToPress: {
-            press_id: undefined,
-            amount: null,
-            isValid: false,
-        }
+        updateModalShow: false,
+        updateModalBtnLoader: false,
+        deleteModalShow: false,
+        deleteModalBtnLoader: false,
     }
 
     selectedPressForAddPay: any | undefined;
     selectedPressForShowReceiptList: any | undefined;
+    selectedPaymentForDelete: any | undefined;
+    selectedPaymentForUPdate: any | undefined;
     private _pressAccountingService = new PressAccountingService();
     private _personService = new PersonService();
 
@@ -559,6 +578,77 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         }
     }
 
+    // start delete modal functions show-hide-request
+
+    deleteModalShow(row: any) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
+        this.selectedPaymentForDelete = row;
+        this.setState({ ...this.state, deleteModalShow: true })
+    }
+
+    deleteModalHide() {
+        this.selectedPaymentForDelete = undefined;
+        this.setState({ ...this.state, deleteModalShow: false })
+    }
+
+    async removeReceipt(id: string) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageDeleteTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
+        this.setState({ ...this.state, deleteModalBtnLoader: true });
+        let res = await this._pressAccountingService.removeFieldOfPressAccountList(id).catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'removeFieldOfPressAccountList' } });
+            this.setState({ ...this.state, deleteModalBtnLoader: false });
+        })
+
+        if (res) {
+            this.setState({ ...this.state, deleteModalBtnLoader: false });
+            this.apiSuccessNotify();
+            this.fetchPressAccounting();
+            this.deleteModalHide();
+        }
+    }
+
+    // end delete modal functions show-hide-request
+
+
+    // start update modal functions show-hide-request
+
+    updateModalShow(row: any) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
+        this.selectedPaymentForUPdate = row;
+        this.setState({ ...this.state, updateModalShow: true })
+    }
+
+    updateModalHide() {
+        this.selectedPaymentForUPdate = undefined;
+        this.setState({ ...this.state, updateModalShow: false })
+    }
+
+    async updateReceipt(field: { payer_id: string, receiver_id: string, amount: number }, field_id: string) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
+        this.setState({ ...this.state, updateModalBtnLoader: true });
+        let res = await this._pressAccountingService.updateFieldOfPressAccountList(field, field_id).catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'updateFieldOfPressAccountList' } });
+            this.setState({ ...this.state, updateModalBtnLoader: false });
+        })
+
+        if (res) {
+            this.setState({ ...this.state, updateModalBtnLoader: false });
+            this.apiSuccessNotify();
+            this.fetchPressAccounting();
+            this.updateModalHide();
+        }
+    }
+
+    // end update modal functions show-hide-request
+
     record_new_payment_manage_wizard(row: any) {
         if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageRecordNewPaymentTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
@@ -642,7 +732,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
     }
 
     async fetchPressAccounting() {
-        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false ){
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
         this.setState({ ...this.state, tableProcessLoader: true });
@@ -1130,6 +1220,34 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                             undefined
                     }
                 </div>
+                {
+                    this.selectedPaymentForDelete === undefined
+                        ?
+                        undefined
+                        :
+                        <DeleteModal
+                            crud_name={Localization.pay}
+                            modalShow={this.state.deleteModalShow}
+                            deleteBtnLoader={this.state.deleteModalBtnLoader}
+                            rowData={{ [Localization.payer]: this.selectedPaymentForDelete.creator, [Localization.Amount_of_payment]: this.selectedPaymentForDelete.amount, [Localization.pay_time]: this.getTimestampToDate(this.selectedPaymentForDelete.creation_date) }}
+                            rowId={this.selectedPaymentForDelete.id}
+                            onHide={() => this.deleteModalHide()}
+                            onDelete={(rowId: string) => this.removeReceipt(rowId)}
+                        />
+                }
+                {
+                    this.selectedPaymentForUPdate === undefined
+                        ?
+                        undefined
+                        :
+                        <UpdatePaymentModal
+                            modalShow={this.state.updateModalShow}
+                            btnLoader={this.state.updateModalBtnLoader}
+                            rowData={this.selectedPaymentForUPdate}
+                            onHide={() => this.updateModalHide()}
+                            onUpdate={(field: { payer_id: string, receiver_id: string, amount: number }, field_id: string) => this.updateReceipt(field, field_id)}
+                        />
+                }
                 {
                     <RetryModal
                         modalShow={this.state.retryModal}

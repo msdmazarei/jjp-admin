@@ -60,6 +60,7 @@ const appRoutes = (
             <Route exact path="/record_new_payment" render={props => <AdminLayout {...props} />} />
             <Route exact path="/record_new_payment_manage_wizard/:press_id" render={props => <AdminLayout {...props} />} />
             <Route exact path="/record_new_payment_press_list_wizard/:press_id" render={props => <AdminLayout {...props} />} />
+            <Route exact path="/example" render={props => <AdminLayout {...props} />} />
             {/* <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} /> */}
             {/* <Route exact path="/" component={() => <Redirect to="/dashboard" />} /> */}
             {/* <RouteLayoutMain exact path="/dashboard" component={Dashboard} /> */}

@@ -339,6 +339,18 @@ var routes = [
     PERMISSIONS: []
   },
   // pressAccounting end
+  // example icon & path start 
+  // {
+  //   path: "/example",
+  //   name: 'example',
+  //   icon: "fa fa-coffee",
+  //   component: TagSelect,
+  //   layout: "/admin",
+  //   sidebarIconVisibility: true,
+  //   brandName: ['example'],
+  //   PERMISSIONS: []
+  // },
+  // example icon & path end 
 ];
 export default routes;
 

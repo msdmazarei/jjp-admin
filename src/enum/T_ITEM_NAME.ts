@@ -93,6 +93,8 @@ export enum T_ITEM_NAME {
     pressAccountingManage = 'pressAccountingManage',
     pressAccountingManageGrid = 'pressAccountingManageGrid',
     pressAccountingManageAllTools = 'pressAccountingManageAllTools',
+    pressAccountingManageDeleteTool = 'pressAccountingManageDeleteTool',
+    pressAccountingManageUpdateTool = 'pressAccountingManageUpdateTool',
     pressAccountingManageRecordNewPaymentTool = 'pressAccountingManageRecordNewPaymentTool',
     pressAccountingManagePressAccountListTool = 'pressAccountingManagePressAccountListTool',
     pressAccountingRecordNewPayment = 'pressAccountingRecordNewPayment',

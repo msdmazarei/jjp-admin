@@ -21,6 +21,7 @@ import { PressAccountList } from "./component/PressAccounting/PressAccountList/P
 import { Localization } from "./config/localization/localization";
 import { TPERMISSIONS } from "./enum/Permission";
 import { RecordNewPayment } from "./component/PressAccounting/RecordNewPayment/RecordNewPayment";
+import { TagSelect } from "./component/tool/TagSelect/TagSelect";
 
 var routes = [
   {
@@ -340,16 +341,16 @@ var routes = [
   },
   // pressAccounting end
   // example icon & path start 
-  // {
-  //   path: "/example",
-  //   name: 'example',
-  //   icon: "fa fa-coffee",
-  //   component: TagSelect,
-  //   layout: "/admin",
-  //   sidebarIconVisibility: true,
-  //   brandName: ['example'],
-  //   PERMISSIONS: []
-  // },
+  {
+    path: "/example",
+    name: 'example',
+    icon: "fa fa-coffee",
+    component: TagSelect,
+    layout: "/admin",
+    sidebarIconVisibility: true,
+    brandName: ['example'],
+    PERMISSIONS: []
+  },
   // example icon & path end 
 ];
 export default routes;

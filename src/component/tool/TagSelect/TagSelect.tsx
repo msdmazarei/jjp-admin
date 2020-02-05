@@ -2,17 +2,17 @@ import React from 'react';
 import Select from 'react-select';
 
 interface IProps {
+    requierd?: boolean;
+    isMulti?: boolean;
+    maxNumberOfTag?: number;
+    minNumberOfTag?: number;
     label?: string;
     placeholder?: string;
     className?: string;
-    maxNumberOfTag?: number;
-    minNumberOfTag?: number;
     clearable?: boolean;
-    isMulti?: boolean;
     menuIsOpen?: boolean;
     requierdError?: string;
     validationError?: string;
-    requierd?: boolean;
     defualtValue?: string | string[] | null | undefined;
     onChange?: (value: string[] | undefined, isValid: boolean) => void;
 }
@@ -30,6 +30,36 @@ class TagSelectComponent extends React.Component<IProps, IState>{
         isValid : false,
     }
 
+    componentDidMount(){
+        let defaultValue : { label: string, value: string }[] = [];
+        if(this.props.defualtValue === undefined || this.props.defualtValue === null){
+            this.setState({
+                ...this.state,
+                value : defaultValue,
+                isValid : false,
+            })
+        }else if(typeof this.props.defualtValue === 'string'){
+            let Tag : { label: string, value: string } = {label:this.props.defualtValue, value:this.props.defualtValue}
+            defaultValue.push(Tag);
+            this.setState({
+                ...this.state,
+                value : defaultValue,
+                isValid : true,
+            })
+        }else{
+            let array : string[] = this.props.defualtValue;
+            for (let i = 0; i < array.length; i++) {
+                let Tags : { label: string, value: string } = {label:array[i], value:array[i]};
+                defaultValue.push(Tags);
+            }
+            this.setState({
+                ...this.state,
+                value : defaultValue,
+                isValid : true,
+            })
+        }
+    }
+
     state_Value_And_IsValid_passToPropsOnChange(){
         let valueForPassToProps : string[] = [];
         let array : { label: string, value: string }[] = this.state.value;
@@ -44,16 +74,16 @@ class TagSelectComponent extends React.Component<IProps, IState>{
         let finalValueForPassToProps : string[] | undefined = valueForPassToProps.length === 0 ? undefined : valueForPassToProps;
         let isValidForPassToProps : boolean = valueForPassToProps.length === 0 ? false : true;
         if(this.props.requierd === true){
-            // if(this.props.onChange){
-            //     this.props.onChange(finalValueForPassToProps,isValidForPassToProps)
-            // }
             console.log(finalValueForPassToProps,isValidForPassToProps);
+            if(this.props.onChange){
+                this.props.onChange(finalValueForPassToProps,isValidForPassToProps)
+            }
         }
         if(this.props.requierd === false || !this.props.requierd){
-            // if(this.props.onChange){
-            //     this.props.onChange(finalValueForPassToProps,true)
-            // }
             console.log(finalValueForPassToProps,true);
+            if(this.props.onChange){
+                this.props.onChange(finalValueForPassToProps,true)
+            }
         }
     }
 
@@ -86,7 +116,7 @@ class TagSelectComponent extends React.Component<IProps, IState>{
                     value: newValue,
                     inputValue: '',
                     isValid : newValue.length === 0 ? false : true,
-                },() => this.state_Value_And_IsValid_passToPropsOnChange());
+                },() => console.log(this.state));
                 event.preventDefault();
         }
     };
@@ -98,7 +128,7 @@ class TagSelectComponent extends React.Component<IProps, IState>{
             value : newValue,
             inputValue : '',
             isValid : newValue === null ? false : true,
-        },() => this.state_Value_And_IsValid_passToPropsOnChange())
+        },() => console.log(this.state))
     }
 
     render() {

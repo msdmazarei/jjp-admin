@@ -21,7 +21,7 @@ import { PressAccountList } from "./component/PressAccounting/PressAccountList/P
 import { Localization } from "./config/localization/localization";
 import { TPERMISSIONS } from "./enum/Permission";
 import { RecordNewPayment } from "./component/PressAccounting/RecordNewPayment/RecordNewPayment";
-import { TagSelect } from "./component/tool/TagSelect/TagSelect";
+import { Example } from "./component/tool/TagSelect/example";
 
 var routes = [
   {
@@ -345,7 +345,7 @@ var routes = [
     path: "/example",
     name: 'example',
     icon: "fa fa-coffee",
-    component: TagSelect,
+    component: Example,
     layout: "/admin",
     sidebarIconVisibility: true,
     brandName: ['example'],

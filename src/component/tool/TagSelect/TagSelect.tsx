@@ -9,9 +9,10 @@ interface IProps {
     label?: string;
     placeholder?: string;
     clearable?: boolean;
+    defualtValue?: string[];
     requierdError?: string;
     validationError?: string;
-    defualtValue?: string[];
+    VAlidationFunc?: (value: string[]) => boolean;
     onChange?: (value: string[] , isValid: boolean) => void;
 }
 
@@ -98,7 +99,7 @@ class TagSelectComponent extends React.Component<IProps, IState>{
             }
         }
         let finalValueForPassToProps: string[] | undefined = valueForPassToProps.length === 0 ? [] : valueForPassToProps;
-        let isValidForPassToProps: boolean = this.validation_calculate_for_pass_to_props(valueForPassToProps);
+        let isValidForPassToProps: boolean = this.props.VAlidationFunc ? this.validation_calculate_for_pass_to_props(valueForPassToProps)&&this.props.VAlidationFunc(finalValueForPassToProps) : this.validation_calculate_for_pass_to_props(valueForPassToProps);
         if(this.props.onChange){
             this.props.onChange(finalValueForPassToProps,isValidForPassToProps);
         }
@@ -167,6 +168,7 @@ class TagSelectComponent extends React.Component<IProps, IState>{
             case 'Enter':
             case 'Tab':
                 const newVal = this.state.inputValue;
+                if((this.props.isMulti === undefined || this.props.isMulti === false) && this.state.value.length > 0) return;
                 if (this.is_tag_exist(newVal) === true) return;
                 const newValue: { label: string, value: string }[] = this.state.value === null ? [{ label: newVal, value: newVal }] : [...this.state.value, { label: newVal, value: newVal }];
                 this.setState({
@@ -223,7 +225,7 @@ class TagSelectComponent extends React.Component<IProps, IState>{
                         undefined
                 }
                 <Select
-                    isMulti={this.props.isMulti === true ? true : false}
+                    isMulti
                     onChange={(value: any) => this.tag_handleChange(value)}
                     value={this.state.value}
                     placeholder={this.props.placeholder ? this.props.placeholder : undefined}

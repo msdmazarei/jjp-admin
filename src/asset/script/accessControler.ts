@@ -98,6 +98,7 @@ export abstract class permissionChecker {
             { item: T_ITEM_NAME.pressAccountingManageRecordNewPaymentTool, permissions: []},
             { item: T_ITEM_NAME.pressAccountingManagePressAccountListTool, permissions: []},
             { item: T_ITEM_NAME.pressAccountingRecordNewPayment, permissions: []},
+            { item: T_ITEM_NAME.pressAccountingUpdatePayment, permissions: []},
             { item: T_ITEM_NAME.pressAccountList, permissions: []},
             { item: T_ITEM_NAME.pressAccountListGrid, permissions: []},
             { item: T_ITEM_NAME.pressAccountListTools, permissions: []},

@@ -22,9 +22,9 @@ class ExampleComponent extends React.Component<any, IState>{
                 <div className="row">
                     <div className="col-4">
                         <TagSelect 
-                            // requierd
-                            // isMulti
-                            // maxNumberOfTag={5}
+                            requierd
+                            isMulti
+                            maxNumberOfTag={5}
                             minNumberOfTag={3}
                             label='tag'
                             placeholder='tag'

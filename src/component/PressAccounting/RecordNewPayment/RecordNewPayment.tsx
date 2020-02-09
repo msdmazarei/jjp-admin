@@ -28,8 +28,15 @@ interface ICmp_select<T> {
 
 enum SAVE_MODE {
     CREATE = 'CREATE',
+    UPDATE = 'UPDATE',
     MAINLISTWIZARD = 'MAINLISTWIZARD',
-    PRESSLISTWIZARD = 'PRESSLISTWIZARD'
+    PRESSLISTWIZARD = 'PRESSLISTWIZARD',
+    PRESSLISTWIZARDUPDATE = 'PRESSLISTWIZARDUPDATE'
+}
+
+enum SAVE_IN {
+    PAYER = 'PAYER',
+    RECEIVER = 'RECEIVER',
 }
 
 interface IProps {
@@ -41,14 +48,14 @@ interface IProps {
 
 interface IState {
     payment_data: {
-        payer_id: {
-            id: string | undefined;
+        payer: {
+            person: ICmp_select<IPerson> | null;
             isValid: boolean;
-        }
-        receiver_id: {
-            press: ICmp_select<IPerson> | null;
+        };
+        receiver: {
+            person: ICmp_select<IPerson> | null;
             isValid: boolean
-        }
+        };
         amount: {
             value: number | undefined,
             isValid: boolean
@@ -67,12 +74,12 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
     state = {
         payment_data: {
-            payer_id: {
-                id: undefined,
+            payer: {
+                person: null,
                 isValid: false,
             },
-            receiver_id: {
-                press: null,
+            receiver: {
+                person: null,
                 isValid: false,
             },
             amount: {
@@ -92,60 +99,115 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
 
     componentDidMount() {
-        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
-            this.payer_id_set_in_state();
-            if (this.props.match.path.includes('/record_new_payment_manage_wizard/:press_id')) {
-                this.setState({
-                    ...this.state,
-                    saveMode: SAVE_MODE.MAINLISTWIZARD
-                }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
-            }
-            if (this.props.match.path.includes('/record_new_payment_press_list_wizard/:press_id')) {
-                this.setState({
-                    ...this.state,
-                    saveMode: SAVE_MODE.PRESSLISTWIZARD,
-                }, () => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id))
-            }
-        } else {
-            this.noAccessRedirect(this.props.history);
-        }
-    }
-
-    payer_id_set_in_state() {
-        if (Store2.getState().logged_in_user === null) {
-            return;
-        }
-        this.setState({
-            ...this.state,
-            payment_data: {
-                ...this.state.payment_data,
-                payer_id: {
-                    id: (Store2.getState().logged_in_user as IUser).person.id,
-                    isValid: true,
+        if (this.props.match.path.includes('/record_new_payment') ||
+            this.props.match.path.includes('/record_new_payment_manage_wizard/:press_id') ||
+            this.props.match.path.includes('/record_new_payment_press_list_wizard/:press_id')) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+                if (this.props.match.path.includes('/record_new_payment_manage_wizard/:press_id')) {
+                    this.setState({
+                        ...this.state,
+                        saveMode: SAVE_MODE.MAINLISTWIZARD
+                    }, () => this.fetch_payer_or_receiver_and_set_in_state(this.props.match.params.press_id, SAVE_IN.RECEIVER))
                 }
+                if (this.props.match.path.includes('/record_new_payment_press_list_wizard/:press_id')) {
+                    this.setState({
+                        ...this.state,
+                        saveMode: SAVE_MODE.PRESSLISTWIZARD,
+                    }, () => this.fetch_payer_or_receiver_and_set_in_state(this.props.match.params.press_id, SAVE_IN.RECEIVER))
+                }
+            } else {
+                this.noAccessRedirect(this.props.history);
             }
-        }, () => this.form_validation_func());
+        }
+
+        if (this.props.match.path.includes('/update_recorded_payment/:payment_id') ||
+            this.props.match.path.includes('/update_recorded_payment_manage_wizard/:payment_id')) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingUpdatePayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+                if (this.props.match.path.includes('/update_recorded_payment/:payment_id')) {
+                    this.setState({
+                        ...this.state,
+                        saveMode: SAVE_MODE.CREATE,
+                    }, () => this.fetch_payment_by_id_and_set_in_state_and_call_payer_fetcher_func(this.props.match.params.payment_id))
+                }
+                if (this.props.match.path.includes('/update_recorded_payment_manage_wizard/:payment_id')) {
+                    this.setState({
+                        ...this.state,
+                        saveMode: SAVE_MODE.PRESSLISTWIZARDUPDATE,
+                    }, () => this.fetch_payment_by_id_and_set_in_state_and_call_payer_fetcher_func(this.props.match.params.payment_id))
+                }
+            } else {
+                this.noAccessRedirect(this.props.history);
+            }
+        }
     }
 
-    async fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(receiver_id: string) {
+    async fetch_payment_by_id_and_set_in_state_and_call_payer_fetcher_func(payment_id: string) {
         this.setState({ ...this.state, retryModal: false })
-        let res = await this._personService.byId(receiver_id).catch(error => {
+        let res = await this._pressAccounting.getFieldOfPressAccountList(payment_id).catch(error => {
+            this.setState({ ...this.state, retryModal: true })
+            this.handleError({ error: error.response, toastOptions: { toastId: 'fetch_payment_by_id_and_set_in_state_and_call_payer_fetcher_func' } })
+        })
+
+        if (res) {
+            let receiver_person: { label: string, value: IPerson } | null = { label: this.getPersonFullName(res.data.receiver), value: res.data.receiver };
+            let receiver_person_valid: boolean = receiver_person === null ? false : true;
+            let amount_num: number = res.data.amount;
+            let amount_num_valid: boolean = typeof amount_num === 'number' ? true : false;
+            let payer_id: string = res.data.payer_id;
+            this.setState({
+                ...this.state,
+                payment_data: {
+                    ...this.state.payment_data,
+                    receiver: {
+                        person: receiver_person,
+                        isValid: receiver_person_valid
+                    },
+                    amount: {
+                        value: amount_num,
+                        isValid: amount_num_valid,
+                    }
+                }
+            }, () => {
+                this.form_validation_func();
+                this.fetch_payer_or_receiver_and_set_in_state(payer_id, SAVE_IN.PAYER)
+            })
+        }
+    }
+
+    async fetch_payer_or_receiver_and_set_in_state(id: string, person_type: SAVE_IN) {
+        this.setState({ ...this.state, retryModal: false })
+        let res = await this._personService.byId(id).catch(error => {
             this.setState({ ...this.state, retryModal: true })
             this.handleError({ error: error.response, toastOptions: { toastId: 'fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state_error' } })
         })
 
         if (res) {
-            this.setState({
-                ...this.state,
-                payment_data: {
-                    ...this.state.payment_data,
-                    receiver_id: {
-                        press: { label: this.getPersonFullName(res.data), value: res.data },
-                        isValid: true
-                    }
-                },
-                retryModal: false
-            })
+            if (person_type === SAVE_IN.RECEIVER) {
+                this.setState({
+                    ...this.state,
+                    payment_data: {
+                        ...this.state.payment_data,
+                        receiver: {
+                            person: { label: this.getPersonFullName(res.data), value: res.data },
+                            isValid: true
+                        }
+                    },
+                    retryModal: false
+                }, () => this.form_validation_func())
+            }
+            if (person_type === SAVE_IN.PAYER) {
+                this.setState({
+                    ...this.state,
+                    payment_data: {
+                        ...this.state.payment_data,
+                        payer: {
+                            person: { label: this.getPersonFullName(res.data), value: res.data },
+                            isValid: true
+                        }
+                    },
+                    retryModal: false
+                }, () => this.form_validation_func())
+            }
         }
     }
 
@@ -174,14 +236,14 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
         }, () => this.form_validation_func())
     }
 
-    bookPressChange(selectedPerson: { label: string, value: IPerson } | null) {
+    payer_or_receiver_Change(selectedPerson: { label: string, value: IPerson } | null, input: string) {
         if (selectedPerson === null) {
             this.setState({
                 ...this.state,
                 payment_data: {
                     ...this.state.payment_data,
-                    receiver_id: {
-                        press: null,
+                    [input]: {
+                        person: null,
                         isValid: false,
                     }
                 },
@@ -191,8 +253,8 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                 ...this.state,
                 payment_data: {
                     ...this.state.payment_data,
-                    receiver_id: {
-                        press: selectedPerson,
+                    [input]: {
+                        person: selectedPerson,
                         isValid: true,
                     }
                 },
@@ -202,8 +264,8 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
     form_validation_func() {
         if (this.state.payment_data.amount.isValid === true
-            && this.state.payment_data.payer_id.isValid === true
-            && this.state.payment_data.receiver_id.isValid === true) {
+            && this.state.payment_data.payer.isValid === true
+            && this.state.payment_data.receiver.isValid === true) {
             this.setState({ ...this.state, isFormValid: true })
         } else {
             this.setState({ ...this.state, isFormValid: false })
@@ -221,17 +283,17 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     gotoMainList() {
-        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManage], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
             this.props.history.push(`/press_accounts/manage`);
-        }else{
+        } else {
             this.noAccessRedirect(this.props.history);
         }
     }
 
     gotoPressList() {
-        if(permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountList], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountList], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
             this.props.history.push(`/press_account_list/${this.props.match.params.press_id}/manage`);
-        }else{
+        } else {
             this.noAccessRedirect(this.props.history);
         }
     }
@@ -240,12 +302,12 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
         if (this.state.isFormValid === false) {
             return;
         }
-        if (this.state.payment_data.receiver_id.press === null) {
+        if (this.state.payment_data.receiver.person === null || this.state.payment_data.payer.person === null) {
             return;
         }
         const created_payment_data: { payer_id: string, receiver_id: string, amount: number } = {
-            payer_id: this.state.payment_data.payer_id.id!,
-            receiver_id: (this.state.payment_data.receiver_id.press as any).value.id,
+            payer_id: (this.state.payment_data.payer.person as any).value.id,
+            receiver_id: (this.state.payment_data.receiver.person as any).value.id,
             amount: Number(this.state.payment_data.amount.value!)
         };
         this.setState({ ...this.state, createLoader: true });
@@ -265,12 +327,12 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
         this.setState({
             ...this.state,
             payment_data: {
-                payer_id: {
-                    id: this.state.payment_data.payer_id.id,
-                    isValid: this.state.payment_data.payer_id.isValid,
+                payer: {
+                    person: null,
+                    isValid: false,
                 },
-                receiver_id: {
-                    press: null,
+                receiver: {
+                    person: null,
                     isValid: false,
                 },
                 amount: {
@@ -339,23 +401,38 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                 <div className="row">
                                     <div className="col-md-4 col-sm-6">
                                         <div className="form-group">
+                                            <label htmlFor="">{Localization.payer}<span className="text-danger">*</span></label>
+                                            <AsyncSelect
+                                                isClearable
+                                                placeholder={Localization.payer}
+                                                cacheOptions
+                                                defaultOptions
+                                                value={this.state.payment_data.payer.person}
+                                                loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
+                                                noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
+                                                onChange={(selectedPerson: any) => this.payer_or_receiver_Change(selectedPerson, 'payer')}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-6">
+                                        <div className="form-group">
                                             <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
                                             <AsyncSelect
                                                 isClearable
                                                 placeholder={Localization.role_type_list.Press}
                                                 cacheOptions
                                                 defaultOptions
-                                                value={this.state.payment_data.receiver_id.press}
+                                                value={this.state.payment_data.receiver.person}
                                                 loadOptions={(inputValue, callback) => this.debounce_300(inputValue, callback)}
                                                 noOptionsMessage={(obj) => this.select_noOptionsMessage(obj)}
-                                                onChange={(selectedPerson: any) => this.bookPressChange(selectedPerson)}
-                                                isDisabled={(this.state.saveMode === SAVE_MODE.MAINLISTWIZARD || this.state.saveMode === SAVE_MODE.PRESSLISTWIZARD) ? true : false}
+                                                onChange={(selectedPerson: any) => this.payer_or_receiver_Change(selectedPerson, 'receiver')}
                                             />
                                         </div>
                                     </div>
                                     <div className="col-md-4 col-sm-6">
                                         <FixNumber
                                             onChange={(value, isValid) => this.handleInputChange(value, isValid)}
+                                            required
                                             label={Localization.price}
                                             placeholder={Localization.price}
                                             defaultValue={this.state.payment_data.amount.value}
@@ -397,12 +474,6 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
-                <RetryModal
-                    modalShow={this.state.retryModal}
-                    onHide={() => this.onHideRetryModal()}
-                    onRetry={() => this.fetch_receiver_person_in_SAVE_EDIT_mode_and_set_in_state(this.props.match.params.press_id)}
-                />
-                <ToastContainer {...this.getNotifyContainerConfig()} />
             </>
         )
     }

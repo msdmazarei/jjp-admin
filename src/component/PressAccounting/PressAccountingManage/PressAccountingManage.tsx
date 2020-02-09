@@ -620,8 +620,9 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
-        this.selectedPaymentForUPdate = row;
-        this.setState({ ...this.state, updateModalShow: true })
+        this.props.history.push(`/update_recorded_payment/${row.id}`)
+        // this.selectedPaymentForUPdate = row;
+        // this.setState({ ...this.state, updateModalShow: true })
     }
 
     updateModalHide() {

@@ -322,6 +322,24 @@ var routes = [
     PERMISSIONS: []
   },
   {
+    path: "/update_recorded_payment/:payment_id",
+    name: Localization.payment_update,
+    component: RecordNewPayment,
+    layout: "/admin",
+    sidebarIconVisibility: false,
+    brandName: ['update_recorded_payment', 'manage'],
+    PERMISSIONS: []
+  },
+  {
+    path: "/update_recorded_payment_manage_wizard/:payment_id",
+    name: Localization.payment_update,
+    component: RecordNewPayment,
+    layout: "/admin", 
+    sidebarIconVisibility: false,
+    brandName: ['update_recorded_payment', 'manage'],
+    PERMISSIONS: []
+  },
+  {
     path: "/record_new_payment_manage_wizard/:press_id",
     name: Localization.record_pay,
     component: RecordNewPayment,

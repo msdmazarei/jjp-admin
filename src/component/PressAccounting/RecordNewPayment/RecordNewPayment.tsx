@@ -280,6 +280,10 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                         person: receiver_person,
                         isValid: receiver_person_valid
                     },
+                    amount: {
+                        value: amount_num,
+                        isValid: amount_num_valid
+                    },
                 }
             }, () => {
                 this.form_validation_func();

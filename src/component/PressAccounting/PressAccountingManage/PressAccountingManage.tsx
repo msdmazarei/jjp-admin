@@ -28,6 +28,7 @@ import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
 import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 import { UpdatePaymentModal } from "../UpdatePaymentModal/UpdatePaymentModal";
+import { payment_type } from "../RecordNewPayment/RecordNewPayment";
 // import { SORT } from "../../../enum/Sort";
 
 /// define props & state ///////
@@ -114,11 +115,44 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         pressAccounting_table: {
             list: [],
             colHeaders: [
+                // start payer
                 {
                     field: "payer", title: Localization.payer,
                     templateFunc: () => {
                         return <>
                             {Localization.payer}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.payer_id) {
+                            return <div title={row.payer_id}>wait!!!</div>
+                        }
+                        return '';
+                    }
+                },
+                // end payer
+                // start reciever
+                {
+                    field: "receiver_press", title: Localization.receiver_press,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.receiver_press}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.receiver) {
+                            return <div title={this.getPersonFullName(row.receiver)}>{this.getPersonFullName(row.receiver)}</div>
+                        }
+                        return '';
+                    }
+                },
+                // end reciever
+                // start creator
+                {
+                    field: "creator", title: Localization.creator,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.creator}
                             {
                                 (this.is_this_sort_exsit_in_state(SORT.creator) === false && this.is_this_sort_exsit_in_state(SORT.creator_) === false)
                                     ?
@@ -159,38 +193,40 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end creator
+                // start record date
                 {
-                    field: "receiver_press", title: Localization.receiver_press,
+                    field: "payment record time", title: Localization.creation_date,
                     templateFunc: () => {
                         return <>
-                            {Localization.receiver_press}
+                            {Localization.creation_date}
                             {
-                                (this.is_this_sort_exsit_in_state(SORT.receiver_id) === false && this.is_this_sort_exsit_in_state(SORT.receiver_id_) === false)
+                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
                                     ?
                                     <span
                                         className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.receiver_id, SORT.receiver_id_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('receiver_id', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('receiver_id', false)}>
-                                        <i className={this.state.sortShowStyle.receiver_id === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
+                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
+                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
                                     </span>
                                     :
-                                    this.is_this_sort_exsit_in_state(SORT.receiver_id) === true
+                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
                                         ?
                                         <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.receiver_id_, SORT.receiver_id, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('receiver_id', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('receiver_id', false)}>
-                                            <i className={this.state.sortShowStyle.receiver_id === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
+                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
+                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
                                         </span>
                                         :
-                                        this.is_this_sort_exsit_in_state(SORT.receiver_id_) === true
+                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
                                             ?
                                             <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.receiver_id_, SORT.receiver_id, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('receiver_id', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('receiver_id', false)}>
-                                                <i className={this.state.sortShowStyle.receiver_id === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
+                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
+                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
+                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
+                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
                                             </span>
                                             :
                                             undefined
@@ -198,12 +234,14 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row.receiver) {
-                            return <div title={this.getPersonFullName(row.receiver)}>{this.getPersonFullName(row.receiver)}</div>
+                        if (row.creation_date) {
+                            return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
                         }
                         return '';
                     }
                 },
+                // end record date
+                // start amount
                 {
                     field: "amount", title: Localization.Amount_of_payment,
                     templateFunc: () => {
@@ -252,51 +290,42 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end amount
+                // start payment type
+                {
+                    field: "payment_t", title: Localization.payment_type_grid,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.payment_type_grid}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.payment_details !== null && row.payment_details !== undefined) {
+                            let p_t: any = row.payment_details.payment_type;
+                            let pay_type: payment_type = p_t;
+                            return <div title={row.amount}>{Localization.payment_type[pay_type]}</div>
+                        }
+                        return '';
+                    }
+                },
+                // end payment type
+                // start payment date
                 {
                     field: "pay_time", title: Localization.pay_time,
                     templateFunc: () => {
                         return <>
                             {Localization.pay_time}
-                            {
-                                (this.is_this_sort_exsit_in_state(SORT.creation_date) === false && this.is_this_sort_exsit_in_state(SORT.creation_date_) === false)
-                                    ?
-                                    <span
-                                        className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                        onClick={() => this.sort_handler_func(SORT.creation_date, SORT.creation_date_, true, 1)}
-                                        onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                        onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                        <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort sort-btn-icon cursor-pointer text-muted" : "fa fa-sort-asc sort-btn-icon cursor-pointer text-muted"}></i>
-                                    </span>
-                                    :
-                                    this.is_this_sort_exsit_in_state(SORT.creation_date) === true
-                                        ?
-                                        <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                            onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, false, 0)}
-                                            onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                            onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                            <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-asc sort-btn-icon cursor-pointer text-success" : "fa fa-sort-desc sort-btn-icon cursor-pointer text-success"}></i>
-                                        </span>
-                                        :
-                                        this.is_this_sort_exsit_in_state(SORT.creation_date_) === true
-                                            ?
-                                            <span className="btn btn-sm my-0 py-0 sort-btn-icon-wrapper"
-                                                onClick={() => this.sort_handler_func(SORT.creation_date_, SORT.creation_date, true, 2)}
-                                                onMouseOver={() => this.sort_icon_change_on_mouse_over_out('creation_date', true)}
-                                                onMouseOut={() => this.sort_icon_change_on_mouse_over_out('creation_date', false)}>
-                                                <i className={this.state.sortShowStyle.creation_date === false ? "fa fa-sort-desc sort-btn-icon cursor-pointer text-success" : "fa fa-sort cursor-pointer text-muted"}></i>
-                                            </span>
-                                            :
-                                            undefined
-                            }
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row.creation_date) {
-                            return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+                        if (row.payment_details !== null && row.payment_details !== undefined) {
+                            return <div title={this._getTimestampToDate(row.payment_details.date)}>{this.getTimestampToDate(row.payment_details.date)}</div>
                         }
                         return '';
                     }
                 },
+                // end payment date
+                // start modifier
                 {
                     field: "modifier", title: Localization.modifier,
                     templateFunc: () => {
@@ -342,6 +371,8 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end modifier
+                // start modification_date
                 {
                     field: "modification_date", title: Localization.modification_date,
                     templateFunc: () => {
@@ -387,6 +418,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end modification_date
             ],
             actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageAllTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                 ?
@@ -1078,7 +1110,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
         return (
             <>
                 <div className="content">
-                    <div className="row">
+                    {/* <div className="row">
                         <div className="col-12">
                             <h2 className="text-bold text-dark pl-3">{Localization.payment_list}</h2>
                             {
@@ -1096,7 +1128,7 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                     undefined
                             }
                         </div>
-                    </div>
+                    </div> */}
                     {
                         permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                             ?
@@ -1123,14 +1155,6 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                             {/* start search box inputs */}
                                             <div className={this.state.advance_search_box_show === false ? "row d-none" : "row"}>
                                                 <div className="col-md-3 col-sm-6">
-                                                    <Input
-                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, 'creator')}
-                                                        label={Localization.payer}
-                                                        placeholder={Localization.payer}
-                                                        defaultValue={this.state.filter_state.creator.value}
-                                                    />
-                                                </div>
-                                                <div className="col-md-3 col-sm-6">
                                                     <label >{Localization.role_type_list.Press}</label>
                                                     <i
                                                         title={Localization.reset}
@@ -1156,8 +1180,16 @@ class PressAccountingManageComponent extends BaseComponent<IProps, IState>{
                                                     />
                                                 </div>
                                                 <div className="col-md-3 col-sm-6">
+                                                    <Input
+                                                        onChange={(value, isValid) => this.handleInputChange(value, isValid, 'creator')}
+                                                        label={Localization.creator}
+                                                        placeholder={Localization.payer}
+                                                        defaultValue={this.state.filter_state.creator.value}
+                                                    />
+                                                </div>
+                                                <div className="col-md-3 col-sm-6">
                                                     <AppRangePicker
-                                                        label={Localization.pay_time}
+                                                        label={Localization.creation_date}
                                                         from={this.state.filter_state.creation_date.from}
                                                         to={this.state.filter_state.creation_date.to}
                                                         onChange={(from, from_isValid, to, to_isValid, isValid) => this.range_picker_onChange(from, from_isValid, to, to_isValid, isValid, 'creation_date')}

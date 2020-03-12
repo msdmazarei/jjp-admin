@@ -13,6 +13,13 @@ import { BtnLoader } from '../../../form/btn-loader/BtnLoader';
 import { BGUtility } from '../fileUploader/fileUploader';
 import { BOOK_TYPES } from '../../../../enum/Book';
 
+enum col_show {
+    m0_t12 = "m0_t12",
+    m3_t9 = "m3_t9",
+    m6_t6 = "m6_t6",
+    m12_t0 = "m12_t0",
+}
+
 interface IProps {
     match?: any;
     history?: History;
@@ -27,6 +34,7 @@ interface IState {
     bookTitle: string;
     bookContent: Book_children[];
     current_id: string;
+    col_state: number;
 }
 
 class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
@@ -34,6 +42,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         bookTitle: '',
         bookContent: [],
         current_id: '',
+        col_state: 3,
     }
 
     book: Book_children[] = [];
@@ -141,12 +150,13 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addChapter() {
         const newId: string = AppGuid.generate();
-        const firstBodyId : string = AppGuid.generate();
-        let newChild: Book_children = { 
-            front_id: newId, 
-            title: '', 
-            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }],
-            children: [] };
+        const firstBodyId: string = AppGuid.generate();
+        let newChild: Book_children = {
+            front_id: newId,
+            title: '',
+            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id: firstBodyId, type: 'text', text: '' }] : [{ front_id: firstBodyId, type: 'voice', voice: '', name: '' }],
+            children: []
+        };
         this.book.push(newChild);
         this.setState({
             ...this.state,
@@ -160,12 +170,13 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addChapterBefore_inMain(current_id: string) {
         const newId: string = AppGuid.generate();
-        const firstBodyId : string = AppGuid.generate();
-        let newChild: Book_children = { 
-            front_id: newId, 
-            title: '', 
-            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
-            children: [] };
+        const firstBodyId: string = AppGuid.generate();
+        let newChild: Book_children = {
+            front_id: newId,
+            title: '',
+            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id: firstBodyId, type: 'text', text: '' }] : [{ front_id: firstBodyId, type: 'voice', voice: '', name: '' }],
+            children: []
+        };
         if (!this.book.length) return
         let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
@@ -183,12 +194,13 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addChapterAfter_inMain(current_id: string) {
         const newId: string = AppGuid.generate();
-        const firstBodyId : string = AppGuid.generate();
-        let newChild: Book_children = { 
-            front_id: newId, 
-            title: '', 
-            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
-            children: [] };
+        const firstBodyId: string = AppGuid.generate();
+        let newChild: Book_children = {
+            front_id: newId,
+            title: '',
+            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id: firstBodyId, type: 'text', text: '' }] : [{ front_id: firstBodyId, type: 'voice', voice: '', name: '' }],
+            children: []
+        };
         if (!this.book.length) return
         let obj = this.searchTree(this.book, current_id);
         if (obj === null) return;
@@ -210,12 +222,13 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             return;
         }
         const newId: string = AppGuid.generate();
-        const firstBodyId : string = AppGuid.generate();
-        let newChild: Book_children = { 
-            front_id: newId, 
-            title: '', 
-            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
-            children: [] };
+        const firstBodyId: string = AppGuid.generate();
+        let newChild: Book_children = {
+            front_id: newId,
+            title: '',
+            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id: firstBodyId, type: 'text', text: '' }] : [{ front_id: firstBodyId, type: 'voice', voice: '', name: '' }],
+            children: []
+        };
         let result = this.searchTree_parent(current_id);
         if (result === null) return;
         let array: Book_children[] = result!.children;
@@ -239,12 +252,13 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
             return;
         }
         const newId: string = AppGuid.generate();
-        const firstBodyId : string = AppGuid.generate();
-        let newChild: Book_children = { 
-            front_id: newId, 
-            title: '', 
-            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
-            children: [] };
+        const firstBodyId: string = AppGuid.generate();
+        let newChild: Book_children = {
+            front_id: newId,
+            title: '',
+            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id: firstBodyId, type: 'text', text: '' }] : [{ front_id: firstBodyId, type: 'voice', voice: '', name: '' }],
+            children: []
+        };
         let result = this.searchTree_parent(current_id);
         if (result === null) return;
         let array: Book_children[] = result!.children;
@@ -264,12 +278,13 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
 
     addNewSubChapterFromBodyGeneratorComponent(current_id: string) {
         const newId: string = AppGuid.generate();
-        const firstBodyId : string = AppGuid.generate();
-        let newChild: Book_children = { 
-            front_id: newId, 
-            title: '', 
-            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id : firstBodyId , type : 'text' , text : '' }] : [{front_id : firstBodyId , type : 'voice' , voice : '' , name : '' }], 
-            children: [] };
+        const firstBodyId: string = AppGuid.generate();
+        let newChild: Book_children = {
+            front_id: newId,
+            title: '',
+            body: this.props.bookType === BOOK_TYPES.Msd ? [{ front_id: firstBodyId, type: 'text', text: '' }] : [{ front_id: firstBodyId, type: 'voice', voice: '', name: '' }],
+            children: []
+        };
         let result = this.searchTree(this.book, current_id);
         if (result === null) return;
         result!.children.push(newChild);
@@ -388,14 +403,14 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                         }
                                         {
                                             (this.props.bookType === BOOK_TYPES.Msd && item.title === '')
-                                            ?
-                                            <i title={Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank} className="fa fa-minus-circle text-danger"></i>
-                                            :
-                                            ((this.props.bookType === BOOK_TYPES.Audio && item.title === '') || (this.props.bookType === BOOK_TYPES.Audio && BGUtility.is_this_chapter_body_full(item.body as book_body_voice[]) === false))
-                                            ?
-                                            <i title={Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank} className="fa fa-minus-circle text-danger"></i>
-                                            :
-                                            undefined    
+                                                ?
+                                                <i title={Localization.msg.ui.admin_book_content_generate.chapter_title_cannot_be_blank} className="fa fa-minus-circle text-danger"></i>
+                                                :
+                                                ((this.props.bookType === BOOK_TYPES.Audio && item.title === '') || (this.props.bookType === BOOK_TYPES.Audio && BGUtility.is_this_chapter_body_full(item.body as book_body_voice[]) === false))
+                                                    ?
+                                                    <i title={Localization.msg.ui.admin_book_content_generate.chapter_title_and_content_cannot_be_blank} className="fa fa-minus-circle text-danger"></i>
+                                                    :
+                                                    undefined
                                         }
                                         {item.title}
                                     </div>
@@ -404,7 +419,7 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                             title={Localization.more}
                                             split
                                             variant="light"
-                                            className="px-3 bg-light btn"
+                                            className="px-1 bg-transparent border-0 btn"
                                             id={AppGuid.generate()}
                                         >
                                             <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>
@@ -428,7 +443,11 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                                             </Dropdown.Item>
                                             <Dropdown.Item className="text-center" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.front_id)}>
                                                 <span className="action-name">
-                                                    <i className="fa fa-arrow-circle-left text-primary mx-1" onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.front_id)}></i>
+                                                    <i
+                                                        className={this.props.internationalization.flag === 'en' ? "fa fa-arrow-circle-right text-primary mx-1" : "fa fa-arrow-circle-left text-primary mx-1"}
+                                                        onClick={() => this.addNewSubChapterFromBodyGeneratorComponent(item.front_id)}
+                                                    >
+                                                    </i>
                                                 </span>
                                                 <span className="action-name">
                                                     {Localization.book_generator.addSubChapter}
@@ -459,6 +478,21 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
         </>
     }
 
+    col_state_number_changer(col_type: col_show) {
+        if (col_type === col_show.m0_t12 && this.state.current_id !== "") {
+            this.setState({ ...this.state, col_state: 0 })
+        }
+        if (col_type === col_show.m3_t9) {
+            this.setState({ ...this.state, col_state: 3 })
+        }
+        if (col_type === col_show.m6_t6) {
+            this.setState({ ...this.state, col_state: 6 })
+        }
+        if (col_type === col_show.m12_t0) {
+            this.setState({ ...this.state, col_state: 12 })
+        }
+    }
+
     render() {
         return (
             <div>
@@ -469,8 +503,35 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                         </div>
                     </div>
                 </div>
+                {/* start text & tree show handle  */}
+                <div className="justify-content-start d-flex my-2">
+                    <i
+                        className={this.state.col_state === 3 ? "fa fa-th-list mx-1 text-danger cursor-pointer" : "fa fa-th-list mx-1 text-primary cursor-pointer"}
+                        onClick={() => this.col_state_number_changer(col_show.m3_t9)}
+                    >
+                    </i>
+
+                    <i
+                        className={this.state.col_state === 12 ? "fa fa-list-ol mx-1 text-danger cursor-pointer" : "fa fa-list-ol mx-1 text-primary cursor-pointer"}
+                        onClick={() => this.col_state_number_changer(col_show.m12_t0)}
+                    >
+                    </i>
+
+                    <i
+                        className={this.state.col_state === 0 ? "fa fa-text-width mx-1 text-danger cursor-pointer" : "fa fa-text-width mx-1 text-primary cursor-pointer"}
+                        onClick={() => this.col_state_number_changer(col_show.m0_t12)}
+                    >
+                    </i>
+
+                    <i
+                        className={this.state.col_state === 6 ? "fa fa-columns mx-1 text-danger cursor-pointer" : "fa fa-columns mx-1 text-primary cursor-pointer"}
+                        onClick={() => this.col_state_number_changer(col_show.m6_t6)}
+                    >
+                    </i>
+                </div>
+                {/* end text & tree show handle  */}
                 <div className="row">
-                    <div className="col-3">
+                    <div className={this.state.col_state === 0 ? "d-none" : "col-"+(this.state.col_state)}>
                         {
                             this.book.length === 0
                                 ?
@@ -492,12 +553,12 @@ class ChapterGeneratorComponent extends BaseComponent<IProps, IState> {
                         {
                             this.state.bookContent.length === 0
                                 ?
-                                undefined 
+                                undefined
                                 :
                                 this.book_tree_render(this.state.bookContent)
                         }
                     </div>
-                    <div className="col-9">
+                    <div className={this.state.col_state === 12 ? "d-none" : "col-"+(12-this.state.col_state)}>
                         {
                             (this.state.bookContent.length === 0 || this.state.current_id === '')
                                 ?

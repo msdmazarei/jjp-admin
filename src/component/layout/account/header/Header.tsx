@@ -5,9 +5,7 @@ class LayoutAccountHeaderComponent extends React.Component<any>{
     render() {
         return (
             <>
-                <header className="header">
-                    <div className="title">{Localization.app_logo}</div>
-                </header>
+                
             </>
         )
     }

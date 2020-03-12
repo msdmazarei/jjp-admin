@@ -7,18 +7,18 @@
   bottom: 0;
   min-height: 150px;
 
-  // &.gutter-15 {
-  //   right: 15px;
-  //   left: 15px;
-  // }
+  &.gutter-15 {
+    right: 15px;
+    left: 15px;
+  }
   &.gutter-0 {
     right: 0;
     left: 0;
   }
-  &.gutter-1r {
-      right: 1rem;
-      left: 1rem;
-    }
+  &.gutter-n1r {
+    right: -1rem;
+    left: -1rem;
+  }
 }
 
 .lds-roller {
@@ -29,7 +29,7 @@
   //top: 50%;
   //right: 50%;
   //@include transform(translate(50%, -50%));
-  @extend .center-el-in-box;
+  // @extend .center-el-in-box;
 
   div {
     animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
@@ -48,7 +48,7 @@
 
     @for $i from 1 through 8 {
       &:nth-child(#{$i}) {
-        animation-delay: $i*-0.036s;
+        animation-delay: $i * -0.036s;
 
         /* &:after {
         } */
@@ -103,7 +103,18 @@
         left: 10px;
       }
     }
+  }
+}
 
+@each $color, $color-varient in $app-colors {
+  .lds-roller-wrapper.lds-roller-#{$color} {
+    .lds-roller {
+      div {
+        &:after {
+          background: app-color($color);
+        }
+      }
+    }
   }
 }
 

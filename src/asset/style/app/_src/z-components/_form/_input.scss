@@ -1,37 +1,78 @@
-app-input {
-
-  label, .el-required, .el-tooltip {
-    margin-#{$dir-mode-align-inverse}: .25rem; //@extend .mr-1;
+.app-input {
+  input{
+    border-radius: 0.25rem!important;
   }
-  label {
-
-  }
-  .el-required, .el-tooltip {
-    font-size: .9rem;
-  }
-  .el-required {
-
-  }
-  .el-tooltip {
-
-  }
-
-  input {
-  }
-
-  &.input-sm {
-    label {
-      font-size: .8rem;
-      margin-bottom: .25rem;
-    }
-
-    .el-required, .el-tooltip {
-      font-size: .7rem;
-    }
-
+  &.input-readonly {
     input {
-      @extend .form-control-sm;
+      border-color: transparent;
+      box-shadow: none;
     }
-
   }
+
+  &.input-bordered-bottom {
+    label {
+      margin-bottom: 0;
+    }
+    input {
+      box-shadow: none;
+      border-radius: 0;
+      border-top: 0;
+      border-right: 0;
+      border-left: 0;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+  }
+
+  // @each $color, $color-varient in $theme-colors {
+  //   &.input-border-#{$color} {
+  //     border-color: app-color($color);
+  //   }
+  // }
+
+  @each $color, $color-varient in $app-colors {
+    &.input-border-#{$color} {
+      input {
+        border-color: app-color($color);
+      }
+    }
+  }
+
+  // label, .el-required, .el-tooltip {
+  //   margin-#{$dir-mode-align-inverse}: .25rem; //@extend .mr-1;
+  // }
+  // label {
+
+  // }
+  // .el-required, .el-tooltip {
+  //   font-size: .9rem;
+  // }
+  // .el-required {
+
+  // }
+  // .el-tooltip {
+
+  // }
+
+  // input {
+  // }
+
+  // &.input-sm {
+  //   label {
+  //     font-size: .8rem;
+  //     margin-bottom: .25rem;
+  //   }
+
+  //   .el-required, .el-tooltip {
+  //     font-size: .7rem;
+  //   }
+
+  //   input {
+  //     @extend .form-control-sm;
+  //   }
+
+  // }
 }
+
+

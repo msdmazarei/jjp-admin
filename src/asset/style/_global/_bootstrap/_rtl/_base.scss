@@ -17,7 +17,10 @@ body.rtl/* ,
     margin-left: inherit;
   }
 
-  th {
+  // th {
+  //   text-align: right;
+  // }
+  caption {
     text-align: right;
   }
 
@@ -147,7 +150,7 @@ body.rtl/* ,
 
   .list-group {
     padding-right: 0;
-    padding-left: inherit; // 40px;
+    padding-left: 0; // inherit; // 40px;
   }
 
   .close {

@@ -5,11 +5,21 @@
       content: "\F060";
     }
   }
+  body.rtl & {
+    &:before {
+      content: "\F060";
+    }
+  }
 }
 
 .fa-arrow-left-app {
   @extend .fa-arrow-left;
   @if $dir-mode-direction == rtl {
+    &:before {
+      content: "\F061";
+    }
+  }
+  body.rtl & {
     &:before {
       content: "\F061";
     }
@@ -23,6 +33,11 @@
       content: "\F064";
     }
   }
+  body.rtl & {
+    &:before {
+      content: "\F064";
+    }
+  }
 }
 /////////////////////////////
 .fa-chevron-right-app {
@@ -32,11 +47,21 @@
       content: "\F053";
     }
   }
+  body.rtl & {
+    &:before {
+      content: "\F053";
+    }
+  }
 }
 
 .fa-chevron-left-app {
   @extend .fa-chevron-left;
   @if $dir-mode-direction == rtl {
+    &:before {
+      content: "\F054";
+    }
+  }
+  body.rtl & {
     &:before {
       content: "\F054";
     }

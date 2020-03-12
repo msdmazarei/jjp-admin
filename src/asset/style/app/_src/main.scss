@@ -8,10 +8,13 @@ $global-font-url: "/static/fonts";
 //
 @import "z-template/template";
 //
+@import "z-admin/admin";
+//
 @import "z-index";
 //
 @import "_fonts";
 @import "_global-common";
+@import "animate";
 @import "_animation";
 @import "_common";
 @import "_shadow";
@@ -22,3 +25,7 @@ $global-font-url: "/static/fonts";
 @import "z-components/components";
 //
 @import "test";
+
+// import admin jjp custom style 
+@import "z-admin/jjp_admin_custom_style.scss"
+

@@ -6,22 +6,6 @@
   }
 }
 
-body{
-  &.printStatus{
-    background-color: white;
-    table{
-      tbody{
-        tr{
-          td{
-            background-color: white !important;
-            color: black !important;
-          }
-        }
-      }
-    }
-  }
-}
-
 /*
 @page {
   @top-center {

@@ -97,7 +97,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                             ))}
                                             {this.props.actions
                                                 ?
-                                                <td className="py-0 px-1 text-center">
+                                                <td className="py-1 px-1 text-center">
                                                     {
                                                         this.props.actions
                                                             ?
@@ -106,7 +106,7 @@ export class Table<T extends IProps_table> extends React.Component<T>{
                                                                     title={Localization.more}
                                                                     split
                                                                     variant="light"
-                                                                    className="px-3 bg-light btn"
+                                                                    className="px-1 bg-light btn"
                                                                     id="dropdown-split-basic"
                                                                 >
                                                                     <i title={Localization.more} className="fa fa-ellipsis-v dropdown-icon"></i>

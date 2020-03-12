@@ -1,0 +1,38 @@
+/*#region Invoice Page*/
+.invoice-container .table-bordered thead > tr {
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+.invoice-container .panel {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+}
+
+.invoice-container .panel .panel-heading {
+  background-color: #ffffff;
+}
+
+.invoice-container .panel .panel-heading h1,
+.invoice-container .panel .panel-heading h2,
+.invoice-container .panel .panel-heading h3,
+.invoice-container .panel .panel-heading h4,
+.invoice-container .panel .panel-heading h5,
+.invoice-container .panel .panel-heading h6 {
+  margin-bottom: 0px;
+}
+
+.invoice-container ul {
+  list-style: none;
+  padding-#{$dir-mode-align}: 0;
+}
+
+.invoice-container ul li {
+  line-height: 22px;
+}
+
+/*#endregion Invoice Page*/

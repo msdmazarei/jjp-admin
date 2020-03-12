@@ -1,0 +1,164 @@
+/*#region Orders*/
+.orders-container {
+  position: relative;
+  padding: 0px;
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.orders-container .orders-header {
+  position: relative;
+  height: 43px;
+  padding: 14px 10px;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #fbfbfb;
+}
+
+.orders-container .orders-header h6 {
+  margin: 0;
+}
+
+.orders-container .orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.orders-container .orders-list .order-item {
+  position: relative;
+  padding: 7px 10px;
+  vertical-align: top;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.orders-container .orders-list .order-item:before {
+  display: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  #{$dir-mode-align}: -4px;
+  width: 4px;
+  max-width: 4px;
+  overflow: hidden;
+  background-color: #2dc3e8;
+}
+
+.orders-container .orders-list .order-item:hover {
+  background-color: #fbfbfb;
+}
+
+.orders-container .orders-list .order-item:hover:before {
+  display: block;
+}
+
+.orders-container .orders-list .order-item.top:hover:before {
+  background-color: #fb6e52;
+}
+
+.orders-container .orders-list .order-item.top .item-more {
+  color: #fb6e52;
+}
+
+.orders-container .orders-list .order-item .item-left {
+  padding-#{$dir-mode-align-inverse}: 0;
+}
+
+.orders-container .orders-list .order-item .item-left .item-booker {
+  margin: 6px 0;
+  color: #666666;
+}
+
+.orders-container .orders-list .order-item .item-left .item-time {
+  font-size: 11px;
+  margin-bottom: 2px;
+  color: #999999;
+}
+
+.orders-container .orders-list .order-item .item-right {
+  padding-#{$dir-mode-align}: 0;
+  text-align: center;
+}
+
+.orders-container .orders-list .order-item .item-right .item-price {
+  font-size: 13px;
+  margin: 17px auto;
+  color: #666666;
+}
+
+.orders-container .orders-list .order-item .item-more {
+  position: absolute;
+  #{$dir-mode-align-inverse}: -10px;
+  -lh-property: 0;
+  top: -webkit-calc(50% - 13px);
+  top: -moz-calc(50% - 13px);
+  top: calc(50% - 13px);;
+  width: 25px;
+  height: 25px;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 3px solid #ffffff;
+  vertical-align: middle;
+  color: #2dc3e8;
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.orders-container .orders-list .order-item .item-more i {
+  font-size: 17px;
+  display: inline-block;
+  font-family: 'FontAwesome';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+.orders-container .orders-list .order-item .item-more i:before {
+  content: "\f105" /*rtl:"\f104"*/
+;
+}
+
+.orders-container .orders-footer {
+  position: relative;
+  background-color: white;
+  height: 34px;
+  padding: 7px;
+  text-align: center;
+  background-color: #fbfbfb;
+}
+
+.orders-container .orders-footer a {
+  margin: 0 auto;
+  font-size: 11px;
+  color: #999999;
+  font-weight: 500;
+}
+
+.orders-container .orders-footer a:hover {
+  text-decoration: none;
+}
+
+.orders-container .orders-footer .help {
+  position: absolute;
+  #{$dir-mode-align-inverse}: 0;
+  top: 0;
+  width: 37px;
+  height: 37px;
+  border-#{$dir-mode-align}: 1px solid #e5e5e5;
+  text-align: center;
+  padding: 8px;
+}
+
+.orders-container .orders-footer .help a i {
+  font-size: 18px;
+  color: #cccccc;
+}
+
+/*#endregion Orders*/

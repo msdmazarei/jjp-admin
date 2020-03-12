@@ -1,0 +1,59 @@
+/*#region wysiwyg*/
+.wysiwyg-editor {
+  max-height: 250px;
+  height: 250px;
+  background-color: white;
+  border-collapse: separate;
+  border: 1px solid #cccccc;
+  padding: 4px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0 1px 1px 0 inset;
+  -moz-box-shadow: rgba(0, 0, 0, 0.0745098) 0 1px 1px 0 inset;
+  box-shadow: rgba(0, 0, 0, 0.0745098) 0 1px 1px 0 inset;
+  overflow: scroll;
+  outline: none;
+}
+
+.wysiwyg-toolbar {
+  margin-bottom: 10px;
+}
+
+.wysiwyg-toolbar .btn-active {
+  color: #444444 !important;
+  background-color: #e5e5e5;
+}
+
+.wysiwyg-toolbar .dropdown-menu {
+  padding: 5px;
+}
+
+.wysiwyg-toolbar .btn-group {
+  margin-bottom: 5px;
+}
+
+.wysiwyg-voiceBtn {
+  width: 20px;
+  color: transparent !important;
+  background-color: transparent !important;
+  -webkit-transform: scale(2, 2);
+  -moz-transform: scale(2, 2);
+  -o-transform: scale(2, 2);
+  -ms-transform: scale(2, 2);
+  transform: scale(2, 2);
+  border: transparent !important;
+  cursor: pointer;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+div[data-role="editor-toolbar"] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/*#endregion wysiwyg*/

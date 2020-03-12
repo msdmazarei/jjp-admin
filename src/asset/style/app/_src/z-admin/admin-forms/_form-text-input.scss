@@ -1,0 +1,435 @@
+/*#region Form Text Input*/
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+  -webkit-border-radius: 0 !important;
+  -webkit-background-clip: padding-box !important;
+  -moz-border-radius: 0 !important;
+  -moz-background-clip: padding !important;
+  border-radius: 0 !important;
+  background-clip: padding-box !important;
+  color: $form-element-base-color; //#858585;
+  background-color: $form-element-base-background-color; //#fbfbfb;
+  border: 1px solid $form-element-base-border-color; //#d5d5d5;
+  font-family: inherit;
+  /*-webkit-transition: -webkit-box-shadow 0.45s, border-color 0.45s ease-in-out;
+  -moz-transition: -moz-box-shadow 0.45s, border-color 0.45s ease-in-out;
+  -o-transition: box-shadow 0.45s, border-color 0.45s ease-in-out;
+  transition: box-shadow 0.45s, border-color 0.45s ease-in-out;*/
+  @include transition($form-element-base-transition);
+  @include box-shadow($form-element-base-box-shadow); //none
+  &:hover {
+    border-color: $form-element-base-border-color-hover; //rgba(0, 0, 0, 0.2);
+  }
+  &:focus {
+    color: $form-element-base-color-focus;
+    background-color: $form-element-base-background-color-focus;
+    @include box-shadow($form-element-base-box-shadow-focus); //inset 0 1px 2px rgba(0, 0, 0, 0.1)
+    border-color: $form-element-base-border-color-focus; //rgba(0, 0, 0, 0.25);
+    outline: 0;
+  }
+}
+
+.form-control,
+select {
+  font-size: 13px;
+  color: #858585;
+  background-color: #fbfbfb;
+  border: 1px solid #d5d5d5;
+  padding: 6px 12px;
+  &:focus {
+    color: $form-element-base-color-focus;
+    background-color: $form-element-base-background-color-focus;
+    outline: 0;
+    /*-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);*/
+    @include box-shadow(inset 0 1px 2px rgba(0, 0, 0, 0.1));
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+}
+
+textarea {
+  &.form-control {
+    padding: 5px 9px;
+    /*-webkit-transition: height 0.2s;
+    -moz-transition: height 0.2s;
+    -o-transition: height 0.2s;
+    transition: height 0.2s;*/
+    @include transition(height 0.2s, border-color ease-in-out .15s, box-shadow ease-in-out .15s);
+    //@include transition(height 0.2s);
+  }
+}
+
+.input-xs {
+  height: 24px;
+  padding: 2px 10px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.input-sm {
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.input-lg {
+  font-weight: 300;
+  font-size: 18px;
+  height: 46px;
+  padding: 10px 16px;
+  line-height: 1.33;
+}
+
+.input-xl {
+  height: 52px;
+  padding: 12px 18px;
+  font-size: 20px;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.form-control[disabled],
+.form-control[readonly],
+fieldset[disabled] .form-control {
+  cursor: not-allowed;
+  background-color: #fbfbfb;
+  border-color: #e5e5e5;
+  &:hover {
+    border-color: #eeeeee;
+    background-color: #ffffff;
+  }
+}
+
+.form-group,
+.input-group {
+
+  @each $color, $color-varient in $app-colors {
+    &.has-#{$color} {
+      input,
+      select,
+      textarea {
+        border-color: lighten(app-color($color), 15);
+        color: lighten(app-color($color), 10);
+        @include box-shadow(none);
+        background-color: app-color($color, 'color');
+        &:focus {
+          @include box-shadow(none);
+          color: app-color($color);
+          border-color: app-color($color);
+        }
+      }
+      .form-control-feedback {
+        &:before {
+          color: app-color($color) !important;
+          color: inherit;
+        }
+      }
+      .control-label,
+      .help-block,
+      .help-inline {
+        color: app-color($color);
+      }
+    }
+  }
+
+  &.has-error {
+    input,
+    select,
+    textarea {
+      border-color: lighten(app-color(danger), 15);
+      color: lighten(app-color(danger), 10);
+      @include box-shadow(none);
+      background-color: app-color(danger, 'color');
+      &:focus {
+        @include box-shadow(none);
+        color: app-color(danger);
+        border-color: app-color(danger);
+      }
+    }
+    .form-control-feedback {
+      &:before {
+        color: app-color(danger) !important;
+        color: inherit;
+      }
+    }
+    .control-label,
+    .help-block,
+    .help-inline {
+      color: app-color(danger);
+    }
+  }
+
+}
+
+span.input-icon {
+  display: inline-block;
+}
+
+.input-icon {
+  position: relative;
+  width: 100%;
+  &.inverted {
+    > [class*="fa-"],
+    > [class*="glyphicon-"] {
+      color: $admin-dark-color1-inverse;
+      background-color: $admin-dark-color1;
+    }
+  }
+  > input {
+    padding-#{$dir-mode-align}: 36px;
+    padding-#{$dir-mode-align-inverse}: 6px;
+    &:focus {
+      + [class*="fa-"],
+      + [class*="glyphicon-"] {
+        zoom: 1;
+        @include opacity(1);
+      }
+      + .circular {
+        @include box-shadow(0 0 0 0.1em rgba(0, 0, 0, 0.15) inset);
+      }
+    }
+    &.input-xs {
+      padding-#{$dir-mode-align}: 26px;
+      + [class*="fa-"],
+      + [class*="glyphicon-"] {
+        width: 24px;
+        font-size: 10px;
+        padding-top: 0;
+        line-height: 24px;
+      }
+      + .circular {
+        width: 14px;
+        height: 14px;
+        font-size: 10px;
+        line-height: 14px;
+      }
+    }
+    &.input-sm {
+      padding-#{$dir-mode-align}: 32px;
+      + [class*="fa-"],
+      + [class*="glyphicon-"] {
+        width: 30px;
+        font-size: 12px;
+        padding-top: 0;
+        line-height: 30px;
+      }
+      + .circular {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        line-height: 20px;
+      }
+    }
+    &.input-lg {
+      padding-#{$dir-mode-align}: 48px;
+      + [class*="fa-"],
+      + [class*="glyphicon-"] {
+        width: 46px;
+        font-size: 18px;
+        padding-top: 5px;
+        line-height: 34px;
+      }
+      + .circular {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        line-height: 26px;
+      }
+    }
+    &.input-xl {
+      padding-#{$dir-mode-align}: 54px;
+      + [class*="fa-"],
+      + [class*="glyphicon-"] {
+        width: 52px;
+        font-size: 20px;
+        padding-top: 8px;
+        line-height: 34px;
+      }
+      + .circular {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+        line-height: 26px;
+      }
+    }
+  }
+  > [class*="fa-"],
+  > [class*="glyphicon-"] {
+    z-index: 2;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    #{$dir-mode-align}: 0;
+    width: 34px;
+    height: 100%;
+    line-height: 28px;
+    display: inline-block;
+    color: #555555;
+    font-size: 14px;
+    text-align: center;
+    padding-top: 3px;
+    zoom: 1;
+    @include opacity(0.7);
+    &.circular {
+      border-radius: 500em !important;
+      box-shadow: 0 0 0 0.1em rgba(0, 0, 0, 0.1) inset;
+      -webkit-transition: -webkit-box-shadow 0.3s ease;
+      -moz-transition: -moz-box-shadow 0.3s ease;
+      -o-transition: box-shadow 0.3s ease;
+      transition: box-shadow 0.3s ease;
+      padding: 0;
+      top: 5px;
+      bottom: 5px;
+      #{$dir-mode-align}: 7px;
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      line-height: 24px;
+    }
+  }
+  &.icon-right {
+    > input {
+      padding-#{$dir-mode-align}: 6px;
+      padding-#{$dir-mode-align-inverse}: 36px;
+      &.input-xs {
+        padding-#{$dir-mode-align-inverse}: 26px;
+      }
+      &.input-sm {
+        padding-#{$dir-mode-align-inverse}: 32px;
+      }
+      &.input-lg {
+        padding-#{$dir-mode-align-inverse}: 48px;
+      }
+      &.input-xl {
+        padding-#{$dir-mode-align-inverse}: 54px;
+      }
+    }
+    > [class*="fa-"],
+    > [class*="glyphicon-"] {
+      #{$dir-mode-align}: auto;
+      #{$dir-mode-align-inverse}: 0;
+    }
+    .circular {
+      #{$dir-mode-align}: auto;
+      #{$dir-mode-align-inverse}: 5px;
+    }
+  }
+  ~ .help-inline {
+    padding-#{$dir-mode-align}: 8px;
+  }
+}
+
+.input-group {
+  .input-group-addon {
+    border-radius: 0 !important;
+    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMSAxIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9Imxlc3NoYXQtZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlZWVlZWUiIHN0b3Atb3BhY2l0eT0iMSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZiZmJmYiIgc3RvcC1vcGFjaXR5PSIxIi8+PC9saW5lYXJHcmFkaWVudD48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2xlc3NoYXQtZ2VuZXJhdGVkKSIgLz48L3N2Zz4=);
+    background-image: -webkit-linear-gradient(top, #eeeeee 0, #fbfbfb 100%);
+    background-image: -moz-linear-gradient(top, #eeeeee 0, #fbfbfb 100%);
+    background-image: -o-linear-gradient(top, #eeeeee 0, #fbfbfb 100%);
+    background-image: linear-gradient(to bottom, #eeeeee 0, #fbfbfb 100%);
+    &[class*="bg-"] {
+      background-image: none;
+      color: #ffffff;
+    }
+  }
+}
+
+.input-group-xl {
+  > .form-control,
+  > .input-group-addon,
+  > .input-group-btn > .btn {
+    height: 52px;
+    padding: 10px 18px;
+    font-size: 20px;
+    line-height: 1.4;
+  }
+}
+
+.input-group-xs {
+  > .form-control,
+  > .input-group-addon,
+  > .input-group-btn > .btn {
+    height: 24px;
+    padding: 2px 6px 2px 7px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
+
+@each $color, $color-varient in $app-colors {
+  .has-#{$color} {
+
+    .input-group-addon {
+      border-color: lighten(app-color($color), 15) !important;
+      color: app-color($color);
+      background-image: none;
+    }
+
+  }
+}
+
+.has-error {
+  .input-group-addon {
+    border-color: lighten(app-color(danger), 15) !important;
+    color: app-color(danger);
+    background-image: none;
+  }
+}
+
+.input-group-btn {
+  .btn-label {
+    padding: 6px 10px !important;
+  }
+  > .btn {
+    line-height: 20px;
+    border-radius: 0 !important;
+    &.dropdown-toggle {
+      > [class*="fa-"] {
+        margin-#{$dir-mode-align-inverse}: 0;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.input-group {
+  > .btn {
+    &.btn-sm {
+      line-height: 22px;
+    }
+    + .btn {
+      margin-#{$dir-mode-align}: 1px;
+    }
+  }
+  > .btn-group {
+    > .btn {
+      line-height: 23px;
+      &.btn-sm {
+        line-height: 26px;
+      }
+    }
+  }
+  > .btn > .caret,
+  > .btn-group > .btn > .caret,
+  > .btn.btn-sm > .caret,
+  > .btn-group > .btn.btn-sm > .caret {
+    margin-top: 10px;
+  }
+}
+
+/*#endregion Form TextInput*/

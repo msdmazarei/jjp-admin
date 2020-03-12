@@ -1,0 +1,300 @@
+/*#region Bordered Colors*/
+.bordered-solid {
+  border-style: solid !important;
+}
+
+.bordered-dashed {
+  border-style: dashed !important;
+}
+
+.bordered-dotted {
+  border-style: dotted !important;
+}
+
+.bordered-double {
+  border-style: double !important;
+}
+
+.bordered-1 {
+  border: 1px solid #ffffff;
+}
+
+.bordered-2 {
+  border: 2px solid #ffffff;
+}
+
+.bordered-3 {
+  border: 3px solid #ffffff;
+}
+
+.bordered-4 {
+  border: 4px solid #ffffff;
+}
+
+.bordered-5 {
+  border: 5px solid #ffffff;
+}
+
+.bordered-bottom-1 {
+  border-bottom: 1px solid #ffffff;
+}
+
+.bordered-bottom-2 {
+  border-bottom: 2px solid #ffffff;
+}
+
+.bordered-bottom-3 {
+  border-bottom: 3px solid #ffffff;
+}
+
+.bordered-bottom-4 {
+  border-bottom: 4px solid #ffffff;
+}
+
+.bordered-bottom-5 {
+  border-bottom: 5px solid #ffffff;
+}
+
+.bordered-top-1 {
+  border-top: 1px solid #ffffff;
+}
+
+.bordered-top-2 {
+  border-top: 2px solid #ffffff;
+}
+
+.bordered-top-3 {
+  border-top: 3px solid #ffffff;
+}
+
+.bordered-top-4 {
+  border-top: 4px solid #ffffff;
+}
+
+.bordered-top-5 {
+  border-top: 5px solid #ffffff;
+}
+
+.bordered-left-1 {
+  border-#{$dir-mode-align}: 1px solid #ffffff;
+}
+
+.bordered-left-2 {
+  border-#{$dir-mode-align}: 2px solid #ffffff;
+}
+
+.bordered-left-3 {
+  border-#{$dir-mode-align}: 3px solid #ffffff;
+}
+
+.bordered-left-4 {
+  border-#{$dir-mode-align}: 4px solid #ffffff;
+}
+
+.bordered-left-5 {
+  border-#{$dir-mode-align}: 5px solid #ffffff;
+}
+
+.bordered-right-1 {
+  border-#{$dir-mode-align-inverse}: 1px solid #ffffff;
+}
+
+.bordered-right-2 {
+  border-#{$dir-mode-align-inverse}: 2px solid #ffffff;
+}
+
+.bordered-right-3 {
+  border-#{$dir-mode-align-inverse}: 3px solid #ffffff;
+}
+
+.bordered-right-4 {
+  border-#{$dir-mode-align-inverse}: 4px solid #ffffff;
+}
+
+.bordered-right-5 {
+  border-#{$dir-mode-align-inverse}: 5px solid #ffffff;
+}
+
+@each $color, $color-varient in $app-colors {
+  .bordered-#{$color} {
+    border-color: app-color($color) !important;
+  }
+}
+
+//.bordered-themeprimary {
+//  border-color: #2dc3e8 !important;
+//}
+//
+//.bordered-themesecondary {
+//  border-color: #fb6e52 !important;
+//}
+//
+//.bordered-themethirdcolor {
+//  border-color: #ffce55 !important;
+//}
+//
+//.bordered-themefourthcolor {
+//  border-color: #a0d468 !important;
+//}
+//
+//.bordered-themefifthcolor {
+//  border-color: #e75b8d !important;
+//}
+//
+//.bordered-white {
+//  border-color: #ffffff !important;
+//}
+//
+//.bordered-snow {
+//  border-color: #fbfbfb !important;
+//}
+//
+//.bordered-whitesmoke {
+//  border-color: #f5f5f5 !important;
+//}
+//
+//.bordered-seashell {
+//  border-color: #f3f3f3 !important;
+//}
+//
+//.bordered-ivory {
+//  border-color: #eeeeee !important;
+//}
+//
+//.bordered-platinum {
+//  border-color: #e5e5e5 !important;
+//}
+//
+//.bordered-lightgray {
+//  border-color: #d0d0d0 !important;
+//}
+//
+//.bordered-gray {
+//  border-color: #cccccc !important;
+//}
+//
+//.bordered-darkgray {
+//  border-color: #999999 !important;
+//}
+//
+//.bordered-silver {
+//  border-color: #777777 !important;
+//}
+//
+//.bordered-sonic-silver {
+//  border-color: #737373 !important;
+//}
+//
+//.bordered-storm-cloud {
+//  border-color: #666666 !important;
+//}
+//
+//.bordered-lightcarbon {
+//  border-color: #555555 !important;
+//}
+//
+//.bordered-carbon {
+//  border-color: #444444 !important;
+//}
+//
+//.bordered-slate-gray {
+//  border-color: #333333 !important;
+//}
+//
+//.bordered-darkcarbon {
+//  border-color: #262626 !important;
+//}
+//
+//.bordered-blue {
+//  border-color: #5db2ff !important;
+//}
+//
+//.bordered-info {
+//  border-color: #57b5e3 !important;
+//}
+//
+//.bordered-sky {
+//  border-color: #11a9cc !important;
+//}
+//
+//.bordered-primary {
+//  border-color: #4374e0 !important;
+//}
+//
+//.bordered-azure {
+//  border-color: #2dc3e8 !important;
+//}
+//
+//.bordered-blueberry {
+//  border-color: #6f85bf !important;
+//}
+//
+//.bordered-palegreen {
+//  border-color: #a0d468 !important;
+//}
+//
+//.bordered-success {
+//  border-color: #53a93f !important;
+//}
+//
+//.bordered-green {
+//  border-color: #8cc474 !important;
+//}
+//
+//.bordered-lightyellow {
+//  border-color: #f6d52e !important;
+//}
+//
+//.bordered-yellow {
+//  border-color: #ffce55 !important;
+//}
+//
+//.bordered-warning {
+//  border-color: #f4b400 !important;
+//}
+//
+//.bordered-gold {
+//  border-color: #f9b256 !important;
+//}
+//
+//.bordered-orange {
+//  border-color: #fb6e52 !important;
+//}
+//
+//.bordered-lightred {
+//  border-color: #e46f61 !important;
+//}
+//
+//.bordered-darkorange {
+//  border-color: #ed4e2a !important;
+//}
+//
+//.bordered-red {
+//  border-color: #df5138 !important;
+//}
+//
+//.bordered-danger {
+//  border-color: #d73d32 !important;
+//}
+//
+//.bordered-pink {
+//  border-color: #e75b8d !important;
+//}
+//
+//.bordered-darkpink {
+//  border-color: #cc324b !important;
+//}
+//
+//.bordered-magenta {
+//  border-color: #bc5679 !important;
+//}
+//
+//.bordered-purple {
+//  border-color: #7e3794 !important;
+//}
+//
+//.bordered-maroon {
+//  border-color: #981b48 !important;
+//}
+
+/*#endregion Bordered Colors*/

@@ -1,0 +1,32 @@
+/*#region Alerts*/
+.alert {
+  //margin-bottom: 20px;
+  //margin-top: 0;
+  //color: #ffffff;
+  border-width: 0;
+  border-#{$dir-mode-align}-width: 5px;
+  padding: 10px;
+  border-radius: 0;
+  .close {
+    top: 0;
+    #{$dir-mode-align-inverse}: 0;
+    line-height: 16px;
+    color: #444444;
+  }
+  &.radius-bordered {
+    -webkit-border-radius: 3px;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 3px;
+    -moz-background-clip: padding;
+    border-radius: 3px;
+    background-clip: padding-box;
+  }
+  &.alert-shadowed {
+    @include box-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
+  &.alert-heading {
+    font-weight: 600;
+  }
+}
+
+/*#endregion Alerts*/

@@ -1,0 +1,133 @@
+/*#region Tasks*/
+.task-container {
+  position: relative;
+  padding: 0;
+}
+
+.task-container .task-search {
+  padding: 15px 16px 15px;
+  background-color: #f3f3f3;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.task-container .task-search input {
+  border-color: #e5e5e5 !important;
+  -webkit-border-radius: 3px !important;
+  -webkit-background-clip: padding-box !important;
+  -moz-border-radius: 3px !important;
+  -moz-background-clip: padding !important;
+  border-radius: 3px !important;
+  background-clip: padding-box !important;
+}
+
+.task-container .tasks-list {
+  list-style: none;
+  padding: 0;
+}
+
+.task-container .tasks-list .task-item {
+  position: relative;
+  height: 150px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.task-container .tasks-list .task-item:last-child {
+  border-bottom: 0px;
+}
+
+.task-container .tasks-list .task-item:hover {
+  background-color: #f5f5f5;
+}
+
+.task-container .tasks-list .task-item .task-check {
+  position: absolute;
+  top: 20px;
+  #{$dir-mode-align}: 15px;
+  margin-#{$dir-mode-align-inverse}: 5px;
+}
+
+.task-container .tasks-list .task-item .task-state {
+  position: absolute;
+  top: 19px;
+  #{$dir-mode-align}: 45px;
+}
+
+.task-container .tasks-list .task-item .task-state .label {
+  padding: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.task-container .tasks-list .task-item .task-time {
+  position: absolute;
+  top: 20px;
+  #{$dir-mode-align-inverse}: 20px;
+  font-size: 11px;
+  color: #999999;
+}
+
+.task-container .tasks-list .task-item .task-body {
+  position: absolute;
+  top: 60px;
+  #{$dir-mode-align}: 45px;
+  padding-#{$dir-mode-align-inverse}: 25px;
+  height: 40px;
+  overflow: hidden;
+  line-height: 22px;
+}
+
+.task-container .tasks-list .task-item .task-creator {
+  position: absolute;
+  top: 115px;
+  #{$dir-mode-align}: 45px;
+}
+
+.task-container .tasks-list .task-item .task-creator a {
+  font-size: 13px;
+  color: #11a9cc;
+}
+
+.task-container .tasks-list .task-item .task-creator a:hover {
+  text-decoration: none;
+}
+
+.task-container .tasks-list .task-item .task-assignedto {
+  position: absolute;
+  top: 115px;
+  #{$dir-mode-align-inverse}: 20px;
+  font-size: 13px;
+  color: #999999;
+}
+
+@media (max-width: 1200px) {
+  .task-container .tasks-list .task-item {
+    height: 130px;
+  }
+  .task-container .tasks-list .task-item .task-creator,
+  .task-container .tasks-list .task-item .task-assignedto {
+    top: 95px;
+  }
+}
+
+@media (max-width: 600px) {
+  .task-container .tasks-list .task-item {
+    height: 150px;
+  }
+  .task-container .tasks-list .task-item .task-creator,
+  .task-container .tasks-list .task-item .task-assignedto {
+    top: 115px;
+  }
+}
+
+@media (max-width: 335px) {
+  .task-container .tasks-list .task-item {
+    height: 175px;
+  }
+  .task-container .tasks-list .task-item .task-assignedto {
+    top: 140px;
+    #{$dir-mode-align-inverse}: auto;
+    #{$dir-mode-align}: 45px;
+  }
+}
+
+/*#endregion Tasks*/

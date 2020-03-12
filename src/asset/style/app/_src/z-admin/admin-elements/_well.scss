@@ -1,0 +1,149 @@
+//not added
+
+/*#region Wells*/
+.well {
+  -webkit-border-radius: 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 2px;
+  -moz-background-clip: padding;
+  border-radius: 2px;
+  background-clip: padding-box;
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  background-color: #fbfbfb;
+  border: 0;
+  color: #262626;
+  position: relative;
+  margin-bottom: 30px;
+  min-height: 0px;
+  /*#region Bordered Well*/
+  /*#endregion Bordered Well*/
+  /*#region Colored Well*/
+  /*#endregion Bordered Well*/
+}
+
+.well.attached {
+  position: relative;
+  top: -1px;
+  bottom: -1px;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: 0 0 0 1px #DDD;
+}
+
+.well.attached.top {
+  top: 0;
+  bottom: -1px;
+  margin-top: 1em;
+  margin-bottom: 0;
+  -webkit-border-radius: 3px 3px 0 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px 3px 0 0;
+  -moz-background-clip: padding;
+  border-radius: 3px 3px 0 0;
+  background-clip: padding-box;
+  border-bottom: 0;
+}
+
+.well.attached.bottom {
+  top: -1px;
+  bottom: 0;
+  margin-top: 0;
+  margin-bottom: 1em;
+  -webkit-border-radius: 0 0 3px 3px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0 0 3px 3px;
+  -moz-background-clip: padding;
+  border-radius: 0 0 3px 3px;
+  background-clip: padding-box;
+  border-top: 0;
+}
+
+.well.attached.bottom:last-child {
+  margin-bottom: 0;
+}
+
+.well.bordered-top {
+  border-top: 5px solid #2dc3e8;
+}
+
+.well.bordered-bottom {
+  border-bottom: 5px solid #2dc3e8;
+}
+
+.well.bordered-left {
+  border-#{$dir-mode-align}: 5px solid #2dc3e8;
+}
+
+.well.bordered-right {
+  border-#{$dir-mode-align-inverse}: 5px solid #2dc3e8;
+}
+
+.well[class*="bg-"] {
+  color: #f5f5f5;
+}
+
+.well h1,
+.well h2,
+.well h3,
+.well h4,
+.well h5,
+.well h6 {
+  margin-top: 0;
+}
+
+.well h1,
+.well h2,
+.well h3 {
+  line-height: 36px;
+}
+
+.well.with-header {
+  padding-top: 60px;
+}
+
+.well.with-footer {
+  padding-bottom: 60px;
+}
+
+.well .header {
+  position: absolute;
+  top: 0;
+  #{$dir-mode-align-inverse}: 0;
+  #{$dir-mode-align}: 0;
+  padding: 10px;
+  text-align: $dir-mode-align;
+  border-radius: 2px 2px 0 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.well .header[class*="bg-"] {
+  color: #ffffff;
+  border-bottom: 0;
+}
+
+.well .header[class*="bordered-"] {
+  border-bottom: 3px solid #ffffff;
+}
+
+.well .footer {
+  position: absolute;
+  bottom: 0;
+  #{$dir-mode-align-inverse}: 0;
+  #{$dir-mode-align}: 0;
+  padding: 10px;
+  border-top: 1px solid #e5e5e5;
+  border-radius: 0 0 2px 2px;
+}
+
+.well .footer[class*="bordered-"] {
+  border-top: 3px solid #ffffff;
+}
+
+.well hr.wide {
+  margin-#{$dir-mode-align-inverse}: -19px;
+  margin-#{$dir-mode-align}: -19px;
+}
+
+/*#endregion Wells*/

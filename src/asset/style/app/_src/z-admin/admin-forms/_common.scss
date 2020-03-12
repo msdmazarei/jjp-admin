@@ -1,0 +1,25 @@
+.form-bordered .form-group {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 15px;
+  margin-#{$dir-mode-align}: -12px;
+  margin-#{$dir-mode-align-inverse}: -12px;
+}
+
+.form-bordered .form-group:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.form-bordered .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-title {
+  display: block;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+  font-size: 15px;
+  font-weight: 300;
+  color: #262626;
+  margin-bottom: 15px;
+}

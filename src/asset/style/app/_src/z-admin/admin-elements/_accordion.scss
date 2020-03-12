@@ -1,0 +1,114 @@
+//not added
+
+/*#region Accordion*/
+.accordion.spaced.panel-group .panel + .panel {
+  margin-top: 3px;
+}
+
+.accordion.panel-group {
+  border: 1px solid #d8d8d8;
+  border-top-width: 0;
+}
+
+.accordion.panel-group .panel {
+  border-radius: 0;
+  border: 0;
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
+.accordion.panel-group .panel:last-child {
+  border-bottom-width: 1px;
+}
+
+.accordion.panel-group .panel .collapse {
+  background-color: #ffffff;
+}
+
+.accordion.panel-group .panel + .panel {
+  margin-top: 0;
+}
+
+.accordion.panel-group .panel-heading {
+  padding: 0;
+}
+
+.accordion.panel-group .panel-heading + .panel-collapse .panel-body {
+  border-top-color: #d5d5d5 !important;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle {
+  color: #555555;
+  background-color: #ffffff;
+  position: relative;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 1;
+  padding: 10px;
+  display: block;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle:after {
+  -webkit-transition: all 0.218s;
+  -moz-transition: all 0.218s;
+  -o-transition: all 0.218s;
+  transition: all 0.218s;
+  position: absolute;
+  #{$dir-mode-align-inverse}: 20px;
+  top: 8px;
+  font-family: 'FontAwesome';
+  font-size: 17px;
+  font-weight: bold;
+  content: "\f107";
+  color: #bebebe;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle.collapsed:after {
+  content: "\f105";
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle.collapsed {
+  color: #737373;
+  font-weight: normal;
+  background-color: #ffffff;
+  -webkit-transition: border 0.218s;
+  -moz-transition: border 0.218s;
+  -o-transition: border 0.218s;
+  transition: border 0.218s;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle:hover {
+  color: #262626;
+  text-decoration: none;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle:hover > [class*="icon-"]:first-child {
+  text-decoration: none;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle:hover:after {
+  color: #262626;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle:focus,
+.accordion.panel-group .panel-heading .accordion-toggle:active {
+  outline: 0;
+  text-decoration: none;
+}
+
+.accordion.panel-group .panel-heading .accordion-toggle > [class*="fa-"]:first-child {
+  width: 16px;
+}
+
+.accordion.panel-group .panel-body {
+  background-color: #eeeeee;
+  border-#{$dir-mode-align}: 2px solid #eeeeee;
+  color: #262626 !important;
+}
+
+.accordion.panel-group.no-padding {
+  padding: 0;
+}
+
+/*#endregion Accordions*/

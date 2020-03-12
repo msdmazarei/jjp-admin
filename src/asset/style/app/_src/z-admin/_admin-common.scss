@@ -1,0 +1,92 @@
+/*#region common*/
+/*Firefox Outline bug*/
+button:focus,
+a:focus {
+  outline: none;
+}
+
+button::-moz-focus-inner,
+a::-moz-focus-inner {
+  border: 0;
+}
+
+.image-circular {
+  -webkit-border-radius: 50% !important;
+  -webkit-background-clip: padding-box !important;
+  -moz-border-radius: 50% !important;
+  -moz-background-clip: padding !important;
+  border-radius: 50% !important;
+  background-clip: padding-box !important;
+}
+
+hr {
+  border-top: 1px solid #e5e5e5;
+}
+
+hr.wide {
+  margin-#{$dir-mode-align-inverse}: -15px;
+  margin-#{$dir-mode-align}: -15px;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.horizontal-space {
+  max-height: 1px;
+  min-height: 1px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.horizontal-space.space-xs {
+  margin: 2px 0;
+}
+
+.horizontal-space.space-sm {
+  margin: 4px 0;
+}
+
+.horizontal-space.space-lg {
+  margin: 8px 0;
+}
+
+.horizontal-space.space-xl {
+  margin: 10px 0;
+}
+
+.horizontal-space.space-xxl {
+  margin: 12px 0;
+}
+
+.vertical-space {
+  max-width: 1px;
+  min-width: 1px;
+  overflow: hidden;
+  margin: 0 12px;
+}
+
+html {
+  min-height: 100%;
+  position: relative;
+  overflow-x: hidden;
+}
+body {
+  padding-bottom: 0;
+  min-height: 100%;
+  //font-family: 'Open Sans', 'Segoe UI' /*rtl:"Droid Arabic Kufi", "WYekan"*/;
+  font-size: 13px;
+  color: #444444;
+}
+body:before {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  #{$dir-mode-align}: 0;
+  #{$dir-mode-align-inverse}: 0;
+  z-index: -1;
+  background-color: #eeeeee;
+}
+/*#endregion*/

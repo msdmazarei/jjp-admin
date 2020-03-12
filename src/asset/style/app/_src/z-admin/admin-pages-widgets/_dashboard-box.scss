@@ -1,0 +1,204 @@
+/*#region Dashboard Box*/
+.dashboard-box {
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px;
+}
+
+.dashboard-box .box-header {
+  background-color: #ffffff;
+  padding: 20px;
+  position: relative;
+}
+
+.dashboard-box .box-header .deadline {
+  position: absolute;
+  top: -3px;
+  #{$dir-mode-align-inverse}: 20px;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  padding: 5px 10px;
+  border-top: 3px solid #2dc3e8;
+  color: #999999;
+  font-size: 12px;
+}
+
+.dashboard-box .box-progress {
+  padding: 0;
+  position: relative;
+}
+
+.dashboard-box .box-progress .progress {
+  margin-bottom: 0;
+}
+
+.dashboard-box .box-progress .progress .progress-bar {
+  position: relative;
+}
+
+.dashboard-box .box-progress .progress .progress-bar:after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  position: absolute;
+  #{$dir-mode-align-inverse}: 0;
+  top: 0;
+  background-color: #a0d468;
+}
+
+.dashboard-box .box-progress .progress-handle {
+  position: absolute;
+  top: -31px;
+  -lh-property: 0;
+  #{$dir-mode-align}: -webkit-calc(20% - 35px);
+  #{$dir-mode-align}: -moz-calc(20% - 35px);
+  #{$dir-mode-align}: calc(20% - 35px);;
+  width: 60px;
+  height: 25px;
+  background-color: #2dc3e8;
+  padding: 2px 5px;
+  font-size: 11px;
+  line-height: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffffff;
+  -webkit-border-radius: 3px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px;
+  -moz-background-clip: padding;
+  border-radius: 3px;
+  background-clip: padding-box;
+}
+
+.dashboard-box .box-progress .progress-handle:after {
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  content: " ";
+  bottom: -13px;
+  #{$dir-mode-align}: 23px;
+  border-bottom-width: 0;
+  border-top-color: #2dc3e8;
+  border-width: 7px;
+}
+
+.dashboard-box .box-tabbs {
+  background-color: #fbfbfb;
+}
+
+.dashboard-box .box-tabbs .tabbable .nav-tabs li {
+  background-color: #ffffff;
+}
+
+.dashboard-box .box-tabbs .tabbable .nav-tabs li:first-child.active a {
+  border-#{$dir-mode-align}: 0px;
+}
+
+.dashboard-box .box-tabbs .tabbable .nav-tabs li:last-child.active a {
+  border-#{$dir-mode-align-inverse}: 0px;
+}
+
+.dashboard-box .box-tabbs .tabbable .nav-tabs li.active a {
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  border-top: 0 !important;
+  border-#{$dir-mode-align-inverse}: 1px solid #e5e5e5;
+  border-#{$dir-mode-align}: 1px solid #e5e5e5;
+  background-color: #ffffff;
+}
+
+.dashboard-box .box-tabbs .tabbable .tab-content {
+  margin-top: 1px;
+  background-color: #ffffff;
+}
+
+.dashboard-box .box-tabbs .tabbable .tab-content .databox {
+  margin-bottom: 20px;
+}
+
+.dashboard-box .box-visits .row {
+  margin: 0;
+}
+
+.dashboard-box .box-visits .row > div {
+  padding: 0 !important;
+}
+
+.dashboard-box .box-visits .row > div:last-child .databox {
+  border-#{$dir-mode-align-inverse}: 0;
+}
+
+.dashboard-box .box-visits .row > div .notification {
+  border: 1px solid #e5e5e5;
+  border-#{$dir-mode-align}: 0;
+  border-bottom: 0;
+  height: 68px;
+  padding: 18px 15px;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-icon {
+  float: $dir-mode-align;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-icon i {
+  width: 34px;
+  height: 34px;
+  text-align: center;
+  line-height: 34px;
+  margin-#{$dir-mode-align-inverse}: 10px;
+  font-size: 16px;
+  border-radius: 50%;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-icon i:hover {
+  cursor: pointer;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-body {
+  float: $dir-mode-align;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-body .title {
+  display: block;
+  font-size: 13px;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-body .description {
+  display: block;
+  font-size: 10px;
+  color: #999999;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-extra {
+  float: $dir-mode-align-inverse;
+  text-align: $dir-mode-align-inverse;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-extra i {
+  font-size: 14px;
+}
+
+.dashboard-box .box-visits .row > div .notification .notification-extra .description {
+  display: block;
+  font-size: 10px;
+  color: #999999;
+}
+
+@media (max-width: 767px) {
+  .dashboard-box .box-tabbs .tabbable .tab-content #visits .visits-databoxes > div:last-child .databox {
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .dashboard-box .box-tabbs .tabbable .tab-content #visits .visits-databoxes > div .databox {
+    border-bottom: 0;
+    border-#{$dir-mode-align-inverse}: 0;
+  }
+}
+
+/*#endregion Dashboard Box*/

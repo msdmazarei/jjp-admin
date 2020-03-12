@@ -1,0 +1,194 @@
+/*#region DropDown*/
+.dropdown-menu {
+  border: 1px solid #ccc !important;
+  -webkit-border-radius: 2px !important;
+  -webkit-background-clip: padding-box !important;
+  -moz-border-radius: 2px !important;
+  -moz-background-clip: padding !important;
+  border-radius: 2px !important;
+  background-clip: padding-box !important;
+  @include box-shadow($admin-dropdown-menu-box-shadow);
+  @include transition(opacity 0.218s);
+  margin: 1px 0 0;
+  min-width: 170px;
+  @extend .dropdownSlideInDown;
+  .dropdown-icon {
+    display: inline-block;
+    font-size: 13px;
+    // margin-#{$dir-mode-align-inverse}: 5px;
+    body:not(.rtl) & {
+      margin-right: 5px;
+    }
+    body.rtl & {
+      margin-left: 5px;
+    }
+  }
+  > li {
+    > a {
+      font-size: 13px;
+      // padding-#{$dir-mode-align}: 11px;
+      // padding-#{$dir-mode-align-inverse}: 11px;
+      body:not(.rtl) & {
+        padding-left: 11px;
+        padding-right: 11px;
+      }
+      body.rtl & {
+        padding-right: 11px;
+        padding-left: 11px;
+      }
+      margin-bottom: 1px;
+      margin-top: 1px;
+      .dropdown-expand {
+        position: absolute;
+        top: 5px;
+        // #{$dir-mode-align-inverse}: 10px;
+        body:not(.rtl) & {
+          right: 10px;
+        }
+        body.rtl & {
+          left: 10px;
+        }
+        font-size: 13px;
+      }
+      .badge,
+      .label {
+        font-size: 10px !important;
+      }
+      .label {
+        padding: 3px 6px 5px 6px;
+      }
+    }
+  }
+  > .dropdown-menu {
+    -webkit-border-radius: 2px;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 2px;
+    -moz-background-clip: padding;
+    border-radius: 2px;
+    background-clip: padding-box;
+    > a {
+      &:after {
+        // margin-#{$dir-mode-align-inverse}: -5px;
+        body:not(.rtl) & {
+          margin-right: -5px;
+        }
+        body.rtl & {
+          margin-left: -5px;
+        }
+      }
+    }
+  }
+  .divider {
+    background-color: #ebebeb;
+    margin-bottom: -1px;
+  }
+  &.pull-right {
+    // #{$dir-mode-align}: auto;
+    // #{$dir-mode-align-inverse}: 0;
+    body:not(.rtl) & {
+      left: auto !important;
+      right: 0;
+    }
+    body.rtl & {
+      right: auto;
+      left: 0 !important;
+    }
+  }
+  &.dropdown-arrow {
+    &.pull-right {
+      &:before {
+        // #{$dir-mode-align}: auto;
+        // #{$dir-mode-align-inverse}: 9px;
+        body:not(.rtl) & {
+          left: auto;
+          right: 9px;
+        }
+        body.rtl & {
+          right: auto;
+          left: 9px;
+        }
+      }
+    }
+    &:before {
+      border-bottom: 7px solid #ffffff;
+      // border-#{$dir-mode-align}: 7px solid transparent;
+      // border-#{$dir-mode-align-inverse}: 7px solid transparent;
+      content: "";
+      display: inline-block;
+      // #{$dir-mode-align}: 9px;
+      body:not(.rtl) & {
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        left: 9px;
+      }
+      body.rtl & {
+        border-right: 7px solid transparent;
+        border-left: 7px solid transparent;
+        right: 9px;
+      }
+      position: absolute;
+      top: -7px;
+    }
+  }
+  li a:hover,
+  li a:focus,
+  li a:active,
+  li.active a,
+  li.active a:hover,
+  .dropdown-submenu:hover > a,
+  .nav-tabs .dropdown-menu li > a:focus {
+    background: #ebebeb;
+    color: #262626;
+  }
+}
+
+@each $color, $color-varient in $app-colors {
+  .dropdown-#{$color} li a:hover,
+  .dropdown-#{$color} li a:focus,
+  .dropdown-#{$color} li a:active,
+  .dropdown-#{$color} li.active a,
+  .dropdown-#{$color} li.active a:hover,
+  .dropdown-#{$color} .dropdown-submenu:hover > a,
+  .nav-tabs .dropdown-#{$color} li > a:focus {
+    background: app-color($color);
+    color: app-color($color, "color");
+  }
+}
+
+.dropdown-inverse li a:hover,
+.dropdown-inverse li a:focus,
+.dropdown-inverse li a:active,
+.dropdown-inverse li.active a,
+.dropdown-inverse li.active a:hover,
+.dropdown-inverse .dropdown-submenu:hover > a,
+.nav-tabs .dropdown-inverse li > a:focus {
+  background: $admin-dark-color1;
+  color: $admin-dark-color1-inverse;
+}
+
+.dropdown-hover {
+  position: relative;
+  &:hover {
+    > .dropdown-menu {
+      display: block;
+      // #{$dir-mode-align}: 100%;
+      body:not(.rtl) & {
+        left: 100%;
+      }
+      body.rtl & {
+        right: 100%;
+      }
+      top: -2px;
+    }
+  }
+  &.dropup {
+    &:hover {
+      > .dropdown-menu {
+        bottom: 0;
+        top: auto;
+      }
+    }
+  }
+}
+
+/*#endregion DropDown*/

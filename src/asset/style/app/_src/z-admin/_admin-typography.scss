@@ -1,0 +1,241 @@
+/*#region Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 300 !important;
+  //font-family: 'Open Sans', 'Segoe UI' /*rtl:"Droid Arabic Kufi", "WYekan"*/;
+}
+
+h1 small,
+h2 small,
+h3 small,
+h4 small,
+h5 small,
+h6 small {
+  color: #444444;
+}
+
+h1.block,
+h2.block,
+h3.block,
+h4.block,
+h5.block,
+h6.block {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+h1 .label,
+h2 .label,
+h3 .label,
+h4 .label,
+h5 .label,
+h6 .label {
+  font-size: 75%;
+}
+
+h1.row-title,
+h2.row-title,
+h3.row-title,
+h4.row-title,
+h5.row-title,
+h6.row-title {
+  line-height: 17px;
+  margin: 10px 0;
+  padding: 9px 10px 9px 8px;
+  display: inline-block;
+  color: #646464;
+  font-weight: 400;
+  background-color: #ffffff;
+  position: relative;
+  -webkit-border-radius: 0 2px 2px 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0 2px 2px 0;
+  -moz-background-clip: padding;
+  border-radius: 0 2px 2px 0;
+  background-clip: padding-box;
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+h1.row-title:before,
+h2.row-title:before,
+h3.row-title:before,
+h4.row-title:before,
+h5.row-title:before,
+h6.row-title:before {
+  display: block;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  #{$dir-mode-align}: -4px;
+  width: 4px;
+  max-width: 4px;
+  overflow: hidden;
+  background-color: #2dc3e8;
+}
+
+h1.row-title .fa,
+h2.row-title .fa,
+h3.row-title .fa,
+h4.row-title .fa,
+h5.row-title .fa,
+h6.row-title .fa,
+h1.row-title .glyphicon,
+h2.row-title .glyphicon,
+h3.row-title .glyphicon,
+h4.row-title .glyphicon,
+h5.row-title .glyphicon,
+h6.row-title .glyphicon,
+h1.row-title .typcn,
+h2.row-title .typcn,
+h3.row-title .typcn,
+h4.row-title .typcn,
+h5.row-title .typcn,
+h6.row-title .typcn,
+h1.row-title [class*="wi-"],
+h2.row-title [class*="wi-"],
+h3.row-title [class*="wi-"],
+h4.row-title [class*="wi-"],
+h5.row-title [class*="wi-"],
+h6.row-title [class*="wi-"] {
+  margin-#{$dir-mode-align-inverse}: 5px;
+  line-height: 17px;
+  font-size: 17px;
+}
+
+h1 {
+  font-size: 32px;
+}
+
+h1.smaller {
+  font-size: 31px;
+}
+
+h1.bigger {
+  font-size: 33px;
+}
+
+h1.block {
+  margin-bottom: 16px;
+}
+
+h2 {
+  font-size: 26px;
+}
+
+h2.smaller {
+  font-size: 25px;
+}
+
+h2.bigger {
+  font-size: 27px;
+}
+
+h2.block {
+  margin-bottom: 16px;
+}
+
+h3 {
+  font-size: 22px;
+}
+
+h3.smaller {
+  font-size: 21px;
+}
+
+h3.bigger {
+  font-size: 23px;
+}
+
+h3.block {
+  margin-bottom: 16px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+h4.smaller {
+  font-size: 17px;
+}
+
+h4.bigger {
+  font-size: 19px;
+}
+
+h4.block {
+  margin-bottom: 16px;
+}
+
+h5 {
+  font-size: 15px;
+}
+
+h5.smaller {
+  font-size: 14px;
+}
+
+h5.bigger {
+  font-size: 16px;
+}
+
+h5.block {
+  margin-bottom: 16px;
+}
+
+h6 {
+  font-size: 13px;
+}
+
+h6.smaller {
+  font-size: 12px;
+}
+
+h6.bigger {
+  font-size: 14px;
+}
+
+h6.block {
+  margin-bottom: 16px;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.text-align-left {
+  text-align: $dir-mode-align !important;
+}
+
+.text-align-right {
+  text-align: $dir-mode-align-inverse !important;
+}
+
+.text-align-justify {
+  text-align: justify !important;
+}
+
+.block-center {
+  margin: 0 auto;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+p {
+  line-height: 22px;
+}
+
+a:focus,
+a:active {
+  text-decoration: none;
+}
+
+/*#endregion Typography */

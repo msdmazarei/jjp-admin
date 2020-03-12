@@ -1,0 +1,390 @@
+/*#region Buttons*/
+.btn {
+  cursor: pointer;
+  vertical-align: middle;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  //color: #ffffff;
+  // @include box-shadow(0 1px 0 rgba(0, 0, 0, 0.05)); // ?
+  @include transition(all 0.15s ease);
+  //
+  -webkit-border-radius: 0px;
+  // -webkit-background-clip: padding-box; // ?
+  -moz-border-radius: 0px;
+  // -moz-background-clip: padding; // ?
+  border-radius: 0px;
+  // background-clip: padding-box; // ?
+  //
+  font-size: 13px;
+  &.btn-link {
+    border: none !important;
+    background: transparent none !important;
+    //color: #08c !important;
+    color: app-color(primary) !important;
+    -webkit-text-shadow: none !important;
+    text-shadow: none !important;
+    padding: 4px 12px !important;
+    line-height: 20px !important;
+
+    @include box-shadow(none !important);
+    &:hover {
+      background: none !important;
+      -webkit-text-shadow: none !important;
+      text-shadow: none !important;
+    }
+    &.active {
+      background: none !important;
+      text-decoration: underline;
+      color: #009ceb !important;
+      &:after {
+        display: none;
+      }
+    }
+    &.disabled,
+    [disabled] {
+      background: 0;
+
+      @include opacity(0.65);
+      &:hover {
+        background: none !important;
+        text-decoration: none !important;
+      }
+    }
+  }
+  &.shiny {
+    @include box-shadow(0 1px 3px 1px rgba(0, 0, 0, 0.1));
+    -webkit-border-radius: 3px;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 3px;
+    -moz-background-clip: padding;
+    border-radius: 3px;
+    background-clip: padding-box;
+    &:hover {
+      zoom: 1;
+      @include opacity(0.9);
+    }
+    &.active, &:focus {
+      @include box-shadow(inset 0 3px 5px rgba(0, 0, 0, 0.125));
+    }
+    &.dropdown-toggle {
+      border-#{$dir-mode-align}-width: 0 !important;
+    }
+  }
+  &.btn-circle {
+    -webkit-border-radius: 50%;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 50%;
+    -moz-background-clip: padding;
+    border-radius: 50%;
+    background-clip: padding-box;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    padding: 11px 12px;
+    > .fa, .typcn, .glyphicon, > [class*="wi-"] {
+      font-size: 20px;
+      margin: 0 auto;
+      line-height: 34px;
+    }
+    &.btn-xs {
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      padding: 6px 0;
+      > .fa, .typcn, .glyphicon, > [class*="wi-"] {
+        font-size: 12px;
+        line-height: 14px;
+      }
+    }
+    &.btn-sm {
+      width: 50px;
+      height: 50px;
+      padding: 10px 15px;
+      > .fa, .typcn, .glyphicon, > [class*="wi-"] {
+        font-size: 18px;
+        line-height: 26px;
+        border-radius: 50%;
+      }
+    }
+    &.btn-lg {
+      width: 70px;
+      height: 70px;
+      padding: 10px;
+      > .fa, .typcn, .glyphicon, > [class*="wi-"] {
+        font-size: 28px;
+        line-height: 46px;
+      }
+    }
+  }
+  &.btn-labeled {
+    position: relative;
+    padding-#{$dir-mode-align}: 0;
+    &.btn-block .btn-label {
+      margin-#{$dir-mode-align-inverse}: 0;
+    }
+    .btn-label {
+      display: block;
+      float: $dir-mode-align;
+
+      @if $dir-mode-direction == rtl {
+        margin: -7px -2px -9px 12px;
+        padding: 8px 11px 8px 10px;
+      } @else {
+        margin: -7px 12px -9px -2px;
+        padding: 8px 10px 8px 11px;
+      }
+      position: relative;
+      background: rgba(0, 0, 0, 0.06);
+      line-height: 15px;
+      border-bottom-#{$dir-mode-align}-radius: 3px;
+      border-top-#{$dir-mode-align}-radius: 3px;
+      > .fa, .typcn, .glyphicon, > [class*="wi-"] {
+        margin-#{$dir-mode-align-inverse}: 0;
+      }
+    }
+  }
+  &.icon-only {
+    width: 36px;
+    height: 34px;
+    padding: 5px 3px;
+    > .fa, .typcn, .glyphicon, > [class*="wi-"] {
+      margin: 0;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0;
+      font-size: 22px;
+      line-height: 22px;
+    }
+  }
+  > .fa, .typcn, .glyphicon {
+    // display: inline;
+    margin-#{$dir-mode-align-inverse}: 4px;
+    font-size: 14px;
+  }
+  > {
+    [class*="wi-"] {
+      display: inline;
+      margin-#{$dir-mode-align-inverse}: 4px;
+      font-size: 14px;
+    }
+    .fa.right {
+      margin-#{$dir-mode-align-inverse}: 0;
+      margin-#{$dir-mode-align}: 4px;
+    }
+  }
+  .typcn.right, .glyphicon.right, > [class*="wi-"].right {
+    margin-#{$dir-mode-align-inverse}: 0;
+    margin-#{$dir-mode-align}: 4px;
+  }
+}
+
+/*#region Button Sizes*/
+
+.btn-xs {
+  font-size: 11px;
+  padding: 2px 7px;
+  > {
+    .fa, .typcn, .glyphicon, [class*="wi-"] {
+      font-size: 12px;
+      margin-#{$dir-mode-align-inverse}: 2px;
+    }
+    .fa.right, .typcn.right, .glyphicon.right, [class*="wi-"].right {
+      margin-#{$dir-mode-align-inverse}: 0;
+      margin-#{$dir-mode-align}: 2px;
+    }
+  }
+  &.icon-only {
+    width: 24px;
+    height: 24px;
+    padding: 2px 6px;
+    > {
+      .fa, .typcn, .glyphicon, [class*="wi-"] {
+        font-size: 12px;
+        line-height: 7px;
+      }
+    }
+  }
+}
+
+.btn-sm {
+  font-size: 12px;
+  padding: 4px 9px;
+  line-height: 1.39;
+  > {
+    .fa, .typcn, .glyphicon, [class*="wi-"] {
+      font-size: 13px;
+      margin-#{$dir-mode-align-inverse}: 3px;
+    }
+    .fa.right, .typcn.right, .glyphicon.right, [class*="wi-"].right {
+      margin-#{$dir-mode-align-inverse}: 0;
+      margin-#{$dir-mode-align}: 3px;
+    }
+  }
+  &.icon-only {
+    width: 31px;
+    height: 30px;
+    padding: 3px !important;
+    > {
+      .fa, .typcn, .glyphicon, [class*="wi-"] {
+        font-size: 20px;
+        line-height: 21px;
+      }
+    }
+  }
+}
+
+.btn-lg {
+  line-height: 1.35;
+  padding: 9px 18px;
+  font-size: 14px;
+  &.icon-only {
+    width: 40px;
+    height: 38px;
+    padding: 6px !important;
+    > {
+      .fa, .typcn, .glyphicon, [class*="wi-"] {
+        font-size: 24px;
+        line-height: 26px;
+      }
+    }
+  }
+  > {
+    .fa, .typcn, .glyphicon, [class*="wi-"] {
+      font-size: 16px;
+      margin-#{$dir-mode-align-inverse}: 6px;
+    }
+    .fa.right, .typcn.right, .glyphicon.right, [class*="wi-"].right {
+      margin-#{$dir-mode-align-inverse}: 0;
+      margin-#{$dir-mode-align}: 6px;
+    }
+  }
+}
+
+/*#endregion Button Sizes*/
+
+.btn {
+  &.disabled.active, &[disabled].active, &.disabled:focus, &[disabled]:focus, &.disabled:active, &[disabled]:active {
+    outline: 0;
+  }
+  &.disabled:active, &[disabled]:active {
+    top: 0;
+    #{$dir-mode-align}: 0;
+  }
+}
+
+.open .btn.dropdown-toggle {
+  @include box-shadow(inset 0 3px 5px rgba(0, 0, 0, 0.125));
+}
+
+/*#region Group Button*/
+
+.btn-group {
+  > .btn {
+    &:not(:first-child):not(.dropdown-toggle) {
+      border-#{$dir-mode-align}: 0;
+    }
+    margin: 0;
+    + .btn {
+      margin: 0;
+    }
+    &:first-child {
+      margin: 0;
+      -webkit-border-radius: 2px;
+      -webkit-background-clip: padding-box;
+      -moz-border-radius: 2px;
+      -moz-background-clip: padding;
+      border-radius: 2px;
+      background-clip: padding-box;
+    }
+    &:last-child {
+      -webkit-border-radius: 0 2px 2px 0;
+      -webkit-background-clip: padding-box;
+      -moz-border-radius: 0 2px 2px 0;
+      -moz-background-clip: padding;
+      border-radius: 0 2px 2px 0;
+      background-clip: padding-box;
+    }
+    > .caret {
+      margin-#{$dir-mode-align}: 1px;
+      border-width: 5px;
+      border-top-color: #eeeeee;
+      margin-top: 1px;
+    }
+    &.btn-default > .caret {
+      border-top-color: #333333;
+    }
+    + {
+      .btn.dropdown-toggle {
+        padding-#{$dir-mode-align}: 7px;
+        padding-#{$dir-mode-align-inverse}: 7px;
+      }
+      .btn-lg.dropdown-toggle {
+        padding-#{$dir-mode-align-inverse}: 10px;
+        padding-#{$dir-mode-align}: 10px;
+      }
+      .btn-sm.dropdown-toggle {
+        padding-#{$dir-mode-align-inverse}: 6px;
+        padding-#{$dir-mode-align}: 6px;
+        .fa {
+          line-height: 13px;
+        }
+      }
+      .btn-xs.dropdown-toggle {
+        padding-#{$dir-mode-align-inverse}: 5px;
+        padding-#{$dir-mode-align}: 5px;
+        .fa {
+          line-height: 13px;
+        }
+      }
+    }
+  }
+  .dropdown-toggle {
+    -webkit-border-radius: 0 2px 2px 0;
+    -webkit-background-clip: padding-box;
+    -moz-border-radius: 0 2px 2px 0;
+    -moz-background-clip: padding;
+    border-radius: 0 2px 2px 0;
+    background-clip: padding-box;
+    .fa {
+      display: inline-block;
+      margin-top: 1px;
+      font-size: 14px;
+      line-height: 14px;
+      margin-#{$dir-mode-align-inverse}: 0;
+      margin-#{$dir-mode-align}: 0;
+    }
+  }
+  > .btn, + .btn {
+    margin: 0;
+  }
+  > .btn.active:after, + .btn.active:after {
+    #{$dir-mode-align}: -2px;
+    #{$dir-mode-align-inverse}: -2px;
+    bottom: -2px;
+    border-bottom-width: 1px;
+  }
+}
+
+.btn-group-vertical > .btn {
+  &:not(:last-child) {
+    border-bottom: 0;
+  }
+  &:first-child:not(:last-child) {
+    border-top-#{$dir-mode-align-inverse}-radius: 2px;
+  }
+  &:last-child:not(:first-child) {
+    border-bottom-#{$dir-mode-align}-radius: 2px;
+  }
+  margin: 0;
+  + .btn {
+    margin: 0;
+  }
+  &:first-child {
+    margin-#{$dir-mode-align-inverse}: 0;
+  }
+}
+
+/*#endregion Group Button*/
+
+/*#endregion Buttons*/

@@ -1,0 +1,89 @@
+/*#region Pagination*/
+.pagination,
+.pager li > a {
+  -webkit-border-radius: 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 2px;
+  -moz-background-clip: padding;
+  border-radius: 2px;
+  background-clip: padding-box;
+}
+
+.pagination,
+.pager {
+  margin: 0;
+}
+
+.pagination > li > a,
+.pager > li > a {
+  color: #444444;
+  background-color: #ffffff;
+  margin: 0 -1px 0 0;
+  border-color: #cccccc;
+}
+
+.pagination > li > a:hover,
+.pager > li > a:hover {
+  background-color: #ebebeb;
+  border-color: #b8b8b8;
+}
+
+.pagination > li > a:focus,
+.pager > li > a:focus,
+.pagination > li > a:focus,
+.pager > li > a:focus {
+  background-color: #ebebeb;
+  border-color: #b8b8b8;
+}
+
+.pagination > li.disabled > a,
+.pager > li.disabled > a,
+.pagination > li.disabled > a:hover,
+.pager > li.disabled > a:hover {
+  background-color: #f9f9f9;
+  border-color: #d9d9d9;
+}
+
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+  -webkit-border-radius: 0 2px 2px 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0 2px 2px 0;
+  -moz-background-clip: padding;
+  border-radius: 0 2px 2px 0;
+  background-clip: padding-box;
+}
+
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+  -webkit-border-radius: 2px 0 0 2px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 2px 0 0 2px;
+  -moz-background-clip: padding;
+  border-radius: 2px 0 0 2px;
+  background-clip: padding-box;
+}
+
+.pagination > li > a,
+.pager > li > a,
+.pagination > li > span,
+.pager > li > span {
+  border-width: 1px;
+}
+
+.pagination > li.active > a,
+.pagination > li.active > a:hover {
+  background-color: $admin-primary-color;//#2dc3e8;
+  border-color: $admin-primary-color;//2dc3e8;
+  color: $admin-dark-color1-inverse;//#ffffff;
+  -webkit-text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.pagination-lg > li > a,
+.pagination-lg > li > span {
+  padding: 7px 16px;
+  font-size: 16px;
+}
+
+/*#endregion Pagination*/

@@ -1,0 +1,470 @@
+/*#region Tables*/
+.table {
+  background-color: #ffffff;
+  margin-bottom: 0;
+}
+
+.table tfoot > tr > th {
+  font-weight: 300;
+}
+
+.table thead {
+  /*#region Colored Header*/
+  /*#endregion Colored Header*/
+  /*#region Bordered Header*/
+  /*#endregion Bordered Header*/
+}
+
+.table thead > tr > th {
+  border-bottom: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.table thead[class*="colored-"] > tr > th {
+  color: #ffffff;
+  font-weight: 400;
+}
+
+.table thead.colored-blue > tr > th {
+  background-color: #5db2ff;
+}
+
+.table thead.colored-primary > tr > th {
+  background-color: #4374e0;
+}
+
+.table thead.colored-danger > tr > th {
+  background-color: #d73d32;
+}
+
+.table thead.colored-success > tr > th {
+  background-color: #53a93f;
+}
+
+.table thead.colored-warning > tr > th {
+  background-color: #f4b400;
+}
+
+.table thead.colored-silver > tr > th {
+  background-color: #777777;
+}
+
+.table thead.colored-inverse > tr > th {
+  background-color: #444444;
+}
+
+.table thead.colored-blueberry > tr > th {
+  background-color: #6f85bf;
+}
+
+.table thead.colored-palegreen > tr > th {
+  background-color: #a0d468;
+}
+
+.table thead.colored-orange > tr > th {
+  background-color: #fb6e52;
+}
+
+.table thead.colored-darkorange > tr > th {
+  background-color: #ed4e2a;
+}
+
+.table thead.colored-magenta > tr > th {
+  background-color: #bc5679;
+}
+
+.table thead.colored-purple > tr > th {
+  background-color: #7e3794;
+}
+
+.table thead.colored-maroon > tr > th {
+  background-color: #981b48;
+}
+
+.table thead.bordered-blue > tr > th {
+  border-bottom: 3px solid #5db2ff;
+}
+
+.table thead.bordered-primary > tr > th {
+  border-bottom: 3px solid #4374e0;
+}
+
+.table thead.bordered-danger > tr > th {
+  border-bottom: 3px solid #d73d32;
+}
+
+.table thead.bordered-success > tr > th {
+  border-bottom: 3px solid #53a93f;
+}
+
+.table thead.bordered-warning > tr > th {
+  border-bottom: 3px solid #f4b400;
+}
+
+.table thead.bordered-silver > tr > th {
+  border-bottom: 3px solid #777777;
+}
+
+.table thead.bordered-inverse > tr > th {
+  border-bottom: 3px solid #444444;
+}
+
+.table thead.bordered-blueberry > tr > th {
+  border-bottom: 3px solid #6f85bf;
+}
+
+.table thead.bordered-palegreen > tr > th {
+  border-bottom: 3px solid #a0d468;
+}
+
+.table thead.bordered-orange > tr > th {
+  border-bottom: 3px solid #fb6e52;
+}
+
+.table thead.bordered-darkorange > tr > th {
+  border-bottom: 3px solid #ed4e2a;
+}
+
+.table thead.bordered-magenta > tr > th {
+  border-bottom: 3px solid #bc5679;
+}
+
+.table thead.bordered-purple > tr > th {
+  border-bottom: 3px solid #7e3794;
+}
+
+.table thead.bordered-maroon > tr > th {
+  border-bottom: 3px solid #981b48;
+}
+
+.table tr.success td:first-child {
+  -webkit-box-shadow: 2px 0 0 #53a93f inset;
+  -moz-box-shadow: 2px 0 0 #53a93f inset;
+  box-shadow: 2px 0 0 #53a93f inset;
+}
+
+.table tr.danger td:first-child {
+  -webkit-box-shadow: 2px 0 0 #d73d32 inset;
+  -moz-box-shadow: 2px 0 0 #d73d32 inset;
+  box-shadow: 2px 0 0 #d73d32 inset;
+}
+
+.table tr.warning td:first-child {
+  -webkit-box-shadow: 2px 0 0 #f4b400 inset;
+  -moz-box-shadow: 2px 0 0 #f4b400 inset;
+  box-shadow: 2px 0 0 #f4b400 inset;
+}
+
+.table tr.active td:first-child {
+  //-webkit-box-shadow: 2px 0 0 #737373 inset;
+  //-moz-box-shadow: 2px 0 0 #737373 inset;
+  //box-shadow: 2px 0 0 #737373 inset;
+  @if $dir-mode-direction == rtl {
+    @include box-shadow(-2px 0 0 #737373 inset);
+  }
+  @else {
+    @include box-shadow(2px 0 0 #737373 inset);
+  }
+
+}
+
+.table tr td.success {
+  -webkit-box-shadow: 2px 0 0 #53a93f inset;
+  -moz-box-shadow: 2px 0 0 #53a93f inset;
+  box-shadow: 2px 0 0 #53a93f inset;
+}
+
+.table tr td.danger {
+  -webkit-box-shadow: 2px 0 0 #d73d32 inset;
+  -moz-box-shadow: 2px 0 0 #d73d32 inset;
+  box-shadow: 2px 0 0 #d73d32 inset;
+}
+
+.table tr td.warning {
+  -webkit-box-shadow: 2px 0 0 #f4b400 inset;
+  -moz-box-shadow: 2px 0 0 #f4b400 inset;
+  box-shadow: 2px 0 0 #f4b400 inset;
+}
+
+.table tr td.active {
+  -webkit-box-shadow: 2px 0 0 #737373 inset;
+  -moz-box-shadow: 2px 0 0 #737373 inset;
+  box-shadow: 2px 0 0 #737373 inset;
+}
+
+.table-bordered thead > tr {
+  background-color: #eee;
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMSAxIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9Imxlc3NoYXQtZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmMmYyZjIiIHN0b3Atb3BhY2l0eT0iMSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZhZmFmYSIgc3RvcC1vcGFjaXR5PSIxIi8+PC9saW5lYXJHcmFkaWVudD48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2xlc3NoYXQtZ2VuZXJhdGVkKSIgLz48L3N2Zz4=);
+  background-image: -webkit-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
+  background-image: -moz-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
+  background-image: -o-linear-gradient(top, #f2f2f2 0, #fafafa 100%);
+  background-image: linear-gradient(to bottom, #f2f2f2 0, #fafafa 100%);
+}
+
+.table > thead > tr > .active,
+.table > tbody > tr > .active,
+.table > tfoot > tr > .active,
+.table > thead > .active > td,
+.table > tbody > .active > td,
+.table > tfoot > .active > td,
+.table > thead > .active > th,
+.table > tbody > .active > th,
+.table > tfoot > .active > th,
+.table-striped > tbody > tr.active:nth-child(odd) > td,
+.table-striped > tbody > tr > .active:nth-child(odd) > th {
+  background-color: #f1f1f1;
+  color: #222;
+}
+
+.table-hover > tbody > tr > .active:hover,
+.table-hover > tbody > .active:hover > td,
+.table-hover > tbody > .active:hover > th,
+.table-striped > tbody > tr.active:hover:nth-child(odd) > td,
+.table-striped > tbody > tr > .active:hover:nth-child(odd) > th {
+  background-color: #e5e5e5 !important;
+}
+
+.table > thead > tr > .success,
+.table > tbody > tr > .success,
+.table > tfoot > tr > .success,
+.table > thead > .success > td,
+.table > tbody > .success > td,
+.table > tfoot > .success > td,
+.table > thead > .success > th,
+.table > tbody > .success > th,
+.table > tfoot > .success > th {
+  color: #119000;
+}
+
+.table > thead > tr > .danger,
+.table > tbody > tr > .danger,
+.table > tfoot > tr > .danger,
+.table > thead > .danger > td,
+.table > tbody > .danger > td,
+.table > tfoot > .danger > td,
+.table > thead > .danger > th,
+.table > tbody > .danger > th,
+.table > tfoot > .danger > th {
+  color: #CD2929;
+}
+
+.table > thead > tr > .warning,
+.table > tbody > tr > .warning,
+.table > tfoot > tr > .warning,
+.table > thead > .warning > td,
+.table > tbody > .warning > td,
+.table > tfoot > .warning > td,
+.table > thead > .warning > th,
+.table > tbody > .warning > th,
+.table > tfoot > .warning > th {
+  color: #fb6e52;
+}
+
+.table-scrollable {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #dddddd;
+}
+
+.table-scrollable > .table {
+  width: 100% !important;
+  margin: 0 !important;
+  margin-bottom: 0;
+  background-color: #fff;
+}
+
+.table-scrollable > .table > thead > tr > th,
+.table-scrollable > .table > tbody > tr > th,
+.table-scrollable > .table > tfoot > tr > th,
+.table-scrollable > .table > thead > tr > td,
+.table-scrollable > .table > tbody > tr > td,
+.table-scrollable > .table > tfoot > tr > td {
+  white-space: nowrap;
+}
+
+.table-scrollable > .table-bordered {
+  border: 0;
+}
+
+.table-scrollable > .table-bordered > thead > tr > th:first-child,
+.table-scrollable > .table-bordered > tbody > tr > th:first-child,
+.table-scrollable > .table-bordered > tfoot > tr > th:first-child,
+.table-scrollable > .table-bordered > thead > tr > td:first-child,
+.table-scrollable > .table-bordered > tbody > tr > td:first-child,
+.table-scrollable > .table-bordered > tfoot > tr > td:first-child {
+  border-#{$dir-mode-align}: 0;
+}
+
+.table-scrollable > .table-bordered > thead > tr > th:last-child,
+.table-scrollable > .table-bordered > tbody > tr > th:last-child,
+.table-scrollable > .table-bordered > tfoot > tr > th:last-child,
+.table-scrollable > .table-bordered > thead > tr > td:last-child,
+.table-scrollable > .table-bordered > tbody > tr > td:last-child,
+.table-scrollable > .table-bordered > tfoot > tr > td:last-child {
+  border-#{$dir-mode-align-inverse}: 0;
+}
+
+.table-scrollable > .table-bordered > thead > tr > th:last-child > td,
+.table-scrollable > .table-bordered > tbody > tr > th:last-child > td,
+.table-scrollable > .table-bordered > tfoot > tr > th:last-child > td,
+.table-scrollable > .table-bordered > thead > tr > td:last-child > td,
+.table-scrollable > .table-bordered > tbody > tr > td:last-child > td,
+.table-scrollable > .table-bordered > tfoot > tr > td:last-child > td {
+  border-bottom: 0;
+}
+
+.flip-scroll table {
+  width: 100%;
+}
+
+@media only screen and (max-width: 800px) {
+  .flip-scroll .flip-content:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+  .flip-scroll html .flip-content {
+    -ms-zoom: 1;
+    zoom: 1;
+  }
+  .flip-scroll *:first-child + html .flip-content {
+    -ms-zoom: 1;
+    zoom: 1;
+  }
+  .flip-scroll table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: block;
+    position: relative;
+  }
+  .flip-scroll th,
+  .flip-scroll td {
+    margin: 0;
+    vertical-align: top;
+  }
+  .flip-scroll th:last-child,
+  .flip-scroll td:last-child {
+    border-bottom: 1px solid #ddd;
+  }
+  .flip-scroll th {
+    border: 0 !important;
+    border-#{$dir-mode-align-inverse}: 1px solid #ddd !important;
+    font-size: 13px !important;
+    padding: 5px;
+    width: auto !important;
+    display: block;
+    text-align: $dir-mode-align-inverse;
+    border-bottom: 0;
+    border-#{$dir-mode-align}: 0;
+  }
+  .flip-scroll td {
+    display: block;
+    min-height: 1.25em;
+    text-align: $dir-mode-align;
+    border-top: 0 !important;
+    border-#{$dir-mode-align}: 0;
+    border-#{$dir-mode-align-inverse}: 0;
+    border-bottom: 0;
+  }
+  .flip-scroll thead {
+    display: block;
+    float: $dir-mode-align;
+  }
+  .flip-scroll thead tr {
+    display: block;
+    //border: !important;
+  }
+  .flip-scroll thead.bordered-blue > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #5db2ff !important;
+  }
+  .flip-scroll thead.bordered-primary > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #4374e0 !important;
+  }
+  .flip-scroll thead.bordered-danger > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #d73d32 !important;
+  }
+  .flip-scroll thead.bordered-success > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #53a93f !important;
+  }
+  .flip-scroll thead.bordered-warning > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #f4b400 !important;
+  }
+  .flip-scroll thead.bordered-silver > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #777777 !important;
+  }
+  .flip-scroll thead.bordered-inverse > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #444444 !important;
+  }
+  .flip-scroll thead.bordered-blueberry > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #6f85bf !important;
+  }
+  .flip-scroll thead.bordered-palegreen > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #a0d468 !important;
+  }
+  .flip-scroll thead.bordered-orange > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #fb6e52 !important;
+  }
+  .flip-scroll thead.bordered-darkorange > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #ed4e2a !important;
+  }
+  .flip-scroll thead.bordered-magenta > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #bc5679 !important;
+  }
+  .flip-scroll thead.bordered-purple > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #7e3794 !important;
+  }
+  .flip-scroll thead.bordered-maroon > tr > th {
+    border-#{$dir-mode-align-inverse}: 3px solid #981b48 !important;
+  }
+  .flip-scroll tbody {
+    display: block;
+    width: auto;
+    position: relative;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .flip-scroll tbody tr {
+    display: inline-block;
+    vertical-align: top;
+    margin-#{$dir-mode-align}: -5px;
+    border-#{$dir-mode-align}: 1px solid #ddd;
+  }
+}
+
+.table-toolbar {
+  padding: 10px 0;
+}
+
+.dropdown-checkboxes {
+  padding: 5px;
+}
+
+.dropdown-checkboxes .checker {
+  display: block;
+  font-weight: 300;
+  color: #333;
+  margin: 0 4px;
+  line-height: 24px;
+}
+
+.dropdown-checkboxes .checker input {
+  margin-top: 5px;
+}
+
+.dropdown-checkboxes .checker span {
+  padding-#{$dir-mode-align}: 5px;
+}
+
+.table input[type=checkbox] ~ .text,
+.table input[type=radio] ~ .text {
+  margin-#{$dir-mode-align-inverse}: -7px;
+  margin-bottom: 0;
+}
+
+/*#endregion Tables*/

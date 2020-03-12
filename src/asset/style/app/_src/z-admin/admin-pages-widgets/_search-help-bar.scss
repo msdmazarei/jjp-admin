@@ -1,0 +1,32 @@
+/*#region SearchHelpBar*/
+.searchhelpbar {
+  width: 100%;
+  position: relative;
+  margin: 0 0 10px;
+}
+
+.searchhelpbar .help-box {
+  min-height: 72px;
+  padding: 0;
+  padding-bottom: 0;
+}
+
+.searchhelpbar .help-box .alert {
+  min-height: 72px;
+  border-color: #ffffff;
+}
+
+.searchhelpbar .search-box {
+  background-color: #ffffff;
+  min-height: 72px;
+  padding: 0;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.searchhelpbar .search-box > div {
+  padding: 19px;
+}
+
+/*#endregion SearchHelpBar*/

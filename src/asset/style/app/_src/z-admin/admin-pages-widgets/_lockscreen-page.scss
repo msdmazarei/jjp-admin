@@ -1,0 +1,104 @@
+/*#region Lockscreen Page*/
+.lock-container {
+  margin: 15% auto;
+  max-width: 300px;
+}
+
+.lock-container .lock-box {
+  position: relative;
+  background: #fff;
+  width: 280px;
+  height: 170px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgMSAxIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9Imxlc3NoYXQtZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMTAwJSIgeDI9IjAlIiB5Mj0iMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2YzZjNmMyIgc3RvcC1vcGFjaXR5PSIxIi8+PC9saW5lYXJHcmFkaWVudD48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2xlc3NoYXQtZ2VuZXJhdGVkKSIgLz48L3N2Zz4=);
+  background-image: -webkit-linear-gradient(bottom, #ffffff, #f3f3f3);
+  background-image: -moz-linear-gradient(bottom, #ffffff, #f3f3f3);
+  background-image: -o-linear-gradient(bottom, #ffffff, #f3f3f3);
+  background-image: linear-gradient(to top, #ffffff, #f3f3f3);
+}
+
+.lock-container .lock-box .lock-username {
+  position: absolute;
+  height: 50px;
+  width: 100%;
+  line-height: 50px;
+  top: 60px;
+  text-align: center;
+  color: #999999;
+}
+
+.lock-container .lock-box img {
+  position: absolute;
+  -lh-property: 0;
+  #{$dir-mode-align}: -webkit-calc(50% - 64px);
+  #{$dir-mode-align}: -moz-calc(50% - 64px);
+  #{$dir-mode-align}: calc(50% - 64px);;
+  top: -64px;
+  border: 3px solid #ffffff;
+  width: 128px;
+  height: 128px;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.lock-container .lock-box .lock-password {
+  position: absolute;
+  top: 115px;
+  text-align: center;
+  -lh-property: 0;
+  #{$dir-mode-align}: -webkit-calc(50% - 114px);
+  #{$dir-mode-align}: -moz-calc(50% - 114px);
+  #{$dir-mode-align}: calc(50% - 114px);;
+}
+
+.lock-container .lock-box .lock-password input {
+  background-color: #ffffff;
+  border-color: #e5e5e5;
+  -webkit-border-radius: 4px !important;
+  -webkit-background-clip: padding-box !important;
+  -moz-border-radius: 4px !important;
+  -moz-background-clip: padding !important;
+  border-radius: 4px !important;
+  background-clip: padding-box !important;
+  text-align: center;
+  padding-#{$dir-mode-align}: 25px;
+}
+
+.lock-container .lock-box .btn-lock,
+.lock-container .lock-box .btn-lock:hover {
+  background: #ffffff;
+  color: #2dc3e8;
+  margin-top: -8px;
+  border: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+
+.lock-container .lock-box .btn-lock i:before,
+.lock-container .lock-box .btn-lock:hover i:before {
+  font-size: 18px;
+}
+
+.lock-container .signinbox {
+  width: 280px !important;
+  height: 50px !important;
+  padding: 15px;
+  margin-top: 15px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.lock-container .signinbox a {
+  font-size: 13px;
+  color: #2dc3e8;
+  padding-#{$dir-mode-align}: 5px;
+  cursor: pointer;
+}
+
+/*#endregion Lockscreen Page*/

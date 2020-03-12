@@ -1,0 +1,186 @@
+/*#region Spinners*/
+.spinbox {
+  position: relative;
+}
+
+.spinbox input {
+  float: $dir-mode-align;
+  padding-#{$dir-mode-align}: 35px;
+}
+
+.spinbox .btn {
+  position: relative;
+  width: 20px;
+  padding-top: 0;
+  padding-#{$dir-mode-align-inverse}: 9px;
+  padding-#{$dir-mode-align}: 9px;
+  font-size: 14px;
+  font-weight: normal;
+  padding: 4px 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  height: 17px;
+  zoom: 1;
+  filter: alpha(opacity=70);
+  -webkit-opacity: 0.7;
+  -moz-opacity: 0.7;
+  opacity: 0.7;
+}
+
+.spinbox .btn:hover {
+  color: #f5f5f5;
+  zoom: 1;
+  filter: alpha(opacity=100);
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+  opacity: 1;
+}
+
+.spinbox .btn:focus,
+.spinbox .btn:active {
+  color: #f5f5f5;
+  zoom: 1;
+  filter: alpha(opacity=100);
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+  opacity: 1;
+}
+
+.spinbox .btn.disabled {
+  cursor: not-allowed;
+}
+
+.spinbox .spinbox-buttons {
+  position: absolute;
+  #{$dir-mode-align}: 0;
+  float: $dir-mode-align;
+  width: 20px;
+  height: 34px;
+  border-#{$dir-mode-align}: 1px solid #d5d5d5;
+}
+
+.spinbox .spinbox-up {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  top: 0;
+  background-color: #fbfbfb;
+  border-#{$dir-mode-align}: 1px !important;
+}
+
+.spinbox .spinbox-up i {
+  position: relative;
+  top: -6px;
+  margin-#{$dir-mode-align-inverse}: 0;
+}
+
+.spinbox .spinbox-down {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  bottom: 0;
+  background-color: #fbfbfb;
+  border-bottom-#{$dir-mode-align}-radius: 0 !important;
+  border-#{$dir-mode-align}: 1px !important;
+  border-top: 1px solid #d5d5d5;
+}
+
+.spinbox .spinbox-down i {
+  position: relative;
+  top: -7px;
+  margin-#{$dir-mode-align-inverse}: 0;
+}
+
+.spinbox.spinbox-right .spinbox-buttons {
+  #{$dir-mode-align}: auto;
+  #{$dir-mode-align-inverse}: 0;
+  border-#{$dir-mode-align-inverse}: 0;
+}
+
+.spinbox.spinbox-right input {
+  padding-#{$dir-mode-align}: 10px;
+  padding-#{$dir-mode-align-inverse}: 35px;
+  margin-#{$dir-mode-align}: 0;
+}
+
+.spinbox.spinbox-horizontal input {
+  padding-#{$dir-mode-align}: 60px;
+}
+
+.spinbox.spinbox-horizontal .spinbox-buttons {
+  margin: 0;
+  font-size: 0;
+  width: 50px;
+  #{$dir-mode-align}: 0;
+  top: 0;
+}
+
+.spinbox.spinbox-horizontal .spinbox-buttons > .btn {
+  height: 34px;
+  line-height: 32px;
+  font-size: 18px;
+  display: inline-block;
+  vertical-align: sub;
+  margin: 0;
+}
+
+.spinbox.spinbox-horizontal .spinbox-buttons > .btn > i {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.spinbox.spinbox-horizontal .spinbox-down {
+  width: 24px;
+  border-#{$dir-mode-align}: 0;
+}
+
+.spinbox.spinbox-horizontal .spinbox-down i {
+  top: -5px;
+}
+
+.spinbox.spinbox-horizontal .spinbox-up {
+  width: 24px;
+}
+
+.spinbox.spinbox-horizontal .spinbox-up i {
+  top: -5px;
+}
+
+.spinbox.spinbox-horizontal.spinbox-right {
+  margin-#{$dir-mode-align}: 0;
+}
+
+.spinbox.spinbox-horizontal.spinbox-right .spinbox-buttons {
+  #{$dir-mode-align-inverse}: -1px;
+  #{$dir-mode-align}: auto;
+}
+
+.spinbox.spinbox-horizontal.spinbox-right input {
+  padding-#{$dir-mode-align}: 10px;
+}
+
+.spinbox.spinbox-horizontal.spinbox-two-sided .spinbox-buttons {
+  width: 25px !important;
+}
+
+.spinbox.spinbox-horizontal.spinbox-two-sided .spinbox-buttons.spinbox-buttons-left {
+  #{$dir-mode-align}: 0;
+}
+
+.spinbox.spinbox-horizontal.spinbox-two-sided .spinbox-buttons.spinbox-buttons-right {
+  #{$dir-mode-align-inverse}: 0;
+  #{$dir-mode-align}: auto;
+}
+
+.spinbox.spinbox-horizontal.spinbox-two-sided input {
+  padding-#{$dir-mode-align}: 35px !important;
+}
+
+/*#endregion Spinners*/

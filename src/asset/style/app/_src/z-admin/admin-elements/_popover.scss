@@ -1,0 +1,107 @@
+/*#region PopOvers*/
+.popover {
+  -webkit-border-radius: 3px;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px;
+  -moz-background-clip: padding;
+  border-radius: 3px;
+  background-clip: padding-box;
+  padding: 0;
+  border-color: #ccc;
+  border-width: 1px;
+  -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  color: #444444;
+  background-color: #fbfbfb;
+}
+
+.popover .popover.bottom .arrow:after {
+  top: 1px;
+  margin-#{$dir-mode-align}: -10px;
+  border-bottom-color: #f7f7f7;
+  border-top-width: 0;
+}
+
+.popover.inverted {
+  background-color: #262626;
+  color: #f5f5f5;
+}
+
+.popover.inverted .popover-title {
+  background-color: #262626;
+  color: #f5f5f5;
+}
+
+.popover.inverted.top .arrow:after {
+  border-top-color: #262626;
+}
+
+.popover.inverted.bottom .arrow:after {
+  border-bottom-color: #262626;
+}
+
+.popover.inverted.left .arrow:after {
+  border-#{$dir-mode-align}-color: #262626;
+}
+
+.popover.inverted.right .arrow:after {
+  border-#{$dir-mode-align-inverse}-color: #262626;
+}
+
+.popover.dark {
+  background-color: #e5e5e5;
+}
+
+.popover.dark .popover-title {
+  background-color: #e5e5e5;
+}
+
+.popover.dark.top .arrow:after {
+  border-top-color: #e5e5e5;
+}
+
+.popover.dark.bottom .arrow:after {
+  border-bottom-color: #e5e5e5;
+}
+
+.popover.dark.left .arrow:after {
+  border-#{$dir-mode-align}-color: #e5e5e5;
+}
+
+.popover.dark.right .arrow:after {
+  border-#{$dir-mode-align-inverse}-color: #e5e5e5;
+}
+
+.popover-title {
+  -webkit-border-radius: 3px 3px 0 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 3px 3px 0 0;
+  -moz-background-clip: padding;
+  border-radius: 3px 3px 0 0;
+  background-clip: padding-box;
+  color: #000000;
+  border-bottom: 3px solid #2dc3e8;
+}
+
+.popover-notitle + .popover .popover-title {
+  display: none;
+}
+
+.popover-notitle + .popover.top .arrow:after {
+  border-top-color: #ffffff;
+}
+
+.popover-notitle + .popover.bottom .arrow:after {
+  border-bottom-color: #ffffff;
+}
+
+.popover-notitle + .popover.left .arrow:after {
+  border-#{$dir-mode-align}-color: #ffffff;
+}
+
+.popover-notitle + .popover.right .arrow:after {
+  border-#{$dir-mode-align}-color: #ffffff;
+}
+
+/*#endregion Popovers*/

@@ -1,0 +1,34 @@
+$admin-primary-color: app-color(primary); //#2dc3e8
+$admin-dark-color1: #262626;
+$admin-dark-color1-inverse: #ffffff;
+$admin-dropdown-menu-box-shadow: 0 2px 40px rgba(0, 0, 0, 0.4);
+//
+$form-element-base-color: #858585;
+$form-element-base-color-focus: $admin-dark-color1; // #262626;
+$form-element-base-background-color: #fbfbfb;
+$form-element-base-background-color-hover: $admin-dark-color1-inverse; // #ffffff;
+$form-element-base-background-color-focus: $admin-dark-color1-inverse; // #ffffff;
+$form-element-base-border-color: #d5d5d5;
+$form-element-base-border-color-hover: rgba(0, 0, 0, 0.2);
+$form-element-base-border-color-focus: rgba(0, 0, 0, 0.25);
+$form-element-base-box-shadow: none;
+$form-element-base-box-shadow-focus: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+$form-element-base-transition: box-shadow 0.45s, border-color 0.45s ease-in-out;
+//
+@import "admin-animations";
+@import "admin-colors/admin-color";
+@import "admin-padding-margin-fonts";
+//
+@import "admin-common";
+//
+@import "admin-typography";
+@import "admin-page-components/admin-page-components";
+@import "admin-elements/admin-elements";
+//
+//@import "nestable-list";
+//@import "tree-view";
+@import "wizards";
+//@import "charts";
+//
+@import "admin-forms/admin-forms";
+@import "admin-pages-widgets/admin-pages-widgets";

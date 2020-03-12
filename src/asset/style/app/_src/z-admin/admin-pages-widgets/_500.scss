@@ -1,0 +1,19 @@
+/*#region 500*/
+.body-500 {
+  background-color: #fb6e52;
+  color: #ffffff;
+}
+
+.body-500:before {
+  display: none;
+}
+
+.body-500 .error-container h1 {
+  color: #fb6e52;
+}
+
+.body-500 .return-btn:hover {
+  color: #fb6e52;
+}
+
+/*#endregion 404*/

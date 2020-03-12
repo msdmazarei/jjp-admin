@@ -8,15 +8,11 @@ import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { redux_state } from '../../../redux/app_state';
 import { Localization } from '../../../config/localization/localization';
-// import { ToastContainer } from 'react-toastify';
 import { BtnLoader } from '../../form/btn-loader/BtnLoader';
 import { FixNumber } from '../../form/fix-number/FixNumber';
 import AsyncSelect from 'react-select/async';
 import { PersonService } from '../../../service/service.person';
 import { PressAccountingService } from '../../../service/service.pressAccounting';
-// import { Store2 } from '../../../redux/store';
-// import { RetryModal } from '../../tool/retryModal/retryModal';
-// import { IUser } from '../../../model/model.user';
 import { permissionChecker } from '../../../asset/script/accessControler';
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from '../../../enum/T_ITEM_NAME';
 import Select from 'react-select';
@@ -24,6 +20,10 @@ import { AppDatePicker } from '../../form/app-datePicker/AppDatePicker';
 import { Input } from '../../form/input/Input';
 import { toast, ToastContainer } from 'react-toastify';
 import Dropzone from 'react-dropzone';
+import { UploadService } from '../../../service/service.upload';
+// import { Store2 } from '../../../redux/store';
+// import { RetryModal } from '../../tool/retryModal/retryModal';
+// import { IUser } from '../../../model/model.user';
 // import { IToken } from '../../../model/model.token';
 
 enum SAVE_MODE {
@@ -39,7 +39,7 @@ enum SAVE_IN {
     RECEIVER = 'RECEIVER',
 }
 
-enum payment_type {
+export enum payment_type {
     Cash_payment = 'Cash_payment',
     Deposit_to_account = 'Deposit_to_account',
     Bank_check = 'Bank_check',
@@ -51,6 +51,27 @@ enum stringInputSelect {
     Bank_cheque_owner_cheque = 'Bank_cheque_owner_cheque',
 }
 
+interface Cash_payment_detail_obj {
+    payment_type: payment_type.Cash_payment;
+    date: number | undefined;
+}
+
+interface Deposit_to_account_detail_obj {
+    payment_type: payment_type.Deposit_to_account;
+    date: number | undefined;
+    serial: number | undefined;
+    bank_name: string | undefined;
+    image: string | undefined;
+}
+
+interface Bank_check_detail_obj {
+    payment_type: payment_type.Bank_check;
+    cheque_owner: string | undefined;
+    date: number | undefined;
+    serial: number | undefined;
+    bank_name: string | undefined;
+    image: string | undefined;
+}
 
 interface ICmp_select<T> {
     label: string;
@@ -90,6 +111,7 @@ interface IState {
             value: number | undefined;
             isValid: boolean;
         };
+        // todo type of value in serial
         serial: {
             value: number | undefined;
             isValid: boolean;
@@ -136,9 +158,9 @@ interface IState {
 class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
     payment_type = [
-        { value: payment_type.Cash_payment, label: 'پرداخت نقدی' },
-        { value: payment_type.Deposit_to_account, label: 'واریز به حساب بانکی' },
-        { value: payment_type.Bank_check, label: 'چک بانکی' },
+        { value: payment_type.Cash_payment, label: Localization.payment_type.Cash_payment },
+        { value: payment_type.Deposit_to_account, label: Localization.payment_type.Deposit_to_account },
+        { value: payment_type.Bank_check, label: Localization.payment_type.Bank_check },
     ];
 
     /////////// end of Select's options define
@@ -214,6 +236,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
 
     private _pressAccounting = new PressAccountingService();
     private _personService = new PersonService();
+    private _uploadService = new UploadService();
 
 
     componentDidMount() {
@@ -247,7 +270,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                         saveMode: SAVE_MODE.UPDATE,
                     }, () => this.fetch_payment_by_id_and_set_in_state_and_call_payer_fetcher_func(this.props.match.params.payment_id))
                 }
-                if (this.props.match.path.includes('/update_recorded_payment_manage_wizard/:payment_id')) {
+                if (this.props.match.path.includes('/update_recorded_payment_manage_wizard/:payment_id/:press_id')) {
                     this.setState({
                         ...this.state,
                         saveMode: SAVE_MODE.PRESSLISTWIZARDUPDATE,
@@ -272,23 +295,119 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
             let amount_num: number = res.data.amount;
             let amount_num_valid: boolean = typeof amount_num === 'number' ? true : false;
             let payer_id: string = res.data.payer_id;
-            this.setState({
-                ...this.state,
-                payment_persons: {
-                    ...this.state.payment_persons,
-                    receiver: {
-                        person: receiver_person,
-                        isValid: receiver_person_valid
+            let payment_details: Cash_payment_detail_obj | Deposit_to_account_detail_obj | Bank_check_detail_obj = res.data.payment_details;
+            if (payment_details.payment_type === payment_type.Cash_payment) {
+                this.setState({
+                    ...this.state,
+                    payment_persons: {
+                        ...this.state.payment_persons,
+                        receiver: {
+                            person: receiver_person,
+                            isValid: receiver_person_valid
+                        },
+                        amount: {
+                            value: amount_num,
+                            isValid: amount_num_valid
+                        },
                     },
-                    amount: {
-                        value: amount_num,
-                        isValid: amount_num_valid
+                    Cash_payment: {
+                        date: {
+                            value: payment_details.date,
+                            isValid: typeof payment_details.date === 'number' ? true : false,
+                        }
                     },
+                    payment_type: this.payment_type[0],
+                }, () => {
+                    this.form_validation_func();
+                    this.fetch_payer_or_receiver_and_set_in_state(payer_id, SAVE_IN.PAYER);
+                })
+            } else if (payment_details.payment_type === payment_type.Deposit_to_account) {
+                let img: string[] = [];
+                if (payment_details.image !== undefined) {
+                    img.push(payment_details.image)
                 }
-            }, () => {
-                this.form_validation_func();
-                this.fetch_payer_or_receiver_and_set_in_state(payer_id, SAVE_IN.PAYER);
-            })
+                this.setState({
+                    ...this.state,
+                    payment_persons: {
+                        ...this.state.payment_persons,
+                        receiver: {
+                            person: receiver_person,
+                            isValid: receiver_person_valid
+                        },
+                        amount: {
+                            value: amount_num,
+                            isValid: amount_num_valid
+                        },
+                    },
+                    Deposit_to_account: {
+                        date: {
+                            value: payment_details.date,
+                            isValid: typeof payment_details.date === 'number' ? true : false,
+                        },
+                        serial: {
+                            value: payment_details.serial,
+                            isValid: typeof payment_details.serial === 'string' ? true : false,
+                        },
+                        bank_name: {
+                            value: payment_details.bank_name,
+                            isValid: typeof payment_details.bank_name === 'string' ? true : false,
+                        },
+                        image: {
+                            value: img,
+                            isValid: payment_details.image !== undefined ? true : false,
+                        }
+                    },
+                    payment_type: this.payment_type[1],
+                }, () => {
+                    this.form_validation_func();
+                    this.fetch_payer_or_receiver_and_set_in_state(payer_id, SAVE_IN.PAYER);
+                })
+            } else {
+                let img: string[] = [];
+                if (payment_details.image !== undefined) {
+                    img.push(payment_details.image)
+                }
+                this.setState({
+                    ...this.state,
+                    payment_persons: {
+                        ...this.state.payment_persons,
+                        receiver: {
+                            person: receiver_person,
+                            isValid: receiver_person_valid
+                        },
+                        amount: {
+                            value: amount_num,
+                            isValid: amount_num_valid
+                        },
+                    },
+                    Bank_cheque: {
+                        cheque_owner: {
+                            value: payment_details.cheque_owner,
+                            isValid: typeof payment_details.cheque_owner === 'string' ? true : false,
+                        },
+                        date: {
+                            value: payment_details.date,
+                            isValid: typeof payment_details.date === 'number' ? true : false,
+                        },
+                        serial: {
+                            value: payment_details.serial,
+                            isValid: typeof payment_details.serial === 'string' ? true : false,
+                        },
+                        bank_name: {
+                            value: payment_details.bank_name,
+                            isValid: typeof payment_details.bank_name === 'string' ? true : false,
+                        },
+                        image: {
+                            value: img,
+                            isValid: payment_details.image !== undefined ? true : false,
+                        }
+                    },
+                    payment_type: this.payment_type[2],
+                }, () => {
+                    this.form_validation_func();
+                    this.fetch_payer_or_receiver_and_set_in_state(payer_id, SAVE_IN.PAYER);
+                })
+            }
         }
     }
 
@@ -568,7 +687,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     onDrop(files: any[], payment_t: payment_type) {
-        if(payment_t === payment_type.Deposit_to_account){
+        if (payment_t === payment_type.Deposit_to_account) {
             if (!files || !files.length) return;
             if (this.state.Deposit_to_account.image.value && this.state.Deposit_to_account.image.value!.length) {
                 this.removePreviousImgNotify();
@@ -611,7 +730,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     }
 
     removeItemFromDZ(index: number, payment_t: payment_type/* , url: string */) {
-        if(payment_t === payment_type.Deposit_to_account){
+        if (payment_t === payment_type.Deposit_to_account) {
             let newFiles = (this.state.Deposit_to_account.image.value || []);
             if (newFiles) {
                 newFiles.splice(index, 1);
@@ -626,7 +745,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                 }
             }, () => this.form_validation_func())
         }
-        if(payment_t === payment_type.Bank_check){
+        if (payment_t === payment_type.Bank_check) {
             let newFiles = (this.state.Bank_cheque.image.value || []);
             if (newFiles) {
                 newFiles.splice(index, 1);
@@ -655,7 +774,8 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
         } else if (this.state.payment_type.value === payment_type.Deposit_to_account) {
             if (this.state.Deposit_to_account.bank_name.isValid === true &&
                 this.state.Deposit_to_account.date.isValid === true &&
-                this.state.Deposit_to_account.serial.isValid === true) {
+                this.state.Deposit_to_account.serial.isValid === true &&
+                this.state.Deposit_to_account.image.isValid === true) {
                 return true;
             } else {
                 return false;
@@ -687,10 +807,10 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
     ////////////////// navigatin func ///////////////////////
 
     backTO() {
-        if (this.state.saveMode === SAVE_MODE.PRESSLISTWIZARD) {
-            this.gotoPressList();
-        } else {
+        if (this.state.saveMode === SAVE_MODE.CREATE || this.state.saveMode === SAVE_MODE.MAINLISTWIZARD || this.state.saveMode === SAVE_MODE.UPDATE) {
             this.gotoMainList();
+        } else {
+            this.gotoPressList();
         }
     }
 
@@ -710,17 +830,89 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
         }
     }
 
+    async uploadFileReq(type: payment_type): Promise<string[]> {
+        let fileImg = (type === payment_type.Deposit_to_account ? this.state.Deposit_to_account.image.value : this.state.Bank_cheque.image.value || []).filter(img => typeof img !== "string");
+        let strImg = (type === payment_type.Deposit_to_account ? this.state.Deposit_to_account.image.value : this.state.Bank_cheque.image.value || []).filter(img => typeof img === "string");
+        if (fileImg && (fileImg || []).length) {
+            return new Promise(async (res, rej) => {
+                let urls = await this._uploadService.upload(fileImg).catch(e => {
+                    this.handleError({ error: e.response, toastOptions: { toastId: 'payment_data_uploadFileReq' } });
+                    rej(e);
+                });
+                if (urls) {
+                    res([...strImg, ...urls.data.result]);
+                }
+            });
+        } else {
+            return new Promise((res, rej) => {
+                res(strImg || []);
+            });
+        }
+    }
+
+    async payment_type_and_detail_returner_func(): Promise<Cash_payment_detail_obj | Deposit_to_account_detail_obj | Bank_check_detail_obj | undefined> {
+        if (this.state.payment_type.value === payment_type.Cash_payment) {
+            const obj: Cash_payment_detail_obj = {
+                payment_type: payment_type.Cash_payment,
+                date: this.state.Cash_payment.date.value
+            }
+            return obj;
+        } else if (this.state.payment_type.value === payment_type.Deposit_to_account) {
+            let img: void | string[] = await this.uploadFileReq(payment_type.Deposit_to_account).catch(error => {
+                this.handleError({ error: error.response, toastOptions: { toastId: 'payment_data_uploadFileReq' } });
+            });
+            if (!img) {
+                return undefined
+            }
+            const obj: Deposit_to_account_detail_obj = {
+                payment_type: payment_type.Deposit_to_account,
+                date: this.state.Deposit_to_account.date.value,
+                serial: this.state.Deposit_to_account.serial.value,
+                bank_name: this.state.Deposit_to_account.bank_name.value,
+                image: img[0],
+            }
+            return obj;
+        } else {
+            let img: void | string[] = await this.uploadFileReq(payment_type.Bank_check).catch(error => {
+                this.handleError({ error: error.response, toastOptions: { toastId: 'payment_data_uploadFileReq' } });
+            });
+            if (!img) {
+                return undefined
+            }
+            const obj: Bank_check_detail_obj = {
+                payment_type: payment_type.Bank_check,
+                cheque_owner: this.state.Bank_cheque.cheque_owner.value,
+                date: this.state.Bank_cheque.date.value,
+                serial: this.state.Bank_cheque.serial.value,
+                bank_name: this.state.Bank_cheque.bank_name.value,
+                image: img[0],
+            }
+            return obj;
+        }
+    }
+
+
+    // create func
     async create() {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingRecordNewPayment], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
         if (this.state.isFormValid === false) {
             return;
         }
         if (this.state.payment_persons.receiver.person === null || this.state.payment_persons.payer.person === null) {
             return;
         }
-        const created_payment_data: { payer_id: string, receiver_id: string, amount: number } = {
+        const payment_detail_obj: Cash_payment_detail_obj | Deposit_to_account_detail_obj | Bank_check_detail_obj | undefined = await this.payment_type_and_detail_returner_func();
+        if (payment_detail_obj === undefined) {
+            this.handleError({ error: "can't upload img --- retry again", toastOptions: { toastId: 'payment_data_uploadFileReq' } });
+            return;
+        }
+        const created_payment_data: { payer_id: string, receiver_id: string, amount: number, payment_details: typeof payment_detail_obj } = {
             payer_id: (this.state.payment_persons.payer.person as any).value.id,
             receiver_id: (this.state.payment_persons.receiver.person as any).value.id,
-            amount: Number(this.state.payment_persons.amount.value!)
+            amount: Number(this.state.payment_persons.amount.value!),
+            payment_details: payment_detail_obj
         };
         this.setState({ ...this.state, createLoader: true });
         let res = await this._pressAccounting.addPaymentToEachPressAccount(created_payment_data).catch(error => {
@@ -728,6 +920,42 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
             this.handleError({ error: error.response, toastOptions: { toastId: 'addPaymentToEachPressAccount' } })
         });
         if (res) {
+            this.apiSuccessNotify();
+            this.resetForm();
+        }
+    }
+
+    // update func
+    async update() {
+        if (this.state.isFormValid === false) {
+            return;
+        }
+        if (this.state.payment_persons.receiver.person === null || this.state.payment_persons.payer.person === null) {
+            return;
+        }
+        let payment_id: string = this.props.match.params.payment_id;
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountingManageUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            return;
+        }
+        const payment_detail_obj: Cash_payment_detail_obj | Deposit_to_account_detail_obj | Bank_check_detail_obj | undefined = await this.payment_type_and_detail_returner_func();
+        if (payment_detail_obj === undefined) {
+            this.handleError({ error: "can't upload img --- retry again", toastOptions: { toastId: 'payment_data_uploadFileReq' } });
+            return;
+        }
+        const updated_payment_data: { payer_id: string, receiver_id: string, amount: number, payment_details: typeof payment_detail_obj } = {
+            payer_id: (this.state.payment_persons.payer.person as any).value.id,
+            receiver_id: (this.state.payment_persons.receiver.person as any).value.id,
+            amount: Number(this.state.payment_persons.amount.value!),
+            payment_details: payment_detail_obj
+        };
+        this.setState({ ...this.state, updateLoader: true });
+        let res = await this._pressAccounting.updateFieldOfPressAccountList(updated_payment_data, payment_id).catch(error => {
+            this.handleError({ error: error.response, toastOptions: { toastId: 'updateFieldOfPressAccountList' } });
+            this.setState({ ...this.state, updateLoader: false });
+        })
+
+        if (res) {
+            this.setState({ ...this.state, updateLoader: false });
             this.apiSuccessNotify();
             this.resetForm();
         }
@@ -940,7 +1168,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                             <div className="role-img-container">
                                 <Dropzone
                                     multiple={false}
-                                    onDrop={(files) => this.onDrop(files,payment_type.Deposit_to_account)}
+                                    onDrop={(files) => this.onDrop(files, payment_type.Deposit_to_account)}
                                     maxSize={838860}
                                     accept="image/*"
                                     onDropRejected={(files, event) => this.onDropRejected(files, event)}
@@ -978,7 +1206,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                                                                     <img className="border-rounded m-2" src={tmUrl} alt="" onError={e => this.personImageOnError(e)} />
                                                                                 </div>
                                                                                 <div className="justify-content-between my-2">
-                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index , payment_type.Deposit_to_account/* , tmUrl */)}>&times;</button>
+                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index, payment_type.Deposit_to_account/* , tmUrl */)}>&times;</button>
                                                                                     <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                 </div>
                                                                             </>
@@ -988,7 +1216,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                                                                     <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                                                                                 </div>
                                                                                 <div className="justify-content-between my-2">
-                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index , payment_type.Deposit_to_account/* , tmUrl */)}>&times;</button>
+                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index, payment_type.Deposit_to_account/* , tmUrl */)}>&times;</button>
                                                                                     <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                 </div>
                                                                             </>
@@ -1081,7 +1309,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                             <div className="role-img-container">
                                 <Dropzone
                                     multiple={false}
-                                    onDrop={(files) => this.onDrop(files,payment_type.Bank_check)}
+                                    onDrop={(files) => this.onDrop(files, payment_type.Bank_check)}
                                     maxSize={838860}
                                     accept="image/*"
                                     onDropRejected={(files, event) => this.onDropRejected(files, event)}
@@ -1119,7 +1347,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                                                                     <img className="border-rounded m-2" src={tmUrl} alt="" onError={e => this.personImageOnError(e)} />
                                                                                 </div>
                                                                                 <div className="justify-content-between my-2">
-                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index , payment_type.Bank_check/* , tmUrl */)}>&times;</button>
+                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index, payment_type.Bank_check/* , tmUrl */)}>&times;</button>
                                                                                     <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                 </div>
                                                                             </>
@@ -1129,7 +1357,7 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                                                                     <img className="w-50px h-50px profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                                                                                 </div>
                                                                                 <div className="justify-content-between my-2">
-                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index , payment_type.Bank_check/* , tmUrl */)}>&times;</button>
+                                                                                    <button title={Localization.remove} className="img-remover btn btn-danger btn-sm ml-4" onClick={() => this.removeItemFromDZ(index, payment_type.Bank_check/* , tmUrl */)}>&times;</button>
                                                                                     <span className="mx-2 text-dark">{fileName} {fileSize}</span>
                                                                                 </div>
                                                                             </>
@@ -1218,14 +1446,27 @@ class RecordNewPaymentComponent extends BaseComponent<IProps, IState> {
                                 {/* end of give data by inputs */}
                                 <div className="d-flex justify-content-between mt-4">
                                     <div className="mr-0 pr-0">
-                                        <BtnLoader
-                                            btnClassName="btn btn-success shadow-default shadow-hover"
-                                            loading={this.state.createLoader}
-                                            onClick={() => this.create()}
-                                            disabled={!this.state.isFormValid}
-                                        >
-                                            {Localization.create}
-                                        </BtnLoader>
+                                        {
+                                            this.state.saveMode === SAVE_MODE.CREATE || this.state.saveMode === SAVE_MODE.MAINLISTWIZARD || this.state.saveMode === SAVE_MODE.PRESSLISTWIZARD
+                                                ?
+                                                <BtnLoader
+                                                    btnClassName="btn btn-success shadow-default shadow-hover"
+                                                    loading={this.state.createLoader}
+                                                    onClick={() => this.create()}
+                                                    disabled={!this.state.isFormValid}
+                                                >
+                                                    {Localization.create}
+                                                </BtnLoader>
+                                                :
+                                                <BtnLoader
+                                                    btnClassName="btn btn-info shadow-default shadow-hover"
+                                                    loading={this.state.updateLoader}
+                                                    onClick={() => this.update()}
+                                                    disabled={!this.state.isFormValid}
+                                                >
+                                                    {Localization.update}
+                                                </BtnLoader>
+                                        }
                                         <BtnLoader
                                             btnClassName="btn btn-warning shadow-default shadow-hover ml-3"
                                             loading={false}

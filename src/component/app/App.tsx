@@ -1,191 +1,80 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect, HashRouter } from 'react-router-dom';
-import { ForgotPassword } from '../forgot-password/ForgotPassword';
-import { Localization } from '../../config/localization/localization';
-import { Register } from '../register/Register';
-import { Login } from '../login/Login';
 import { TInternationalization } from '../../config/setup';
+import { Localization } from '../../config/localization/localization';
+import { BaseService } from '../../service/service.base';
 import { MapDispatchToProps, connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { BaseService } from '../../service/service.base';
-import { Modal } from 'react-bootstrap';
 import { redux_state } from '../../redux/app_state';
-import { AdminLayout } from '../../layouts/Admin/Admin';
-import { AppInitService } from '../../service/service.app-init';
+import { BrowserRouter as Router, Route, Switch, Redirect, HashRouter } from 'react-router-dom';
+import { RouteLayoutValidUser } from '../layout/valid-user/ValidUser';
 import { RouteLayoutAccount } from '../layout/account/Account';
-// import { Dashboard } from '../dashboard/Dashboard';
-// import NotFound from '../layout/main/not-found/NotFound';
-// import { RouteLayoutAccount } from '../layout/account/Account';
-// import { RouteLayoutMain } from '../layout/main/Main';
-// import { appLocalStorage } from '../../service/appLocalStorage';
-// import { NETWORK_STATUS } from '../../enum/NetworkStatus';
-// import { action_set_network_status } from '../../redux/action/netwok-status';
-// import { Store2 } from '../../redux/store';
+import { Login } from '../login/Login';
+import { Register } from '../register/Register';
 
 const appRoutes = (
-    <HashRouter>
-        <Switch>
-            <Redirect exact from="/" to="/dashboard" />
-            <Route exact path="/" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/dashboard" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book/create" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book/:book_id/edit" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/person/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/person/create" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/person/:person_id/edit" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/user/create" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/user/:user_id/edit" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/user/:person_id/wizard" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/comment/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/comment/:book_id/wizard" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/order/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/order/create" render={props => <AdminLayout {...props} />} />              
-            <Route exact path="/order/:order_id/edit" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/group/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/group/create" render={props => <AdminLayout {...props} />} />              
-            <Route exact path="/group/:group_id/edit" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book_generator/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book_generator/create" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book_generator/:book_generator_id/edit" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/book_generator/:book_id/wizard" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/permission/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/permission/create" render={props => <AdminLayout {...props} />} />              
-            <Route exact path="/permission/:permission_id/edit" render={props => <AdminLayout {...props} />} />    
-            <Route exact path="/profile" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/transaction/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/press_accounts/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/press_account_list/:press_id/manage" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/record_new_payment" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/update_recorded_payment/:payment_id" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/record_new_payment_manage_wizard/:press_id" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/record_new_payment_press_list_wizard/:press_id" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/update_recorded_payment_manage_wizard/:payment_id" render={props => <AdminLayout {...props} />} />
-            <Route exact path="/example" render={props => <AdminLayout {...props} />} />
-            {/* <Route exact path="/user/manage" render={props => <AdminLayout {...props} />} /> */}
-            {/* <Route exact path="/" component={() => <Redirect to="/dashboard" />} /> */}
-            {/* <RouteLayoutMain exact path="/dashboard" component={Dashboard} /> */}
-            <RouteLayoutAccount path="/login" component={Login} />
-            <RouteLayoutAccount path="/register" component={Register} />
-            <RouteLayoutAccount path="/forgot-password" component={ForgotPassword} />
-            {/* <RouteLayoutMain component={NotFound} /> */}
-        </Switch>
-    </HashRouter>
+  <HashRouter>
+    <Switch>
+
+      <Route exact path="/" component={() => <Redirect to="/dashboard" />} />
+      <RouteLayoutValidUser exact path="/dashboard" />
+      <RouteLayoutValidUser path="/profile" />
+      <RouteLayoutValidUser path="/blank" />
+
+      <RouteLayoutValidUser path="/user/manage" />
+      <RouteLayoutValidUser path="/user/create" />
+
+      <RouteLayoutAccount path="/login" component={Login} />
+      <RouteLayoutAccount path="/register" component={Register} />
+      {/* <RouteLayoutAccount path="/forgot-password" component={ForgotPassword} /> */}
+
+      <RouteLayoutValidUser />
+
+    </Switch>
+  </HashRouter>
 );
 
 interface IProps {
-    internationalization: TInternationalization;
-    // network_status: NETWORK_STATUS;
-    // set_network_status?: (network_status: NETWORK_STATUS) => any;
+  internationalization: TInternationalization;
 }
 interface IState {
-    showConfirmReloadModal: boolean;
+  showConfirmReloadModal: boolean;
 }
 
 class AppComponent extends React.Component<IProps, IState> {
-    //   private initStore = new appLocalStorage();
-    private _appInitService = new AppInitService();
-    state = {
-        showConfirmReloadModal: false,
+
+  constructor(props: IProps) {
+    super(props);
+
+    Localization.setLanguage(props.internationalization.flag);
+    document.title = Localization.app_title;
+
+    if (props.internationalization.rtl) {
+      document.body.classList.add('rtl');
     }
 
-    constructor(props: IProps) {
-        super(props);
+    BaseService.check_network_status();
+  }
 
-        Localization.setLanguage(props.internationalization.flag);
-        document.title = Localization.app_title;
-
-        if (props.internationalization.rtl) {
-            document.body.classList.add('rtl');
-        }
-
-        // if (BaseService.isAppOffline()) {
-        //   // Store2.dispatch(action_set_network_status(NETWORK_STATUS.OFFLINE));
-        //   this.props.set_network_status && this.props.set_network_status(NETWORK_STATUS.OFFLINE);
-        // }
-        BaseService.check_network_status();
-
-    }
-
-    componentDidMount() {
-        this.event_confirmReloadModal();
-    }
-
-    event_confirmReloadModal() {
-        window.addEventListener("app-event-newContentAvailable", () => {
-            this.setState({ ...this.state, showConfirmReloadModal: true });
-        });
-    }
-
-    closeModal_confirmReload() {
-        this.setState({ ...this.state, showConfirmReloadModal: false });
-    }
-
-    confirmModal_confirmReload() {
-        // window.location.reload(window.location.href);
-        // window.location.reload(window.location.href);
-        // location.reload(); // true
-        window.location.reload();
-    }
-
-    modal_confirmReload_render() {
-        return (
-            <>
-                <Modal show={this.state.showConfirmReloadModal} onHide={() => this.closeModal_confirmReload()}
-                    centered
-                    backdrop='static'>
-                    <Modal.Body>{Localization.msg.ui.new_vesion_available_update}</Modal.Body>
-                    <Modal.Footer>
-                        <button className="btn btn-light-- btn-sm btn-link text-muted" onClick={() => this.closeModal_confirmReload()}>
-                            {Localization.dont_want_now}
-                        </button>
-                        <button className="btn btn-system btn-sm" onClick={() => this.confirmModal_confirmReload()}>
-                            {Localization.update}
-                        </button>
-                    </Modal.Footer>
-                </Modal>
-            </>
-        )
-    }
-
-    /* check_network_status() {
-      if (this.props.network_status === NETWORK_STATUS.ONLINE) {
-        if (BaseService.isAppOffline()) {
-          this.props.set_network_status && this.props.set_network_status(NETWORK_STATUS.OFFLINE);
-        }
-      } else if (this.props.network_status === NETWORK_STATUS.OFFLINE) {
-        if (!BaseService.isAppOffline()) {
-          this.props.set_network_status && this.props.set_network_status(NETWORK_STATUS.ONLINE);
-        }
-      }
-    } */
-
-    render() {
-        return (
-            <div className="app">
-                <Router>
-                    {appRoutes}
-                </Router>
-
-                {this.modal_confirmReload_render()}
-            </div>
-        );
-    }
+  render() {
+    return (
+      <>
+        <Router>
+          {appRoutes}
+        </Router>
+      </>
+    )
+  }
 }
 
-
 const dispatch2props: MapDispatchToProps<{}, {}> = (dispatch: Dispatch) => {
-    return {
-        // set_network_status: (network_status: NETWORK_STATUS) => dispatch(action_set_network_status(network_status)),
-    }
+  return {
+  }
 }
 
 const state2props = (state: redux_state) => {
-    return {
-        internationalization: state.internationalization,
-        // network_status: state.network_status
-    }
+  return {
+    internationalization: state.internationalization,
+  }
 }
 
 export const App = connect(state2props, dispatch2props)(AppComponent);

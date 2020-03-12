@@ -1,4 +1,14 @@
 
+type TClient_OS_name = 'Unknown OS' | 'Windows' | 'MacOS' | 'UNIX' | 'Linux' | 'iOS' | 'Android' | 'Tizen';
+export interface IBrowserDetail {
+    browserName: string;
+    fullVersion: string;
+    majorVersion: number;
+    appName: string;
+    userAgent: string;
+    OSName: TClient_OS_name;
+}
+
 export abstract class Utility {
     static get_encode_auth(data: { username: string; password: string; }, separator: string = '_:_:_'): string {
         let username_password_str = data.username + separator + data.password;
@@ -80,5 +90,189 @@ export abstract class Utility {
         }
         return str;
     };
+
+    /**
+     * conver second duration to timer.
+     * @param second: duration in second, for example 1 hour = 3600 s.
+     * @returns it return time format like 35:06:53 (minute and second alwayes <= 59 & >=0)
+     */
+    static second_to_timer(second: number): string {
+        let hour = Math.floor(second / 3600);
+        let min = Math.floor((second - (hour * 3600)) / 60);
+        let sec = second - (min * 60) - (hour * 3600);
+
+        return `${Utility.convert_oneDigitNum_to_two(hour)}:${Utility.convert_oneDigitNum_to_two(min)}:${Utility.convert_oneDigitNum_to_two(sec)}`;
+    }
+
+    private static convert_oneDigitNum_to_two(number: number): string {
+        let num = number.toString();
+        if (number < 10) {
+            return '0' + num;
+        }
+        return num;
+    }
+
+    static prettifyNumber(number: number): string {
+        return number.toLocaleString();
+    }
+
+    static byteFileSize(byte: number): string {
+        if (!byte && byte !== 0) return '';
+        const kb = byte / 1024;
+        const mb = kb / 1024;
+        let rtn = '';
+        if (mb > 0) {
+            rtn = Math.round(mb * 100) / 100 + ' MB';
+        } else if (kb > 0) {
+            rtn = Math.round(kb * 100) / 100 + ' KB';
+        } else {
+            rtn = Math.round(byte * 100) / 100 + ' B';
+        }
+        return rtn;
+    }
+
+    static waitOnMe(timer: number = 500): Promise<boolean> {
+        return new Promise((res, rej) => {
+            setTimeout(function () {
+                res(true);
+            }, timer);
+        });
+    }
+
+    static float32Concat(first: Float32Array, second: Float32Array): Float32Array {
+        const firstLength = first.length;
+        const result = new Float32Array(firstLength + second.length);
+
+        result.set(first);
+        result.set(second, firstLength);
+
+        return result;
+    }
+
+    static getClientOSName(): TClient_OS_name {
+        var userAgent = window.navigator.userAgent,
+            platform = window.navigator.platform,
+            macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+            windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+            iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+            os: TClient_OS_name = "Unknown OS";
+
+        if (macosPlatforms.indexOf(platform) !== -1) {
+            os = 'MacOS';
+        } else if (iosPlatforms.indexOf(platform) !== -1) {
+            os = 'iOS';
+        } else if (windowsPlatforms.indexOf(platform) !== -1) {
+            os = 'Windows';
+        } else if (/Android/.test(userAgent)) {
+            os = 'Android';
+        } else if (/Tizen/.test(userAgent)) {
+            os = 'Tizen';
+        } else if (/Linux/.test(platform)) {
+            os = 'Linux';
+        } else if (navigator.appVersion.indexOf("X11") !== -1) os = "UNIX";
+
+        return os;
+    }
+
+    static browserDetail(): IBrowserDetail {
+        // let nVer = navigator.appVersion;
+        let nAgt = navigator.userAgent;
+        let browserName = navigator.appName;
+        let fullVersion = '' + parseFloat(navigator.appVersion);
+        let majorVersion = parseInt(navigator.appVersion, 10);
+        let nameOffset, verOffset, ix;
+
+        // In Opera 15+, the true version is after "OPR/" 
+        if ((verOffset = nAgt.indexOf("OPR/")) !== -1) {
+            browserName = "Opera";
+            fullVersion = nAgt.substring(verOffset + 4);
+        }
+        // In older Opera, the true version is after "Opera" or after "Version"
+        else if ((verOffset = nAgt.indexOf("Opera")) !== -1) {
+            browserName = "Opera";
+            fullVersion = nAgt.substring(verOffset + 6);
+            if ((verOffset = nAgt.indexOf("Version")) !== -1)
+                fullVersion = nAgt.substring(verOffset + 8);
+        }
+        // In MSIE, the true version is after "MSIE" in userAgent
+        else if ((verOffset = nAgt.indexOf("MSIE")) !== -1) {
+            browserName = "Microsoft Internet Explorer";
+            fullVersion = nAgt.substring(verOffset + 5);
+        }
+        // Edge
+        else if ((verOffset = nAgt.indexOf("Edge")) !== -1) {
+            browserName = "Edge";
+            fullVersion = nAgt.substring(verOffset + 5);
+        }
+        // In SamsungBrowser, the true version is after "SamsungBrowser" 
+        else if ((verOffset = nAgt.indexOf("SamsungBrowser")) !== -1) {
+            browserName = "SamsungBrowser";
+            fullVersion = nAgt.substring(verOffset + 15);
+        }
+        // In Chrome, the true version is after "Chrome" 
+        else if ((verOffset = nAgt.indexOf("Chrome")) !== -1) {
+            browserName = "Chrome";
+            fullVersion = nAgt.substring(verOffset + 7);
+        }
+        // In Chrome in IOS, the true version is after "CriOS" 
+        else if ((verOffset = nAgt.indexOf("CriOS")) !== -1) {
+            browserName = "Chrome";
+            fullVersion = nAgt.substring(verOffset + 6);
+        }
+        // In Safari, the true version is after "Safari" or after "Version" 
+        else if ((verOffset = nAgt.indexOf("Safari")) !== -1) {
+            browserName = "Safari";
+            fullVersion = nAgt.substring(verOffset + 7);
+            if ((verOffset = nAgt.indexOf("Version")) !== -1)
+                fullVersion = nAgt.substring(verOffset + 8);
+        }
+        // In Firefox, the true version is after "Firefox" 
+        else if ((verOffset = nAgt.indexOf("Firefox")) !== -1) {
+            browserName = "Firefox";
+            fullVersion = nAgt.substring(verOffset + 8);
+        }
+        // In most other browsers, "name/version" is at the end of userAgent 
+        else if ((nameOffset = nAgt.lastIndexOf(' ') + 1) <
+            (verOffset = nAgt.lastIndexOf('/'))) {
+            browserName = nAgt.substring(nameOffset, verOffset);
+            fullVersion = nAgt.substring(verOffset + 1);
+            if (browserName.toLowerCase() === browserName.toUpperCase()) {
+                browserName = navigator.appName;
+            }
+        }
+        // trim the fullVersion string at semicolon/space if present
+        if ((ix = fullVersion.indexOf(";")) !== -1)
+            fullVersion = fullVersion.substring(0, ix);
+        if ((ix = fullVersion.indexOf(" ")) !== -1)
+            fullVersion = fullVersion.substring(0, ix);
+
+        majorVersion = parseInt('' + fullVersion, 10);
+        if (isNaN(majorVersion)) {
+            fullVersion = '' + parseFloat(navigator.appVersion);
+            majorVersion = parseInt(navigator.appVersion, 10);
+        }
+
+        /* let OSName: TClient_OS_name = "Unknown OS";
+
+        if (navigator.appVersion.indexOf("Win") !== -1) OSName = "Windows";
+        if (navigator.appVersion.indexOf("Mac") !== -1) OSName = "MacOS";
+        if (navigator.appVersion.indexOf("X11") !== -1) OSName = "UNIX";
+        if (navigator.appVersion.indexOf("Linux") !== -1) OSName = "Linux"; */
+
+        return {
+            browserName,
+            fullVersion,
+            majorVersion,
+            appName: navigator.appName,
+            userAgent: navigator.userAgent,
+            OSName: Utility.getClientOSName()
+        }
+    }
+
+    static random_int(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    static readonly partial_downloadSize = 100000;
 
 }

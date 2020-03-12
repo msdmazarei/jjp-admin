@@ -179,7 +179,7 @@ class ChangePasswordComponent extends BaseComponent<IProps, IState> {
                                     required
                                     type="password"
                                     onKeyUp={(e) => this.handle_keyUp(e)}
-                                    className="input-bordered-bottom input-border-primary"
+                                    // className="input-bordered-bottom input-border-primary"
                                 />
                             </div>
                             <div className="col-12">
@@ -191,7 +191,7 @@ class ChangePasswordComponent extends BaseComponent<IProps, IState> {
                                     required
                                     type="password"
                                     onKeyUp={(e) => this.handle_keyUp(e)}
-                                    className="input-bordered-bottom input-border-primary"
+                                    // className="input-bordered-bottom input-border-primary"
                                 />
                             </div>
                             <div className="col-12">
@@ -205,7 +205,7 @@ class ChangePasswordComponent extends BaseComponent<IProps, IState> {
                                     patternError={Localization.validation.confirmPassword}
                                     type="password"
                                     onKeyUp={(e) => this.handle_keyUp(e)}
-                                    className="input-bordered-bottom input-border-primary"
+                                    // className="input-bordered-bottom input-border-primary"
                                 />
                             </div>
                         </div>

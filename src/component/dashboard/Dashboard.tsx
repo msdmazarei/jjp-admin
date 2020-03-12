@@ -58,16 +58,16 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
   }
 
   is_allow_render_report(r_name: TReport): boolean {
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.dashboard],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.dashboard], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
       return false;
     }
-    if(permissionChecker.is_allow_item_render([T_ITEM_NAME.advancedDashboard],CHECKTYPE.ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true){
+    if (permissionChecker.is_allow_item_render([T_ITEM_NAME.advancedDashboard], CHECKTYPE.ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
       return true
     }
     if (r_name === 'newst_comment') {
       return false;
     }
-    if (r_name === 'best_sells_chart' ) {
+    if (r_name === 'best_sells_chart') {
       return true;
     }
     if (r_name === 'last_sell_with_type') {
@@ -80,7 +80,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
       return true;
     }
     if (r_name === 'store_customer_performance') {
-      return false; 
+      return false;
     }
     return false;
   }
@@ -98,7 +98,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
     return <div className="row">
       {
         this.state.report_cmp_list.map((report: TReport, r_index: number) => {
-          if(this.is_allow_render_report(report) === true){
+          if (this.is_allow_render_report(report) === true) {
             const Cmpname = reportListMapCmp[report];
             const status: string = this.state.report_cmp_status[r_index];
             return (
@@ -113,7 +113,7 @@ class DashboardComponent extends BaseComponent<IProps, IState> {
                 </div>
               </Fragment>
             )
-          }else{
+          } else {
             return (
               undefined
             )

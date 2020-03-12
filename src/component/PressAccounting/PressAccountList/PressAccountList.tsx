@@ -20,6 +20,7 @@ import { DeleteModal } from "../../tool/deleteModal/deleteModal";
 import { UpdatePaymentModal } from "../UpdatePaymentModal/UpdatePaymentModal";
 import { permissionChecker } from "../../../asset/script/accessControler";
 import { T_ITEM_NAME, CHECKTYPE, CONDITION_COMBINE } from "../../../enum/T_ITEM_NAME";
+import { payment_type } from "../RecordNewPayment/RecordNewPayment";
 // import { IToken } from "../../../model/model.token";
 // import { SORT } from "../../../enum/Sort";
 
@@ -55,6 +56,71 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
         pressAccountList_table: {
             list: [],
             colHeaders: [
+                // start payer
+                {
+                    field: "payer", title: Localization.payer,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.payer}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.payer_id) {
+                            return <div title={row.payer_id}>wait!!!</div>
+                        }
+                        return '';
+                    }
+                },
+                // end payer
+                // start reciever
+                // {
+                //     field: "receiver_press", title: Localization.receiver_press,
+                //     templateFunc: () => {
+                //         return <>
+                //             {Localization.receiver_press}
+                //         </>
+                //     },
+                //     cellTemplateFunc: (row: any) => {
+                //         if (row.receiver) {
+                //             return <div title={this.getPersonFullName(row.receiver)}>{this.getPersonFullName(row.receiver)}</div>
+                //         }
+                //         return '';
+                //     }
+                // },
+                // end reciever
+                // start creator
+                {
+                    field: "creator", title: Localization.creator,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.creator}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.creator) {
+                            return <div title={row.creator}>{row.creator}</div>
+                        }
+                        return '';
+                    }
+                },
+                // end creator
+                // start record date
+                {
+                    field: "payment record time", title: Localization.creation_date,
+                    templateFunc: () => {
+                        return <>
+                            {Localization.creation_date}
+                        </>
+                    },
+                    cellTemplateFunc: (row: any) => {
+                        if (row.creation_date) {
+                            return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+                        }
+                        return '';
+                    }
+                },
+                // end record date
+                // start amount
                 {
                     field: "amount", title: Localization.Amount_of_payment,
                     templateFunc: () => {
@@ -72,20 +138,26 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end amount
+                // start payment type
                 {
-                    field: "payer", title: Localization.payer,
+                    field: "payment_t", title: Localization.payment_type_grid,
                     templateFunc: () => {
                         return <>
-                            {Localization.payer}
+                            {Localization.payment_type_grid}
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row.creator) {
-                            return <div title={row.creator}>{row.creator}</div>
+                        if (row.payment_details !== null && row.payment_details !== undefined) {
+                            let p_t: any = row.payment_details.payment_type;
+                            let pay_type: payment_type = p_t;
+                            return <div title={row.amount}>{Localization.payment_type[pay_type]}</div>
                         }
                         return '';
                     }
                 },
+                // end payment type
+                // start payment date
                 {
                     field: "pay_time", title: Localization.pay_time,
                     templateFunc: () => {
@@ -94,12 +166,14 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                         </>
                     },
                     cellTemplateFunc: (row: any) => {
-                        if (row.creation_date) {
-                            return <div title={this._getTimestampToDate(row.creation_date)}>{this.getTimestampToDate(row.creation_date)}</div>
+                        if (row.payment_details !== null && row.payment_details !== undefined) {
+                            return <div title={this._getTimestampToDate(row.payment_details.date)}>{this.getTimestampToDate(row.payment_details.date)}</div>
                         }
                         return '';
                     }
                 },
+                // end payment date
+                // start modifier
                 {
                     field: "modifier", title: Localization.modifier,
                     templateFunc: () => {
@@ -114,6 +188,8 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end modifier
+                // start modification_date
                 {
                     field: "modification_date", title: Localization.modification_date,
                     templateFunc: () => {
@@ -128,6 +204,7 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
                         return '';
                     }
                 },
+                // end modification_date
             ],
             actions: permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListTools], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                 ?
@@ -214,7 +291,6 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
             });
         });
         if (res) {
-            console.log(res.data)
             this.setState({
                 ...this.state,
                 press_fullName: this.getPersonFullName(res.data.payment_details[0].receiver),
@@ -271,8 +347,9 @@ class PressAccountListComponent extends BaseComponent<IProps, IState>{
         if (permissionChecker.is_allow_item_render([T_ITEM_NAME.pressAccountListUpdateTool], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         }
-        this.selectedReceipt = row;
-        this.setState({ ...this.state, updateModalShow: true })
+        this.props.history.push(`/update_recorded_payment_manage_wizard/${row.id}/${this.props.match.params.press_id}`)
+        // this.selectedReceipt = row;
+        // this.setState({ ...this.state, updateModalShow: true })
     }
 
     updateModalHide() {

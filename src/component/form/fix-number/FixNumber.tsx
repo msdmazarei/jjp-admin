@@ -1,3 +1,4 @@
+// import React from 'react';
 import { Input } from '../input/Input';
 import { Utility } from '../../../asset/script/utility';
 
@@ -9,4 +10,5 @@ export class FixNumber extends Input {
         this.setValidate(fix_phrase_numbers); // event.target.value
         this.props.onChange && this.props.onChange(fix_phrase_numbers, this.handleValidate(fix_phrase_numbers)); // event.target.value
     }
+
 }

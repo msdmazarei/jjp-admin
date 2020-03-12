@@ -12,6 +12,7 @@ interface IProps {
     internationalization: TInternationalization;
     onClose?: () => void;
     reShow?:boolean;
+    children: any;
     // token: IToken;
 }
 

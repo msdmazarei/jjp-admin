@@ -259,7 +259,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
     componentDidMount() {
         if (this.props.match.path.includes('/book/:book_id/edit')) {
-            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 this.setState({ ...this.state, saveMode: SAVE_MODE.EDIT });
                 this.book_id = this.props.match.params.book_id;
                 this.fetchBookById(this.props.match.params.book_id);
@@ -267,7 +267,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 this.noAccessRedirect(this.props.history);
             }
         } else {
-            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
                 this.noAccessRedirect(this.props.history);
             }
         }
@@ -327,14 +327,14 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                 book: {
                     ...this.state.book,
                     title: { ...this.state.book.title, value: res.data.title, isValid: true },
-                    edition: { ...this.state.book.edition, value: res.data.edition === null ? undefined : res.data.edition , isValid: true },
+                    edition: { ...this.state.book.edition, value: res.data.edition === null ? undefined : res.data.edition, isValid: true },
                     language: { ...this.state.book.language, value: Language!, isValid: true },
                     pub_year: { ...this.state.book.pub_year, value: res.data.pub_year === null ? undefined : Number(res.data.pub_year), isValid: true },
-                    isben: { ...this.state.book.isben, value: res.data.isben === null ? undefined : res.data.isben , isValid: true },
-                    pages: { ...this.state.book.pages, value: res.data.pages === null ? undefined : res.data.pages , isValid: true },
-                    duration: { ...this.state.book.duration, value: res.data.duration === null ? undefined : res.data.duration , isValid: true },
+                    isben: { ...this.state.book.isben, value: res.data.isben === null ? undefined : res.data.isben, isValid: true },
+                    pages: { ...this.state.book.pages, value: res.data.pages === null ? undefined : res.data.pages, isValid: true },
+                    duration: { ...this.state.book.duration, value: res.data.duration === null ? undefined : res.data.duration, isValid: true },
                     type: { ...this.state.book.type, value: typeList, isValid: true },
-                    price: { ...this.state.book.price, value: res.data.price === null ? undefined : res.data.price , isValid: true },
+                    price: { ...this.state.book.price, value: res.data.price === null ? undefined : res.data.price, isValid: true },
                     genre: { ...this.state.book.genre, value: genreList, isValid: true },
                     tags: { ...this.state.book.tags, value: tagList, isValid: true },
                     from_editor: { ...this.state.book.from_editor, value: res.data.from_editor === null ? undefined : res.data.from_editor, isValid: true },
@@ -484,7 +484,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     // add book function 
 
     async create() {
-        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         };
         if (!this.state.isFormValid) return;
@@ -502,14 +502,14 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let roleList = (this.state.book.roles.value || []).map((item: any) => { return { role: item.role, person: { id: item.person.id } } });
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         let roleListWithPress = roleList;
-        let press = { role: BOOK_ROLES.Press, person: {id : (this.state.book_roll_press! as ICmp_select<IPerson>).value.id} }
+        let press = { role: BOOK_ROLES.Press, person: { id: (this.state.book_roll_press! as ICmp_select<IPerson>).value.id } }
         roleListWithPress.push(press);
 
         const newBook = {
             title: this.state.book.title.value,
             edition: (this.state.book.edition.value === '' || this.state.book.edition.value === undefined) ? undefined : this.state.book.edition.value,
             language: this.state.book.language.value.value,
-            pub_year: (this.state.book.pub_year.value === undefined ) ? undefined : (this.state.book.pub_year.value as any).toString(),
+            pub_year: (this.state.book.pub_year.value === undefined) ? undefined : (this.state.book.pub_year.value as any).toString(),
             isben: (this.state.book.isben.value === '' || this.state.book.isben.value === undefined) ? undefined : this.state.book.isben.value,
             pages: (this.state.book.pages.value === '' || this.state.book.pages.value === undefined) ? undefined : this.state.book.pages.value,
             duration: (this.state.book.duration.value === '' || this.state.book.duration.value === undefined) ? undefined : this.state.book.duration.value,
@@ -530,7 +530,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         if (res) {
             this.apiSuccessNotify();
             this.resetForm();
-            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookContentSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 if (res.data.result.length === 0) {
                     return;
                 } else {
@@ -560,7 +560,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     async update() {
-        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
+        if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false) {
             return;
         };
         if (!this.state.isFormValid) return;
@@ -577,7 +577,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
         let tagList = (this.state.book.tags.value || []).map((item: { label: string; value: string }) => item.value);
         // let imagesList = (this.state.book.images.value || []).map((list: { label: string; value: string }) => list.value);
         let roleListWithPress = roleList;
-        let press = { role: BOOK_ROLES.Press, person:{id:(this.state.book_roll_press! as ICmp_select<IPerson>).value.id} }
+        let press = { role: BOOK_ROLES.Press, person: { id: (this.state.book_roll_press! as ICmp_select<IPerson>).value.id } }
         roleListWithPress.push(press);
 
         const newBook = {
@@ -589,7 +589,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
             duration: this.state.book.duration.value,
             from_editor: this.state.book.from_editor.value,
             description: this.state.book.description.value,
-            price: this.state.book.price.value === undefined ? undefined : this.state.book.price.value === '' ?  null : (Number(this.state.book.price.value)),
+            price: this.state.book.price.value === undefined ? undefined : this.state.book.price.value === '' ? null : (Number(this.state.book.price.value)),
             genre: genreList.length === 0 ? null : genreList,
             roles: roleListWithPress,
             images: imgUrls,
@@ -706,12 +706,28 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
 
     //////// tag input keydown handle ////////////////////////////
 
+    is_exist_this_tag(tag: string): boolean {
+        if (this.state.book.tags.value.length === 0) {
+            return false;
+        } else {
+            for (let i = 0; i < this.state.book.tags.value.length; i++) {
+                if ((this.state.book.tags.value[i] as { label: string, value: string }).value === tag) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     handle_tagsKeyDown(event: any/* SyntheticKeyboardEvent<HTMLElement> */) {
         if (!this.state.tags_inputValue) return;
         switch (event.key) {
             case 'Enter':
             case 'Tab':
                 const newVal = this.state.tags_inputValue;
+                if(this.is_exist_this_tag(newVal) === true){
+                    return;
+                }
                 this.setState({
                     ...this.state,
                     book: {
@@ -730,7 +746,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     };
 
     typeInputTouch_handler() {
-        this.setState({...this.state,isBookTypeInputTouch: true})
+        this.setState({ ...this.state, isBookTypeInputTouch: true })
     }
 
     typeInvalidFeedback() {
@@ -746,7 +762,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     }
 
     pressInputTouch_handler() {
-        this.setState({...this.state,isBookPressInputTouch: true})
+        this.setState({ ...this.state, isBookPressInputTouch: true })
     }
 
     pressInvalidFeedback() {
@@ -840,11 +856,11 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
     is_price_input_show(): boolean {
         let result: boolean = false;
         if (this.state.saveMode === SAVE_MODE.EDIT) {
-            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEditPriceEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEditPriceEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 result = true;
             }
         } else {
-            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSavePriceAdd],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
+            if (permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSavePriceAdd], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true) {
                 result = true;
             }
         }
@@ -1012,7 +1028,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                         <div className="form-group">
                                             <label htmlFor="">{Localization.role_type_list.Press}<span className="text-danger">*</span></label>
                                             {
-                                                permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
+                                                permissionChecker.is_allow_item_render([T_ITEM_NAME.quickPersonSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
                                                     ?
                                                     <i
                                                         title={Localization.Quick_person_creation}
@@ -1152,7 +1168,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 ?
                                                 <>
                                                     {
-                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSave],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookSave], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false
                                                             ?
                                                             undefined
                                                             :
@@ -1177,7 +1193,7 @@ class BookSaveComponent extends BaseComponent<IProps, IState> {
                                                 :
                                                 <>
                                                     {
-                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEdit],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === false
+                                                        permissionChecker.is_allow_item_render([T_ITEM_NAME.bookEdit], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === false
                                                             ?
                                                             undefined
                                                             :

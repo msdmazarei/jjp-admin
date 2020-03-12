@@ -214,14 +214,14 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
             if (row.images && row.images.length) {
               return <div className="text-center" >
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
+                  <img className="rounded max-w-50px max-h-50px" src={"/api/serve-files/" + row.images[0]} alt="" onError={e => this.bookImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px" src={this.defaultBookImagePath} alt="" />
+                  <img className="rounded max-w-50px max-h-50px" src={this.defaultBookImagePath} alt="" />
                 </div>
               </div>
             }
@@ -1445,7 +1445,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.book}</h2>
               {
@@ -1463,7 +1463,7 @@ class BookManageComponent extends BaseComponent<IProps, IState>{
                   undefined
               }
             </div>
-          </div>
+          </div> */}
           {/* start search box */}
           <div className="row">
             <div className="col-12">

@@ -237,6 +237,7 @@ export const en = {
     previous: 'previous',
     next: 'next',
     no_item_found: 'no item found',
+    list : 'list',
     category: {
         category: 'category',
         new: 'new release',
@@ -342,7 +343,7 @@ export const en = {
     permission_update: "permission update",
     creator: "creator",
     modifier: 'modifier',
-    modification_date: "modification_date",
+    modification_date: "modification date",
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher: "Each book must have only one publisher and it is not possible to add a book without a publisher",
     name_of_organization: "name of organization",
     upload: 'upload',
@@ -386,6 +387,7 @@ export const en = {
     view_publisher_received_list : 'view publisher received list',
     payment_remove : 'remove payment',
     payment_update : 'payment update',
+    payment_type_grid : 'payment type',
     bookType : 'book type',
     contentType : 'content type',
     transactionType : 'transaction type',
@@ -421,6 +423,11 @@ export const en = {
         addContent: 'add content',
         addContentBefore: 'add content to before',
         addContentAfter: 'add content to after',
+    },
+    payment_type: {
+        Cash_payment: 'cash payment',
+        Deposit_to_account: 'deposit to account',
+        Bank_check: 'bank check',
     },
     name_of_report: {
         ten_Recent_Comments: "10 Recent Comments",

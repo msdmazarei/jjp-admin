@@ -240,6 +240,7 @@ export const fa = {
     previous: 'قبلی',
     next: 'بعدی',
     no_item_found: 'موردی یافت نشد',
+    list : 'لیست',
     category: {
         category: 'گروه',
         new: 'نسخه ها جدید',
@@ -389,6 +390,7 @@ export const fa = {
     view_publisher_received_list : 'مشاهده لیست دریافتی ناشر',
     payment_remove : 'حذف پرداخت',
     payment_update : 'بروزرسانی پرداخت',
+    payment_type_grid : 'نوع پرداخت',
     bookType : 'نوع کتاب',
     contentType : 'نوع محتوا',
     transactionType : 'نوع تراکنش',
@@ -424,6 +426,11 @@ export const fa = {
         addContent: 'افزودن محتوا',
         addContentBefore: 'افزودن محتوا به قبل',
         addContentAfter: 'افزودن محتوا به بعد',
+    },
+    payment_type: {
+        Cash_payment: 'پرداخت نقدی',
+        Deposit_to_account: 'واریز به حساب بانکی',
+        Bank_check: 'چک بانکی',
     },
     name_of_report:{
         ten_Recent_Comments : "10 کامنت اخیر",

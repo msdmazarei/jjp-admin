@@ -6,7 +6,9 @@ import { en } from './en';
 import { ar } from './ar';
 import { BOOK_TYPES, BOOK_GENRE, BOOK_ROLES } from '../../enum/Book';
 import { TPERMISSIONS } from '../../enum/Permission';
-import { TReportName } from '../../component/tool/reports/ReportUtils';import { LANGUAGES } from '../../enum/Language';
+import { TReportName } from '../../component/tool/reports/ReportUtils';
+import { LANGUAGES } from '../../enum/Language';
+import { payment_type } from '../../component/PressAccounting/RecordNewPayment/RecordNewPayment';
 ;
 
 interface ILocalization extends LocalizedStringsMethods {
@@ -20,9 +22,9 @@ interface ILocalization extends LocalizedStringsMethods {
     brand_name: string;
     sign_in_bookstore_account: string;
     forgot_password: string;
-    stop : string;
-    cancel : string;
-    build : string;
+    stop: string;
+    cancel: string;
+    build: string;
     msg: {
         ui: {
             [key: string]: any; // todo
@@ -37,29 +39,29 @@ interface ILocalization extends LocalizedStringsMethods {
             no_network_connection: string;
             new_vesion_available_update: string;
             item_will_be_removed_continue: string;
-            you_stop_uploading_process : string;
-            upload_process_error_msg : string;
-            do_you_want_create_this_book_content : string;
-            at_least_two_publishers_must_be_selected_to_compare_publisher_sales : string;
-            book_creation_successful_do_you_want_to_create_content_for_this_book : string;
-            person_creation_successful_do_you_want_to_create_user_for_this_person : string;
-            user_creation_successful_do_you_want_to_add_group_for_this_user : string;
+            you_stop_uploading_process: string;
+            upload_process_error_msg: string;
+            do_you_want_create_this_book_content: string;
+            at_least_two_publishers_must_be_selected_to_compare_publisher_sales: string;
+            book_creation_successful_do_you_want_to_create_content_for_this_book: string;
+            person_creation_successful_do_you_want_to_create_user_for_this_person: string;
+            user_creation_successful_do_you_want_to_add_group_for_this_user: string;
             content_saved_successfully_do_you_want_to_make_the_book: string;
             choose_the_type_of_book: string;
-            there_is_no_access_for_you : string;
-            admin_book_content_generate:{
-                chapter_title_cannot_be_blank : string ;
-                chapter_title_and_content_cannot_be_blank : string;
-                just_one_file_can_upload : string;
-                book_not_created : string;
+            there_is_no_access_for_you: string;
+            admin_book_content_generate: {
+                chapter_title_cannot_be_blank: string;
+                chapter_title_and_content_cannot_be_blank: string;
+                just_one_file_can_upload: string;
+                book_not_created: string;
                 before_generate_request_result_pendding: string;
                 before_generate_request_result_fail: string;
                 before_generate_request_result_success: string;
                 after_generate_request_result_pendding: string;
                 after_generate_request_result_fail: string;
                 after_generate_request_result_success: string;
-                content_status_query_error_try_again : string;
-                Inquiring : string;
+                content_status_query_error_try_again: string;
+                Inquiring: string;
             }
         },
         back: {
@@ -113,13 +115,13 @@ interface ILocalization extends LocalizedStringsMethods {
             commit_error: string;
             person_has_books: string;
             book_not_in_lib: string;
-            used_somewhere : string;
-            deleting_the_item_encountered_a_problem : string;
-            cell_no_exists : string;
-            legal_user_restriction : string;
-            person_is_not_legal : string;
-            person_must_have_user : string;
-            invalid_password : string;
+            used_somewhere: string;
+            deleting_the_item_encountered_a_problem: string;
+            cell_no_exists: string;
+            legal_user_restriction: string;
+            person_is_not_legal: string;
+            person_must_have_user: string;
+            invalid_password: string;
         }
     };
     validation: {
@@ -191,7 +193,7 @@ interface ILocalization extends LocalizedStringsMethods {
     create: string;
     reset: string;
     back: string;
-    continue : string;
+    continue: string;
     reading_insights: string;
     settings: string;
     info: string;
@@ -251,6 +253,7 @@ interface ILocalization extends LocalizedStringsMethods {
     previous: string;
     next: string;
     no_item_found: string;
+    list: string;
     category: {
         [key: string]: any; // todo
         category: string;
@@ -356,59 +359,60 @@ interface ILocalization extends LocalizedStringsMethods {
     create_permission: string;
     permission_update: string;
     creator: string;
-    modifier : string;
+    modifier: string;
     modification_date: string;
     each_book_must_have_only_one_publisher_and_it_is_not_possible_to_add_a_book_without_a_publisher: string;
     name_of_organization: string;
-    upload : string;
-    content : string;
+    upload: string;
+    content: string;
     Original: string;
-    Brief : string;
-    NEW_PAGE : string;
-    NEW_LINE : string;
-    chapter : string;
-    first_Chapter : string;
-    text : string;
-    control :string;
+    Brief: string;
+    NEW_PAGE: string;
+    NEW_LINE: string;
+    chapter: string;
+    first_Chapter: string;
+    text: string;
+    control: string;
     voice: string;
-    selected_range_is_not_valid : string;
-    save : string;
-    content_generated : string;
-    content_not_generated : string;
-    row : string;
-    advanced_search : string;
-    transaction : string;
-    transaction_amount : string;
-    increase_credit : string;
-    reduce_credit : string;
-    credit_level : string;
-    no_credit_account_has_been_registered_for_this_person : string;
-    none : string;
+    selected_range_is_not_valid: string;
+    save: string;
+    content_generated: string;
+    content_not_generated: string;
+    row: string;
+    advanced_search: string;
+    transaction: string;
+    transaction_amount: string;
+    increase_credit: string;
+    reduce_credit: string;
+    credit_level: string;
+    no_credit_account_has_been_registered_for_this_person: string;
+    none: string;
     number_of_users: string;
-    total_crediting : string;
-    total_receipt : string;
-    balance_crediting : string;
-    pay : string;
-    record_pay : string;
-    receipts_list : string;
-    payment_list : string;
-    Publishers_bills : string;
-    Amount_of_payment : string;
-    pay_time : string;
-    number_of_pay : string;
-    payer : string;
-    receiver_press : string;
-    view_publisher_received_list : string;
-    payment_remove : string;
-    payment_update : string;
-    bookType : string;
-    contentType : string;
-    transactionType : string;
-    password_change:{
-        change_password : string;
-        old_password : string;
-        new_password : string;
-        confirm_new_password : string;
+    total_crediting: string;
+    total_receipt: string;
+    balance_crediting: string;
+    pay: string;
+    record_pay: string;
+    receipts_list: string;
+    payment_list: string;
+    Publishers_bills: string;
+    Amount_of_payment: string;
+    pay_time: string;
+    number_of_pay: string;
+    payer: string;
+    receiver_press: string;
+    view_publisher_received_list: string;
+    payment_remove: string;
+    payment_update: string;
+    payment_type_grid : string;
+    bookType: string;
+    contentType: string;
+    transactionType: string;
+    password_change: {
+        change_password: string;
+        old_password: string;
+        new_password: string;
+        confirm_new_password: string;
     };
     type_of_report: {
         Reporting_Period: string;
@@ -428,14 +432,17 @@ interface ILocalization extends LocalizedStringsMethods {
         last_quarter: string;
         yearly: string;
     };
-    book_generator : {
-        addSubChapter : string;
+    book_generator: {
+        addSubChapter: string;
         addChapterBefore: string;
         addChapterAfter: string;
         addTitleAndContentToChapter: string;
         addContent: string;
         addContentBefore: string;
         addContentAfter: string;
+    };
+    payment_type: {
+        [key in payment_type]: string;
     };
     genre_type_list: {
         [key in BOOK_GENRE]: string;
@@ -451,10 +458,10 @@ interface ILocalization extends LocalizedStringsMethods {
     };
     name_of_report: {
         [key in TReportName]: string;
-    }; 
+    };
     languages_list: {
         [key in LANGUAGES]: string;
-    };    
+    };
     order_status: {
         Invoiced: string;
         Created: string;

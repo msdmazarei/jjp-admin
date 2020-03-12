@@ -167,14 +167,14 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
             if (row.image) {
               return <div title={Localization.image} className="text-center" >
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px profile-img-rounded" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
+                  <img className="rounded-circle max-w-50px max-h-50px profile-img-rounded" src={"/api/serve-files/" + row.image} alt="" onError={e => this.personImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
+                  <img className="rounded-circle max-w-50px max-h-50px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                 </div>
               </div>
             }
@@ -1001,7 +1001,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.person}</h2>
               {
@@ -1019,7 +1019,7 @@ class PersonManageComponent extends BaseComponent<IProps, IState>{
                   undefined
               }
             </div>
-          </div>
+          </div> */}
           {
             permissionChecker.is_allow_item_render([T_ITEM_NAME.personManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?

@@ -161,14 +161,14 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
             if (row.person.image) {
               return <div title={Localization.image} className="text-center" >
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px profile-img-rounded" src={"/api/serve-files/" + row.person.image} alt="" onError={e => this.userImageOnError(e)} />
+                  <img className="rounded-circle max-w-50px max-h-50px profile-img-rounded" src={"/api/serve-files/" + row.person.image} alt="" onError={e => this.userImageOnError(e)} />
                 </div>
               </div>
             }
             else {
               return <div className="text-center">
                 <div className="d-inline-block w-50px h-50px">
-                  <img className="max-w-50px max-h-50px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
+                  <img className="rounded-circle max-w-50px max-h-50px  profile-img-rounded" src={this.defaultPersonImagePath} alt="" />
                 </div>
               </div>
             }
@@ -975,7 +975,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.user}</h2>
               <BtnLoader
@@ -987,7 +987,7 @@ class UserManageComponent extends BaseComponent<IProps, IState>{
                 {Localization.new}
               </BtnLoader>
             </div>
-          </div>
+          </div> */}
           {
             permissionChecker.is_allow_item_render([T_ITEM_NAME.userManageGetGrid],CHECKTYPE.ONE_OF_ALL,CONDITION_COMBINE.DOSE_NOT_HAVE) === true
               ?

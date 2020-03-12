@@ -981,7 +981,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
     return (
       <>
         <div className="content">
-          <div className="row">
+          {/* <div className="row">
             <div className="col-12">
               <h2 className="text-bold text-dark pl-3">{Localization.group}</h2>
               {
@@ -999,7 +999,7 @@ class GroupManageComponent extends BaseComponent<IProps, IState>{
                   undefined
               }
             </div>
-          </div>
+          </div> */}
           {
             permissionChecker.is_allow_item_render([T_ITEM_NAME.groupManageGetGrid], CHECKTYPE.ONE_OF_ALL, CONDITION_COMBINE.DOSE_NOT_HAVE)
               ?

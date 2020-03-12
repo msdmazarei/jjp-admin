@@ -91,7 +91,7 @@ class DashboardReportsManageModalComponent extends BaseComponent<IProps, IState>
                                             >
                                             </i>
                                             <label htmlFor={i.toString()}>
-                                                <h6 className="text-dark ml-2">{this.returner_report_title_name(i)}</h6>
+                                                <h6 className="text-dark ml-2 mt-3">{this.returner_report_title_name(i)}</h6>
                                             </label>
                                         </>
                                         :
@@ -102,7 +102,7 @@ class DashboardReportsManageModalComponent extends BaseComponent<IProps, IState>
                                             >
                                             </i>
                                             <label htmlFor={i.toString()}>
-                                                <h6 className="text-dark ml-2">{this.returner_report_title_name(i)}</h6>
+                                                <h6 className="text-dark ml-2 mt-3">{this.returner_report_title_name(i)}</h6>
                                             </label>
                                         </>
                                 }

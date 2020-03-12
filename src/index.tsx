@@ -1,49 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import { createBrowserHistory } from "history";
-// import { Router, Route, Switch, Redirect, HashRouter } from "react-router-dom";
-// import {AdminLayout} from "./layouts/Admin/Admin";
-// import RTLLayout from './layouts/RTL/RTL.jsx';
-import * as serviceWorker from './serviceWorker';
 import './asset/style/app/skin-default/style.scss';
-import { Provider } from 'react-redux';
-import { Store2, persistor } from './redux/store';
-import { PersistGate } from 'redux-persist/integration/react';
 import { App } from './component/app/App';
-// import * as dirObj from 'react-datepicker2';
-// const project = dirObj.readDirectory(__dirname + '/..', {
-//   fileTransform: (file: dirObj.File) => {
-//     return file.fullpath;
-//   }
-// });
-// const hist = createBrowserHistory();
+import * as serviceWorker from './serviceWorker';
+import { Provider } from 'react-redux';
+import { persistor, Store2 } from './redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 ReactDOM.render(
-  // <Provider store={Store2}>
-  //   <PersistGate loading={null} persistor={persistor}>
-  //     <Router history={hist}>
-  //       <HashRouter>
-  //         <Switch>
-  //           <Route path="/" render={props => <AdminLayout {...props} />} />
-  //           {/* <Route path="/rtl" render={props => <RTLLayout {...props} />} /> */}
-  //           <Redirect from="/" to="/dashboard" />
-  //         </Switch>
-  //       </HashRouter>
-  //     </Router>
-  //   </PersistGate>
-  // </Provider>
-
-
-
-  <Provider store={Store2}>
-    <PersistGate loading={null} persistor={persistor}>
-     <App />
-    </PersistGate>
-  </Provider>
-  ,
-  document.getElementById("root")
+    <Provider store={Store2}>
+        <PersistGate loading={null} persistor={persistor}>
+            <App />
+        </PersistGate>
+    </Provider>
+    , document.getElementById('content')
 );
-
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
